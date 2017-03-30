@@ -1,0 +1,29 @@
+<div data-jc="form" data-title="@(Export flow)" data-jc-path="common.form" data-if="value === 'export'" data-width="500px" class="hidden" data-jc-init="formexport_init">
+	<div class="padding npb">
+		<div data-jc="textarea" data-jc-path="formexport.body" class="m" data-height="200px">@(Copy data to clipboard)</div>
+	</div>
+	<div class="ui-form-buttons">
+		<button name="cancel" style="width:100%">@(Close)</button>
+	</div>
+</div>
+
+<script>
+	function formexport_reload() {
+
+		var obj = {};
+		obj.components = CLONE(flow.components);
+		obj.tabs = CLONE(flow.tabs);
+		obj.url = location.href;
+		obj.created = new Date();
+
+		obj.components.forEach(function(o) {
+			delete o.$component;
+		});
+
+		SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
+	}
+
+	function formexport_init(component) {
+		component.find('textarea').prop('readonly', true);
+	}
+</script>

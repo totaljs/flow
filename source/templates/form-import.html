@@ -1,0 +1,61 @@
+<div data-jc="form" data-title="@(Import flow)" data-jc-path="common.form" data-if="value === 'import'" data-width="500px" class="hidden" data-jc-init="formimport_init">
+	<div class="padding npb">
+		<div data-jc="textarea" data-jc-path="formimport.body" class="m" data-height="200px" data-required="true" data-jc-value="''">@(Put exported data)</div>
+	</div>
+	<div class="ui-form-buttons center">
+		<div data-jc="validation" data-jc-path="formimport">
+			<button name="submit" disabled="disabled">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(CANCEL)</button>
+	</div>
+</div>
+
+<script>
+	function formimport_reload() {
+		SET('formimport.body', '');
+	}
+
+	function formimport_init(component) {
+		component.submit = function(hide) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to restore entered data?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (index)
+					return;
+				var err = false;
+				SETTER('loading', 'show');
+				try {
+					var data = PARSE(decodeURIComponent(atob(formimport.body)));
+					if (data) {
+						flow.tabs = data.tabs;
+						flow.components = data.components;
+						flow.designer = [];
+						flow.loaded = true;
+
+						if (!flow.tabs)
+							flow.tabs = [{ id: Date.now().toString(), name: 'Main', icon: 'fa-object-ungroup', linker: 'main' }];
+
+						location.hash = flow.tabs[0].linker;
+
+						if (!flow.components)
+							flow.components = [];
+
+						UPDATE('flow');
+						SETTER('binder', 'scan');
+						hide();
+						setTimeout(function() {
+							EMIT('designer.refresh');
+						}, 100);
+					} else
+						err = true;
+				} catch (ex) {
+					err = true;
+				}
+
+				if (err) {
+					SETTER('message', 'alert', '@(Imported data are not valid.)');
+					DEFAULT('formimport.body');
+				}
+				SETTER('loading', 'hide', 1000);
+			});
+		};
+	}
+</script>

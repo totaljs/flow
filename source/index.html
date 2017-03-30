@@ -1,0 +1,842 @@
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>@(Flow:) @{config.name}</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=11" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="width=1280, user-scalable=no" />
+	<meta name="robots" content="all,follow" />
+	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
+	<script src="@{repository.url}default.js"></script>
+</head>
+<body data-jc="exec,binder">
+
+		<div data-jc="loading"></div>
+		<div data-jc="confirm"></div>
+		<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
+		<div data-jc="autocomplete"></div>
+		<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
+		<div data-jc="autocomplete"></div>
+		<div data-jc="contextmenu"></div>
+		<div data-jc="message" data-button="@(Close)"></div>
+		<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
+
+		<div class="panel">
+			<section class="tabs">
+				<nav>
+					<a href="javascript:void(0)" class="exec onlyicon" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></a>
+					<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'info'" data-b="common.panel" data-b-class="n => (n === 'info' ? '+' : '-') + 'selected'">@(Info)</a>
+					<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'debug'" data-b="common.panel" data-b-class="n => (n === 'debug' ? '+' : '-') + 'selected'"><i class="fa fa-history"></i>@(Debug)</a>
+					<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'errors'" data-b="common.panel" data-b-class="n => (n === 'errors' ? '+' : '-') + 'selected'"><i class="fa fa-bug" data-b="common.errors" data-b-class="n => (n && n.length ? '+' : '-') + 'red'"></i>@(Errors)</a>
+					<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'traffic'" data-b="common.panel" data-b-class="n => (n === 'traffic' ? '+' : '-') + 'selected'"><i class="fa fa-tasks"></i>@(Traffic)</a>
+				</nav>
+			</section>
+			<div class="padding hidden markdown" data-b="common.panel" data-b-visible="n => n === 'info'" id="infopanel"></div>
+			<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'errors'">
+				<div class="padding npb">
+					<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
+					<hr class="mt5 nmb" />
+				</div>
+				<div class="scroller">
+					<div data-jc="repeater" data-jc-path="common.errors">
+						<script type="text/html">
+							<div class="erroroutput">
+								<div class="erroroutput-name"><i class="fa fa-square mr5" style="color:{{ color }}"></i><b>{{ name }}</b> / {{ tab }}</div>
+								<div class="erroroutput-errors">
+								{{ foreach m in errors }}
+									<div>
+										<div class="gray">@({{ m.count }}x errors) / {{ m.date | format('@(yyyy-MM-dd HH:mm:ss)') }}</div>
+										<div>{{ m.error }}</div>
+									</div>
+								{{ end }}
+								</div>
+							</div>
+						</script>
+					</div>
+				</div>
+			</div>
+			<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'debug'">
+				<div class="padding npb">
+					<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear"><i class="fa fa-times mr5"></i>@(Clear console)</a>
+					<hr class="mt5 nmb" />
+				</div>
+				<div id="debugpanel" class="scroller"></div>
+			</div>
+			<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
+				<div class="padding npb">
+					<div><i class="fa fa-microchip mr5"></i>@(Memory consuption:) <span data-b="flow.traffic.memory" data-b-html="n => n" class="b">...</span></div>
+					<hr class="nmb" style="margin-top:10px" />
+				</div>
+				<div class="scroller">
+					<div class="traffic-container b" style="margin-bottom:5px">
+						<div class="traffic-value">@(Output)</div>
+						<div class="traffic-value">@(Input)</div>
+						<div class="traffic-name">@(Component)</div>
+					</div>
+					<div data-jc="repeater" data-jc-path="flow.traffic">
+						<script type="text/html">
+							<div class="traffic-container">
+								<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ output }}%</div>
+								<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ input }}%</div>
+								<div class="traffic-name gray">{{ name }}</div>
+							</div>
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mainmenu">
+			<section class="tabs">
+				<nav>
+					<a href="javascript:void(0)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</a>
+					<a href="javascript:void(0)" title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></a>
+					<a href="javascript:void(0)" title="@(Import)" class="exec onlyicon" data-path="common.form" data-value="'import'"><i class="fa fa-folder-o"></i></a>
+					<a href="javascript:void(0)" title="@(Export)" class="exec onlyicon" data-path="common.form" data-value="'export'"><i class="fa fa-copy"></i></a>
+					<a href="javascript:void(0)" title="@(Clear)" class="exec onlyicon" data-exec="#flow.clear"><i class="fa fa-trash-o"></i></a>
+				</nav>
+			</section>
+
+			<div class="padding">
+				<div data-jc="textbox" data-jc-path="common.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search"></div>
+			</div>
+
+			<div data-jc="search" data-jc-path="common.search" data-selector="li">
+				<div class="components-container">
+					<div class="scroller">
+						<ul data-jc="repeater-group" data-jc-path="common.components" data-group="group" class="components">
+							<script type="text/html">
+								<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
+									<div><i class="fa fa-square" style="color:{{ color }}"></i>{{ name }}</div>
+								</li>
+							</script>
+							<script type="text/html">
+								<li class="group" data-search=""><i class="fa fa-folder-o"></i>{{ group }}</li>
+								{{ body | raw }}
+							</script>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="body">
+			<section class="tabs">
+				<nav data-jc="repeater" data-jc-path="flow.tabs">
+					<script type="text/html">
+						<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === flow.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
+					</script>
+				</nav>
+				<a href="javascript:void(0)" class="exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
+			</section>
+			<div class="designer-container">
+				<div id="designerstate"></div>
+				<nav id="designerbuttons">
+					<a href="javascript:void(0)" class="exec disabled" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-copy"></i></a>
+					<a href="javascript:void(0)" class="exec disabled" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></a>
+				</nav>
+				<div id="designerzoom">
+					<a href="javascript:void(0)" class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></a>
+					<a href="javascript:void(0)" class="exec" title="@(Reset zoom)" data-exec="#designer.zoomreset"><i class="fa fa-unsorted"></i></a>
+					<a href="javascript:void(0)" class="exec" title="@(Zoom out)" data-exec="#designer.zoomout"><i class="fa fa-search-minus"></i></a>
+				</div>
+				<div class="designer-scrollbar">
+					<div data-jc="designer" data-jc-path="flow.designer"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="@{repository.url}templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'settings'" data-url="@{repository.url}templates/form-settings.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'export'" data-url="@{repository.url}templates/form-export.html" data-reload="formexport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'import'" data-url="@{repository.url}templates/form-import.html" data-reload="formimport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{repository.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
+
+	<div id="flowsettings"></div>
+	<div id="tmpclone"></div>
+
+	<script>
+
+		UPTODATE('1 day');
+
+		var MESSAGES = {};
+		MESSAGES.apply = '<i class="fa fa-info-circle blue mr5"></i>@(You have to click the &quot;<b>APPLY</b>&quot; button to apply all changes.)';
+
+		marked.setOptions({ gfm: true, breaks: true, sanitize: true, tables: true });
+
+		MAKE('common', function() {
+			!this.panel && (this.panel = 'info');
+			!this.minimized && (this.minimized = false);
+			this.callbacks = {};
+			this.statics = {}; // cache for static content
+		});
+
+		CACHEPATH('common.minimized', '1 month');
+		CACHEPATH('common.panel', '1 month');
+
+		var flow = {};
+		var settings = {};
+		var mdraggable = {};
+
+		if (isMOBILE) {
+			$(document).on('touchstart', '[draggable]', function(e) {
+
+				var el = $(e.target);
+				var target = el.hasClass('component') ? el : el.closest('.component');
+				var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+
+				if (val) {
+					val = CLONE(val);
+					val.tab = common.tab.id;
+				}
+
+				mdraggable.drag = true;
+				mdraggable.component = val;
+
+				$('#tmpclone').empty();
+				var clone = el.clone();
+				clone.appendTo('#tmpclone');
+
+				var t = e.originalEvent.touches[0];
+				clone.css({ position: 'absolute', left: t.pageX, top: t.pageY, 'z-index': 5 });
+				mdraggable.el = clone;
+
+				val && SETTER('designer', 'dragdrop', val);
+				e.stopPropagation();
+			});
+
+			$(document).on('touchmove', '[draggable]', function(e) {
+				if (mdraggable.drag) {
+					var t = e.originalEvent.touches[0];
+					mdraggable.x = t.pageX;
+					mdraggable.y = t.pageY;
+					mdraggable.el.css({ left: t.pageX, top: t.pageY });
+					e.stopPropagation();
+				}
+			});
+
+			$(document).on('touchend', '[draggable]', function(e) {
+				if (!mdraggable.drag)
+					return;
+				mdraggable.drag = false;
+				$('#tmpclone').empty();
+				var d = FIND('designer');
+				var el = d.element;
+				var off = el.offset();
+				var x = mdraggable.x - off.left;
+				var y = mdraggable.y - off.top;
+				x += el.prop('scrollLeft');
+				y += el.prop('scrollTop');
+				var zoom = d.getZoom();
+				EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
+				e.stopPropagation();
+			});
+
+		} else {
+			$(document).on('dragstart', function(e) {
+
+				var el = $(e.target);
+				var target = el.hasClass('component') ? el : el.closest('.component');
+				var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+
+				if (val) {
+					val = CLONE(val);
+					val.tab = common.tab.id;
+				}
+
+				if (val) {
+					e.originalEvent.dataTransfer.setData('text', '1');
+					SETTER('designer', 'dragdrop', val);
+				}
+			});
+		}
+
+		ON('designer.add', function(component, x, y, is, cf, ct, index, duplicate) {
+			var obj = {};
+			obj.component = component.id;
+			obj.$component = component;
+			obj.state = component.state || {};
+			obj.x = x;
+			obj.y = y;
+			obj.tab = component.tab;
+			obj.connections = {};
+			obj.id = Date.now().toString();
+			obj.isnew = true;
+
+			if (typeof(component.status) === 'object')
+				obj.state = { text: component.status.text, color: component.status.color };
+			else
+				obj.state = { text: component.status || '', color: '' };
+
+			if (is) {
+				obj.connections[0] = [ct];
+				var a = flow.components.findItem('id', cf);
+				a.connections[index] = a.connections[index].remove(ct);
+				a.connections[index].push(obj.id);
+				setTimeout(function() {
+					EMIT('designer.refresh');
+				}, 50);
+			}
+
+			if (duplicate) {
+				obj.options = duplicate.options;
+				obj.name = duplicate.name;
+				obj.output = duplicate.output;
+				obj.tab = duplicate.tab;
+			}
+
+			flow.components.push(obj);
+			flow.designer.push(obj);
+
+			if (!is) {
+				var com = FIND('designer');
+				com.add(obj);
+				com.rebind(null, true);
+				com.rebind_lines();
+			}
+
+			EMIT('add.' + obj.component);
+			setState(MESSAGES.apply);
+		});
+
+		ON('designer.rem', function(id) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected component?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (index)
+					return;
+
+				var instance = flow.components.findItem('id', id);
+				EMIT('rem.' + instance.component, instance);
+				flow.components = flow.components.remove('id', id);
+				flow.designer = flow.designer.remove('id', id);
+				flow.components.forEach(function(component) {
+					Object.keys(component.connections).forEach(function(key) {
+						var connections = component.connections[key];
+						component.connections[key] = connections.remove(id);
+						!component.connections[key].length && (delete component.connections[key]);
+					});
+				});
+
+				var el = $('.node_' + id);
+
+				$('.node_connection').each(function() {
+					var el = $(this);
+					(el.attr('data-from') === id || el.attr('data-to') === id) && el.remove();
+				});
+
+				el.remove();
+				setState(MESSAGES.apply);
+			});
+		});
+
+		ON('designer.settings', function(id) {
+			var component = flow.components.findItem('id', id);
+			var model = CLONE(component.$component.options || {});
+			component.options && $.extend(true, model, component.options);
+			model.comname = component.name;
+			model.comreference = component.reference;
+			settings.$output = component.output;
+			staticContent(component.component, 'html', function() {
+				EMIT('open.' + component.component, component, model);
+				SET('settings.' + component.component, model);
+				SET('common.form', 'settings-' + component.component);
+				RESET('settings.' + component.component + '.*', 500);
+				settings.$backup = STRINGIFY(model);
+			});
+			settings.$id = id;
+		});
+
+		ON('designer.selectable', function(el) {
+			$('#designerbuttons a').each(function(index) {
+				var node = $(this);
+				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.classed('node') ? false : true));
+			});
+		});
+
+		ON('designer.select', function(id) {
+			if (!id)
+				return;
+			var component = flow.components.findItem('id', id);
+			EMIT('select.' + component.component, component);
+			staticContent(component.component, 'readme', function(response) {
+				EMIT('info', response || '');
+			});
+		});
+
+		ON('designer.click', function(id) {
+			if (!id)
+				return;
+			var component = flow.components.findItem('id', id);
+			EMIT('click.' + component.component, component);
+			SETTER('websocket', 'send', { target: id, event: 'click' });
+			success();
+		});
+
+		ON('designer.add.connection', function(a, b) {
+			setState(MESSAGES.apply);
+		});
+
+		ON('designer.rem.connection', function(a, b, index) {
+			var component = flow.components.findItem('id', a);
+			if (!component)
+				return;
+			var connections = component.connections[index];
+			connections = connections.remove(b);
+			component.connections[index] = connections;
+			!connections.length && (delete component.connections[index]);
+			setState(MESSAGES.apply);
+		});
+
+		ON('info', function(value) {
+			var el = $('#infopanel');
+			el.html(markdown(value));
+			el.find('pre code').each(function(i, block) {
+				if (block.$processed)
+					return;
+				block.$processed = true;
+				hljs.highlightBlock(block);
+			});
+		});
+
+		ON('debug', function(id, value) {
+
+			var component = flow.components.findItem('id', id);
+			if (!component)
+				return;
+
+			var el = $('#debugpanel');
+			var logs = el.find('.debugoutput');
+			var tab = flow.tabs.findItem('id', component.tab);
+
+			logs.length > 30 && $(logs.eq(logs.length - 1)).remove();
+
+			var text;
+
+			if (typeof(value) === 'string')
+				text = '<div class="markdown">{0}</div>'.format(markdown(value));
+			else
+				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(JSON.stringify(value)));
+
+			el.prepend('<div class="debugoutput"><div class="debugoutput-time"><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)'));
+			setTimeout2('debug.highlight', function() {
+				el.find('pre code').each(function(i, block) {
+					if (block.$processed)
+						return;
+					block.$processed = true;
+					hljs.highlightBlock(block);
+				});
+			}, 100);
+		});
+
+		ON('designer.refresh', function() {
+
+			if (!flow.loaded)
+				return;
+
+			var tab = flow.tabs.findItem('linker', location.hash.substring(1));
+			if (!tab) {
+				tab = flow.tabs[0];
+				location.hash = tab.linker;
+			}
+
+			SET('common.tab', tab);
+			flow.designer = [];
+
+			flow.components.forEach(function(item) {
+				item.tab === common.tab.id && flow.designer.push(item);
+			});
+
+			UPDATE('flow.designer');
+			setTimeout(refreshTraffic, 100);
+		});
+
+		$(window).on('hashchange', function() {
+			EMIT('designer.refresh');
+		}).trigger('hashchange');
+
+		$(document).on('dblclick', '.tab', function() {
+			OPERATION('tabs.upd')(this.getAttribute('data-id'));
+		});
+
+		$(window).on('keydown', function(e) {
+			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && OPERATION('flow.apply')();
+		});
+
+		// Tabs operations
+
+		OPERATION('tabs.add', function() {
+			SET('formtab', {}, true);
+			SET('common.form', 'tab');
+		});
+
+		OPERATION('tabs.upd', function(id) {
+			var item = flow.tabs.findItem('id', id);
+			if (item) {
+				SET('formtab', CLONE(item), true);
+				SET('common.form', 'tab');
+			}
+		});
+
+		OPERATION('flow.clear', function() {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (index)
+					return;
+				flow.components = flow.components.remove('tab', common.tab.id);
+				UPDATE('flow');
+				SETTER('binder', 'scan');
+				EMIT('designer.refresh');
+				setState(MESSAGES.apply);
+			});
+		});
+
+		OPERATION('flow.settings', function() {
+			var component = flow.components.findItem('id', settings.$id);
+			component.options = settings[component.component];
+
+			var is_designer = component.name !== component.options.comname || component.reference !== component.options.comreference || component.output !== settings.$output;
+			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
+
+			component.name = component.options.comname;
+			component.reference = component.options.comreference;
+			EMIT('save.' + component.component, component, component.options);
+			component.options.comoutput = component.output;
+
+			if (!component.isnew && is_server) {
+				SETTER('websocket', 'send', { target: settings.$id, type: 'options', body: component.options });
+				success();
+			}
+
+			if (component.output != null) {
+				var count = component.output instanceof Array ? component.output.length : component.output;
+				Object.keys(component.connections).forEach(function(key) {
+					var index = +key;
+					index >= count && (delete component.connections[key]);
+				});
+			}
+
+			setTimeout(function() {
+				component.options.comname = undefined;
+				component.options.comreference = undefined;
+				component.options.comoutput = undefined;
+				is_designer && EMIT('designer.refresh');
+			}, 300);
+
+			SET('common.form', '');
+		});
+
+		OPERATION('flow.apply', function() {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (index)
+					return;
+				$('.node_new').removeClass('node_new');
+				$('.path_new').removeClass('path_new');
+				var body = CLONE(flow);
+				body.loaded = undefined;
+				body.designer = undefined;
+				flow.connections = {};
+
+				flow.components.forEach(function(item) {
+					item.isnew = undefined;
+					Object.keys(item.connections).forEach(function(index) {
+						item.connections[index].forEach(function(conn) {
+							flow.connections[index + '' + item.id + conn] = true;
+						});
+					});
+				});
+
+				body.components.forEach(function(item) {
+					item.$component = undefined;
+				});
+
+				EMIT('apply');
+
+				var message = {};
+				message.type = 'apply';
+				message.body = body;
+				setState('');
+				SETTER('websocket', 'send', message);
+				setTimeout(success, 1000);
+			});
+		});
+
+		OPERATION('flow.restore', function() {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to refresh this page?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				!index && location.reload(true);
+			});
+		});
+
+		OPERATION('tabs.rem', function(id) {
+			flow.components = flow.components.remove('tab', id);
+			SET('flow.tabs', flow.tabs.remove('id', id));
+			SETTER('binder', 'scan');
+			if (common.tab.id === id)
+				location.hash = flow.tabs[0].linker;
+			setState(MESSAGES.apply);
+		});
+
+		OPERATION('debug.clear', function() {
+			$('#debugpanel').empty();
+		});
+
+		ON('tabs.save', function(form) {
+			var o = form.id ? flow.tabs.findItem('id', form.id) : {};
+			o.name = form.name;
+			o.icon = form.icon;
+			o.linker = o.name.slug();
+
+			if (!o.id) {
+				o.id = Date.now().toString();
+				flow.tabs.push(o);
+			}
+
+			UPDATE('flow.tabs');
+			SETTER('binder', 'scan');
+			location.hash = o.linker;
+		});
+
+		ON('online', function(online) {
+			SETTER('loading', online ? 'hide' : 'show');
+		});
+
+		ON('message', function(message) {
+
+			if (message.type === 'errors') {
+				$('.node_' + message.id).addClass('node_errors');
+				var instance = flow.components.findItem('id', message.id);
+				instance && (instance.errors = message.body);
+				Object.keys(message.body).forEach(function(key) {
+					key !== 'error' && $('path[data-from="{0}"]'.format(key)).each(function() {
+						var el = $(this);
+						el.attr('data-to') === message.id && el.addClass('path_error').attr('title', message.body[key]);
+					});
+				});
+
+				OPERATION('errors.refresh')();
+				return;
+			}
+
+			if (message.type === 'clearerrors') {
+				$('.node_errors').removeClass('node_errors');
+				$('.path_error').removeClass('path_error').attr('title', '');
+				flow.components.forEach(function(instance) {
+					instance.errors = {};
+				});
+				SET('common.errors', EMPTYARRAY);
+				return;
+			}
+
+			if (message.type === 'traffic') {
+
+				if (!NOTMODIFIED('traffic', message.body)) {
+					common.traffic = message.body;
+					refreshTraffic();
+				}
+
+				var arr = [];
+				var empty = { input: 0, output: 0 };
+				var count = message.body.count;
+
+				flow.components.forEach(function(component) {
+					if (!component.$component)
+						return;
+					var stats = message.body[component.id] || empty;
+					arr.push({ name: component.name || component.$component.name, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output });
+				});
+
+				arr.memory = message.memory;
+				arr.quicksort('order', false);
+				SET('flow.traffic', arr);
+				return;
+			}
+
+			if (message.type === 'designer') {
+
+				flow = {};
+				flow.tabs = message.tabs;
+				flow.components = message.components;
+				flow.designer = [];
+				flow.loaded = true;
+
+				if (!flow.tabs)
+					flow.tabs = [{ id: Date.now().toString(), name: '@(Main)', icon: 'fa-object-ungroup', linker: 'main' }];
+
+				if (!flow.components)
+					flow.components = [];
+
+				flow.connections = {};
+
+				flow.components.forEach(function(item) {
+					item.$component = message.database.findItem('id', item.component);
+					Object.keys(item.connections).forEach(function(index) {
+						item.connections[index].forEach(function(conn) {
+							flow.connections[index + '' + item.id + conn] = true;
+						});
+					});
+				});
+
+				message.database.quicksort('name');
+				SET('common.components', message.database);
+				UPDATE('flow');
+				SETTER('binder', 'scan');
+				EMIT('designer.refresh');
+				OPERATION('errors.refresh')();
+				return;
+			}
+
+			if (message.type === 'status') {
+				var component = flow.components.findItem('id', message.target);
+				if (component) {
+					!component.state && (component.state = {});
+					component.state.color = message.body.color || 'gray';
+					component.state.text = message.body.text;
+					$('.node_status_' + message.target).text(component.state.text).attr('fill', component.state.color);
+				}
+				return;
+			}
+
+			if (message.type === 'debug') {
+				EMIT('debug', message.id, message.body);
+				return;
+			}
+
+			if (message.type === 'trigger') {
+				var trigger = flowtriggers[message.id];
+				if (trigger) {
+					if (typeof(trigger) === 'function')
+						trigger(message.body);
+					else
+						SET(trigger, message.body);
+				}
+			}
+
+			if (message.type === 'callback') {
+				var fn = common.callbacks[message.id];
+				if (message.id) {
+					fn(message.body);
+					delete common.callbacks[message.id];
+				}
+			}
+		});
+
+		// Prevention for "backspace"
+		WATCH('common.form', function(path, value) {
+			FIND('designer').disabled = value ? true : false;
+		});
+
+		ON('resize', function() {
+			$('.scroller').each(function() {
+				var el = $(this);
+				var top = el.offset().top;
+				var h = el.closest('.panel,.mainmenu').height();
+				el.css('height', h - top);
+			});
+		});
+
+		WATCH('common.minimized', function(path, value) {
+			$(document.body).toggleClass('panel-minized', value);
+		}, true);
+
+		function setState(value) {
+			$('#designerstate').html(value);
+			$('.mainmenu').find('.highlight').toggleClass('blink', value ? true : false);
+		}
+
+		function markdown(value) {
+			return marked(value.trim()).replace(/<img/g, '<img class="img-responsive"').replace(/<table/g, '<table class="table table-bordered"').replace(/<a\s/g, '<a target="_blank"');
+		}
+
+		function staticContent(target, type, callback) {
+
+			var key = type + '.' + target;
+
+			if (common.statics[key]) {
+				callback(common.statics[key], true);
+				return;
+			}
+
+			var id = GUID(15);
+
+			common.callbacks[id] = function(response) {
+				if (type === 'html') {
+					common.statics[key] = 'html.' + target;
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {0}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-placeholder="@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-placeholder="@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+				} else
+					common.statics[key] = response;
+				callback(common.statics[key], false);
+			};
+
+			SETTER('websocket', 'send', { id: id, target: target, type: type });
+		}
+
+		OPERATION('designer.zoomin', function() {
+			SETTER('designer', 'zoom', 1);
+		});
+
+		OPERATION('designer.zoomout', function() {
+			SETTER('designer', 'zoom', -1);
+		});
+
+		OPERATION('designer.zoomreset', function() {
+			SETTER('designer', 'zoom', 0);
+		});
+
+		OPERATION('designer.remove', function(el) {
+			!el.hasClass('disabled') && SETTER('designer', 'remove');
+		});
+
+		OPERATION('designer.duplicate', function(el) {
+			!el.hasClass('disabled') && SETTER('designer', 'duplicate');
+		});
+
+		OPERATION('errors.refresh', function() {
+			var errors = [];
+			flow.components.forEach(function(instance) {
+
+				if (!instance.errors)
+					return;
+
+				var err = [];
+				Object.keys(instance.errors).forEach(function(key) {
+					err.push(instance.errors[key]);
+				});
+
+				err.length && errors.push({ tab: flow.tabs.findItem('id', instance.tab).name, name: instance.name || instance.$component.name, color: instance.$component.color || 'gray', component: instance.$component.name, errors: err });
+			});
+			SET('common.errors', errors);
+		});
+
+		OPERATION('errors.clear', function() {
+			SETTER('loading', 'show');
+			common.errors && common.errors.length && SETTER('websocket', 'send', { type: 'clearerrors' });
+			SETTER('loading', 'hide', 1000);
+		});
+
+		function refreshTraffic() {
+			if (!common.traffic)
+				return;
+			var count = common.traffic.count;
+			$('.node_traffic').each(function() {
+				var el = $(this);
+				var id = el.attr('data-id');
+				var stats = common.traffic[id];
+				var input = 0;
+				var output = 0;
+				if (stats && (stats.input || stats.output)) {
+					input = ((stats.input / count) * 100 >> 0);
+					output = ((stats.output / count) * 100 >> 0);
+				}
+				var sum = input > output ? input : output;
+				el.toggleClass('m1', sum < 25).toggleClass('m2', sum > 24 && sum < 50).toggleClass('m3', sum > 49 && sum < 70).toggleClass('m4', sum > 69);
+				el.find('text').html('IO: <tspan>' + input + '%</tspan> &#8644; <tspan>' + output + '%</tspan>');
+				var rect = el.find('rect');
+				var w = +rect.attr('data-width');
+				var p = (w / 100) * sum;
+				rect.attr('width', p);
+			});
+		}
+
+	</script>
+
+</body>
+</html>
