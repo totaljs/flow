@@ -24,7 +24,7 @@ function getSize(el) {
 }
 
 function getTranslate(value) {
-	var arr = value.substring(10, value.length - 1).split(',');
+	var arr = value.substring(10, value.length - 1).split(/\s|,/);
 	return { x: arr[0].parseInt(), y: arr[1].parseInt() };
 }
 
@@ -48,7 +48,7 @@ d3.selection.prototype.getTranslate = function() {
 	var arr = null;
 	try {
 		var value = this.attr('transform');
-		arr = value.substring(10, value.length - 1).split(',');
+		arr = value.substring(10, value.length - 1).split(/\s|,/);
 	} catch (e) {}
 	return arr ? { x: arr[0].parseInt(), y: arr[1].parseInt() } : EMPTYTRANSLATE;
 };
