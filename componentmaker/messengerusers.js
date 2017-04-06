@@ -11,6 +11,10 @@ exports.readme = `# Total.js Messenger: Users
 This component evaluates user data when the user is online (green output) / offline (red output).
 
 - output contains a raw data of the user
+- supports websocket client via \`message.get('client')\`
+- supports websocket controller via \`message.get('controller')\`
+
+__Data Example__:
 
 \`\`\`javascript
 {
