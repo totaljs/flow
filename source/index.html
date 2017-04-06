@@ -60,8 +60,9 @@
 			</div>
 			<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'debug'">
 				<div class="padding npb">
-					<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear"><i class="fa fa-times mr5"></i>@(Clear console)</a>
-					<hr class="mt5 nmb" />
+					<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
+					<div data-jc="checkbox" data-jc-path="common.beautify">@(Beautify)</div>
+					<hr class="nmb" style="margin-top:10px" />
 				</div>
 				<div id="debugpanel" class="scroller"></div>
 			</div>
@@ -170,11 +171,13 @@
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
 			this.callbacks = {};
+			this.beautify = false;
 			this.statics = {}; // cache for static content
 		});
 
 		CACHEPATH('common.minimized', '1 month');
 		CACHEPATH('common.panel', '1 month');
+		CACHEPATH('common.beautify', '1 month');
 
 		var flow = {};
 		var settings = {};
@@ -416,7 +419,7 @@
 			if (typeof(value) === 'string')
 				text = '<div class="markdown">{0}</div>'.format(markdown(value));
 			else
-				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(JSON.stringify(value)));
+				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
 			el.prepend('<div class="debugoutput"><div class="debugoutput-time"><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)'));
 			setTimeout2('debug.highlight', function() {
