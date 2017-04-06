@@ -156,6 +156,7 @@ exports.install = function(instance) {
 
 	instance.custom.reconfigure();
 	instance.on('data', instance.custom.refresh);
+	instance.on('options', instance.custom.reconfigure);
 };
 
 F.route('/netatmo/{id}/', netatmo, ['id:netatmo']);
