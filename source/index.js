@@ -2,9 +2,7 @@
 // Copyright Peter Širka <petersirka@gmail.com>, Martin Smola <smola.martin@gmail.com>
 
 const Fs = require('fs');
-const Util = require('util');
 const Exec = require('child_process').exec;
-const EventEmitter = require('events');
 const MESSAGE_STATUS = { type: 'status' };
 const MESSAGE_DEBUG = { type: 'debug' };
 const MESSAGE_DESIGNER = { type: 'designer', database: [] };
@@ -22,7 +20,7 @@ var OPT;
 var DDOS = {};
 var FILENAME;
 
-global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '' };
+global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
 exports.version = 'v1.0.0';
 exports.install = function(options) {
@@ -221,7 +219,7 @@ function websocket() {
 					});
 				}
 
-				instance.emit('options', instance.options, old_options);
+				instance.$events.options && instance.emit('options', instance.options, old_options);
 
 				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
 				if (tmp) {
@@ -232,7 +230,7 @@ function websocket() {
 					FLOW.save2();
 				}
 			} else
-				instance.emit(message.event, message.body);
+				instance.$events[message.event] && instance.emit(message.event, message.body);
 			return;
 		}
 
@@ -264,9 +262,63 @@ function websocket() {
 function Component(options) {
 	U.extend(this, options);
 	this.state = { text: '', color: 'gray' };
+	this.$events = {};
 }
 
-Util.inherits(Component, EventEmitter);
+Component.prototype.emit = function(name, a, b, c, d, e, f, g) {
+	var evt = this.$events[name];
+	if (evt) {
+		var clean = false;
+		for (var i = 0, length = evt.length; i < length; i++) {
+			if (evt[i].$once)
+				clean = true;
+			evt[i].call(this, a, b, c, d, e, f, g);
+		}
+		if (clean) {
+			evt = evt.remove(n => n.$once);
+			if (evt.length)
+				this.$events[name] = evt;
+			else
+				this.$events[name] = undefined;
+		}
+	}
+	return this;
+};
+
+Component.prototype.on = function(name, fn) {
+	if (this.$events[name])
+		this.$events[name].push(fn);
+	else
+		this.$events[name] = [fn];
+	return this;
+};
+
+Component.prototype.once = function(name, fn) {
+	fn.$once = true;
+	return this.on(name, fn);
+};
+
+Component.prototype.removeListener = function(name, fn) {
+	var evt = this.$events[name];
+	if (evt) {
+		evt = evt.remove(n => n === fn);
+		if (evt.length)
+			this.$events[name] = evt;
+		else
+			this.$events[name] = undefined;
+	}
+	return this;
+};
+
+Component.prototype.removeAllListeners = function(name) {
+	if (name === true)
+		this.$events = EMPTYOBJECT;
+	else if (name)
+		this.$events[name] = undefined;
+	else
+		this.$events = {};
+	return this;
+};
 
 Component.prototype.set = function(key, value) {
 	FLOW.set('$' + this.id + key, value);
@@ -288,7 +340,7 @@ Component.prototype.log = function(a, b, c, d, e, f) {
 
 Component.prototype.click = function() {
 	try {
-		this.emit('click');
+		this.$events.click && this.emit('click');
 	} catch (e) {
 		this.error(e);
 	}
@@ -312,11 +364,11 @@ Component.prototype.signal = function(index, data) {
 
 	if (index) {
 		var conn = self.connections[index];
-		conn && conn.emit('signal', data, self);
+		conn && conn.$events.signal && conn.emit('signal', data, self);
 	} else {
 		var keys = Object.keys(self.connections);
 		for (var i = 0, length = keys.length; i < length; i++)
-			self.connections[i].emit('signal', data, self);
+			self.connections[i].$events.signal && self.connections[i].emit('signal', data, self);
 	}
 
 	return self;
@@ -365,7 +417,7 @@ Component.prototype.send = function(index, message) {
 					if (instance && !instance.$closed) {
 						FLOW.traffic(instance.id, 'input');
 						try {
-							instance.emit('data', canclone ? message.clone() : message);
+							instance.$events.data && instance.emit('data', canclone ? message.clone() : message);
 						} catch (e) {
 							instance.error(e, self.id);
 						}
@@ -390,7 +442,7 @@ Component.prototype.send = function(index, message) {
 				if (instance && !instance.$closed) {
 					FLOW.traffic(instance.id, 'input');
 					try {
-						instance.emit('data', canclone ? message.clone() : message);
+						instance.$events.data && instance.emit('data', canclone ? message.clone() : message);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
@@ -467,6 +519,59 @@ function clone(val) {
 // ===================================================
 // FLOW METHODS
 // ===================================================
+
+FLOW.on = function(name, fn) {
+	if (FLOW.$events[name])
+		FLOW.$events[name].push(fn);
+	else
+		FLOW.$events[name] = [fn];
+	return this;
+};
+
+FLOW.emit = function(name, a, b, c, d, e, f, g) {
+	var evt = FLOW.$events[name];
+	if (evt) {
+		var clean = false;
+		for (var i = 0, length = evt.length; i < length; i++) {
+			if (evt[i].$once)
+				clean = true;
+			evt[i].call(F, a, b, c, d, e, f, g);
+		}
+		if (clean) {
+			evt = evt.remove(n => n.$once);
+			if (evt.length)
+				FLOW.$events[name] = evt;
+			else
+				FLOW.$events[name] = undefined;
+		}
+	}
+	return F;
+};
+
+FLOW.once = function(name, fn) {
+	fn.$once = true;
+	return FLOW.on(name, fn);
+};
+
+FLOW.removeListener = function(name, fn) {
+	var evt = FLOW.$events[name];
+	if (evt) {
+		evt = evt.remove(n => n === fn);
+		if (evt.length)
+			FLOW.$events[name] = evt;
+		else
+			FLOW.$events[name] = undefined;
+	}
+	return F;
+};
+
+FLOW.removeAllListeners = function(name) {
+	if (name)
+		FLOW.$events[name] = undefined;
+	else
+		FLOW.$events = {};
+	return F;
+};
 
 FLOW.register = function(name, options, fn) {
 
@@ -553,7 +658,7 @@ FLOW.reset = function(components, callback) {
 		EMIT('flow.close', instance);
 		instance.$closed = true;
 		FLOW.debug('Closing ' + instance.name);
-		instance.emit('close');
+		instance.$events.close && instance.emit('close');
 
 		if (instance.close) {
 			instance.close(function() {
@@ -613,7 +718,7 @@ FLOW.init = function(components) {
 			if (instance) {
 				instance.name = com.name;
 				instance.connections = com.connections;
-				instance.emit('reinit');
+				instance.$events.$reinit && instance.emit('reinit');
 				continue;
 			}
 
