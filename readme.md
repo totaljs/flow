@@ -19,7 +19,6 @@ Flow comes pre-installed with components such as:
 
 If You miss some specific component You can always write it by yourself :)
 
-
 __Terminology__:
 - `Component` is a single unit which recieves data, processes them and responds with the result
 - `Flow` is a series of components connected together
@@ -30,8 +29,6 @@ __Terminology__:
 
 - Total.js `+v2.5.0`
 - download and copy `flow.package` into the `/packages/` directory __or create a definition file with:__
-- __IMPORTANT 1__: doesn't support `UPTODATE` mechanism
-- __IMPORTANT 2__: `component.id` can contain `a-z` `0-9` chars only.
 
 ```javascript
 var options = {};
@@ -60,6 +57,8 @@ var options = {};
 
 INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/flow.package', options);
 ```
+
+- __IMPORTANT__: it doesn't support `UPTODATE` mechanism
 
 ## Flow
 
@@ -145,6 +144,8 @@ ON('flow.close', function(instance) {
 ```
 
 ## Component
+
+- __IMPORTANT__: `exports.id` can contain `a-z` `0-9` chars only.
 
 ```javascript
 // {String}, IMPORTANT (lower case without diacritics)
