@@ -1,7 +1,4 @@
 // Total.js Dashboard + Flow
-const ID = '58d28424a467a310a58c53cd';
-const SECRET = 'FY4VgGhbQa9NWbo8Bo2NLVG3XL7I';
-const Qs = require('querystring');
 
 exports.id = 'netatmo';
 exports.title = 'Netatmo';
@@ -14,7 +11,7 @@ exports.output = 1;
 exports.options = { device: '' };
 exports.readme = `# Netatmo
 
-Receives data from __Netatmo Weather Station__. Each station has to be authorized first.
+Receives data from __Netatmo Weather Station__. Each station has to be authorized first. __IMPORTANT__: some \`input\` data receives current data from wheater station.
 
 __Data example__:
 
