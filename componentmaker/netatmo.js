@@ -14,17 +14,45 @@ exports.output = 1;
 exports.options = { device: '' };
 exports.readme = `# Netatmo
 
-Receive station data from Netatmo Weather Station.
+Receives data from __Netatmo Weather Station__. Each station has to be authorized first.
 
-\`\`\`javascript
-{
+__Data example__:
 
-}
+\`\`\`json
+[
+  {
+    "altitude": 362,
+    "lat": 19.158087,
+    "lng": 48.728146,
+    "name": "mSirkovci",
+    "humidity": 51,
+    "co2": 1671,
+    "temperature": 23.3,
+    "temperaturetrend": "stable",
+    "noise": 43,
+    "pressure": 1017,
+    "pressuretrend": "up",
+    "indoor": [],
+    "outdoor": [
+      {
+        "temperaturetrend": "up",
+        "temperature": 3.8,
+        "humidity": 89,
+        "temperaturemin": 3.4,
+        "temperaturemax": 15.2,
+        "battery": 72,
+        "name": "Module"
+      }
+    ]
+  }
+]
 \`\`\``;
 
 exports.html = `<div class="padding">
-	<div class="m"><a href="javascript:void(0)" class="netatmoautorizationlink" target="_blank">@(Authorize my wheater station)</a></div>
-	<div data-jc="textbox" data-jc-path="device" class="m" data-required="true">@(Device ID)</div>
+	<div data-jc="textbox" data-jc-path="device" data-required="true">@(Device MAC address)</div>
+	<div class="help m">@(Open <a href="https://my.netatmo.com/app/station" target="_blank">https://my.netatmo.com/app/station</a> and click on the settings. There is your MAC address.)</div>
+	<hr />
+	<div class="m"><a href="javascript:void(0)" class="button netatmoautorizationlink" target="_blank"><i class="fa fa-cloud mr5"></i>@(<b>Authorize Netatmo</b> wheater station)</a></div>
 </div><script>
 ON('open.netatmo', function(component) {
 	setTimeout(function() {
@@ -36,13 +64,27 @@ ON('open.netatmo', function(component) {
 exports.install = function(instance) {
 
 	instance.custom.reconfigure = function() {
+
+		if (!instance.options.device) {
+			instance.status('Not configured', 'red');
+			return;
+		}
+
+		NOSQL('netatmo').find().first().where('id', instance.id).callback(function(err, station) {
+			if (!station || !station.token)
+				instance.status('Not authorized', 'red');
+			else
+				instance.status();
+		});
 	};
 
-	instance.getData = function() {
+	instance.custom.refresh = function() {
 		NOSQL('netatmo').find().first().where('id', instance.id).callback(function(err, station) {
 
-			if (!station)
+			if (!station || !station.token || !instance.options.device) {
+				instance.status(station && station.token ? 'Not configured' : 'Not authorized', 'red');
 				return;
+			}
 
 			RESTBuilder.make(function(builder) {
 				var data = {};
@@ -52,138 +94,86 @@ exports.install = function(instance) {
 				builder.urlencoded(data);
 				builder.post();
 				builder.exec(function(err, data) {
-					data.dashboard_data && self.send(data.dashboard_data);
+					data.body && data.body.devices && instance.send(instance.custom.prepare(data.body.devices));
 				});
 			});
 		});
 	};
+
+	instance.custom.prepare = function(data) {
+		var arr = [];
+		for (var i = 0, length = data.length; i < length; i++) {
+
+			var item = data[i];
+			var obj = {};
+
+			obj.altitude = item.place.altitude;
+			obj.lat = item.place.location[0];
+			obj.lng = item.place.location[1];
+			obj.name = item.station_name;
+			obj.humidity = item.dashboard_data.Humidity;
+			obj.co2 = item.dashboard_data.CO2;
+			obj.temperature = item.dashboard_data.Temperature;
+			obj.temperaturetrend = item.dashboard_data.temp_trend;
+			obj.noise = item.dashboard_data.Noise;
+			obj.pressure = item.dashboard_data.Pressure;
+			obj.pressuretrend = item.dashboard_data.pressure_trend;
+			obj.indoor = [];
+			obj.outdoor = [];
+			arr.push(obj);
+
+			for (var j = 0, jl = item.modules.length; j < jl; j++) {
+				var m = item.modules[j].dashboard_data;
+				var sub;
+				switch (item.modules[j].type) {
+					case 'NAModule1':
+						// outdoor
+						sub = {};
+						sub.temperaturetrend = m.temp_trend;
+						sub.temperature = m.Temperature;
+						sub.humidity = m.Humidity;
+						sub.temperaturemin = m.min_temp;
+						sub.temperaturemax = m.max_temp;
+						sub.battery = item.modules[j].battery_percent;
+						sub.name = item.modules[j].module_name;
+						obj.outdoor.push(sub);
+						break;
+					case 'NAModule4':
+						// indoor
+						sub = {};
+						sub.temperaturetrend = m.temp_trend;
+						sub.temperature = m.Temperature;
+						sub.humidity = m.Humidity;
+						sub.temperaturemin = m.min_temp;
+						sub.temperaturemax = m.max_temp;
+						sub.battery = item.modules[j].battery_percent;
+						sub.name = item.modules[j].module_name;
+						obj.indoor.push(sub);
+						break;
+				}
+			}
+		}
+
+		return arr;
+	};
+
+	instance.custom.reconfigure();
+	instance.on('data', instance.custom.refresh);
 };
 
 F.route('/netatmo/{id}/', netatmo, ['id:netatmo']);
-F.route('/netatmo/{id}/process/', netatmo_process, ['id:netatmo']);
+F.route('/netatmo/', netatmo_process, ['id:netatmo']);
 
 exports.uninstall = function() {
 	UNINSTALL('web', 'id:netatmo');
 };
 
 function netatmo(id) {
-	var self = this;
-	RESTBuilder.make(function(builder) {
-
-		var data = {};
-		data.client_id = ID;
-		data.scope = 'read_station';
-		data.state = U.GUID(10);
-		data.redirect_uri = self.hostname('/netatmo/{0}/process/'.format(id));
-
-		builder.redirect(false);
-		builder.url('https://api.netatmo.com/oauth2/authorize?' + Qs.stringify(data));
-		builder.urlencoded(data);
-		builder.exec(function(err, data, response) {
-			self.redirect(response.headers.location);
-		});
-	});
+	this.redirect('https://netatmo.totaljs.com/?id={0}&url={1}'.format(id, encodeURIComponent(this.hostname('/netatmo/'))));
 }
 
-function netatmo_process(id) {
-	var self = this;
-
-	RESTBuilder.make(function(builder) {
-
-		var data = {};
-		data.grant_type = 'authorization_code';
-		data.client_id = ID;
-		data.client_secret = SECRET;
-		data.code = self.query.code;
-		data.redirect_uri = self.hostname('/netatmo/{id}/process/'.format(id));
-
-		builder.url('https://api.netatmo.com/oauth2/token');
-		builder.urlencoded(data);
-		builder.exec(function(err, data) {
-			var options = { id: id, device: '70:ee:50:12:95:f2', token: data.access_token, refresh_token: data.refresh_token, dateupdated: F.datetime };
-			NOSQL('netatmo').update(options, options).where('id', id);
-			self.plain('Done. You can close this page.');
-		});
-	});
+function netatmo_process() {
+	var options = { id: this.query.id, token: this.query.token, dateupdated: F.datetime };
+	NOSQL('netatmo').update(options, options).where('id', options.id);
+	this.content('<html><body>Done. You can close this page.<script>window.close()</script></body></html>', 'text/html');
 }
-
-/*
-{
-	"body": {
-		"devices": [{
-			"_id": "70:ee:50:12:95:f2",
-			"cipher_id": "enc:16:L0NlzqN1HFnyvspjLk/dE3fXep8LnGVQ+sWmzmgqB44F3k+QcV/ebNM3dpHsa1VP",
-			"last_status_store": 1491486039,
-			"modules": [{
-				"_id": "02:00:00:12:a2:02",
-				"type": "NAModule1",
-				"last_message": 1491486035,
-				"last_seen": 1491485996,
-				"dashboard_data": {
-					"time_utc": 1491485996,
-					"Temperature": 9.8,
-					"temp_trend": "stable",
-					"Humidity": 46,
-					"date_max_temp": 1491470257,
-					"date_min_temp": 1491431844,
-					"min_temp": 7.9,
-					"max_temp": 15.2
-				},
-				"data_type": ["Temperature", "Humidity"],
-				"module_name": "Module",
-				"last_setup": 1446044903,
-				"battery_vp": 5322,
-				"battery_percent": 72,
-				"rf_status": 63,
-				"firmware": 44
-			}],
-			"place": {
-				"altitude": 362,
-				"city": "Radvan",
-				"country": "SK",
-				"timezone": "Europe/Bratislava",
-				"location": [19.158087, 48.728146]
-			},
-			"station_name": "mSirkovci",
-			"type": "NAMain",
-			"dashboard_data": {
-				"AbsolutePressure": 969.9,
-				"time_utc": 1491486000,
-				"Noise": 39,
-				"Temperature": 23,
-				"temp_trend": "stable",
-				"Humidity": 41,
-				"Pressure": 1012.6,
-				"pressure_trend": "up",
-				"CO2": 459,
-				"date_max_temp": 1491457576,
-				"date_min_temp": 1491471490,
-				"min_temp": 22.4,
-				"max_temp": 23.7
-			},
-			"data_type": ["Temperature", "CO2", "Humidity", "Noise", "Pressure"],
-			"co2_calibrating": false,
-			"date_setup": 1446044903,
-			"last_setup": 1446044903,
-			"module_name": "mSirkovci",
-			"firmware": 124,
-			"last_upgrade": 1440392749,
-			"wifi_status": 64
-		}],
-		"user": {
-			"mail": "petersirka@gmail.com",
-			"administrative": {
-				"reg_locale": "sk-SK",
-				"lang": "en-US",
-				"unit": 0,
-				"windunit": 0,
-				"pressureunit": 0,
-				"feel_like_algo": 0
-			}
-		}
-	},
-	"status": "ok",
-	"time_exec": 0.03435492515564,
-	"time_server": 1491486196
-}
-*/
