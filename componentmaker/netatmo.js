@@ -1,5 +1,3 @@
-// Total.js Dashboard + Flow
-
 exports.id = 'netatmo';
 exports.title = 'Netatmo';
 exports.version = '1.0.0';
@@ -8,12 +6,16 @@ exports.group = 'Services';
 exports.color = '#FC6E51';
 exports.input = true;
 exports.output = 1;
-exports.options = { device: '' };
+exports.options = {};
 exports.readme = `# Netatmo
 
-Receives data from __Netatmo Weather Station__. Each station has to be authorized first. __IMPORTANT__: some \`input\` data receives current data from wheater station.
+Receives data from __Netatmo Weather Station__. Each station has to be authorized first. __IMPORTANT__: \`input\` has to be MAC address from your Netatmo station.
 
-__Data example__:
+### How to obtain MAC address?
+
+Open https://my.netatmo.com/app/station and click on the settings. There is your MAC address. For example \`70:ee:50:12:95:f2\`.
+
+### Output example
 
 \`\`\`json
 [
@@ -46,26 +48,37 @@ __Data example__:
 \`\`\``;
 
 exports.html = `<div class="padding">
-	<div data-jc="textbox" data-jc-path="device" data-required="true">@(Device MAC address)</div>
-	<div class="help m">@(Open <a href="https://my.netatmo.com/app/station" target="_blank">https://my.netatmo.com/app/station</a> and click on the settings. There is your MAC address.)</div>
-	<hr />
-	<div class="m"><a href="javascript:void(0)" class="button netatmoautorizationlink" target="_blank"><i class="fa fa-cloud mr5"></i>@(<b>Authorize Netatmo</b> wheater station)</a></div>
+	<br />
+	<div class="row">
+		<div class="col-md-4 m col-md-offset-4">
+			<a href="javascript:void(0)" class="button netatmoautorizationlink" target="_blank" style="width:100%"><i class="fa fa-cloud mr5"></i>@(<b>Authorize Netatmo</b> wheater station)</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2 m">
+			<div class="help nmt ui-center">@(Click on the button if you didn't authorize your wheater station. You will be redirected into the secured area of Netatmo wheater station.)</div>
+		</div>
+	</div>
+	<br />
 </div><script>
 ON('open.netatmo', function(component) {
 	setTimeout(function() {
-		$('.netatmoautorizationlink').attr('href', '/netatmo/{0}/'.format(component.id));
+		$('.netatmoautorizationlink').attr('href', '/$netatmo/{0}/'.format(component.id));
 	});
+});
+$(document).on('click', '.netatmoautorizationlink', function() {
+	SET('common.form', '');
 });
 </script>`;
 
 exports.install = function(instance) {
 
+	var REG_INVALID = /invalid/i;
+
 	instance.custom.reconfigure = function() {
 
-		if (!instance.options.device) {
-			instance.status('Not configured', 'red');
-			return;
-		}
+		// A temporary variable for token refreshing
+		instance.custom.errors = {};
 
 		NOSQL('netatmo').find().first().where('id', instance.id).callback(function(err, station) {
 			if (!station || !station.token)
@@ -75,25 +88,42 @@ exports.install = function(instance) {
 		});
 	};
 
-	instance.custom.refresh = function() {
+	instance.custom.refresh = function(mac) {
 		NOSQL('netatmo').find().first().where('id', instance.id).callback(function(err, station) {
-
-			if (!station || !station.token || !instance.options.device) {
-				instance.status(station && station.token ? 'Not configured' : 'Not authorized', 'red');
-				return;
-			}
-
 			RESTBuilder.make(function(builder) {
 				var data = {};
 				data.access_token = station.token;
-				data.device_id = instance.options.device;
+				data.device_id = mac;
 				builder.url('https://api.netatmo.com/api/getstationsdata');
 				builder.urlencoded(data);
 				builder.post();
 				builder.exec(function(err, data) {
+
+					if (data.error && REG_INVALID.test(data.error)) {
+						if (!instance.custom.errors[mac]) {
+							instance.custom.errors[mac] = true;
+							instance.custom.reauthorize(mac, station, () => instance.custom.refresh(mac));
+						}
+						return;
+					}
+
 					data.body && data.body.devices && instance.send(instance.custom.prepare(data.body.devices));
 				});
 			});
+		});
+	};
+
+	instance.custom.reauthorize = function(mac, station, callback) {
+		U.request('https://netatmo.totaljs.com/netatmo/refresh/?id={0}&url={1}&token={2}'.format(station.id, encodeURIComponent(station.hostname), encodeURIComponent(station.refresh)), ['get'], '', function(err, response) {
+			var data = JSON.parse(response);
+			if (data.refresh) {
+				var options = { token: data.token, refresh: data.refresh, dateupdated: F.datetime };
+				NOSQL('netatmo').modify(options).where('id', instance.id).callback(function() {
+					delete instance.custom.errors[mac];
+					callback && callback();
+				});
+			} else
+				callback = null;
 		});
 	};
 
@@ -155,23 +185,27 @@ exports.install = function(instance) {
 	};
 
 	instance.custom.reconfigure();
-	instance.on('data', instance.custom.refresh);
+
+	instance.on('data', function(response) {
+		response.data && typeof(response.data) === 'string' && instance.custom.refresh(response.data);
+	});
+
 	instance.on('options', instance.custom.reconfigure);
 };
 
-F.route('/netatmo/{id}/', netatmo, ['id:netatmo']);
-F.route('/netatmo/', netatmo_process, ['id:netatmo']);
+F.route('/$netatmo/{id}/', netatmo, ['id:netatmo']);
+F.route('/$netatmo/', netatmo_process, ['id:netatmo']);
 
 exports.uninstall = function() {
 	UNINSTALL('web', 'id:netatmo');
 };
 
 function netatmo(id) {
-	this.redirect('https://netatmo.totaljs.com/?id={0}&url={1}'.format(id, encodeURIComponent(this.hostname('/netatmo/'))));
+	this.redirect('https://netatmo.totaljs.com/?id={0}&url={1}'.format(id, encodeURIComponent(this.hostname('/$netatmo/'))));
 }
 
 function netatmo_process() {
-	var options = { id: this.query.id, token: this.query.token, dateupdated: F.datetime };
+	var options = { id: this.query.id, token: this.query.token, refresh: this.query.refresh, dateupdated: F.datetime, hostname: this.hostname('/$netatmo/') };
 	NOSQL('netatmo').update(options, options).where('id', options.id);
 	this.content('<html><body>Done. You can close this page.<script>window.close()</script></body></html>', 'text/html');
 }
