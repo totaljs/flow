@@ -34,7 +34,7 @@ nav .highlight:hover { opacity: 0.8; }
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 30px; left: 0; }
 .designer-scrollbar { width: 110%; overflow: auto; height: 110%; }
-.debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 11px; padding: 10px 20px; }
+.debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 11px; padding: 10px 15px; }
 .debugoutput .fa { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
 .debugoutput-name { font-size: 12px; line-height: 14px; }
