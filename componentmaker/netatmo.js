@@ -73,8 +73,6 @@ $(document).on('click', '.netatmoautorizationlink', function() {
 
 exports.install = function(instance) {
 
-	var REG_INVALID = /invalid/i;
-
 	instance.custom.reconfigure = function() {
 
 		// A temporary variable for token refreshing
@@ -98,8 +96,7 @@ exports.install = function(instance) {
 				builder.urlencoded(data);
 				builder.post();
 				builder.exec(function(err, data) {
-
-					if (data.error && REG_INVALID.test(data.error)) {
+					if (data.error) {
 						if (!instance.custom.errors[mac]) {
 							instance.custom.errors[mac] = true;
 							instance.custom.reauthorize(mac, station, () => instance.custom.refresh(mac));
