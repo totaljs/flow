@@ -20,7 +20,7 @@ The response property will be used as reponse body
 exports.html = `<div class="padding">
 	<div class="row">
 		<div class="col-md-6 m">
-			<div data-jc="dropdown" data-jc-path="datatype" data-required="true" data-options=";JSON|json;HTML|html;Plain text|plain;XML|xml">@(Response data-type (json by default))</div>
+			<div data-jc="dropdown" data-jc-path="datatype" data-required="true" data-options=";Empty response|emptyresponse;JSON|json;HTML|html;Plain text|plain;XML|xml">@(Response data-type (json by default))</div>
 		</div>
 	</div>
 	<!--<div data-jc="keyvalue" data-jc-path="headers" data-placeholder-key="@(Header name)" data-placeholder-value="@(Header value and press enter)" class="m">@(Custom headers)</div>
@@ -52,6 +52,9 @@ exports.install = function(instance) {
 		}
 
 		switch(datatype) {
+			case 'emptyresponse':
+				ctrl.plain('');
+				break;
 			case 'html':
 				ctrl.content(data, 'text/html');
 				break;
