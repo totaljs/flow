@@ -298,26 +298,31 @@ exports.install = function(instance) {
 			});	
 		});
 
+		var MINUTES = 15;
+
 		var dt = new Date();
 		var ms = dt.getTime();
 		var minutes = dt.getMinutes();
-		var remaining_minutes = minutes % 15;
-		dt.setMinutes(minutes + (15 - remaining_minutes));
+		var remaining_minutes = minutes % MINUTES;
+		dt.setMinutes(minutes + (MINUTES - remaining_minutes));
 		dt.setSeconds(0);
 		var timeout = dt.getTime() - ms;
 
 		weekly_timeout = setTimeout(function(){
 
 			run();
-			weekly_interval = setInterval(run, 15 * 60 * 1000);
+			weekly_interval = setInterval(run, MINUTES * 60 * 1000);
 
 		}, timeout);
 
 		function run(){
 
-			var dt = daytime();
+			var dt = daytime();	
+
 			if (days[dt.day] && days[dt.day][dt.time]) {
-				var data = JSON.parse(weekly[days[dt.day][dt.time] + 'data']);
+				var key = days[dt.day][dt.time] + 'data';
+				var data = instance.options.weekly[key];
+				data = instance.options.weekly.datatype === 'object' ? JSON.parse(data) : data;
 				instance.send(data);
 			}
 
@@ -356,7 +361,8 @@ exports.install = function(instance) {
 function daytime() {
 	var date = new Date();
 	var mins = date.getMinutes();
-	var d, t = date.getHours() + ':' + (mins < 10 ? '0' + mins : mins);
+	var hours = date.getHours()
+	var d, t = (hours < 10 ? '0' + hours : '' + hours) + ':' + (mins < 10 ? '0' + mins : '' + mins);
 
 	switch(F.datetime.getDay()) {
 		case 1: d = 'monday'; break;
