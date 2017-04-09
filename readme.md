@@ -192,6 +192,9 @@ exports.npm = ['sqlagent', 'mqtt'];
 // Default options for new and existing instances
 exports.options = { enabled: true };
 
+// Disables data cloning
+export.cloning = false;
+
 exports.install = function(component) {
 
     // =====================

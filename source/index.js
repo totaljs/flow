@@ -417,7 +417,7 @@ Component.prototype.send = function(index, message) {
 					if (instance && !instance.$closed) {
 						FLOW.traffic(instance.id, 'input');
 						try {
-							instance.$events.data && instance.emit('data', canclone ? message.clone() : message);
+							instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
 						} catch (e) {
 							instance.error(e, self.id);
 						}
@@ -442,7 +442,7 @@ Component.prototype.send = function(index, message) {
 				if (instance && !instance.$closed) {
 					FLOW.traffic(instance.id, 'input');
 					try {
-						instance.$events.data && instance.emit('data', canclone ? message.clone() : message);
+						instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
