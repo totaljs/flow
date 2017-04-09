@@ -9,6 +9,7 @@ exports.output = 1;
 exports.version = '1.0.0';
 exports.author = 'Peter Širka';
 exports.options = { route: 0 };
+exports.cloning = false;
 
 exports.html = `<div class="padding">
 	<div data-jc="dropdown" data-jc-path="route" data-source="receiverroutes" data-empty="" data-jc-type="number" class="m">@(Choose a route)</div>

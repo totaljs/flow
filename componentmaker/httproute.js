@@ -7,6 +7,7 @@ exports.input = false;
 exports.output = 1;
 exports.version = '1.0.0';
 exports.author = 'Martin Smola';
+exports.cloning = false;
 exports.readme = `# HTTP route
 
 When a request comes in bellow object is available by using \`flowdata.get('request')\`:
@@ -40,7 +41,7 @@ exports.install = function(instance) {
 		var data = {
 			query: this.query,
 			body: this.body
-		}
+		};
 		if (params.length) {
 			data.params = {};
 			for (var i = 0, length = arguments.length; i < length; i++)

@@ -7,6 +7,7 @@ exports.output = 1;
 exports.version = '1.0.0';
 exports.author = 'Peter Širka';
 exports.options = { staticfiles: false };
+exports.cloning = false;
 
 exports.html = `<div class="padding">
 	<div data-jc="checkbox" data-jc-path="staticfiles" class="m">@(Include static files)</div>
