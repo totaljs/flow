@@ -17,7 +17,8 @@ exports.options = {
 			saturday: [],
 			sunday: [],
 		}
-	}
+	},
+	enabled: true
 };
 
 exports.html = `
@@ -43,6 +44,7 @@ exports.html = `
 
 		<div class="row m">
 			<div class="col-md-3">
+				<div data-jc="checkbox" data-jc-path="enabled">@(Enabled)</div>
 				<div data-jc="dropdown" data-jc-path="type" data-options=";@(Hourly)|hourly;@(Daily)|daily;@(Weekly)|weekly;@(Monthly)|monthly;@(Yearly)|yearly" class="m">Timer type</div>
 			</div>
 		</div>
@@ -274,9 +276,11 @@ Timer will trigger flow at the given times and dates. You can optionally define 
 
 exports.install = function(instance) {
 
-	//instance.on('click', () => value && instance.send(value));
+	instance.on('click', () => {
+		instance.options.enabled = !instance.options.enabled;
+	});
 	
-	instance.on('close', () => clearSchedule(id));
+	//instance.on('close', () => clearSchedule(id));
 
 	var weekly_interval, weekly_timeout;
 	var timers = {};
@@ -323,7 +327,7 @@ exports.install = function(instance) {
 				var key = days[dt.day][dt.time] + 'data';
 				var data = instance.options.weekly[key];
 				data = instance.options.weekly.datatype === 'object' ? JSON.parse(data) : data;
-				instance.send(data);
+				instance.options.enabled && instance.send(data);
 			}
 
 		}
