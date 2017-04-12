@@ -25,7 +25,7 @@ nav .highlight:hover { opacity: 0.8; }
 .tabs a:hover { text-decoration: none; color: black; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
 
-.components-container { width: 270px; overflow: hidden;; padding-right: 20px; }
+.components-container { width: 280px; overflow: hidden;; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
 .components .component { border-bottom: 1px solid #E0E0E0; padding: 5px 15px; cursor: move; font-size: 12px; line-height: 14px; }
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
@@ -33,7 +33,7 @@ nav .highlight:hover { opacity: 0.8; }
 .components .fa { width: 18px; }
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 40px; left: 0; }
-.designer-scrollbar { width: 110%; overflow: auto; height: 110%; }
+.designer-scrollbar { width: 111%; overflow: auto; height: 110%; }
 .debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 12px; padding: 10px 15px; }
 .debugoutput .fa { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
