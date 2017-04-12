@@ -7,7 +7,12 @@ function diagonal(x1, y1, x2, y2) {
 }
 
 ON('ready', function() {
-	SETTER('loading', 'hide', 1000);
+
+	setTimeout(function() {
+		SETTER('loading', 'hide');
+		$('.ui-loading').removeClass('ui-loading-firstload');
+	}, 2000);
+
 	EMIT('resize', $(window));
 });
 

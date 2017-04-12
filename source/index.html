@@ -14,7 +14,7 @@
 </head>
 <body data-jc="exec,binder" class="themedark">
 
-		<div data-jc="loading"></div>
+		<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 		<div data-jc="confirm"></div>
 		<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
 		<div data-jc="autocomplete"></div>
@@ -850,10 +850,6 @@
 				rect.attr('width', p);
 			});
 		}
-
-		OPERATION('setup', function(el) {
-			console.log('OK');
-		});
 
 		function themechanger() {
 			SETTER('loading', 'show');
