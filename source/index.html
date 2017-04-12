@@ -12,7 +12,7 @@
 	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
 	<script src="@{repository.url}default.js"></script>
 </head>
-<body data-jc="exec,binder">
+<body data-jc="exec,binder" class="themedark">
 
 		<div data-jc="loading"></div>
 		<div data-jc="confirm"></div>
@@ -175,7 +175,7 @@
 		MAKE('common', function() {
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
-			this.theme = '';
+			this.theme === undefined && (this.theme = 'dark');
 			this.callbacks = {};
 			this.beautify = false;
 			this.statics = {}; // cache for static content
