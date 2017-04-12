@@ -6,7 +6,7 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .panel { float: right; width: 360px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; }
 .panel-minized .panel { margin-right: -324px; }
 .panel-minized .body { margin-right: 30px; }
-.body { margin-left: 250px; margin-right: 360px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background: linear-gradient(white,#E6E9ED); position: relative; transition: margin-right 0.3s; }
+.body { margin-left: 250px; margin-right: 360px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin-right 0.3s; }
 
 section > label .fa { margin-right: 5px; }
 section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 4px 4px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
@@ -18,8 +18,8 @@ nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 nav .highlight:hover { opacity: 0.8; }
 
-.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.08); height: 32px; }
-.tabs a { float: left; padding: 5px 12px 0; font-size: 14px; color: gray; height: 32px; border-left: 1px solid #D0D0D0; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.08); height: 40px; }
+.tabs a { float: left; padding: 10px 12px 0; font-size: 14px; color: gray; height: 40px; border-left: 1px solid #D0D0D0; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; }
 .tabs a:first-child { border-left: 0; }
 .tabs .fa { margin-right: 5px; }
 .tabs a:hover { text-decoration: none; color: black; }
@@ -32,9 +32,9 @@ nav .highlight:hover { opacity: 0.8; }
 .components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; background: linear-gradient(#F8F8F8, white); padding: 10px 15px; color: gray; }
 .components .fa { width: 18px; }
 
-.designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 30px; left: 0; }
+.designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 40px; left: 0; }
 .designer-scrollbar { width: 110%; overflow: auto; height: 110%; }
-.debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 11px; padding: 10px 15px; }
+.debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 12px; padding: 10px 15px; }
 .debugoutput .fa { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
 .debugoutput-name { font-size: 12px; line-height: 14px; }
@@ -86,7 +86,7 @@ svg { cursor: move; }
 .markdown { margin-top: 5px; font-size: 12px; line-height: 16px; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif; color: #404040; }
 .markdown h1 { margin: 0 0 15px; font-size: 23px; padding: 0 0 5px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 23px; font-family: Arial, sans-serif; }
 .markdown h2 { margin: 15px 0 10px; font-weight: bold; font-size: 20px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 28px; font-family: Arial, sans-serif; }
-.markdown h3 { margin: 15px 0 10px; font-size: 18px; padding: 0 0 5px; color: black; font-weight: bold; color: black; line-height: 22px; font-family: Arial, sans-serif; }
+.markdown h3 { margin: 15px 0 10px; font-size: 18px; padding: 0 0 5px; font-weight: bold; color: black; line-height: 22px; font-family: Arial, sans-serif; }
 .markdown h1:first-child { margin-top: 0; }
 .markdown h2:first-child { margin-top: 0; }
 .markdown h3:first-child { margin-top: 0; }
@@ -136,6 +136,8 @@ svg { cursor: move; }
 .db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .db-item .name { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .db-item .author { font-size: 11px; color: gray; }
+.themechanger { float: right; margin: 8px 15px 0 0; font-size: 16px; color: black; cursor: pointer; }
+.themechanger:hover { opacity: 0.7; }
 
 .bg-smoke { background-color: #F8F8F8; }
 
@@ -143,3 +145,49 @@ svg { cursor: move; }
 	0% { opacity: 0.5; }
 	100% { opacity: 1; }
 }
+
+.designer-shadow-top { position: absolute; left: 0; top: -10px; right: 0; height: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.1); width: 100%; }
+.designer-shadow-bottom { position: absolute; left: 0; bottom: -10px; right: 0; height: 10px; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 100%; }
+.designer-shadow-left { position: absolute; left: -10px; top: 0; bottom: 0; right: 0; height: 100%; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 10px; }
+.designer-shadow-right { position: absolute; bottom: 0; top: 0; right: -10px; height: 100%; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 10px; }
+
+.themedark { color: gray; }
+.themedark .body { background-colo: #202020; border-color: #303030; }
+.themedark .designer-container { box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+.themedark .mainmenu { background-color: #202020; color: gray; }
+.themedark .components .group { background: linear-gradient(#303030,#202020); color: white; }
+.themedark .components .component { border-color: #303030; }
+.themedark .tabs { background-color: #101010; }
+.themedark .tabs .selected { background-color: #202020; color: white; }
+.themedark .tabs a { border-color: #303030; }
+.themedark .tabs a:hover { color: white; }
+.themedark nav .highlight { background-color: #404040; }
+.themedark .panel { background-color: #202020; }
+.themedark .panel hr { border-color: #303030; }
+.themedark .panel .ui-checkbox div { border-color: #303030; background-color: #303030; }
+.themedark .traffic-container { border-color: #303030; }
+.themedark #designerbuttons { background-color: #151515; }
+.themedark #designerzoom { background-color: #151515; }
+.themedark #designerzoom a { border-color: #202020; }
+.themedark #designerbuttons a { border-color: #202020; }
+.themedark #designerbuttons .disabled { color: #404040 !important; background-color: #303030 !important; }
+.themedark .mainmenu .ui-textbox { background-color: #303030; border-color: #303030; }
+.themedark .mainmenu .ui-textbox input { background-color: #303030; color: gray; }
+.themedark .mainmenu .ui-textbox div { border-color: #404040; color: gray; }
+.themedark .traffic-container.b { color: white; }
+.themedark .debugoutput { border-color: #303030; }
+.themedark .hljs { background-color: #303030; color: gray; }
+
+.themedark .designer-shadow-top { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
+.themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
+.themedark .designer-shadow-left { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
+.themedark .designer-shadow-right { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
+.themedark .themechanger { color: white; }
+
+.themedark .markdown { color: #A0A0A0; }
+.themedark .markdown h1 { border-color: #303030; color: white; }
+.themedark .markdown h2 { border-color: #303030; color: white; }
+.themedark .markdown h3 { color: white; }
+.themedark .markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #404040; }
+.themedark .markdown th { background-color: #404040; }
+.themedark .markdown blockquote { border-color: #303030; color: gray; }

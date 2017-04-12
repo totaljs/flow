@@ -5,6 +5,7 @@ exports.author = 'Peter Širka';
 exports.color = '#656D78';
 exports.input = true;
 exports.output = 1;
+exports.cloning = false;
 exports.options = { condition: '// Next has to contain an index for output (null/undefiend) will cancel current data\n\nnext(value > 20 ? 1 : value > 10 ? 0 : null)', output: 1 };
 exports.readme = `# Condition
 

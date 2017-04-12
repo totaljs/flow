@@ -64,6 +64,7 @@ exports.install = function(options) {
 	F.map(OPT.url + 'templates/', '@flow/templates/');
 	F.map(OPT.url + 'templates/', '@flow/templates/');
 	F.map(OPT.url + 'fonts/', '@flow/fonts/');
+	F.map(OPT.url + 'img/', '@flow/img/');
 
 	// Localization
 	F.localize(OPT.url + 'templates/*.html', ['compress']);

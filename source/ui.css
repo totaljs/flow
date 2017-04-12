@@ -1,5 +1,6 @@
 /*auto*/
 
+.ui-designer-grid { background: url(img/themewhite.png) repeat -1px -1px; width: 3000px; height: 3000px; }
 .ui-designer * { user-select: none; }
 .ui-designer .node { cursor: pointer; }
 .ui-designer .selectable { cursor: crosshair; }
@@ -80,7 +81,7 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 .ui-checkbox span { cursor: pointer; vertical-align: middle; }
 .ui-checkbox div { position: relative; display: inline-block; width: 16px; height: 16px; border: 2px solid #E0E0E0; margin-right: 6px; vertical-align: middle; cursor: pointer; color: white; font-size: 11px; text-align: center; padding: 1px 0 0 1px; background-color: white; border-radius: 3px; }
 .ui-checkbox .fa { display: none; }
-.ui-checkbox-checked div { background-color: #017CCA; border-color: #017CCA; }
+.ui-checkbox-checked div { background-color: #017CCA !important; border-color: #017CCA !important; }
 .ui-checkbox-checked .fa { display: block !important; }
 label { vertical-align: middle; }
 label input { vertical-align: middle; margin-right: 3px; }
@@ -255,6 +256,20 @@ label span { vertical-align: middle; }
 .ui-loading li:nth-of-type(3) { animation-delay: 333ms; }
 .ui-loading li:nth-of-type(4) { animation-delay: 444ms; }
 .ui-loading li:nth-of-type(5) { animation-delay: 555ms; }
+
+.themedark .ui-designer .node_connection { stroke: #505050; }
+.themedark .ui-designer .m1 { fill: white; }
+.themedark .ui-designer .input, .ui-designer .output { stroke: black; fill: white; }
+.themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
+.themedark .ui-designer > div { background: url(img/themedark.png) repeat -1px -1px; }
+.themedark .ui-form-container { background-color: rgba(0,0,0,0.5); }
+.themedark .ui-form { box-shadow: 0 0 20px black; }
+.themedark .ui-confirm { background-color: rgba(0,0,0,0.5); }
+.themedark .ui-loading .a { background: #707070; }
+.themedark .ui-loading .b { background: #606060; }
+.themedark .ui-loading .c { background: #505050; }
+.themedark .ui-loading .d { background: #404040; }
+.themedark .ui-loading .e { background: #303030; }
 
 @keyframes loading {
   to {

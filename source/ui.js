@@ -857,7 +857,7 @@ COMPONENT('designer', function() {
 	self.make = function() {
 		scroller = self.element.parent();
 		self.classes('ui-designer');
-		self.append('<svg width="3000" height="3000"></svg>');
+		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"></svg></div>');
 		var tmp = self.find('svg');
 		svg = d3.select(tmp.get(0));
 		main = svg.append('g');
@@ -1038,10 +1038,10 @@ COMPONENT('designer', function() {
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
-				o.attr('fill', 'black');
+				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		g.append('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', '#E0E0E0');
+		g.append('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 		var plus = g.append('g').attr('class', 'node_traffic').attr('data-id', item.id);
 		plus.append('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
 		plus.append('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
