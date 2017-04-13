@@ -94,9 +94,8 @@
 				<nav>
 					<a href="javascript:void(0)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</a>
 					<a href="javascript:void(0)" title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></a>
-					<a href="javascript:void(0)" title="@(Import)" class="exec onlyicon" data-path="common.form" data-value="'import'"><i class="fa fa-folder-o"></i></a>
-					<a href="javascript:void(0)" title="@(Export)" class="exec onlyicon" data-path="common.form" data-value="'export'"><i class="fa fa-copy"></i></a>
-					<a href="javascript:void(0)" title="@(Clear)" class="exec onlyicon" data-exec="#flow.clear"><i class="fa fa-trash-o"></i></a>
+					<a href="javascript:void(0)" title="@(Settings)" class="exec onlyicon br" data-exec="settings_menu"><i class="fa fa-cogs"></i></a>
+					<a href="javascript:void(0)" class="exec onlyicon nb" style="float:right" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></a>
 				</nav>
 			</section>
 
@@ -175,6 +174,7 @@
 		MAKE('common', function() {
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
+			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
 			this.theme === undefined && (this.theme = 'dark');
 			this.callbacks = {};
 			this.beautify = false;
@@ -182,13 +182,20 @@
 		});
 
 		CACHEPATH('common.minimized', '1 month');
+		CACHEPATH('common.minimizedmainmenu', '1 month');
 		CACHEPATH('common.panel', '1 month');
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
 
 		WATCH('common.theme', function(path, value) {
-			var body = $(document.body).removeClass();
+			var body = $(document.body);
+			var cls = body.attr('class').match(/theme\w+/g);
+			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
+		}, true);
+
+		WATCH('common.minimizedmainmenu', function(path, value) {
+			$(document.body).toggleClass('mainmenu-hidden', value);
 		}, true);
 
 		var flow = {};
@@ -857,6 +864,21 @@
 				SET('common.theme', common.theme === 'dark' ? '' : 'dark');
 				SETTER('loading', 'hide', 1000);
 			}, 1000);
+		}
+
+		function settings_menu(el) {
+			FIND('contextmenu').show('left', el, [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }], function(value) {
+				switch (value) {
+					case 'database':
+					case 'import':
+					case 'export':
+						SET('common.form', value);
+						return;
+					case 'clear':
+						OPERATION('#flow.clear');
+						return;
+				}
+			}, 5);
 		}
 
 	</script>

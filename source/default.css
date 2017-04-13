@@ -2,11 +2,11 @@
 html,body { height: 100%; overflow: hidden; }
 body { background-color: #E6E9ED; font-smoothing: antialiased; }
 
-.mainmenu { float: left; width: 260px; height: 100%; background-color: white; overflow: hidden; }
+.mainmenu { float: left; width: 260px; height: 100%; background-color: white; overflow: hidden; transition: margin 0.3s; }
 .panel { float: right; width: 380px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; }
 .panel-minized .panel { margin-right: -334px; }
 .panel-minized .body { margin-right: 30px; }
-.body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin-right 0.3s; }
+.body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
 
 section > label .fa { margin-right: 5px; }
 section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 4px 4px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
@@ -24,8 +24,10 @@ nav .highlight:hover { opacity: 0.8; }
 .tabs .fa { margin-right: 5px; }
 .tabs a:hover { text-decoration: none; color: black; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
+.tabs .br { border-right: 1px solid #D0D0D0; }
+.nb { border: 0 !important; }
 
-.components-container { width: 280px; overflow: hidden;; padding-right: 20px; }
+.components-container { width: 280px; overflow: hidden; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
 .components .component { border-bottom: 1px solid #E0E0E0; padding: 5px 15px; cursor: move; font-size: 12px; line-height: 14px; }
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
@@ -151,7 +153,7 @@ svg { cursor: move; }
 .designer-shadow-left { position: absolute; left: -10px; top: 0; bottom: 0; right: 0; height: 100%; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 10px; }
 .designer-shadow-right { position: absolute; bottom: 0; top: 0; right: -10px; height: 100%; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 10px; }
 
-.themedark { color: gray; }
+.themedark { color: gray; background-color: #1B1A1D; }
 .themedark .body { background-colo: #202020; border-color: #303030; }
 .themedark .designer-container { box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
 .themedark .mainmenu { background-color: #202020; color: gray; }
@@ -160,6 +162,7 @@ svg { cursor: move; }
 .themedark .tabs { background-color: #101010; }
 .themedark .tabs .selected { background-color: #202020; color: white; }
 .themedark .tabs a { border-color: #303030; }
+.themedark .tabs .br { border-right-color: #303030; }
 .themedark .tabs a:hover { color: white; }
 .themedark nav .highlight { background-color: #404040; }
 .themedark .panel { background-color: #202020; }
@@ -191,3 +194,7 @@ svg { cursor: move; }
 .themedark .markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #404040; }
 .themedark .markdown th { background-color: #404040; }
 .themedark .markdown blockquote { border-color: #303030; color: gray; }
+
+.mainmenu-hidden {  }
+.mainmenu-hidden .mainmenu { margin-left: -220px; }
+.mainmenu-hidden .body { margin-left: 40px; }

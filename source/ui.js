@@ -2716,7 +2716,7 @@ COMPONENT('contextmenu', function() {
 		});
 	};
 
-	self.show = function(orientation, target, items, callback) {
+	self.show = function(orientation, target, items, callback, offsetX) {
 
 		if (is) {
 			clearTimeout(timeout);
@@ -2780,7 +2780,8 @@ COMPONENT('contextmenu', function() {
 				break;
 		}
 
-		var options = { left: orientation === 'center' ? Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) : orientation === 'left' ? offset.left - 8 : (offset.left - self.element.width()) + target.innerWidth(), top: offset.top + target.innerHeight() + 10 };
+
+		var options = { left: (orientation === 'center' ? Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) : orientation === 'left' ? offset.left - 8 : (offset.left - self.element.width()) + target.innerWidth()) + (offsetX || 0), top: offset.top + target.innerHeight() + 10 };
 		self.css(options);
 
 		if (is)
