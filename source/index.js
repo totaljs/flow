@@ -596,6 +596,7 @@ FLOW.register = function(name, options, fn) {
 		options: options.options,
 		uninstall: options.uninstall,
 		status: options.status,
+		cloning: options.cloning,
 		fn: fn,
 		readme: options.readme || '',
 		html: options.html || '',
@@ -733,6 +734,7 @@ FLOW.init = function(components) {
 			instance.custom = {};
 			FLOW.instances[com.id] = instance;
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
+			instance.cloning = declaration.cloning;
 			instance.name = com.name;
 			declaration.fn.call(instance, instance, declaration);
 
@@ -769,6 +771,7 @@ FLOW.init_component = function(component) {
 			FLOW.instances[com.id] = instance;
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 			instance.name = com.name;
+			instance.cloning = declaration.cloning;
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
