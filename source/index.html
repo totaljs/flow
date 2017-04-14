@@ -516,12 +516,17 @@
 			var component = flow.components.findItem('id', settings.$id);
 			component.options = settings[component.component];
 
-			var is_designer = component.name !== component.options.comname || component.reference !== component.options.comreference || component.output !== settings.$output;
-			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
+			var tmp_n = component.name;
+			var tmp_r = component.reference;
 
 			component.name = component.options.comname;
 			component.reference = component.options.comreference;
+
 			EMIT('save.' + component.component, component, component.options);
+
+			var is_designer = tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output;
+			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
+
 			component.options.comoutput = component.output;
 
 			if (!component.isnew && is_server) {
