@@ -8,7 +8,7 @@ exports.author = 'Peter Širka';
 exports.icon = 'cloud-upload';
 
 exports.html = `<div class="padding">
-	<div data-jc="textbox" data-jc-path="url" class="m" data-required="true" data-maxlength="500" data-jc-type="url">@(URL address)</div>
+	<div data-jc="textbox" data-jc-path="url" class="m" data-required="true" data-maxlength="500" data-jc-type="url" data-placeholder="@(E.g. https://www.totaljs.com)">@(URL address)</div>
 	<div class="row">
 		<div class="col-md-6 m">
 			<div data-jc="dropdown" data-jc-path="method" data-required="true" data-options=";GET;POST;PUT;DELETE">@(HTTP method)</div>

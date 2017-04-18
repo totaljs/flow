@@ -43,7 +43,7 @@ exports.install = function(instance) {
 		data.session = controller.session;
 		data.method = controller.method;
 		data.ip = controller.ip;
-		data.body = controller.body;
+		data.body = typeof(controller.body.$clean) === 'function' ? controller.body.$clean() : controller.body;
 		data.files = controller.files;
 		data.query = controller.query;
 		data.url = controller.url;

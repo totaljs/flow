@@ -31,6 +31,7 @@ var lines = value.split('\\n');
 var obj = {};
 obj.name = lines[0];
 obj.price = lines[1];
+
 next(obj);
 \`\`\``;
 
