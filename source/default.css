@@ -13,7 +13,8 @@ section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 
 section > div { background-color: white; border-radius: 0 0 4px 4px; line-height: 18px; border: 1px solid #E0E0E0; }
 section > div:first-child { border-radius: 4px; }
 
-nav > .onlyicon { padding-right: 8px !important; }
+nav > .onlyicon { min-width: 30px; }
+nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 3px; }
 nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 nav .highlight:hover { opacity: 0.8; }
