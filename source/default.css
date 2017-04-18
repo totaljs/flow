@@ -186,6 +186,7 @@ svg { cursor: move; }
 .themedark .designer-shadow-left { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-right { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .themechanger { color: white; }
+.themedark .hljs-keyword { color: #D0D0D0; }
 
 .themedark .markdown { color: #A0A0A0; }
 .themedark .markdown h1 { border-color: #303030; color: white; }
