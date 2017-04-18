@@ -263,6 +263,7 @@ label span { vertical-align: middle; }
 .themedark .ui-designer .input, .ui-designer .output { stroke: black; fill: white; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 .themedark .ui-designer > div { background: #202020 url(img/themedark.png) repeat -1px -1px; }
+.themedark .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }
 .themedark .ui-form-container { background-color: rgba(0,0,0,0.5); }
 .themedark .ui-form { box-shadow: 0 0 20px black; }
 .themedark .ui-confirm { background-color: rgba(0,0,0,0.5); }
