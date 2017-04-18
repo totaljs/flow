@@ -615,7 +615,8 @@ FLOW.register = function(name, options, fn) {
 		fn: fn,
 		readme: options.readme || '',
 		html: options.html || '',
-		filename: FILENAME
+		filename: FILENAME,
+		dateupdated: options.dateupdated
 	};
 
 	var exec = function() {
@@ -862,6 +863,7 @@ FLOW.execute = function(filename) {
 	if (data.indexOf('exports.install') === -1 || data.indexOf('exports.id') === -1)
 		return FLOW;
 
+	var meta = Fs.statSync(filename);
 	var name = require.resolve(filename);
 	FILENAME = U.getName(filename);
 	var m = require(filename);
@@ -869,6 +871,7 @@ FLOW.execute = function(filename) {
 	var install = m.install;
 	delete m.id;
 	delete m.install;
+	m.dateupdated = meta.mtime;
 	FLOW.register(id, m, install);
 	(function(name, filename, fname) {
 		setTimeout(function() {
