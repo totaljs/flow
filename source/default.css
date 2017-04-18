@@ -28,6 +28,9 @@ nav .highlight:hover { opacity: 0.8; }
 .tabs .br { border-right: 1px solid #D0D0D0; }
 .nb { border: 0 !important; }
 
+.tag { position: relative; display: inline-block; padding: 2px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; }
+.tag:hover { opacity: 0.8; text-decoration: none; }
+
 .components-container { width: 280px; overflow: hidden; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
 .components .component { border-bottom: 1px solid #E0E0E0; padding: 5px 15px; cursor: move; font-size: 12px; line-height: 14px; }
@@ -56,6 +59,7 @@ svg { cursor: move; }
 .red { color: #E33733; }
 .green { color: #8CC152; }
 .blue { color: #3BAFDA; }
+.black { color: black; }
 .gray { color: gray; }
 .mr5 { margin-right: 5px; }
 
@@ -134,12 +138,17 @@ svg { cursor: move; }
 .blink { animation: blinker 0.5s infinite alternate; background-color: #8CC152 !important; }
 
 .db-container { margin: 0 -10px; }
-.db-item { position: relative; display: inline-block; background-color: #F0F0F0; padding: 2px 5px; width: 160px; margin: 10px; border-radius: 3px; }
-.db-item > span { float: right; width: 20px; text-align: center; margin: 5px 0 0 0; cursor: pointer; color: #E33733; }
+.db-item { position: relative; display: inline-block; background-color: white; border: 1px solid #E0E0E0; padding: 4px 10px; width: 206px; margin: 10px 10px 5px; border-radius: 3px; }
+.db-item > span { float: right; width: 20px; text-align: right; margin: 0; cursor: pointer; color: #E33733; }
 .db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.db-item .name { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-item .name { font-size: 14px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
 .db-item .author { font-size: 11px; color: gray; }
-.themechanger { float: right; margin: 8px 15px 0 0; font-size: 16px; color: black; cursor: pointer; }
+.db-category { font-size: 16px; color: black; margin: 15px 10px 5px; font-weight: bold; border-bottom: 3px solid black; padding: 5px 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.db-category .fa { margin-right: 8px; }
+.db-item .datetime { font-size: 11px; color: #A0A0A0; }
+.db-item .datetime .fa { margin-right: 5px; }
+
+.themechanger { float: right; margin: 0 15px 0 0; font-size: 16px; color: black; cursor: pointer; }
 .themechanger:hover { opacity: 0.7; }
 
 .bg-smoke { background-color: #F8F8F8; }

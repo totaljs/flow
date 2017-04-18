@@ -44,6 +44,9 @@ var options = {};
 // A maximum length of request:
 // options.limit = 50;
 
+// Predefined set of components (default value):
+// options.templates = 'https://cdn.totaljs.com/templates.json';
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================

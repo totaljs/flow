@@ -1,14 +1,21 @@
 <div data-jc="form" data-title="@(Flow components)" data-jc-path="common.form" data-if="value === 'database'" data-width="920px" data-jc-init="formdatabase_init" class="hidden">
-	<div class="padding npb bg-smoke">
-		<div class="b m"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
+	<div class="padding npb" style="background-color:#FFFCD3">
+		<div class="b m black"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
 		<div class="row">
 			<div class="col-md-6 m">
-				<div data-jc="textbox" data-jc-path="formdatabase.url" data-maxlength="200" class="m" data-placeholder="@(E.g. https://cdn.totaljs.com/flow/condition.js)" data-jc-type="url" data-jc-keypress="false" data-required="true">@(URL address)</div>
+				<div data-jc="textbox" data-jc-path="formdatabase.url" data-maxlength="200" class="m" data-placeholder="@(E.g. https://domain.com/flowcomponent.js and press enter)" data-jc-type="url" data-jc-keypress="false" data-required="true">@(URL address)</div>
 			</div>
 			<div class="col-md-6 m">
 				<div data-jc="filereader" data-jc-path="formdatabase.file" class="m" data-placeholder="@(Browse device)" data-accept="text/javascript" data-required="true">@(Upload .js component)</div>
 			</div>
 		</div>
+		<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
+		<div data-jc="repeater" data-jc-path="common.templates">
+			<script type="text/html">
+				<a href="javascript:void(0)" class="exec tag" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</a>
+			</script>
+		</div>
+		<br />
 	</div>
 	<div class="success hidden" data-b="formdatabase.success" data-b-visible="n => n"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
 	<div class="padding npb">
@@ -19,15 +26,16 @@
 				<div data-jc="repeater-group" data-jc-path="common.components" data-group="group">
 					<script type="text/html">
 						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ id }}">
-							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times"></i></span>
+							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
 							<div>
 								<div class="name">{{ name }}</div>
+								<div class="datetime"><i class="fa fa-clock-o"></i>{{ dateupdated | format('yyyy-MM-dd HH:mm') }}</div>
 								<div class="author">{{ author }}</div>
 							</div>
 						</div>
 					</script>
 					<script type="text/html">
-						<div class="jsearch b gray" data-search="" style="margin:10px 10px 2px"><i class="fa fa-folder-o mr5"></i>{{ group }}</div>
+						<div class="jsearch db-category" data-search=""><i class="fa fa-folder-o"></i>{{ group }}</div>
 						{{ body | raw }}
 					</script>
 				</div>
@@ -41,6 +49,8 @@
 </div>
 
 <script>
+
+	SETTER('websocket', 'send', { 'type': 'templates' });
 
 	var formdatabase = { reload: false };
 
@@ -101,5 +111,18 @@
 			SET('formdatabase.success', false, 3500);
 		}
 	});
+
+	function formdatabase_install(el) {
+		var arr = common.templates.findItem('name', el.attr('data-value'));
+		SETTER('loading', 'show');
+		arr.items.waitFor(function(item, next) {
+			SETTER('websocket', 'send', { type: 'install', filename: 'https://cdn.totaljs.com/flow/{0}.js'.format(item) });
+			setTimeout(next, 500);
+		}, function() {
+			SETTER('loading', 'hide', 1000);
+			SET('formdatabase.success', true);
+			SET('formdatabase.success', false, 3500);
+		});
+	}
 
 </script>

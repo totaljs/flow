@@ -628,6 +628,11 @@
 
 		ON('message', function(message) {
 
+			if (message.type === 'templates') {
+				SET('common.templates', message.body);
+				return;
+			}
+
 			if (message.type === 'errors') {
 				$('.node_' + message.id).addClass('node_errors');
 				var instance = flow.components.findItem('id', message.id);

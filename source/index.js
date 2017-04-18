@@ -9,12 +9,14 @@ const MESSAGE_DESIGNER = { type: 'designer', database: [] };
 const MESSAGE_TRIGGER = { type: 'trigger' };
 const MESSAGE_TRAFFIC = { type: 'traffic' };
 const MESSAGE_STATIC = { type: 'callback' };
+const MESSAGE_TEMPLATES = { type: 'templates' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FILEINMEMORY = '/flow/repository.json';
+const FLAGS = ['get', 'dnscache'];
 
 var OPT;
 var DDOS = {};
@@ -45,6 +47,9 @@ exports.install = function(options) {
 	}
 
 	OPT.url = U.path(OPT.url || '/$flow/');
+
+	if (!OPT.templates)
+		OPT.templates = 'https://cdn.totaljs.com/templates.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
@@ -172,6 +177,16 @@ function websocket() {
 			MESSAGE_STATIC.id = message.id;
 			MESSAGE_STATIC.body = component ? TRANSLATOR(self.language || 'default', component.readme) : '';
 			client.send(MESSAGE_STATIC);
+			return;
+		}
+
+		if (message.type === 'templates') {
+			OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
+				if (!err) {
+					MESSAGE_TEMPLATES.body = response.parseJSON();
+					MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
+				}
+			});
 			return;
 		}
 
@@ -842,6 +857,11 @@ FLOW.save_inmemory = function() {
 };
 
 FLOW.execute = function(filename) {
+
+	var data = Fs.readFileSync(filename).toString('utf8');
+	if (data.indexOf('exports.install') === -1 || data.indexOf('exports.id') === -1)
+		return FLOW;
+
 	var name = require.resolve(filename);
 	FILENAME = U.getName(filename);
 	var m = require(filename);
@@ -978,7 +998,7 @@ FLOW.install = function(filename, body, callback) {
 
 	var u = filename.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
-		U.download(filename, ['get'], function(err, response) {
+		U.download(filename, FLAGS, function(err, response) {
 
 			if (err) {
 				MESSAGE_ERROR.body = err.toString();
