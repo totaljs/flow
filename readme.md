@@ -1,5 +1,7 @@
 # Total.js Flow
 
+[![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
+
 __Total.js Flow__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__.
 Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications.
 It can be used for connecting *Internet of Things*, home automation, etc.
@@ -485,10 +487,10 @@ Bellow jComponents can be used in `Settings form`
 - visible
 - nosqlcounter
 
-Reference:
+__References:__
 
-- (Componentator.com)[https://componentator.com/]
-- (jComponents on Github)[https://github.com/totaljs/jComponent]
+- [Componentator.com](https://componentator.com/)
+- [jComponents on Github](https://github.com/totaljs/jComponent)
 
 ### Triggers
 
