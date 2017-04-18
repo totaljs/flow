@@ -404,7 +404,7 @@ var message = instance.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
 
 ## Client-Side
 
-### Events
+### Events
 
 ```javascript
 ON('open.componentname', function(component, options) {
@@ -436,7 +436,7 @@ ON('apply', function() {
 });
 ```
 
-### Good to know
+### Good to know
 
 __How to change count of outputs dynamically?__
 
