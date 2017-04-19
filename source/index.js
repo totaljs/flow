@@ -854,7 +854,7 @@ FLOW.save2 = function(callback) {
 FLOW.save_inmemory = function() {
 	setTimeout2('flowinmemorysave', function() {
 		Fs.writeFile(F.path.root(FILEINMEMORY), JSON.stringify(FLOW.inmemory), NOOP);
-	}, 500);
+	}, 500, 100);
 };
 
 FLOW.execute = function(filename) {
