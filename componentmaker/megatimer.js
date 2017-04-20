@@ -277,7 +277,6 @@ Timer will trigger flow at the given times and dates. You can optionally define 
 `;
 
 exports.install = function(instance) {
-	console.log('instance.options.enabled',instance.options.enabled);
 	instance.options.enabled = true;
 
 	var queue = [];
@@ -344,8 +343,6 @@ exports.install = function(instance) {
 
 	F.on('service', function(){
 
-		console.log('SERVICE');
-
 		var now = F.datetime.getTime();
 		var l = queue.length;
 		var last = 0;
@@ -368,7 +365,6 @@ exports.install = function(instance) {
 		var key = t.type + 'data';		
 		var data = instance.options[key];
 		data = instance.options.datatype === 'object' ? JSON.parse(data) : data;
-		console.log('instance.options.enabled',instance.options.enabled);
 		instance.options.enabled && instance.send(data);
 
 	});

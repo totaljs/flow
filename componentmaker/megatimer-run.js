@@ -35,6 +35,7 @@ FLOWINIT(require('./' + U.getName(process.argv[1].replace(/\-run\.js$/, ''))));
 
 ON('flow.ready', function() {
 	FLOWOPTIONS({ 
+		enabled: true,
 		type: 'weekly', 
 		ondata: 'on', 
 		offdata: 'off', 
@@ -42,20 +43,26 @@ ON('flow.ready', function() {
 		weekly: { 
 			days: { 
 				thursday: [
-					{ time: '09:36', type: 'on' }, 
-					{ time: '09:37', type: 'off' }, 
-					{ time: '09:38', type: 'on' }, 
-					{ time: '09:39', type: 'off' }, 
-					{ time: '09:40', type: 'on' }, 
-					{ time: '09:41', type: 'off' }, 
-					{ time: '09:42', type: 'on' }
+					{ time: '10:14', type: 'on' },
+					{ time: '10:15', type: 'off' },
+					{ time: '10:16', type: 'on' },
+					{ time: '10:17', type: 'off' },
+					{ time: '10:18', type: 'on' },
+					{ time: '10:19', type: 'off' },
+					{ time: '10:20', type: 'on' },
+					{ time: '10:21', type: 'off' },
+					{ time: '10:22', type: 'on' },
+					{ time: '10:23', type: 'off' },
+					{ time: '10:24', type: 'on' },
+					{ time: '10:25', type: 'off' },
+					{ time: '10:26', type: 'on' },
+					{ time: '10:27', type: 'off' },
+					{ time: '10:28', type: 'on' },
+					{ time: '10:29', type: 'off' }
 				] 
 			} 
 		} 
 	});
 
-	console.log('Use CMD/CTRL+C to cancel test!!!');
-});
-ON('flow.send', function(index, data) {
-	console.log('DATA SENT', index, data);
+	console.log('===========\nUse CMD/CTRL+C to cancel this test!!!\n===========');
 });
