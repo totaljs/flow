@@ -1,5 +1,5 @@
 // TEST INTERFACE FOR TOTAL.JS FLOW COMPONENT
-require('total.js');
+require('total.js').http('debug');
 require('./flow');
 FLOWINIT(require('./' + U.getName(process.argv[1].replace(/\-run\.js$/, ''))));
 
@@ -34,8 +34,28 @@ FLOWINIT(require('./' + U.getName(process.argv[1].replace(/\-run\.js$/, ''))));
 // ON('flow.close')                    - triggered when the component is closed
 
 ON('flow.ready', function() {
-	FLOWOPTIONS({ conditions: [ { operator: 'Regex', datatype: 'String', value: '/L/i'}, { operator: '>', datatype: 'Number', value: 5} ]});
-	FLOWDATA('hello');
-	FLOWDATA(6);
-	FLOWCLOSE();
+	FLOWOPTIONS({ 
+		type: 'weekly', 
+		ondata: 'on', 
+		offdata: 'off', 
+		datatype: 'string', 
+		weekly: { 
+			days: { 
+				thursday: [
+					{ time: '09:36', type: 'on' }, 
+					{ time: '09:37', type: 'off' }, 
+					{ time: '09:38', type: 'on' }, 
+					{ time: '09:39', type: 'off' }, 
+					{ time: '09:40', type: 'on' }, 
+					{ time: '09:41', type: 'off' }, 
+					{ time: '09:42', type: 'on' }
+				] 
+			} 
+		} 
+	});
+
+	console.log('Use CMD/CTRL+C to cancel test!!!');
+});
+ON('flow.send', function(index, data) {
+	console.log('DATA SENT', index, data);
 });

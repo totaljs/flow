@@ -49,6 +49,21 @@ exports.html = `
 			</div>
 		</div>
 
+		<section class="m">
+			<label><i class="fa fa-database"></i>@(Data)</label>
+			<div class="padding npb">	
+				<div class="row">
+					<div class="col-md-3">
+						<div data-jc="dropdown" data-jc-path="datatype" data-options=";String|string;Number|number;Boolean|boolean;Date|date;Object|object" class="m">@(Data type (String by default))</div>
+					</div>
+					<div class="col-md-9">
+						<div data-jc="textbox" data-jc-path="ondata" data-placeholder="@(e.g. Hello world or 123 or { hello: 'world'} or ['hello', 'world']))" class="m">@(On data)</div>
+						<div data-jc="textbox" data-jc-path="offdata" data-placeholder="@(e.g. Hello world or 123 or { hello: 'world'} or ['hello', 'world']))" class="m">@(Off data)</div>
+					</div>
+				</div>				
+			</div>
+		</section>
+
 		<div data-jc="visible" data-jc-path="type" data-if="value === 'daily'">
 			<section>
 				<label><i class="fa fa-edit"></i>@(Daily timer)</label>
@@ -68,20 +83,6 @@ exports.html = `
 		</div>
 
 		<div data-jc="visible" data-jc-path="type" data-if="value === 'weekly'">
-			<section class="m">
-				<label><i class="fa fa-database"></i>@(Data)</label>
-				<div class="padding npb">	
-					<div class="row">
-						<div class="col-md-3">
-							<div data-jc="dropdown" data-jc-path="weekly.datatype" data-options=";String|string;Number|number;Boolean|boolean;Date|date;Object|object" class="m">@(Data type (String by default))</div>
-						</div>
-						<div class="col-md-9">
-							<div data-jc="textbox" data-jc-path="weekly.ondata" data-placeholder="@(e.g. Hello world or 123 or { hello: 'world'} or ['hello', 'world']))" class="m">@(On data)</div>
-							<div data-jc="textbox" data-jc-path="weekly.offdata" data-placeholder="@(e.g. Hello world or 123 or { hello: 'world'} or ['hello', 'world']))" class="m">@(Off data)</div>
-						</div>
-					</div>				
-				</div>
-			</section>
 			<section>
 				<label><i class="fa fa-calendar"></i>@(Weekly timer)</label>
 				<div class="padding npb">
@@ -256,7 +257,8 @@ exports.html = `
 
 		function megatimercomponent_add(el){
 			var day = el.attr('data-day');
-			PUSH('settings.megatimer.weekly.days.' + day, { type: 'on', time: '12:00' });
+			PUSH('settings.megatimer.weekly.days.' + day, { type: 'on', time: '12:00' }, true);
+			CHANGE('settings.megatimer');
 		}
 
 		var megatimercomponent = {};
@@ -275,76 +277,56 @@ Timer will trigger flow at the given times and dates. You can optionally define 
 `;
 
 exports.install = function(instance) {
+	console.log('instance.options.enabled',instance.options.enabled);
+	instance.options.enabled = true;
 
-	instance.on('click', () => {
-		instance.options.enabled = !instance.options.enabled;
-	});
-	
-	//instance.on('close', () => clearSchedule(id));
+	var queue = [];
 
-	var weekly_interval, weekly_timeout;
+	// instance.on('click', function(){
+	// 	instance.options.enabled = !instance.options.enabled;
+	// });
+
 	var timers = {};
-
-	timers.hourly = function(){};
-
-	timers.daily = function(){};
 
 	timers.weekly = function(){
 
 		var weekly = instance.options.weekly;
-		var days = {};
+		var todayday = F.datetime.getDay();
+		todayday === 0 && (todayday = 7);
 
-		Object.keys(weekly.days).forEach(function(day){
-			var d = weekly.days[day];
-			days[day] = {};
-			d.forEach(function(d){
-				days[day][d.time] = d.type;
-			});	
+		Object.keys(weekly.days).forEach(function(dayname){
+			var daynumber = weekdays[dayname]; // sunday === 7 not 0 !!!
+			var day = weekly.days[dayname];
+			var add = 0;
+			
+			if (daynumber < todayday)
+				// 7 - (wed - tue) => 7 - (3 - 2) => 7 - 1 => 6
+				add = 7 - (todayday - daynumber); 
+
+			if (daynumber > todayday)
+				add = daynumber - todayday;
+
+			var date = F.datetime.add('{0} days'.format(add));
+
+			day.forEach(function(d){
+				var time = d.time.split(':');
+				date.setHours(time[0]);
+				date.setMinutes(time[1]);
+				queue.push({
+					expire: date.getTime(),
+					type: d.type
+				});
+			});
 		});
-
-		var MINUTES = 15;
-
-		var dt = new Date();
-		var ms = dt.getTime();
-		var minutes = dt.getMinutes();
-		var remaining_minutes = minutes % MINUTES;
-		dt.setMinutes(minutes + (MINUTES - remaining_minutes));
-		dt.setSeconds(0);
-		var timeout = dt.getTime() - ms;
-
-		weekly_timeout = setTimeout(function(){
-
-			run();
-			weekly_interval = setInterval(run, MINUTES * 60 * 1000);
-
-		}, timeout);
-
-		function run(){
-
-			var dt = daytime();	
-
-			if (days[dt.day] && days[dt.day][dt.time]) {
-				var key = days[dt.day][dt.time] + 'data';
-				var data = instance.options.weekly[key];
-				data = instance.options.weekly.datatype === 'object' ? JSON.parse(data) : data;
-				instance.options.enabled && instance.send(data);
-			}
-
-		}
 	};
-
-	timers.monthly = function(){};
-
-	timers.yearly = function(){};
 
 	instance.on('options', reconfigure);
 
-	reconfigure();
+	//reconfigure();
 
 	function reconfigure(o, old_options) {
 
-		weekly_interval && clearInterval(weekly_interval);
-		weekly_timeout && clearTimeout(weekly_timeout);
+		queue = [];
 
 		var options = instance.options;
 
@@ -360,22 +342,45 @@ exports.install = function(instance) {
 	};
 
 
+	F.on('service', function(){
+
+		console.log('SERVICE');
+
+		var now = F.datetime.getTime();
+		var l = queue.length;
+		var last = 0;
+		var index;
+
+		for (var i = 0; i < l; i++) {
+			var t = queue[i];
+			if (t.expire < now && t.expire > last) {
+				last = t.expire;
+				index = i;
+			}
+		}
+
+		if (index == null)
+			return;
+
+		var t = queue[index];
+		t.expire = new Date().setTime(t.expire + 604800000); // +7 days
+
+		var key = t.type + 'data';		
+		var data = instance.options[key];
+		data = instance.options.datatype === 'object' ? JSON.parse(data) : data;
+		console.log('instance.options.enabled',instance.options.enabled);
+		instance.options.enabled && instance.send(data);
+
+	});
+
 };
 
-function daytime() {
-	var date = new Date();
-	var mins = date.getMinutes();
-	var hours = date.getHours()
-	var d, t = (hours < 10 ? '0' + hours : '' + hours) + ':' + (mins < 10 ? '0' + mins : '' + mins);
-
-	switch(F.datetime.getDay()) {
-		case 1: d = 'monday'; break;
-		case 2: d = 'tuesday'; break;
-		case 3: d = 'wednesday'; break;
-		case 4: d = 'thursday'; break;
-		case 5: d = 'friday'; break;
-		case 6: d = 'saturday'; break;
-		case 7: d = 'sunday'; break;
-	}
-	return { day: d, time: t};
-};
+var weekdays = {
+	'monday': 1,
+	'tuesday': 2,
+	'wednesday': 3,
+	'thursday': 4,
+	'friday': 5,
+	'saturday': 6,
+	'sunday': 7
+}
