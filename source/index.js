@@ -515,6 +515,14 @@ Component.prototype.debug = function(data, style) {
 	return this;
 };
 
+Component.prototype.save = function() {
+	var tmp = MESSAGE_DESIGNER.components.findItem('id', this.id);
+	if (tmp) {
+		tmp.options = this.options;
+		FLOW.save2();
+	}
+};
+
 function print_buffer(buf) {
 	var response = '<Buffer';
 	var arr = buf.toString('hex').split('');
