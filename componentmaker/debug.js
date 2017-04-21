@@ -33,6 +33,7 @@ exports.install = function(instance) {
 	instance.on('click', function() {
 		instance.options.enabled = !instance.options.enabled;
 		instance.custom.status();
+		instance.save();
 	});
 
 	instance.on('options', function(options) {
