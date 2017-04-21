@@ -521,6 +521,7 @@ Component.prototype.save = function() {
 		tmp.options = this.options;
 		FLOW.save2();
 	}
+	return this;
 };
 
 function print_buffer(buf) {
