@@ -634,8 +634,8 @@ FLOW.register = function(name, options, fn) {
 		}
 	};
 
-	if (options.dependencies && options.dependencies.length)
-		FLOW.npm(options.dependencies, exec);
+	if (options.npm && options.npm.length)
+		FLOW.npm(options.npm, exec);
 	else
 		exec();
 
