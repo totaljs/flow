@@ -276,25 +276,51 @@ Timer will trigger flow at the given times and dates. You can optionally define 
 
 `;
 
+var WEEKDAYS = {
+	'monday': 1,
+	'tuesday': 2,
+	'wednesday': 3,
+	'thursday': 4,
+	'friday': 5,
+	'saturday': 6,
+	'sunday': 7
+}
+
 exports.install = function(instance) {
 	instance.options.enabled = true;
 
 	var queue = [];
+	var delay;
 
-	// instance.on('click', function(){
-	// 	instance.options.enabled = !instance.options.enabled;
-	// });
+	instance.on('click', function(){
+		instance.options.enabled = !instance.options.enabled;
+		instance.save();
+	});
 
 	var timers = {};
 
+	timers.hourly = function(){
+
+		delay = 3600000; // 1 hour
+
+	};
+
+	timers.daily = function(){
+
+		delay = 86400000; // 1 day
+
+	};
+
 	timers.weekly = function(){
+
+		delay = 604800000; // 7 days
 
 		var weekly = instance.options.weekly;
 		var todayday = F.datetime.getDay();
 		todayday === 0 && (todayday = 7);
 
 		Object.keys(weekly.days).forEach(function(dayname){
-			var daynumber = weekdays[dayname]; // sunday === 7 not 0 !!!
+			var daynumber = WEEKDAYS[dayname]; // sunday === 7 not 0 !!!
 			var day = weekly.days[dayname];
 			var add = 0;
 			
@@ -360,7 +386,8 @@ exports.install = function(instance) {
 			return;
 
 		var t = queue[index];
-		t.expire = new Date().setTime(t.expire + 604800000); // +7 days
+
+		t.expire = new Date().setTime(t.expire + delay); 
 
 		var key = t.type + 'data';		
 		var data = instance.options[key];
@@ -371,12 +398,3 @@ exports.install = function(instance) {
 
 };
 
-var weekdays = {
-	'monday': 1,
-	'tuesday': 2,
-	'wednesday': 3,
-	'thursday': 4,
-	'friday': 5,
-	'saturday': 6,
-	'sunday': 7
-}
