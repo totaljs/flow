@@ -148,7 +148,7 @@ svg { cursor: move; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }
 .db-item .datetime .fa { margin-right: 5px; }
 
-.themechanger { float: right; margin: 0 15px 0 0; font-size: 16px; color: black; cursor: pointer; }
+.themechanger { float: right; padding: 10px 12px 0; height: 40px; font-size: 16px; color: black; cursor: pointer; }
 .themechanger:hover { opacity: 0.7; }
 
 .bg-smoke { background-color: #F8F8F8; }
