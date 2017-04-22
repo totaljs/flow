@@ -26,9 +26,12 @@ global;   	// ref to value.global, available methods get, set, rem for storing p
 flowdata; 	// ref to value.flowdata, instance of FlowData - available methods get, set, rem for storing temporary data related to current flow
 Date;		// 
 
-// Example #1:
+// Example:
 send('Hello world.'); // sends data to all outputs
 send(0, 'Hello world.'); // sends data only to first output
+
+// Calling send without any argument will pass incomming data to next components
+send();
 \`\`\``;
 
 exports.html = `<div class="padding">
@@ -69,15 +72,16 @@ exports.install = function(instance) {
 			status: instance.status.bind(instance),
 			send: function(flowdata, index, data){
 
-				if (data instanceof Array) {
-					for (let i = 0, length = data.length; i < length; i++){
-						flowdata.data = data[i];
-						instance.send(i, flowdata);
-					}
-				} else {
-					flowdata.data = data;
-					instance.send(index, flowdata);
+				if (!data){
+					if (!index)
+						return instance.send(flowdata.clone());
+					data = index;
+					index = 0;
 				}
+
+				flowdata = flowdata.clone();
+				flowdata.data = data;
+				instance.send(index, flowdata);
 			}
 		},
 		global: {
@@ -90,7 +94,6 @@ exports.install = function(instance) {
 	};
 
 	instance.custom.reconfigure = function(){
-		// fn = new Function('value', instance.options.code);
 		fn = SCRIPT(`
 			var instance = value.instance;
 			var flowdata = value.flowdata;
@@ -98,15 +101,9 @@ exports.install = function(instance) {
 			var Object = value.Object;
 			var global = value.global;
 			var send = function(index, data){
-				if (!data){
-					data = index;
-					index = 0;
-				} 
-				value.instance.send(value.flowdata, index || undefined, data);
+				value.instance.send(value.flowdata, index, data);
 			}
-
 			${instance.options.code}
-
 			next(value);
 		`);
 	};
@@ -117,8 +114,6 @@ exports.install = function(instance) {
 		fn(VALUE, function(err, value) {
 			if (err)
 				return instance.error('Error while processing function ' + err);
-
-			//instance.send(value.flowdata);
 		});
 	});
 
