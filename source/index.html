@@ -885,7 +885,7 @@
 						SET('common.form', value);
 						return;
 					case 'clear':
-						OPERATION('#flow.clear');
+						OPERATION('flow.clear')();
 						return;
 				}
 			}, 5);
