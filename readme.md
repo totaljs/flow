@@ -350,6 +350,10 @@ exports.install = function(component) {
     // Creates error
     // returns {Component}
 
+    component.save();
+    // Saves current options, useful when options are changed internally. Options from settings form are saved automatically
+    // returns {Component}
+
     // =====================
     // PROPERTIES
     // =====================
@@ -380,14 +384,14 @@ exports.uninstall = function() {
 
 ## Message
 
-When the message instance is created?
+When is the message instance created?
 
 ```javascript
 // FIRST CASE:
 instance.on('data', function(message) {
     // Properties:
     message.begin;            // {Date} when it started
-    message.data;             // {Object} raw data (you can modify it)
+    message.data;             // {Anything} user defined data
     message.completed;        // {Boolean} is sending completed?
     message.tracking;         // {Array of Instances} all instances in order which they modified data
     message.parent;           // {Component} a parent instance
