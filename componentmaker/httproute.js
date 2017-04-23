@@ -50,7 +50,7 @@ exports.install = function(instance) {
 				data.params[params[i]] = arguments[i];
 		}
 
-		data = new FlowData(data);
+		data = instance.make(data);
 		if (instance.options.emptyresponse) {
 			instance.status('200 OK');
 			this.plain();
