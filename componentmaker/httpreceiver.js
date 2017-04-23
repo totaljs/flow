@@ -14,7 +14,9 @@ exports.cloning = false;
 exports.html = `<div class="padding">
 	<div data-jc="dropdown" data-jc-path="route" data-source="receiverroutes" data-empty="" data-jc-type="number" class="m">@(Choose a route)</div>
 </div>
-<script>TRIGGER('{0}', 'receiverroutes')</script>`.format(TRIGGER);
+<script>ON('open.receiver', function(component, options) {
+	TRIGGER('{0}', 'receiverroutes');
+});</script>`.format(TRIGGER);
 
 exports.readme = `# HTTP Receiver
 
