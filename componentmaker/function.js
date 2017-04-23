@@ -24,7 +24,7 @@ send;    	// send data to next component, optionaly specify output index -> send
 instance; 	// ref to value.instance, available methods get, set, rem for storing temporary data related to this instance of Function component and  debug, status and error for sending data to designer
 global;   	// ref to value.global, available methods get, set, rem for storing persistent data globally accessible in any component
 flowdata; 	// ref to value.flowdata, instance of FlowData - available methods get, set, rem for storing temporary data related to current flow
-Date;		// 
+flowdata.data; // user defined data recieved from previous component
 
 // Example:
 send('Hello world.'); // sends data to all outputs
@@ -62,6 +62,8 @@ exports.html = `<div class="padding">
 exports.install = function(instance) {
 
 	var fn;
+	var ready = false;
+
 	var VALUE = {
 		instance: {
 			get: instance.get.bind(instance),
@@ -106,12 +108,19 @@ exports.install = function(instance) {
 			${instance.options.code}
 			next(value);
 		`);
+
+		if (typeof(fn) !== 'function') {
+			ready = false;
+			instance.error(fn.message);
+			return;
+		}
+		ready = true;
 	};
 
 	instance.on('data', function(flowdata) {
 		VALUE.flowdata = flowdata;
 
-		fn(VALUE, function(err, value) {
+		ready && fn(VALUE, function(err, value) {
 			if (err)
 				return instance.error('Error while processing function ' + err);
 		});
