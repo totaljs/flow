@@ -18,6 +18,7 @@ This component can send message.
 
 exports.html = `<div class="padding">
 	<div data-jc="dropdown" data-jc-path="from" data-source="messengerdata.users" data-empty="" class="m" data-required="true">@(Who is the sender?)</div>
+	<div data-jc="dropdown" data-jc-path="location" data-source="messengerdata.channels" data-empty="@(Current location)" class="m">@(Location)</div>
 </div>
 <script>TRIGGER('{0}', 'messengerdata');</script>`.format(TRIGGER);
 
@@ -61,14 +62,13 @@ exports.install = function(instance) {
 			return;
 
 		var client = response.get('client');
-		if (!client)
-			return;
+		if (!instance.options.location) {
+			if (!client || (instance.options.from === '$target' && client.threadtype === 'channel') || (instance.options.from !== '$sender' && instance.options.from !== '$target' && client.threadtype === 'user' && client.threadid !== instance.options.from))
+				return;
+		}
 
-		if ((instance.options.from === '$target' && client.threadtype === 'channel') || (instance.options.from !== '$sender' && instance.options.from !== '$target' && client.threadtype === 'user' && client.threadid !== instance.options.from))
-			return;
-
-		MESSAGE.idtarget = instance.options.from === '$target' ? client.user.id : client.threadid;
-		MESSAGE.target = client.threadtype;
+		MESSAGE.idtarget = instance.options.location ? instance.options.location : instance.options.from === '$target' ? client.user.id : client.threadid;
+		MESSAGE.target = instance.options.location ? 'channel' : client.threadtype;
 		MESSAGE.iduser = instance.options.from === '$sender' ? client.user.id : instance.options.from === '$target' ? client.threadid : instance.options.from;
 
 		MESSAGE.body = typeof(data) === 'object' ? ('```json\n' + JSON.stringify(data, null, '    ') + '\n```') : data.toString();
@@ -86,6 +86,7 @@ FLOW.trigger(TRIGGER, function(next) {
 	response.users.push({ id: '$sender', name: 'From: sender' });
 	response.users.push({ id: '$target', name: 'From: recipient' });
 	F.global.users && F.global.users.forEach(item => response.users.push({ id: item.id, name: item.name }));
+	F.global.channels && F.global.channels.forEach(item => response.channels.push({ id: item.id, name: item.name }));
 	next(response);
 });
 
