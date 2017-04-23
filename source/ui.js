@@ -3049,52 +3049,76 @@ COMPONENT('filereader', function() {
 
 COMPONENT('nosqlcounter', function() {
 	var self = this;
-	var count = (self.attr('data-count') || '12').parseInt();
+	var count = (self.attr('data-count') || '0').parseInt();
+	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 	self.readonly();
 	self.make = function() {
-		self.toggle('ui-nosqlcounter', true);
+		self.toggle('ui-nosqlcounter hidden', true);
+		var calendar = FIND('calendar');
+		calendar && (months = calendar.months);
 	};
 
 	self.setter = function(value) {
 
-		if (!value || !value.length)
+		var is = !value || !value.length;
+		self.toggle('hidden', is);
+
+		if (is)
 			return self.empty();
 
-		var maxbars = count;
+		var maxbars = 12;
+
+		if (count === 0)
+			maxbars = self.element.width() / 30 >> 0;
+		else
+			maxbars = count;
 
 		if (WIDTH() === 'xs')
-			maxbars = (maxbars / 2) >> 0;
+			maxbars = maxbars / 2;
 
-		var max = value.length - maxbars;
-		if (max < 0)
-			max = 0;
+		var dt = new Date();
+		var current = dt.format('yyyyMM');
+		var stats = null;
 
-		value = value.slice(max, value.length);
-		max = value.scalar('max', 'value');
+		if (self.attr('data-lastvalues') === 'true') {
+			var max = value.length - maxbars;
+			if (max < 0)
+				max = 0;
+			stats = value.slice(max, value.length);
+		} else {
+			stats = [];
+			for (var i = 0; i < maxbars; i++) {
+				var id = dt.format('yyyyMM');
+				var item = value.findItem('id', id);
+				stats.push(item ? item : { id: id, month: dt.getMonth() + 1, year: dt.getFullYear(), value: 0 });
+				dt = dt.add('-1 month');
+			}
+			stats.reverse();
+		}
 
+		var max = stats.scalar('max', 'value');
 		var bar = 100 / maxbars;
 		var builder = [];
-		var months = FIND('calendar').months;
-		var current = new Date().format('yyyyMM');
 		var cls = '';
 
-		value.forEach(function(item, index) {
+		stats.forEach(function(item, index) {
 			var val = item.value;
 			if (val > 999)
 				val = (val / 1000).format(1, 2) + 'K';
+
 			var h = (item.value / max) * 60;
 			h += 40;
 
-			cls = '';
+			cls = item.value ? '' : 'empty';
 
 			if (item.id === current)
 				cls += (cls ? ' ' : '') + 'current';
 
-			if (index === 11)
+			if (index === maxbars - 1)
 				cls += (cls ? ' ' : '') + 'last';
 
-			builder.push('<div style="width:{0}%;height:{1}%" title="{3}" class="{4}"><span>{2}</span></div>'.format(bar.format(0, 3), h.format(0, 3), val, months[item.month - 1] + ' ' + item.year, cls));
+			builder.push('<div style="width:{0}%;height:{1}%" title="{3}" class="{4}"><span>{2}</span></div>'.format(bar.format(2, ''), h.format(0, ''), val, months[item.month - 1] + ' ' + item.year, cls));
 		});
 
 		self.html(builder);
