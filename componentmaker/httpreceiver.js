@@ -21,16 +21,16 @@ exports.readme = `# HTTP Receiver
 This component can receive all data from this web application. Choose which route data you want to receive and everything will work automatically. __Response__ is an object:
 
 \`\`\`javascript
-response.body;      // Request body (POST/PUT/DELETE)
-response.files;     // Uploaded files
-response.id;        // Record ID (if exists)
-response.ip;        // Current IP
-response.method;    // String
-response.path;      // Splitted path
-response.query;     // Query string arguments
-response.session;   // Session instance (if exists)
-response.url;       // Current URL
-response.user;      // User instance (if exists)
+response.body;      // (Object) Request body (POST/PUT/DELETE)
+response.files;     // (Object Array) Uploaded files
+response.id;        // (String/Number) Record ID (if exists)
+response.ip;        // (String) Current IP
+response.method;    // (String) HTTP method
+response.path;      // (Array) Splitted path
+response.query;     // (Object) Query string arguments
+response.session;   // (Object) Session instance (if exists)
+response.url;       // (String) Current URL
+response.user;      // (Object) User instance (if exists)
 \`\`\``;
 
 exports.install = function(instance) {
