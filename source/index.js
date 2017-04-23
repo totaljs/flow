@@ -354,6 +354,10 @@ Component.prototype.log = function(a, b, c, d, e, f) {
 	return this;
 };
 
+Component.prototype.make = function(data) {
+	return new FlowData(data);
+};
+
 Component.prototype.click = function() {
 	try {
 		this.$events.click && this.emit('click');

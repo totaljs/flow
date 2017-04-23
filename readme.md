@@ -327,6 +327,11 @@ exports.install = function(component) {
     // @key {String}
     // returns {Object}
 
+    component.make(data);
+    // Creates a new FlowData/Message instance.
+    // @data {Object}
+    // returns {Message}
+
     component.rem(key);
     // Removes a value from a private key-value store (data are stored on HDD)
     // @key {String}
