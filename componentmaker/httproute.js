@@ -17,22 +17,22 @@ When a request comes in bellow object is available at \`flowdata.data\`:
 	query: { msg: 'Hello' }, // parsed query string, e.g. /test/1?msg=Hello
 	body: { test: 'OK' }     // object if json requests otherwise string
 }
-\`\`\``;
+\`\`\`
+
+If the Label field in the settings form is left empty then following string will be used automatically: METHOD /some/url`;
 
 exports.html = `<div class="padding">
 	<div data-jc="textbox" data-jc-path="url" class="m" data-required="true" data-maxlength="500" data-placeholder="/api/test">@(URL address)</div>
-	<div class="row">
-		<div class="col-md-6 m">
-			<div data-jc="dropdown" data-jc-path="method" data-required="true" data-options=";GET;POST;PUT;DELETE" class="m">@(HTTP method)</div>
-			<div data-jc="checkbox" data-jc-path="emptyresponse">@(Automaticlly respond with 200 OK?)</div>
-			<div class="help">@(If not checked you need to use HTTP response component to respond to the request.)</div>
-		</div>
-		<div class="col-md-6 m">
-			<!--<div data-jc="dropdown" data-jc-path="datatype" data-required="true">@(Data-type - JSON by default)</div>-->
-		</div>
-	</div>
+	<div data-jc="dropdown" data-jc-path="method" data-required="true" data-options=";GET;POST;PUT;DELETE" class="m">@(HTTP method)</div>
+	<div data-jc="checkbox" data-jc-path="emptyresponse">@(Automaticlly respond with 200 OK?)</div>
+	<div class="help m">@(If not checked you need to use HTTP response component to respond to the request.)</div>
 	<div data-jc="keyvalue" data-jc-path="headers" data-placeholder-key="@(Header name)" data-placeholder-value="@(Header value and press enter)" class="m">@(Custom headers)</div>
 	<div data-jc="keyvalue" data-jc-path="cookies" data-placeholder-key="@(Cookie name)" data-placeholder-value="@(Cookie value and press enter)" class="m">@(Cookies)</div>
+	<script>
+		ON('save.httproute', function(component, options) {
+			!component.name && (component.name = options.method + ' ' + options.url);
+		});	
+	</script>
 </div>`;
 
 exports.install = function(instance) {
@@ -73,7 +73,7 @@ exports.install = function(instance) {
 			options.flags = options.flags.split('|');
 
 		id && UNINSTALL('route', id);
-		id = 'id:' + U.GUID(10);
+		id = 'id:' + instance.id;
 		params = [];
 		options.url.split('/').forEach(param => param[0] === '{' && params.push(param.substring(1, param.length - 1).trim()));
 

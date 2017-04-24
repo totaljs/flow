@@ -33,9 +33,7 @@ exports.install = function(instance) {
 
 	instance.on('data', function(flowdata){
 		var ctrl = flowdata.get('controller');
-		
-		// if the connection is `httproute -> httpresponse` then do not send any data
-		var data = flowdata.parent.component === 'httproute' ? '' :  flowdata.data || '';
+		var data = flowdata.data;
 
 		if (!ctrl) {
 			ERRORMESSAGE.error = 'No controller to use for response!';
