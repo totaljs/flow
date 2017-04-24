@@ -17,9 +17,8 @@ exports.html = `
 		<div data-jc="checkbox" data-jc-path="retain" class="m">@(Retain)</div>
 	</div>
 	<script>
-		TRIGGER('mqtt.brokers', function(brokers){
-			console.log('BROKERS', brokers);
-			SET('mqttconfig.brokers', brokers);
+		ON('open.mqttpublish', function(component, options) {
+			TRIGGER('mqtt.brokers', 'mqttconfig.brokers');
 		});
 	</script>
 `;
