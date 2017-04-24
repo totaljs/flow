@@ -115,7 +115,7 @@ exports.install = function(instance) {
 		var conditions = instance.options.conditions;
 
 		if (instance.options.property) {
-			if (instance.options.property.indexOf('.') < 0)
+			if (instance.options.property.indexOf('.') === -1)
 				data = flowdata.data[instance.options.property];
 			else
 				data = U.get(flowdata.data, instance.options.property);

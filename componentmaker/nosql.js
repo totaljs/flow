@@ -9,6 +9,9 @@ exports.output = 1;
 exports.options = {  };
 exports.readme = `# NoSQL
 
+## Collection
+if the collection field is left empty, then we try to look at \`flowdata.get('collection')\`, to set this value you need to use \`flowdata.set('collection', '<collection-name>')\` in previous component (currently only \`function\` can be used)
+
 ## Insert
 - will insert recieved data into DB
 - expects data to be an Object
@@ -52,7 +55,7 @@ exports.install = function(instance) {
 	instance.on('data', function(flowdata) {
 
 		var options = instance.options;
-		var nosql = NOSQL(options.collection);
+		var nosql = NOSQL(options.collection || flowdata.get('collection'));
 
 		if (options.method === 'read') {
 
