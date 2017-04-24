@@ -202,7 +202,7 @@ svg { cursor: move; }
 .themedark .markdown h1 { border-color: #303030; color: white; }
 .themedark .markdown h2 { border-color: #303030; color: white; }
 .themedark .markdown h3 { color: white; }
-.themedark .markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #404040; }
+.themedark .markdown p code, .themedark .markdown li code, .themedark .markdown blockquote code, .themedark .markdown h1 code, .themedark .markdown h2 code, .themedark .markdown h3 code, .themedark .markdown h4 code { background-color: #404040; }
 .themedark .markdown th { background-color: #404040; }
 .themedark .markdown blockquote { border-color: #303030; color: gray; }
 
