@@ -1084,7 +1084,6 @@ COMPONENT('designer', function() {
 				instance.y = py;
 			}
 		});
-
 	};
 
 	self.setter = function(value) {
