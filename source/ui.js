@@ -906,7 +906,6 @@ COMPONENT('designer', function() {
 			self.remove();
 		});
 
-
 		self.remove = function() {
 			EMIT('designer.selectable', null);
 			var idconnection;
