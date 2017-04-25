@@ -24,7 +24,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
-exports.version = 'v1.0.0';
+exports.version = 'v1.1.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -1095,29 +1095,39 @@ FLOW.uninstall = function(name) {
 FLOW.findByReference = function(value) {
 	var arr = [];
 	var keys = Object.keys(FLOW.instances);
+	var is = value.test ? true : false;
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
-		instance.reference === value && arr.push(instance);
-	}
+		if (is)
+			value.test(instance.reference) && arr.push(instance);
+		else
+			instance.reference === value && arr.push(instance);	}
 	return arr;
 };
 
 FLOW.findByName = function(value) {
 	var arr = [];
 	var keys = Object.keys(FLOW.instances);
+	var is = value.test ? true : false;
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
-		instance.name === value && arr.push(instance);
-	}
+		if (is)
+			value.test(instance.name) && arr.push(instance);
+		else
+			instance.name === value && arr.push(instance);	}
 	return arr;
 };
 
 FLOW.findByComponent = function(value) {
 	var arr = [];
 	var keys = Object.keys(FLOW.instances);
+	var is = value.test ? true : false;
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
-		instance.component === value && arr.push(instance);
+		if (is)
+			value.test(instance.component) && arr.push(instance);
+		else
+			instance.component === value && arr.push(instance);
 	}
 	return arr;
 };

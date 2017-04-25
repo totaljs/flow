@@ -91,15 +91,18 @@ FLOW.get(key);
 FLOW.rem(key);
 // Removes value from the key-value store (data are stored on HDD)
 
-FLOW.findByReference('reference');
+FLOW.findByReference('STRING');
+FLOW.findByReference(REGULAR_EXPRESSION);
 // Finds all instances by reference
 // returns {Array of Components}
 
-FLOW.findByName('name');
+FLOW.findByName('STRING');
+FLOW.findByName(REGULAR_EXPRESSION);
 // Finds all instances by name
 // returns {Array of Components}
 
-FLOW.findByComponent('name');
+FLOW.findByComponent('STRING');
+FLOW.findByComponent(REGULAR_EXPRESSION);
 // Finds all instances by component name
 // returns {Array of Components}
 
