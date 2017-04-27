@@ -9,13 +9,7 @@ exports.version = '1.0.0';
 exports.author = 'Martin Smola';
 exports.readme = `# HTTP response
 
-Expects data object as shown bellow.
-The response property will be used as reponse body
-\`\`\`javascript
-{
-	response: String|Object // depends on response data-type set in options
-}
-\`\`\``;
+HTTP response will respond with data recieved using data-type set in Settings form or plain text if not set.`;
 
 exports.html = `<div class="padding">
 	<div class="row">
@@ -43,6 +37,10 @@ exports.install = function(instance) {
 		}
 
 		var datatype = instance.options.datatype;
+
+		if (datatype === 'emptyresponse')
+			return ctrl.plain('');
+
 		if (datatype !== 'json' && typeof(data) !== 'string') {
 			ERRORMESSAGE.error = 'Incorect type of data, expected string, got ' + typeof(data);
 			ERRORMESSAGE.data = data;
@@ -50,9 +48,6 @@ exports.install = function(instance) {
 		}
 
 		switch(datatype) {
-			case 'emptyresponse':
-				ctrl.plain('');
-				break;
 			case 'html':
 				ctrl.content(data, 'text/html');
 				break;
