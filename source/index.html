@@ -34,7 +34,11 @@
 					<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'traffic'" data-b="common.panel" data-b-class="n => (n === 'traffic' ? '+' : '-') + 'selected'"><i class="fa fa-tasks"></i>@(Traffic)</a>
 				</nav>
 			</section>
-			<div class="padding hidden markdown" data-b="common.panel" data-b-visible="n => n === 'info'" id="infopanel"></div>
+			<div class="padding hidden" data-b="common.panel" data-b-visible="n => n === 'info'">
+				<div class="scroller">
+					<div class="markdown" id="infopanel"></div>
+				</div>
+			</div>
 			<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'errors'">
 				<div class="padding npb">
 					<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
