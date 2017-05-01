@@ -861,6 +861,7 @@ FLOW.save2 = function(callback) {
 	data.components = MESSAGE_DESIGNER.components;
 	Fs.writeFile(F.path.root(FILEDESIGNER), JSON.stringify(data, (k,v) => k === '$component' ? undefined : v), function() {
 		callback && callback();
+		EMIT('flow.save');
 	});
 };
 

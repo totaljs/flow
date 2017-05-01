@@ -144,6 +144,11 @@ ON('flow.open', function(instance) {
     // New instance of a component has been created
 });
 
+ON('flow.save', function(instance) {
+    // Flow is saved/applied
+    // +v1.2.0
+});
+
 ON('flow.close', function(instance) {
     // A component instance will be closed
 });
