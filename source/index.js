@@ -217,10 +217,11 @@ function websocket() {
 			var instance = FLOW.instances[message.target];
 			if (!instance)
 				return;
+
 			if (message.type === 'options') {
 				var old_options = instance.options;
 				instance.options = message.body;
-				instance.name = instance.options.comname;
+				instance.name = instance.options.comname || FLOW.components[instance.component].name;
 				instance.reference = instance.options.comreference;
 				instance.output = instance.options.comoutput;
 				instance.options.comname = undefined;
@@ -745,17 +746,17 @@ FLOW.init = function(components) {
 		for (var i = 0, length = components.length; i < length; i++) {
 
 			var com = components[i];
-			var instance = FLOW.instances[com.id];
-			if (instance) {
-				instance.name = com.name;
-				instance.connections = com.connections;
-				instance.$events.$reinit && instance.emit('reinit');
-				continue;
-			}
-
 			var declaration = FLOW.components[com.component];
 			if (!declaration) {
 				// console.error('FLOW.init: component "{0}" does\'t exist.'.format(com.component));
+				continue;
+			}
+
+			var instance = FLOW.instances[com.id];
+			if (instance) {
+				instance.name = com.name || declaration.name;
+				instance.connections = com.connections;
+				instance.$events.$reinit && instance.emit('reinit');
 				continue;
 			}
 
@@ -764,7 +765,7 @@ FLOW.init = function(components) {
 			FLOW.instances[com.id] = instance;
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 			instance.cloning = declaration.cloning;
-			instance.name = com.name;
+			instance.name = com.name || declaration.name;
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
@@ -799,7 +800,7 @@ FLOW.init_component = function(component) {
 			instance.custom = {};
 			FLOW.instances[com.id] = instance;
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
-			instance.name = com.name;
+			instance.name = com.name || declaration.name;
 			instance.cloning = declaration.cloning;
 			declaration.fn.call(instance, instance, declaration);
 
