@@ -1003,7 +1003,7 @@ FLOW.npm = function(dependencies, callback) {
 					next();
 				});
 			});
-		});
+		}, callback);
 	});
 };
 
