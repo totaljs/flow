@@ -26,7 +26,8 @@ exports.html = `
 exports.readme = `
 # MQTT publish
 
-If topic field is left empty and the data do not have a 'topic' property then nothing is send.`;
+If the topic field is left empty and the data object does not have a 'topic' property then nothing is send.
+`;
 
 var PUBLISH_OPTIONS = {};
 
@@ -53,6 +54,11 @@ exports.install = function(instance) {
 
 	instance.on('close', function(){
 		MQTT.remove(instance.options.broker, instance.id);
+		OFF('mqtt.brokers.connected', connected);
+		OFF('mqtt.brokers.connecting', connecting);
+		OFF('mqtt.brokers.disconnected', disconnected);
+		OFF('mqtt.brokers.connectionfailed', connectionfailed);
+		OFF('mqtt.brokers.error', error);
 	});
 
 	instance.on('data', function(flowdata){
@@ -67,31 +73,41 @@ exports.install = function(instance) {
 		MQTT.publish(instance.options.broker, topic, msg, PUBLISH_OPTIONS);
 	});
 
-	instance.custom.reconfigure();
+	ON('mqtt.brokers.connected', connected);
+	ON('mqtt.brokers.connecting', connecting);
+	ON('mqtt.brokers.disconnected', disconnected);
+	ON('mqtt.brokers.connectionfailed', connectionfailed);
+	ON('mqtt.brokers.error', error);
 
-	ON('mqtt.brokers.connected', function(brokerid) {
+	function connected(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Connected', 'green');
-	});
-	ON('mqtt.brokers.connecting', function(brokerid) {
+		instance.status('Connected', 'green')
+	};
+
+	function connecting(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Connecting', '#a6c3ff');
-	});
-	ON('mqtt.brokers.disconnected', function(brokerid) {
+		instance.status('Connecting', '#a6c3ff')
+	};
+
+	function disconnected(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Disconnected', 'red');
-	});
-	ON('mqtt.brokers.connectionfailed', function(brokerid) {
+		instance.status('Disconnected', 'red')
+	};
+
+	function connectionfailed(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Disconnected', 'red');
-	});
-	ON('mqtt.brokers.error', function(brokerid, msg) {
+		instance.status('Disconnected', 'red')
+	};
+
+	function error(brokerid, msg) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status(msg, 'red');
-	});
+		instance.status(msg, 'red')
+	};
+
+	instance.custom.reconfigure();
 };
