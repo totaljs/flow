@@ -22,32 +22,34 @@ exports.html = `<div class="padding">
 
 exports.readme = `
 # MQTT subscribe
-
-Create MQTT subscriber easily.`;
+`;
 
 exports.install = function(instance) {
 
 	var added = false;
 	var subscribed = false;
 	var isWildcard = false;
-	var MESSAGE = { topic: '' };
 
+	var MESSAGE = {
+		topic:''
+	};
 	instance.custom.reconfigure = function(o, old_options){
 
 		if (instance.options.broker && instance.options.topic) {
 			isWildcard = instance.options.topic[instance.options.topic.length - 1] === '#';
 
-			!added && MQTT.add(instance.options.broker);
-			!subscribed && MQTT.subscribe(instance.options.broker, instance.id, instance.options.topic);
+			if (!added)
+				MQTT.add(instance.options.broker);
+
+			if (!subscribed)
+				MQTT.subscribe(instance.options.broker, instance.id, instance.options.topic);
 
 			if (old_options && (instance.options.topic !== old_options.topic || instance.options.qos !== old_options.qos)) {
 				MQTT.unsubscribe(instance.options.broker, instance.id, old_options.topic);
 				MQTT.subscribe(instance.options.broker, instance.id, instance.options.topic, instance.options.qos);
 			}
-
 			added = true;
 			subscribed = true;
-			instance.status('');
 			return;
 		}
 
@@ -57,13 +59,21 @@ exports.install = function(instance) {
 	instance.on('options', instance.custom.reconfigure);
 
 	instance.on('close', function(){
+
 		MQTT.unsubscribe(instance.options.broker, instance.id, instance.options.topic);
 		MQTT.remove(instance.options.broker, instance.id);
+		subscribed = false;
+		added = false;
+
+		OFF('mqtt.brokers.message', message);
+		OFF('mqtt.brokers.connected', connected);
+		OFF('mqtt.brokers.connecting', connecting);
+		OFF('mqtt.brokers.disconnected', disconnected);
+		OFF('mqtt.brokers.connectionfailed', connectionfailed);
+		OFF('mqtt.brokers.error', error);
 	});
 
-	instance.custom.reconfigure();
-
-	ON('mqtt.brokers.message', function(brokerid, topic, message) {
+	function message(brokerid, topic, message) {
 		if (brokerid !== instance.options.broker)
 			return;
 
@@ -75,37 +85,49 @@ exports.install = function(instance) {
 				return;
 		}
 		MESSAGE.topic = topic;
-		MESSAGE.data = message;
+		MESSAGE.data = message; 
 		instance.send(MESSAGE);
-	});
+	};
 
 	// re-subscibe on reconnect
-	ON('mqtt.brokers.connected', function(brokerid){
+	function connected(brokerid){
 		if (brokerid !== instance.options.broker)
 			return;
 
 		MQTT.subscribe(instance.options.broker, instance.id, instance.options.topic);
 		instance.status('Connected', 'green');
-	});
+	};
 
-	ON('mqtt.brokers.connecting', function(brokerid) {
+	function connecting(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Connecting', '#a6c3ff');
-	});
-	ON('mqtt.brokers.disconnected', function(brokerid) {
+		instance.status('Connecting', '#a6c3ff')
+	};
+
+	function disconnected(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Disconnected', 'red');
-	});
-	ON('mqtt.brokers.connectionfailed', function(brokerid) {
+		instance.status('Disconnected', 'red')
+	};
+
+	function connectionfailed(brokerid) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status('Disconnected', 'red');
-	});
-	ON('mqtt.brokers.error', function(brokerid, msg) {
+		instance.status('Connection failed', 'red')
+	};
+
+	function error(brokerid, msg) {
 		if (brokerid !== instance.options.broker)
 			return;
-		instance.status(msg, 'red');
-	});
+		instance.status(msg, 'red')
+	};
+
+	ON('mqtt.brokers.message', message);
+	ON('mqtt.brokers.connected', connected);
+	ON('mqtt.brokers.connecting', connecting);
+	ON('mqtt.brokers.disconnected', disconnected);
+	ON('mqtt.brokers.connectionfailed', connectionfailed);
+	ON('mqtt.brokers.error', error);
+
+	instance.custom.reconfigure();
 };
