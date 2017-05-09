@@ -43,9 +43,13 @@ exports.readme = `
 var MQTT_BROKERS = [];
 global.MQTT = {};
 
+var mqtt;
+
 exports.install = function(instance) {
 
 	var broker;
+
+	mqtt = require('mqtt');
 
 	instance.custom.reconfigure = function(o, old_options) {
 
@@ -66,6 +70,7 @@ exports.install = function(instance) {
 
 	instance.custom.createBroker = function() {
 		broker = new Broker(instance.options);
+		instance.status('Ready', 'white');
 		MQTT_BROKERS.push(broker);
 	};
 
@@ -155,7 +160,6 @@ MQTT.unsubscribe = function(brokerid, componentid, topic, qos) {
 
 
 */
-var mqtt = require('mqtt');
 
 function Broker(options) {
 	var self = this;
@@ -176,25 +180,28 @@ function Broker(options) {
 Broker.prototype.connect = function() {
 
 	var self = this;
-	if (self.connected || self.connecting) {
-		EMIT('mqtt.brokers.' + self.connected ? 'connected' : 'connecting', self.id);
-		return;
-	}
+	if (self.connected || self.connecting)
+		return EMIT('mqtt.brokers.' + (self.connected ? 'connected' : 'connecting'), self.id);
 
 	self.connecting = true;
-
 	var broker = self.options.secure ? 'mqtts://' : 'mqtt://' + self.options.host + ':' + self.options.port;
 
 	EMIT('mqtt.brokers.connecting', self.id);
 
 	self.client = mqtt.connect(broker);
+
 	self.client.on('connect', function() {
 		self.connecting = false;
 		self.connected = true;
 		EMIT('mqtt.brokers.connected', self.id);
 	});
 
-	self.client.on('reconnect', () => EMIT('mqtt.brokers.connecting', self.id));
+	self.client.on('reconnect', function(){
+		self.connecting = true;
+		self.connected = false;
+		EMIT('mqtt.brokers.connecting', self.id);
+	});
+
 	self.client.on('message', function(topic, message) {
 		message = message.toString();
 		if (message[0] === '{') {
@@ -210,19 +217,19 @@ Broker.prototype.connect = function() {
 			self.connected = false;
 			EMIT('mqtt.brokers.disconnected', self.id);
 		} else if (self.connecting) {
+			self.connecting = false;
 			EMIT('mqtt.brokers.connectionfailed', self.id);
 		}
 	});
 
 	self.client.on('error', function(err) {
-		/*
-		node === unused
-		if (node.connecting) {
-			node.client.end();
-			node.connecting = false;
+
+		if (self.connecting) {
+			self.client.end();
+			self.connecting = false;
 			EMIT('mqtt.brokers.connectionfailed', self.id);
 		}
-		*/
+
 		console.log('ERROR', broker, err);
 	});
 
@@ -275,7 +282,7 @@ Broker.prototype.publish = function(topic, data, options) {
 		options.qos = parseInt(data.qos || options.qos);
 		options.retain = data.retain || options.retain;
 		topic = data.topic || topic;
-		data.payload && (data = JSON.stringify(data.payload));
+		data.payload && (data = typeof(data.payload) === 'string' ? data.payload : JSON.stringify(data.payload));
 	}
 
 	if (options.qos !== 0 || options.qos !== 1 || options.qos !== 2)
