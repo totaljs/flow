@@ -469,7 +469,7 @@ COMPONENT('repeater', function() {
 		}
 
 		self.html(builder);
-		recompile && jC.compile();
+		recompile && COMPILE();
 	};
 });
 
@@ -767,7 +767,7 @@ COMPONENT('validation', function() {
 	};
 
 	self.state = function() {
-		var disabled = jC.disabled(path);
+		var disabled = DISABLED(path);
 		if (!disabled && self.evaluate)
 			disabled = !EVALUATE(self.path, self.evaluate);
 		elements.prop({ disabled: disabled });
@@ -2917,7 +2917,7 @@ COMPONENT('disable', function() {
 				el.toggleClass('ui-disabled', is);
 		});
 
-		validate && validate.forEach(FN('n => jC.reset({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
+		validate && validate.forEach(FN('n => RESET({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
 	};
 
 	self.state = function() {
