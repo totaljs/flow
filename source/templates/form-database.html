@@ -116,7 +116,7 @@
 		var arr = common.templates.findItem('name', el.attr('data-value'));
 		SETTER('loading', 'show');
 		arr.items.waitFor(function(item, next) {
-			SETTER('websocket', 'send', { type: 'install', filename: 'https://cdn.totaljs.com/flow/{0}.js'.format(item) });
+			SETTER('websocket', 'send', { type: 'install', filename: 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/{0}/{0}.js'.format(item) });
 			setTimeout(next, 500);
 		}, function() {
 			SETTER('loading', 'hide', 1000);

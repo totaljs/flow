@@ -24,7 +24,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
-exports.version = 'v1.1.0';
+exports.version = 'v2.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -49,7 +49,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://cdn.totaljs.com/flow/templates.json';
+		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
