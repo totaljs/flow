@@ -196,12 +196,13 @@ label span { vertical-align: middle; }
 .ui-contextmenu .selected { font-weight: bold; }
 .ui-contextmenu .selected * { color: #1484FC !important; }
 .ui-contextmenu-visible { opacity: 1; transform: translate(0px,0px); }
-.ui-contextmenu-items > div { border-top: 1px solid #404040; font-size: 12px; height: 32px; background-color: #303030; cursor: pointer; }
-.ui-contextmenu-items > div:hover { background-color: black; }
+.ui-contextmenu-items .item { border-top: 1px solid #404040; font-size: 12px; height: 32px; background-color: #303030; cursor: pointer; display: block; }
+.ui-contextmenu-items .item:hover { background-color: black; }
 .ui-contextmenu-items i { float: left; width: 40px; text-align: center; color: gray; padding: 9px 0 3px; font-size: 14px; }
 .ui-contextmenu-items span { float: left; color: white; width: 140px; margin: 8px 0 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 20px; }
-.ui-contextmenu-items > div:first-child { border-width: 0; border-top-left-radius: 4px; border-top-right-radius: 4px; }
-.ui-contextmenu-items > div:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+.ui-contextmenu-items .item:first-child { border-width: 0; border-top-left-radius: 4px; border-top-right-radius: 4px; }
+.ui-contextmenu-items .item:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+.ui-contextmenu-items .divider { font-size: 11px; color: #A0A0A0; text-transform: uppercase; padding: 10px 10px 5px; border-width: 0; }
 
 .ui-message { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 1010; width: 100%; display: table; height: 100%; transition: 0.3s all; opacity: 0; }
 .ui-message > div { display: table-cell; vertical-align: middle; text-align: center; color: black; padding: 15px; }
@@ -276,9 +277,9 @@ label span { vertical-align: middle; }
 
 .themedark .ui-contextmenu { background-color: white; }
 .themedark .ui-contextmenu-arrow { color: white; }
-.themedark .ui-contextmenu-items > div { border-color: #D0D0D0; background-color: white; color: black; }
+.themedark .ui-contextmenu-items .item { border-color: #E0E0E0; background-color: white; color: black; }
 .themedark .ui-contextmenu-items span { color: #505050; }
-.themedark .ui-contextmenu-items > div:hover { background: linear-gradient(white,#F8F8F8); }
+.themedark .ui-contextmenu-items .item:hover { background: linear-gradient(white,#F8F8F8); }
 
 @keyframes loading {
   to {

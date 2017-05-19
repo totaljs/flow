@@ -881,7 +881,17 @@
 		}
 
 		function settings_menu(el) {
-			FIND('contextmenu').show('left', el, [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }], function(value) {
+			var items = [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }];
+			@{if helpers.FLOWBOARD || helpers.DASHBOARD}
+			items.push('@(Applications)');
+			@{if helpers.FLOWBOARD}
+			items.push({ name: '@(Open Flowboard)', icon: 'fa-object-ungroup', url: '@{helpers.FLOWBOARD.url}' });
+			@{fi}
+			@{if helpers.DASHBOARD}
+			items.push({ name: '@(Open Dashboard)', icon: 'fa-dashboard', url: '@{helpers.DASHBOARD.url}' });
+			@{fi}
+			@{fi}
+			FIND('contextmenu').show('left', el, items, function(value) {
 				switch (value) {
 					case 'database':
 					case 'import':

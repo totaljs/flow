@@ -2690,7 +2690,7 @@ COMPONENT('contextmenu', function() {
 	var container;
 	var arrow;
 
-	self.template = Tangular.compile('<div data-value="{{ value }}"{{ if selected }} class="selected"{{ fi }}><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.template = Tangular.compile('<div data-value="{{ value }}" class="item{{ if selected }} selected{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
 	self.callback = null;
@@ -2753,19 +2753,28 @@ COMPONENT('contextmenu', function() {
 		var builder = [];
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
+
+			if (typeof(item) === 'string') {
+				builder.push('<div class="divider">{0}</div>'.format(item));
+				continue;
+			}
+
 			item.index = i;
 			if (!item.value)
 				item.value = item.name;
 			if (!item.icon)
 				item.icon = 'fa-caret-right';
-			builder.push(self.template(item));
+
+			var tmp = self.template(item);
+			if (item.url)
+				tmp = tmp.replace('<div', '<a href="{0}" target="_blank"'.format(item.url)).replace(/div>$/g, 'a>');
+
+			builder.push(tmp);
 		}
 
 		self.target = target.get(0);
 		var offset = target.offset();
-
 		container.html(builder);
-
 		switch (orientation) {
 			case 'left':
 				arrow.css({ left: '15px' });
@@ -2778,8 +2787,7 @@ COMPONENT('contextmenu', function() {
 				break;
 		}
 
-
-		var options = { left: (orientation === 'center' ? Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) : orientation === 'left' ? offset.left - 8 : (offset.left - self.element.width()) + target.innerWidth()) + (offsetX || 0), top: offset.top + target.innerHeight() + 10 };
+		var options = { left: orientation === 'center' ? (Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) + (offsetX || 0)) : orientation === 'left' ? (offset.left - 8 + (offsetX || 0)) : ((offset.left - self.element.width()) + target.innerWidth() + (offsetX || 0)), top: offset.top + target.innerHeight() + 10 };
 		self.css(options);
 
 		if (is)
