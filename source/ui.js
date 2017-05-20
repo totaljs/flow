@@ -1335,9 +1335,11 @@ COMPONENT('designer', function() {
 		if (!value)
 			return;
 
-		db = {};
 		data = {};
 		selected = null;
+
+		lines.empty();
+		container.empty();
 
 		value.forEach(self.add);
 		value.length && self.autoconnect(true);
