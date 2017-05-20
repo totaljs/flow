@@ -24,7 +24,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
-exports.version = 'v1.2.0';
+exports.version = 'v2.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -156,6 +156,7 @@ function websocket() {
 	});
 
 	self.on('open', function(client) {
+
 		// Security
 		if ((OPT.token && OPT.token.indexOf(client.query.token) === -1) || (OPT.baa && !OPT.baa[client.query.baa]) || (OPT.restrictions && OPT.restrictions[self.ip] === -1)) {
 			setImmediate(() => client.close('Unauthorized'));
@@ -183,7 +184,7 @@ function websocket() {
 		if (message.type === 'templates') {
 			OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
 				if (!err) {
-					MESSAGE_TEMPLATES.body = response.parseJSON();
+					MESSAGE_TEMPLATES.body = response.trim().parseJSON();
 					MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
 				}
 			});

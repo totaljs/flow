@@ -315,14 +315,7 @@
 
 			flow.components.push(obj);
 			flow.designer.push(obj);
-
-			if (!is) {
-				var com = FIND('designer');
-				com.add(obj);
-				com.rebind(null, true);
-				com.rebind_lines();
-			}
-
+			!is && SETTER('designer', 'add', obj);
 			EMIT('add.' + obj.component);
 			setState(MESSAGES.apply);
 		});
@@ -376,7 +369,7 @@
 		ON('designer.selectable', function(el) {
 			$('#designerbuttons a').each(function(index) {
 				var node = $(this);
-				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.classed('node') ? false : true));
+				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.hasClass('node') ? false : true));
 			});
 		});
 
@@ -881,17 +874,7 @@
 		}
 
 		function settings_menu(el) {
-			var items = [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }];
-			@{if helpers.FLOWBOARD || helpers.DASHBOARD}
-			items.push('@(Applications)');
-			@{if helpers.FLOWBOARD}
-			items.push({ name: '@(Open Flowboard)', icon: 'fa-object-ungroup', url: '@{helpers.FLOWBOARD.url}' });
-			@{fi}
-			@{if helpers.DASHBOARD}
-			items.push({ name: '@(Open Dashboard)', icon: 'fa-dashboard', url: '@{helpers.DASHBOARD.url}' });
-			@{fi}
-			@{fi}
-			FIND('contextmenu').show('left', el, items, function(value) {
+			FIND('contextmenu').show('left', el, [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }], function(value) {
 				switch (value) {
 					case 'database':
 					case 'import':
