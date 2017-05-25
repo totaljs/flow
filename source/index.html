@@ -888,7 +888,24 @@
 		}
 
 		function settings_menu(el) {
-			FIND('contextmenu').show('left', el, [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }], function(value) {
+			var items = [];
+
+			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+			items.push({ name: '@(Export designer)', icon: 'fa-copy', value: 'export' });
+			items.push({ name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' });
+			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
+
+			@{if helpers.FLOWBOARD || helpers.DASHBOARD}
+			items.push('@(Applications)');
+			@{if helpers.DASHBOARD}
+			items.push({ name: '@(Dashboard)', icon: 'fa-dashboard', url: '@{helpers.DASHBOARD.url}' });
+			@{fi}
+			@{if helpers.FLOWBOARD}
+			items.push({ name: '@(Flowboard)', icon: 'fa-object-group', url: '@{helpers.FLOWBOARD.url}' });
+			@{fi}
+			@{fi}
+
+			FIND('contextmenu').show('left', el, items, function(value) {
 				switch (value) {
 					case 'database':
 					case 'import':
