@@ -22,7 +22,7 @@
 .ui-designer .m3 { fill: #FC6E51; }
 .ui-designer .m4 { fill: #DA4453; }
 .ui-designer tspan { font-weight: bold; color: #303030; }
-.ui-designer .click rect:first-child { fill: white; stroke: black; stroke-width: 1; }
+.ui-designer .click rect:first-child { fill: white; stroke: black; stroke-width: 3; }
 .ui-designer .click rect:last-child { fill: black; }
 .ui-designer .click:active rect:first-child { fill: black; }
 .ui-designer .click:active rect:last-child { fill: #404040; }
@@ -262,7 +262,7 @@ label span { vertical-align: middle; }
 
 .themedark .ui-designer .node_connection { stroke: #505050; }
 .themedark .ui-designer .m1 { fill: white; }
-.themedark .ui-designer .input, .ui-designer .output { stroke: black; fill: white; }
+.themedark .ui-designer .input, .themedark .ui-designer .output { stroke: black; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 .themedark .ui-designer > div { background: #202020 url(img/themedark.png) repeat -1px -1px; }
 .themedark .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }

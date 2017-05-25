@@ -849,8 +849,8 @@ COMPONENT('designer', function() {
 	var svg, connection;
 	var drag = {};
 	var skip = false;
-	var data, selected, dragdrop, container, lines, main, scroller;
-	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0 };
+	var data, selected, dragdrop, container, lines, main, scroller, touch;
+	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 
 	self.readonly();
@@ -873,6 +873,37 @@ COMPONENT('designer', function() {
 				self.mup(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
 			else
 				self.mdown(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+		});
+
+		tmp.on('touchstart touchmove touchend', function(evt) {
+			var e = evt.touches[0];
+			var offset;
+			if (evt.type === 'touchmove') {
+				offset = offsetter(evt);
+				touch = evt;
+				if (move.drag) {
+					if (move.type === 2 || move.type === 3) {
+						offset.x += move.scrollX;
+						offset.y += move.scrollY;
+					}
+					self.mmove(e.pageX, e.pageY, offset.x, offset.y, evt);
+					evt.preventDefault();
+				}
+			} else if (evt.type === 'touchend') {
+				offset = offsetter(touch);
+				e = touch.touches[0];
+				if (move.type === 2 || move.type === 3) {
+					offset.x += move.scrollX;
+					offset.y += move.scrollY;
+				}
+				touch.target = document.elementFromPoint(e.screenX, e.screenY);
+				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
+			} else {
+				offset = offsetter(evt);
+				move.scrollX = +scroller.prop('scrollLeft');
+				move.scrollY = +scroller.prop('scrollTop');
+				self.mdown(e.pageX, e.pageY, offset.x, offset.y, evt);
+			}
 		});
 
 		$(window).on('keydown', function(e) {
@@ -1170,12 +1201,12 @@ COMPONENT('designer', function() {
 		g.attr('data-height', height);
 
 		var points = g.asvg('g');
-		var top = ((height / 2) - ((item.$component.input * 20) / 2)) + 10;
+		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
-		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 5);
-		top = ((height / 2) - ((output * 20) / 2)) + 10;
+		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 8).attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
-			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 20).attr('r', 5);
+			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
@@ -1190,8 +1221,8 @@ COMPONENT('designer', function() {
 
 		if (item.$component.click) {
 			var clicker = g.asvg('g').addClass('click');
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 8, height - 8)).attr('width', 16).attr('height', 16).attr('rx', 10).attr('ry', 10);
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 3, height - 3)).attr('width', 6).attr('height', 6).attr('rx', 6).attr('ry',6);
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
 		}
 
 		data[item.id] = item;
@@ -1365,6 +1396,24 @@ COMPONENT('designer', function() {
 		main.attr('transform', 'scale({0})'.format(zoom));
 	};
 });
+
+function offsetter(evt){
+	var position = {};
+	if (evt.touches){
+		position.x = evt.touches[0].pageX;
+		position.y = evt.touches[0].pageY;
+		var parent = evt.target;
+		while (parent.offsetParent) {
+			position.x -= parent.offsetLeft;
+			position.y -= parent.offsetTop;
+			parent = parent.offsetParent;
+		}
+	} else {
+		position.x = evt.offsetX;
+		position.y = evt.offsetY;
+	}
+	return position;
+}
 
 COMPONENT('checkbox', function() {
 
@@ -2688,7 +2737,7 @@ COMPONENT('contextmenu', function() {
 	var container;
 	var arrow;
 
-	self.template = Tangular.compile('<div data-value="{{ value }}"{{ if selected }} class="selected"{{ fi }}><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.template = Tangular.compile('<div class="item{{ if selected }} selected{{ fi }}" data-value="{{ value }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
 	self.callback = null;

@@ -240,14 +240,21 @@
 					mdraggable.y = t.pageY;
 					mdraggable.el.css({ left: t.pageX, top: t.pageY });
 					e.stopPropagation();
+					e.preventDefault();
 				}
 			});
 
 			$(document).on('touchend', '[draggable]', function(e) {
 				if (!mdraggable.drag)
 					return;
+
+				e.stopPropagation();
 				mdraggable.drag = false;
 				$('#tmpclone').empty();
+
+				if (mdraggable.x < 280)
+					return;
+
 				var d = FIND('designer');
 				var el = d.element;
 				var off = el.offset();
@@ -257,7 +264,6 @@
 				y += el.prop('scrollTop');
 				var zoom = d.getZoom();
 				EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
-				e.stopPropagation();
 			});
 
 		} else {
@@ -870,6 +876,13 @@
 			setTimeout(function() {
 				SET('common.theme', common.theme === 'dark' ? '' : 'dark');
 				SETTER('loading', 'hide', 1000);
+				var color = common.theme === 'dark' ? 'white' : 'black';
+				$('.input,.output').each(function() {
+					var cur = this.getAttribute('fill');
+					if (cur !== 'white' && cur !== 'black')
+						return;
+					this.setAttribute('fill', color);
+				});
 			}, 1000);
 		}
 
