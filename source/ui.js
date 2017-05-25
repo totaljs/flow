@@ -1280,12 +1280,12 @@ COMPONENT('designer', function() {
 		self.find('.node_connection').each(function() {
 			var el = $(this);
 			var off = el.attr('data-offset').split(',');
-			var x1 = +off[0] + x;
-			var y1 = +off[1] + y;
-			var x2 = +off[2] + x;
-			var y2 = +off[3] + y;
-			this.setAttribute('data-offset', x1 + ',' + y1 + ',' + x2 + ',' + y2);
-			el.attr('d', diagonal(x1, y1, x2, y2));
+			off[4] = +off[4] + x;
+			off[5] = +off[5] + y;
+			off[6] = +off[6] + x;
+			off[7] = +off[7] + y;
+			this.setAttribute('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
 		self.find('.node').each(function() {
