@@ -204,7 +204,7 @@ exports.npm = ['sqlagent', 'mqtt'];
 exports.options = { enabled: true };
 
 // Disables data cloning
-export.cloning = false;
+exports.cloning = false;
 
 exports.install = function(component) {
 
