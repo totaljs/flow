@@ -849,8 +849,8 @@ COMPONENT('designer', function() {
 	var svg, connection;
 	var drag = {};
 	var skip = false;
-	var data, selected, dragdrop, container, lines, main, scroller;
-	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0 };
+	var data, selected, dragdrop, container, lines, main, scroller, touch;
+	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 
 	self.readonly();
@@ -873,6 +873,37 @@ COMPONENT('designer', function() {
 				self.mup(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
 			else
 				self.mdown(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+		});
+
+		tmp.on('touchstart touchmove touchend', function(evt) {
+			var e = evt.touches[0];
+			var offset;
+			if (evt.type === 'touchmove') {
+				offset = offsetter(evt);
+				touch = evt;
+				if (move.drag) {
+					if (move.type === 2 || move.type === 3) {
+						offset.x += move.scrollX;
+						offset.y += move.scrollY;
+					}
+					self.mmove(e.pageX, e.pageY, offset.x, offset.y, evt);
+					evt.preventDefault();
+				}
+			} else if (evt.type === 'touchend') {
+				offset = offsetter(touch);
+				e = touch.touches[0];
+				if (move.type === 2 || move.type === 3) {
+					offset.x += move.scrollX;
+					offset.y += move.scrollY;
+				}
+				touch.target = document.elementFromPoint(e.screenX, e.screenY);
+				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
+			} else {
+				offset = offsetter(evt);
+				move.scrollX = +scroller.prop('scrollLeft');
+				move.scrollY = +scroller.prop('scrollTop');
+				self.mdown(e.pageX, e.pageY, offset.x, offset.y, evt);
+			}
 		});
 
 		$(window).on('keydown', function(e) {
@@ -1170,12 +1201,12 @@ COMPONENT('designer', function() {
 		g.attr('data-height', height);
 
 		var points = g.asvg('g');
-		var top = ((height / 2) - ((item.$component.input * 20) / 2)) + 10;
+		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
-		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 5);
-		top = ((height / 2) - ((output * 20) / 2)) + 10;
+		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 8).attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
-			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 20).attr('r', 5);
+			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
@@ -1190,8 +1221,8 @@ COMPONENT('designer', function() {
 
 		if (item.$component.click) {
 			var clicker = g.asvg('g').addClass('click');
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 8, height - 8)).attr('width', 16).attr('height', 16).attr('rx', 10).attr('ry', 10);
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 3, height - 3)).attr('width', 6).attr('height', 6).attr('rx', 6).attr('ry',6);
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
 		}
 
 		data[item.id] = item;
@@ -1249,12 +1280,12 @@ COMPONENT('designer', function() {
 		self.find('.node_connection').each(function() {
 			var el = $(this);
 			var off = el.attr('data-offset').split(',');
-			var x1 = +off[0] + x;
-			var y1 = +off[1] + y;
-			var x2 = +off[2] + x;
-			var y2 = +off[3] + y;
-			this.setAttribute('data-offset', x1 + ',' + y1 + ',' + x2 + ',' + y2);
-			el.attr('d', diagonal(x1, y1, x2, y2));
+			off[4] = +off[4] + x;
+			off[5] = +off[5] + y;
+			off[6] = +off[6] + x;
+			off[7] = +off[7] + y;
+			this.setAttribute('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
 		self.find('.node').each(function() {
@@ -1365,6 +1396,24 @@ COMPONENT('designer', function() {
 		main.attr('transform', 'scale({0})'.format(zoom));
 	};
 });
+
+function offsetter(evt){
+	var position = {};
+	if (evt.touches){
+		position.x = evt.touches[0].pageX;
+		position.y = evt.touches[0].pageY;
+		var parent = evt.target;
+		while (parent.offsetParent) {
+			position.x -= parent.offsetLeft;
+			position.y -= parent.offsetTop;
+			parent = parent.offsetParent;
+		}
+	} else {
+		position.x = evt.offsetX;
+		position.y = evt.offsetY;
+	}
+	return position;
+}
 
 COMPONENT('checkbox', function() {
 
@@ -2688,7 +2737,7 @@ COMPONENT('contextmenu', function() {
 	var container;
 	var arrow;
 
-	self.template = Tangular.compile('<div data-value="{{ value }}"{{ if selected }} class="selected"{{ fi }}><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.template = Tangular.compile('<div class="item{{ if selected }} selected{{ fi }}" data-value="{{ value }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
 	self.callback = null;
@@ -2751,12 +2800,23 @@ COMPONENT('contextmenu', function() {
 		var builder = [];
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
+
+			if (typeof(item) === 'string') {
+				builder.push('<div class="divider">{0}</div>'.format(item));
+				continue;
+			}
+
 			item.index = i;
 			if (!item.value)
 				item.value = item.name;
 			if (!item.icon)
 				item.icon = 'fa-caret-right';
-			builder.push(self.template(item));
+
+			var tmp = self.template(item);
+			if (item.url)
+				tmp = tmp.replace('<div', '<a href="{0}" target="_blank"'.format(item.url)).replace(/div>$/g, 'a>');
+
+			builder.push(tmp);
 		}
 
 		self.target = target.get(0);
@@ -3118,5 +3178,76 @@ COMPONENT('nosqlcounter', function() {
 		});
 
 		self.html(builder);
+	};
+});
+
+COMPONENT('colorpicker', function() {
+	var self = this;
+	var container;
+	var template = '<li data-index="{0}"><i class="fa fa-circle" style="color:#{1}"></i></li>';
+	var opener = {};
+	var is = false;
+	var colors = 'ff0000,ff4000,ff8000,ffbf00,ffff00,bfff00,80ff00,40ff00,00ff00,00ff40,00ff80,00ffbf,00ffff,00bfff,0080ff,0040ff,0000ff,4000ff,8000ff,bf00ff,ff00ff,ff00bf,ff0080,ff0040,ff0000,F0F0F0,D0D0D0,AAB2BD,505050,000000'.split(',');
+
+	self.singleton();
+	self.readonly();
+	self.blind();
+
+	self.make = function() {
+		self.classes('ui-colorpicker hidden');
+		self.append('<ul></ul>');
+		container = self.find('ul');
+
+		self.event('click', 'li', function() {
+			var color = '#' + colors[+this.getAttribute('data-index')];
+			opener.callback && opener.callback(color, opener.target);
+			self.hide();
+			EMIT('colorpicker', color);
+		});
+
+		self.on('reflow', self.$hide);
+		self.on('resize', self.$hide);
+	};
+
+	self.$hide = function() {
+		is && self.hide();
+	};
+
+	self.render = function() {
+		var builder = [];
+		for (var i = 0, length = colors.length; i < length; i++)
+			builder.push(template.format(i, colors[i]));
+		container.empty().html(builder.join(''));
+	};
+
+	self.hide = function() {
+		if (!is)
+			return;
+		self.classes('hidden');
+		is = false;
+	};
+
+	self.show = function(x, y, target, callback) {
+
+		if (is && opener.x === x && opener.y === y) {
+			opener.x = null;
+			opener.y = null;
+			self.hide();
+			return;
+		}
+
+		if (typeof(target) === 'function') {
+			callback = target;
+			target = null;
+		}
+
+		opener.callback = callback;
+		opener.target = target;
+		opener.x = x;
+		opener.y = y;
+
+		!is && self.render();
+		is = true;
+		self.element.css({ left: x, top: y }).removeClass('hidden');
 	};
 });

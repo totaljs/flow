@@ -22,7 +22,7 @@
 .ui-designer .m3 { fill: #FC6E51; }
 .ui-designer .m4 { fill: #DA4453; }
 .ui-designer tspan { font-weight: bold; color: #303030; }
-.ui-designer .click rect:first-child { fill: white; stroke: black; stroke-width: 1; }
+.ui-designer .click rect:first-child { fill: white; stroke: black; stroke-width: 3; }
 .ui-designer .click rect:last-child { fill: black; }
 .ui-designer .click:active rect:first-child { fill: black; }
 .ui-designer .click:active rect:last-child { fill: #404040; }
@@ -241,9 +241,11 @@ label span { vertical-align: middle; }
 .ui-nosqlcounter .empty { background-color: #A0A0A0; }
 .ui-nosqlcounter .current { background-color: #E74024; }
 
-@media(max-width: 767px) {
-	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
-}
+.ui-colorpicker { border: 1px solid #E0E0E0; font-size: 14px; color: black; position: absolute; width: 180px; height: 160px; background-color: white; box-shadow: 0 5px 10px rgba(0,0,0,0.08); border-radius: 4px; z-index: 80; }
+.ui-colorpicker ul { list-style-type: none; margin: 0; padding: 10px 20px 0 15px; text-align: center; }
+.ui-colorpicker li { position: relative; display: inline-block; width: 24px; height: 25px; text-align: center; margin-top: 2px; cursor: pointer; padding: 3px 0 0 0; border-radius: 4px; color: black; border: 2px solid white; }
+.ui-colorpicker li:hover { border-color: #E0E0E0; }
+.ui-colorpicker .hidden { display: none !important; }
 
 .ui-loading-firstload { background: black !important; }
 .ui-loading { position: fixed; width: 100%; height: 100%; background: rgba(255,255,255,0.8); left: 0; top: 0; z-index: 100; transition: all 0.5s; }
@@ -262,7 +264,7 @@ label span { vertical-align: middle; }
 
 .themedark .ui-designer .node_connection { stroke: #505050; }
 .themedark .ui-designer .m1 { fill: white; }
-.themedark .ui-designer .input, .ui-designer .output { stroke: black; fill: white; }
+.themedark .ui-designer .input, .themedark .ui-designer .output { stroke: black; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 .themedark .ui-designer > div { background: #202020 url(img/themedark.png) repeat -1px -1px; }
 .themedark .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }
@@ -280,6 +282,12 @@ label span { vertical-align: middle; }
 .themedark .ui-contextmenu-items .item { border-color: #E0E0E0; background-color: white; color: black; }
 .themedark .ui-contextmenu-items span { color: #505050; }
 .themedark .ui-contextmenu-items .item:hover { background: linear-gradient(white,#F8F8F8); }
+
+@media(max-width: 767px) {
+	.ui-colorpicker { width: 90%; margin-left: 5%; }
+	.ui-colorpicker li { width: 10%; }
+	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
+}
 
 @keyframes loading {
   to {

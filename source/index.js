@@ -84,27 +84,29 @@ exports.install = function(options) {
 	// ViewEngine helper
 	F.helpers.FLOW = FLOW;
 
-	// Load flow's data
-	FLOW.load();
 
 	F.on('service', service);
 
-	setInterval(function() {
+	// Load flow's data
+	setTimeout(function() {
+		FLOW.load();
+		setInterval(function() {
 
-		FLOW.indexer++;
+			FLOW.indexer++;
 
-		if (FLOW.ws) {
-			MESSAGE_TRAFFIC.body = FLOW.alltraffic;
-			MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
-			FLOW.ws.send(MESSAGE_TRAFFIC);
-		}
+			if (FLOW.ws) {
+				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
+				MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+				FLOW.ws.send(MESSAGE_TRAFFIC);
+			}
 
-		if (FLOW.indexer % 5 === 0) {
-			FLOW.reset_traffic();
-			FLOW.indexer = 0;
-		}
+			if (FLOW.indexer % 5 === 0) {
+				FLOW.reset_traffic();
+				FLOW.indexer = 0;
+			}
 
-	}, 3000);
+		}, 3000);
+	}, 2000);
 };
 
 function service(counter) {

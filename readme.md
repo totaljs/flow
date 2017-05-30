@@ -207,7 +207,7 @@ exports.npm = ['sqlagent', 'mqtt'];
 exports.options = { enabled: true };
 
 // Disables data cloning
-export.cloning = false;
+exports.cloning = false;
 
 exports.install = function(component) {
 
@@ -477,18 +477,19 @@ ON('save.componentname', function(component, options) {
 });
 ```
 
-### Components: jComponent
+### Components: jComponent +v10.0.0
 
-Bellow jComponents can be used in `Settings form`
+Bellow jComponents can be used in `Settings form`:
 
 - autocomplete (declared `body`)
 - binder (declared in `body`)
-- calendar (declared `body`)
+- calendar (declared in `body`)
 - checkbox
 - checkboxlist
 - codemirror
-- confirm (declared `body`)
-- contextmenu (declared `body`)
+- colorpicker (declared in `body`)
+- confirm (declared in `body`)
+- contextmenu (declared in `body`)
 - dropdown
 - dropdowncheckbox
 - error
@@ -497,7 +498,8 @@ Bellow jComponents can be used in `Settings form`
 - importer
 - keyvalue
 - loading
-- message (declared `body`)
+- message (declared in `body`)
+- nosqlcounter
 - repeater
 - repeater-group
 - search
@@ -506,7 +508,6 @@ Bellow jComponents can be used in `Settings form`
 - textboxlist
 - validation
 - visible
-- nosqlcounter
 
 __References:__
 
