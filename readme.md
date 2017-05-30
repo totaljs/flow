@@ -546,3 +546,7 @@ TRIGGER('name', function(data) {
 
 TRIGGER('name', 'path.to.bind.response'); // window.path.to.bind.response === [1, 2, 3, 4]
 ```
+
+## Contribute
+
+This project is stored in GitHub private repository. Contact me petersirka@gmail.com if you want be a contributor.
