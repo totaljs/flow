@@ -24,7 +24,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
-exports.version = 'v1.1.0';
+exports.version = 'v2.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -49,7 +49,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://cdn.totaljs.com/flow/templates.json';
+		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
@@ -84,27 +84,29 @@ exports.install = function(options) {
 	// ViewEngine helper
 	F.helpers.FLOW = FLOW;
 
-	// Load flow's data
-	FLOW.load();
 
 	F.on('service', service);
 
-	setInterval(function() {
+	// Load flow's data
+	setTimeout(function() {
+		FLOW.load();
+		setInterval(function() {
 
-		FLOW.indexer++;
+			FLOW.indexer++;
 
-		if (FLOW.ws) {
-			MESSAGE_TRAFFIC.body = FLOW.alltraffic;
-			MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
-			FLOW.ws.send(MESSAGE_TRAFFIC);
-		}
+			if (FLOW.ws) {
+				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
+				MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+				FLOW.ws.send(MESSAGE_TRAFFIC);
+			}
 
-		if (FLOW.indexer % 5 === 0) {
-			FLOW.reset_traffic();
-			FLOW.indexer = 0;
-		}
+			if (FLOW.indexer % 5 === 0) {
+				FLOW.reset_traffic();
+				FLOW.indexer = 0;
+			}
 
-	}, 3000);
+		}, 3000);
+	}, 2000);
 };
 
 function service(counter) {
@@ -156,6 +158,7 @@ function websocket() {
 	});
 
 	self.on('open', function(client) {
+
 		// Security
 		if ((OPT.token && OPT.token.indexOf(client.query.token) === -1) || (OPT.baa && !OPT.baa[client.query.baa]) || (OPT.restrictions && OPT.restrictions[self.ip] === -1)) {
 			setImmediate(() => client.close('Unauthorized'));
@@ -183,7 +186,7 @@ function websocket() {
 		if (message.type === 'templates') {
 			OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
 				if (!err) {
-					MESSAGE_TEMPLATES.body = response.parseJSON();
+					MESSAGE_TEMPLATES.body = response.trim().parseJSON();
 					MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
 				}
 			});

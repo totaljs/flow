@@ -29,34 +29,11 @@ function getSize(el) {
 }
 
 function getTranslate(value) {
+	if (value instanceof jQuery)
+		value = value.attr('transform');
 	var arr = value.substring(10, value.length - 1).split(/\s|,/);
 	return { x: arr[0].parseInt(), y: arr[1].parseInt() };
 }
-
-d3.selection.prototype.moveToFront = function() {
-	return this.each(function(){
-		this.parentNode.appendChild(this);
-	});
-};
-
-d3.selection.prototype.moveToBack = function() {
-	return this.each(function() {
-		var pn = this.parentNode;
-		var f = pn.firstChild;
-		f && pn.insertBefore(this, f);
-	});
-};
-
-d3.selection.prototype.getTranslate = function() {
-	if (!this || !this.attr)
-		return EMPTYTRANSLATE;
-	var arr = null;
-	try {
-		var value = this.attr('transform');
-		arr = value.substring(10, value.length - 1).split(/\s|,/);
-	} catch (e) {}
-	return arr ? { x: arr[0].parseInt(), y: arr[1].parseInt() } : EMPTYTRANSLATE;
-};
 
 window.TRIGGER = function(name, data, callback) {
 

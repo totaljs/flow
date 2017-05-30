@@ -849,8 +849,8 @@ COMPONENT('designer', function() {
 	var svg, connection;
 	var drag = {};
 	var skip = false;
-	var db, data, selected, dragdrop, container, lines, main, scroller;
-	var moving = { x: 0, y: 0, drag: false };
+	var data, selected, dragdrop, container, lines, main, scroller, touch;
+	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 
 	self.readonly();
@@ -859,26 +859,51 @@ COMPONENT('designer', function() {
 		self.classes('ui-designer');
 		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"></svg></div>');
 		var tmp = self.find('svg');
-		svg = d3.select(tmp.get(0));
-		main = svg.append('g');
-		connection = main.append('path').attr('class', 'connection');
-		lines = main.append('g');
-		container = main.append('g');
+		svg = $(tmp.get(0));
+		main = svg.asvg('g');
+		connection = main.asvg('path').attr('class', 'connection');
+		lines = main.asvg('g');
+		container = main.asvg('g');
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
-			if (e.type === 'mousemove') {
-				if (!moving.drag)
-					return;
-				var x = moving.x - e.pageX;
-				var y = moving.y - e.pageY;
-				scroller.prop('scrollLeft', x).prop('scrollTop', y);
-				return;
-			}
+			if (e.type === 'mousemove')
+				move.drag && self.mmove(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+			else if (e.type === 'mouseup')
+				self.mup(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+			else
+				self.mdown(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+		});
 
-			moving.drag = e.type === 'mousedown';
-			moving.x = e.pageX + scroller.prop('scrollLeft');
-			moving.y = e.pageY + scroller.prop('scrollTop');
+		tmp.on('touchstart touchmove touchend', function(evt) {
+			var e = evt.touches[0];
+			var offset;
+			if (evt.type === 'touchmove') {
+				offset = offsetter(evt);
+				touch = evt;
+				if (move.drag) {
+					if (move.type === 2 || move.type === 3) {
+						offset.x += move.scrollX;
+						offset.y += move.scrollY;
+					}
+					self.mmove(e.pageX, e.pageY, offset.x, offset.y, evt);
+					evt.preventDefault();
+				}
+			} else if (evt.type === 'touchend') {
+				offset = offsetter(touch);
+				e = touch.touches[0];
+				if (move.type === 2 || move.type === 3) {
+					offset.x += move.scrollX;
+					offset.y += move.scrollY;
+				}
+				touch.target = document.elementFromPoint(e.screenX, e.screenY);
+				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
+			} else {
+				offset = offsetter(evt);
+				move.scrollX = +scroller.prop('scrollLeft');
+				move.scrollY = +scroller.prop('scrollTop');
+				self.mdown(e.pageX, e.pageY, offset.x, offset.y, evt);
+			}
 		});
 
 		$(window).on('keydown', function(e) {
@@ -906,10 +931,140 @@ COMPONENT('designer', function() {
 			self.remove();
 		});
 
+		self.mmove = function(x, y, offsetX, offsetY, e) {
+			switch (move.type) {
+				case 1:
+					scroller.prop('scrollLeft', move.x - x).prop('scrollTop', move.y - y);
+					return;
+				case 2:
+				case 3:
+					connection.attr('d', diagonal(move.x, move.y, offsetX, offsetY));
+					break;
+				case 5:
+					// Current node
+					self.moveselected(offsetX + move.offsetX, offsetY + move.offsetY, e);
+					return;
+			}
+		};
+
+		self.mup = function(x, y, offsetX, offsetY, e) {
+			var el = $(e.target);
+			switch (move.type) {
+				case 2:
+					connection.attr('d', '');
+					if (el.hasClass('input')) {
+						var index = +move.node.attr('data-index');
+						var output = move.node.closest('.node');
+						var input = el.closest('.node');
+						var instance = flow.components.findItem('id', output.attr('data-id'));
+						if (instance) {
+							if (instance.connections[index])
+								instance.connections[index].push(input.attr('data-id'));
+							else
+								instance.connections[index] = [input.attr('data-id')];
+							self.connect(index, output, input);
+						}
+					}
+					break;
+				case 3:
+					connection.attr('d', '');
+					if (el.hasClass('output')) {
+						var index = +el.attr('data-index');
+						var output = el.closest('.node');
+						var input = move.node.closest('.node');
+						var instance = flow.components.findItem('id', output.attr('data-id'));
+						if (instance) {
+							if (instance.connections[index])
+								instance.connections[index].push(input.attr('data-id'));
+							else
+								instance.connections[index] = [input.attr('data-id')];
+							self.connect(index, output, input);
+						}
+					}
+			}
+			move.type = 0;
+			move.drag = false;
+		};
+
+		self.mdown = function(x, y, offsetX, offsetY, e) {
+
+			var el = $(e.target);
+			var tmp;
+			move.drag = true;
+
+			if (e.target.tagName === 'svg') {
+				move.x = x + scroller.prop('scrollLeft');
+				move.y = y + scroller.prop('scrollTop');
+				move.type = 1;
+				return;
+			}
+
+			if (el.hasClass('output')) {
+				// output point
+				move.type = 2;
+				move.node = el;
+				tmp = getTranslate(el.closest('.node'));
+				var x = tmp.x + (+el.attr('cx'));
+				var y = tmp.y + (+el.attr('cy'));
+				move.x = x;
+				move.y = y;
+			} else if (el.hasClass('input')) {
+				// input point
+				move.type = 3;
+				move.node = el;
+				tmp = getTranslate(el.closest('.node'));
+				var x = tmp.x + (+el.attr('cx'));
+				var y = tmp.y + (+el.attr('cy'));
+				move.x = x;
+				move.y = y;
+			} else if (el.hasClass('node_connection')) {
+				// connection
+				move.type = 4;
+				move.node = el;
+				move.drag = false;
+				self.select(el);
+			} else if (el.hasClass('click')) {
+				tmp = el.closest('.node').attr('data-id');
+				move.drag = false;
+				if (BLOCKED('click.' + tmp, 1000))
+					return;
+				EMIT('designer.click', tmp);
+			} else {
+
+				tmp = el.closest('.node');
+				var ticks = Date.now();
+				var same = false;
+
+				if (move.node && tmp.get(0) === move.node.get(0)) {
+					var diff = ticks - move.ticks;
+					if (diff < 300) {
+						EMIT('designer.settings', move.node.attr('data-id'));
+						return;
+					}
+					same = true;
+				}
+
+				// node
+				move.node = tmp;
+				move.ticks = ticks;
+
+				if (!move.node.length) {
+					move.drag = false;
+					return;
+				}
+
+				var transform = getTranslate(move.node);
+				move.offsetX = transform.x - offsetX;
+				move.offsetY = transform.y - offsetY;
+				move.type = 5;
+				!same && self.select(move.node);
+			}
+		};
+
 		self.remove = function() {
 			EMIT('designer.selectable', null);
 			var idconnection;
-			if (selected.classed('node')) {
+			if (selected.hasClass('node')) {
 				idconnection = selected.attr('data-id');
 				EMIT('designer.rem', idconnection);
 			} else {
@@ -923,16 +1078,36 @@ COMPONENT('designer', function() {
 			var component = flow.components.findItem('id', selected.attr('data-id'));
 			var duplicate = {
 				options: CLONE(component.options),
-				name: component.name + ' (copy)',
+				name: component.name,
 				output: component.output,
 				tab: component.tab
 			};
 			EMIT('designer.add', component.$component, component.x + 50, component.y + 50, false, null, null, null, duplicate);
 		};
 
+		self.select = function(el) {
+			if ((selected && !el) || (selected && selected.get(0) === el.get(0))) {
+				selected.removeClass('selected');
+				selected = null;
+				EMIT('designer.selectable', null);
+				return;
+			} else if (selected)
+				selected.removeClass('selected');
+
+			if (!el)
+				return;
+
+			el.addClass('selected', true);
+			selected = el;
+			EMIT('designer.selectable', selected);
+			EMIT('designer.select', selected.attr('data-id'));
+		};
+
 		self.event('dragover dragenter drag drop', 'svg', function(e) {
+
 			if (!dragdrop)
 				return;
+
 			switch (e.type) {
 				case 'dragenter':
 
@@ -987,20 +1162,18 @@ COMPONENT('designer', function() {
 		if (!item.$component)
 			return;
 
-		var g = container.append('g');
-		var id = 'node_' + GUID(5);
+		self.find('.node_' + item.id).remove();
+
+		var g = container.asvg('g');
 		var err = item.errors ? Object.keys(item.errors) : EMPTYARRAY;
-
 		g.attr('class', 'node node_unbinded selectable' + (err.length ? ' node_errors' : '') + ' node_' + item.id + (item.isnew ? ' node_new' : ''));
-		g.attr('id', id);
 		g.attr('data-id', item.id);
+		var rect = g.asvg('rect');
+		g.asvg('text').attr('class', 'node_status node_status_' + item.id).attr('transform', 'translate(2,-8)').text((item.state ? item.state.text : '') || '').attr('fill', (item.state ? item.state.color : '') || 'gray');
 
-		var rect = g.append('rect');
-		g.append('text').attr('class', 'node_status node_status_' + item.id).attr('transform', 'translate(2,-8)').text((item.state ? item.state.text : '') || '').attr('fill', (item.state ? item.state.color : '') || 'gray');
-
-		var body = g.append('g');
-		var label = (item.name || item.reference) ? body.append('text').html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
-		var text = body.append('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate(0, {0})'.format(label ? 14 : 5));
+		var body = g.asvg('g');
+		var label = (item.name || item.reference) ? body.asvg('text').html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
+		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate(0, {0})'.format(label ? 14 : 5));
 
 		var outputcolors = null;
 		var output = 0;
@@ -1019,7 +1192,7 @@ COMPONENT('designer', function() {
 
 		var count = output || 1;
 		var height = 30 + count * 20;
-		var width = (Math.max(label ? label.node().getComputedTextLength() : 0, text.node().getComputedTextLength()) + 30) >> 0;
+		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
 		rect.attr('width', width).attr('height', height).attr('rx', 4).attr('ry', 4).attr('fill', item.$component.color || '#656D78');
@@ -1027,33 +1200,77 @@ COMPONENT('designer', function() {
 		g.attr('data-width', width);
 		g.attr('data-height', height);
 
-		var points = g.append('g');
-		var top = ((height / 2) - ((item.$component.input * 20) / 2)) + 10;
+		var points = g.asvg('g');
+		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
-		item.$component.input && points.append('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 5);
-		top = ((height / 2) - ((output * 20) / 2)) + 10;
+		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 8).attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
-			var o = points.append('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 20).attr('r', 5);
+			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		g.append('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
-		var plus = g.append('g').attr('class', 'node_traffic').attr('data-id', item.id);
-		plus.append('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
-		plus.append('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
+		g.asvg('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
+		var plus = g.asvg('g').attr('class', 'node_traffic').attr('data-id', item.id);
+		plus.asvg('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
+		plus.asvg('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
 		g.attr('transform', 'translate({0},{1})'.format(item.x, item.y));
 
 		if (item.$component.click) {
-			var clicker = g.append('g').attr('class', 'click');
-			clicker.append('rect').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 8, height - 8)).attr('width', 16).attr('height', 16).attr('rx', 10).attr('ry', 10);
-			clicker.append('rect').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 3, height - 3)).attr('width', 6).attr('height', 6).attr('rx', 6).attr('ry',6);
+			var clicker = g.asvg('g').addClass('click');
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
+			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
 		}
 
-		db[item.id] = id;
 		data[item.id] = item;
+	};
+
+	self.moveselected = function(x, y, e) {
+
+		e.preventDefault();
+
+		move.node.each(function() {
+
+			var el = $(this);
+			var id = el.attr('data-id');
+
+			el.attr('transform', 'translate({0},{1})'.format(x, y));
+
+			var instance = flow.components.findItem('id', id);
+			if (instance) {
+				instance.x = x;
+				instance.y = y;
+			}
+
+			lines.find('.from_' + id).each(function() {
+				var el = $(this);
+				var off = el.attr('data-offset').split(',');
+				var x1 = +off[0] + x;
+				var y1 = +off[1] + y;
+				var x2 = +off[6];
+				var y2 = +off[7];
+				off[4] = x1;
+				off[5] = y1;
+				el.attr('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+				el.attr('d', diagonal(x1, y1, x2, y2));
+			});
+
+			lines.find('.to_' + id).each(function() {
+				var el = $(this);
+				var off = el.attr('data-offset').split(',');
+				var x1 = +off[4];
+				var y1 = +off[5];
+				var x2 = +off[2] + x;
+				var y2 = +off[3] + y;
+				off[6] = x2;
+				off[7] = y2;
+				el.attr('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+				el.attr('d', diagonal(x1, y1, x2, y2));
+			});
+		});
 	};
 
 	self.move = function(x, y, e) {
@@ -1063,12 +1280,12 @@ COMPONENT('designer', function() {
 		self.find('.node_connection').each(function() {
 			var el = $(this);
 			var off = el.attr('data-offset').split(',');
-			var x1 = +off[0] + x;
-			var y1 = +off[1] + y;
-			var x2 = +off[2] + x;
-			var y2 = +off[3] + y;
-			this.setAttribute('data-offset', x1 + ',' + y1 + ',' + x2 + ',' + y2);
-			el.attr('d', diagonal(x1, y1, x2, y2));
+			off[4] = +off[4] + x;
+			off[5] = +off[5] + y;
+			off[6] = +off[6] + x;
+			off[7] = +off[7] + y;
+			this.setAttribute('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
 		self.find('.node').each(function() {
@@ -1086,6 +1303,59 @@ COMPONENT('designer', function() {
 		});
 	};
 
+	self.autoconnect = function(reset) {
+
+		reset && self.find('.node_connection').remove();
+
+		for (var i = 0, length = flow.components.length; i < length; i++) {
+			var instance = flow.components[i];
+			var output = self.find('.node_' + instance.id);
+			if (!output.length)
+				continue;
+			Object.keys(instance.connections).forEach(function(index) {
+				var arr = instance.connections[index];
+				arr.forEach(function(id) {
+					var hash = 'c' + index + '_' + instance.id + 'x' + id;
+					var e = lines.find('.' + hash);
+					if (e.length)
+						return;
+					var input = self.find('.node_' + id);
+					input.length && output.length && self.connect(+index, output, input);
+				});
+			});
+		}
+	};
+
+	self.connect = function(index, output, input) {
+		var a = output.find('.output[data-index="{0}"]'.format(index));
+		var b = input.find('.input');
+
+		var tmp = getTranslate(output);
+		var acx = +a.attr('cx');
+		var acy = +a.attr('cy');
+		var ax = tmp.x + acx;
+		var ay = tmp.y + acy;
+
+		tmp = getTranslate(input);
+		var bcx = +b.attr('cx');
+		var bcy = +b.attr('cy');
+		var bx = tmp.x + bcx;
+		var by = tmp.y + bcy;
+
+		var aid = output.attr('data-id');
+		var bid = input.attr('data-id');
+
+		var attr = {};
+		attr['d'] = diagonal(ax, ay, bx, by);
+		attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
+		attr['stroke-width'] = 3;
+		attr['data-index'] = index;
+		attr['data-from'] = aid;
+		attr['data-to'] = bid;
+		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (index + '_' + aid + 'x' + bid) + (flow.connections[index + aid + bid] ? '' : ' path_new');
+		lines.asvg('path').attr(attr);
+	};
+
 	self.setter = function(value) {
 
 		if (skip) {
@@ -1093,50 +1363,18 @@ COMPONENT('designer', function() {
 			return;
 		}
 
-		container.selectAll('*').remove();
-		lines.selectAll('*').remove();
-
 		if (!value)
 			return;
 
-		db = {};
 		data = {};
 		selected = null;
 
-		value.forEach(function(item) {
-			self.add(item);
-		});
+		lines.empty();
+		container.empty();
 
-		self.rebind(value);
-	};
-
-	self.rebind_lines = function() {
-
-		svg.selectAll('.click').on('click', null).on('click', function() {
-			var id = $(this).parent().attr('data-id');
-			d3.event.preventDefault();
-			!BLOCKED('click.' + id, 1000) && EMIT('designer.click', id);
-		});
-
-		svg.selectAll('.selectable').on('click', null).on('click', function() {
-
-			var el = d3.select(this);
-
-			if (selected) {
-				selected.classed('selected', false);
-				if (selected === el) {
-					selected = null;
-					EMIT('designer.selectable', null);
-					return;
-				}
-			}
-
-			el.classed('selected', true);
-			selected = el;
-			EMIT('designer.selectable', el);
-		});
-
-		EMIT('designer.selectable', null);
+		value.forEach(self.add);
+		value.length && self.autoconnect(true);
+		self.select(null);
 	};
 
 	self.getZoom = function() {
@@ -1155,218 +1393,27 @@ COMPONENT('designer', function() {
 				zoom -= 0.1;
 				break;
 		}
-		main.transition().duration(200).attr('transform', 'scale({0})'.format(zoom));
-	};
-
-	self.rebind = function(value, noredraw) {
-		var dblclick = 0;
-		var skip = false;
-
-		var selector = svg.selectAll('.node_unbinded');
-		selector.call(d3.drag().on('start', function() {
-
-			var el = d3.select(this);
-			var target = d3.select(d3.event.sourceEvent.target);
-			var tmp;
-
-			if (target.classed('click') || (d3.event.sourceEvent.target.tagName === 'rect' && d3.event.sourceEvent.target.getAttribute('data-click'))) {
-				skip = true;
-				return;
-			}
-
-			skip = false;
-			drag.owner = el;
-
-			if (target.classed('input') || target.classed('output')) {
-				tmp = el.getTranslate();
-				var x = tmp.x + (+target.attr('cx'));
-				var y = tmp.y + (+target.attr('cy'));
-				drag.x = x;
-				drag.y = y;
-				drag.type = 2;
-				drag.element = target;
-				return;
-			}
-
-			drag.type = 1;
-			drag.offset = el.getTranslate();
-			drag.offset.x -= d3.event.x;
-			drag.offset.y -= d3.event.y;
-
-			var id = el.attr('data-id');
-			var now = Date.now();
-			var can = dblclick && (now - dblclick) < 300;
-			dblclick = now;
-
-			el.raise();
-
-			if (!el.classed('selected')) {
-				selected && selected.classed('selected', false);
-				el.classed('selected', true);
-				selected = el;
-				EMIT('designer.select', id);
-				EMIT('designer.selectable', el);
-			}
-
-			can && EMIT('designer.settings', id);
-
-		}).on('drag', function() {
-
-			if (skip)
-				return;
-
-			var el = d3.select(this);
-			switch (drag.type) {
-				case 1:
-					var x = drag.offset.x + d3.event.x;
-					var y = drag.offset.y + d3.event.y;
-					el.attr('transform', 'translate({0},{1})'.format(x, y));
-					var id = drag.owner.attr('id');
-					var w = +drag.owner.attr('data-width');
-					var h = +drag.owner.attr('data-height');
-
-					svg.selectAll('.' + id + '_from').attr('d', function() {
-						var off = this.getAttribute('data-offset').split(',');
-						var x1 = x + w;
-						var y1 = (this.getAttribute('data-index').parseInt() * 20) + y + 26;
-						var x2 = +off[2];
-						var y2 = +off[3];
-						this.setAttribute('data-offset', x1 + ',' + y1 + ',' + x2 + ',' + y2);
-						return diagonal(x1, y1, x2, y2);
-					});
-
-					svg.selectAll('.' + id + '_to').attr('d', function() {
-						var off = this.getAttribute('data-offset').split(',');
-						var x1 = +off[0];
-						var y1 = +off[1];
-						var x2 = x;
-						var y2 = y + (h / 2);
-						this.setAttribute('data-offset', x1 + ',' + y1 + ',' + x2 + ',' + y2);
-						return diagonal(x1, y1, x2, y2);
-					});
-
-					id = drag.owner.attr('data-id');
-					data[id].x = x;
-					data[id].y = y;
-					break;
-				case 2:
-					connection.attr('d', diagonal(drag.x, drag.y, d3.event.x, d3.event.y));
-					drag.x2 = d3.event.x;
-					drag.y2 = d3.event.y;
-					break;
-			}
-
-		}).on('end', function() {
-
-			if (drag.type === 1 || skip)
-				return;
-
-			var tmp = d3.select(d3.event.sourceEvent.target);
-
-			connection.attr('d', '');
-
-			var clsA = drag.element.attr('class').match(/input|output/);
-			var clsB = (tmp.attr('class') || '').match(/input|output/);
-
-			if (clsA)
-				clsA = clsA.toString();
-
-			if (clsB)
-				clsB = clsB.toString();
-
-			if (!clsB || !clsA || clsB === clsA)
-				return;
-
-			var target = $(tmp.node()).closest('.node');
-			var a = drag.owner.attr('id');
-			var b = target.attr('id');
-			var aid = drag.owner.attr('data-id');
-			var bid = target.attr('data-id');
-
-			if (aid === bid)
-				return;
-
-			var index = drag.element.attr('data-index');
-
-			if (clsA === 'input') {
-				index = tmp.attr('data-index');
-				tmp = b;
-				b = a;
-				a = tmp;
-				tmp = bid;
-				bid = aid;
-				aid = tmp;
-				tmp = drag.x;
-				drag.x = drag.x2;
-				drag.x2 = tmp;
-				tmp = drag.y;
-				drag.y = drag.y2;
-				drag.y2 = tmp;
-				tmp = drag.owner;
-				drag.owner = d3.select(target.get(0));
-				tmp.each(function() {
-					target = $(this);
-				});
-			}
-
-			var tmpA = flow.components.findItem('id', aid);
-			if (tmpA.connections[index] && tmpA.connections[index].indexOf(bid) !== -1)
-				return;
-
-			var height = +target.attr('data-height');
-			drag.y2 = d3.select(target.get(0)).getTranslate().y + (height / 2);
-
-			// Creates a line beween nodes
-			lines.append('path').attr('d', diagonal(drag.x, drag.y, drag.x2, drag.y2)).attr('data-offset', drag.x + ',' + drag.y + ',' + drag.x2 + ',' + drag.y2).attr('stroke-width', 3).attr('class', a + '_from ' + b + '_to node_connection selectable' + (flow.connections[index + aid + bid] ? '' : ' path_new')).attr('data-from', aid).attr('data-to', bid).attr('data-index', index);
-
-			if (data[aid].connections[index])
-				data[aid].connections[index].push(bid);
-			else
-				data[aid].connections[index] = [bid];
-
-			EMIT('designer.add.connection', a, b);
-			self.rebind_lines();
-			self.change(true);
-		}));
-
-		selector.classed('node_unbinded', false);
-
-		if (noredraw)
-			return;
-
-		var elements = {};
-
-		value.forEach(function(item) {
-
-			if (!item.$component)
-				return;
-
-			var id = db[item.id];
-			var el = elements[id];
-			!el && (el = elements[id] = svg.select('#' + id));
-			var offset = el.getTranslate();
-			var width = +el.attr('data-width');
-			var x = offset.x + width;
-			Object.keys(item.connections).forEach(function(key) {
-				var y = offset.y + (key.parseInt() * 20) + 26;
-				item.connections[key].forEach(function(idconnection) {
-					var targetinstance = value.findItem('id', idconnection);
-					var target = db[idconnection];
-					var tmp = elements[target];
-					var hasError = targetinstance.errors && targetinstance.errors[item.id] ? true : false;
-					!tmp && (tmp = elements[target] = svg.select('#' + target));
-					var offset = tmp.getTranslate();
-					var height = +tmp.attr('data-height');
-					offset.y += (height / 2);
-					lines.append('path').attr('d', diagonal(x, y, offset.x, offset.y)).attr('data-offset', x + ',' + y + ',' + offset.x + ',' + offset.y).attr('stroke-width', 3).attr('class', id + '_from ' + target + '_to node_connection selectable' + (hasError ? ' path_error' : '') + (flow.connections[key + item.id + idconnection] ? '' : ' path_new')).attr('data-from', item.id).attr('data-to', idconnection).attr('data-index', key);
-				});
-			});
-		});
-
-		self.rebind_lines();
-		EMIT('designer.select', null);
+		main.attr('transform', 'scale({0})'.format(zoom));
 	};
 });
+
+function offsetter(evt){
+	var position = {};
+	if (evt.touches){
+		position.x = evt.touches[0].pageX;
+		position.y = evt.touches[0].pageY;
+		var parent = evt.target;
+		while (parent.offsetParent) {
+			position.x -= parent.offsetLeft;
+			position.y -= parent.offsetTop;
+			parent = parent.offsetParent;
+		}
+	} else {
+		position.x = evt.offsetX;
+		position.y = evt.offsetY;
+	}
+	return position;
+}
 
 COMPONENT('checkbox', function() {
 
@@ -2690,7 +2737,7 @@ COMPONENT('contextmenu', function() {
 	var container;
 	var arrow;
 
-	self.template = Tangular.compile('<div data-value="{{ value }}"{{ if selected }} class="selected"{{ fi }}><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.template = Tangular.compile('<div class="item{{ if selected }} selected{{ fi }}" data-value="{{ value }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
 	self.callback = null;
@@ -2753,12 +2800,23 @@ COMPONENT('contextmenu', function() {
 		var builder = [];
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
+
+			if (typeof(item) === 'string') {
+				builder.push('<div class="divider">{0}</div>'.format(item));
+				continue;
+			}
+
 			item.index = i;
 			if (!item.value)
 				item.value = item.name;
 			if (!item.icon)
 				item.icon = 'fa-caret-right';
-			builder.push(self.template(item));
+
+			var tmp = self.template(item);
+			if (item.url)
+				tmp = tmp.replace('<div', '<a href="{0}" target="_blank"'.format(item.url)).replace(/div>$/g, 'a>');
+
+			builder.push(tmp);
 		}
 
 		self.target = target.get(0);
@@ -3120,5 +3178,76 @@ COMPONENT('nosqlcounter', function() {
 		});
 
 		self.html(builder);
+	};
+});
+
+COMPONENT('colorpicker', function() {
+	var self = this;
+	var container;
+	var template = '<li data-index="{0}"><i class="fa fa-circle" style="color:#{1}"></i></li>';
+	var opener = {};
+	var is = false;
+	var colors = 'ff0000,ff4000,ff8000,ffbf00,ffff00,bfff00,80ff00,40ff00,00ff00,00ff40,00ff80,00ffbf,00ffff,00bfff,0080ff,0040ff,0000ff,4000ff,8000ff,bf00ff,ff00ff,ff00bf,ff0080,ff0040,ff0000,F0F0F0,D0D0D0,AAB2BD,505050,000000'.split(',');
+
+	self.singleton();
+	self.readonly();
+	self.blind();
+
+	self.make = function() {
+		self.classes('ui-colorpicker hidden');
+		self.append('<ul></ul>');
+		container = self.find('ul');
+
+		self.event('click', 'li', function() {
+			var color = '#' + colors[+this.getAttribute('data-index')];
+			opener.callback && opener.callback(color, opener.target);
+			self.hide();
+			EMIT('colorpicker', color);
+		});
+
+		self.on('reflow', self.$hide);
+		self.on('resize', self.$hide);
+	};
+
+	self.$hide = function() {
+		is && self.hide();
+	};
+
+	self.render = function() {
+		var builder = [];
+		for (var i = 0, length = colors.length; i < length; i++)
+			builder.push(template.format(i, colors[i]));
+		container.empty().html(builder.join(''));
+	};
+
+	self.hide = function() {
+		if (!is)
+			return;
+		self.classes('hidden');
+		is = false;
+	};
+
+	self.show = function(x, y, target, callback) {
+
+		if (is && opener.x === x && opener.y === y) {
+			opener.x = null;
+			opener.y = null;
+			self.hide();
+			return;
+		}
+
+		if (typeof(target) === 'function') {
+			callback = target;
+			target = null;
+		}
+
+		opener.callback = callback;
+		opener.target = target;
+		opener.x = x;
+		opener.y = y;
+
+		!is && self.render();
+		is = true;
+		self.element.css({ left: x, top: y }).removeClass('hidden');
 	};
 });

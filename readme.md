@@ -43,7 +43,7 @@ var options = {};
 // options.limit = 50;
 
 // Predefined set of components (default value):
-// options.templates = 'https://cdn.totaljs.com/templates.json';
+// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
 
 // ====================================
 // Security (OPTIONAL)
@@ -51,6 +51,9 @@ var options = {};
 
 // HTTP Basic auth:
 // options.auth = ['admin:admin', 'name:password'];
+
+// Standard "authorize" flag
+// options.auth = true;
 
 // IP restrictions:
 // options.restrictions = ['127.0.0.1', '138.201', '172.31.33'];
@@ -204,7 +207,7 @@ exports.npm = ['sqlagent', 'mqtt'];
 exports.options = { enabled: true };
 
 // Disables data cloning
-export.cloning = false;
+exports.cloning = false;
 
 exports.install = function(component) {
 
@@ -474,18 +477,19 @@ ON('save.componentname', function(component, options) {
 });
 ```
 
-### Components: jComponent
+### Components: jComponent +v10.0.0
 
-Bellow jComponents can be used in `Settings form`
+Bellow jComponents can be used in `Settings form`:
 
 - autocomplete (declared `body`)
 - binder (declared in `body`)
-- calendar (declared `body`)
+- calendar (declared in `body`)
 - checkbox
 - checkboxlist
 - codemirror
-- confirm (declared `body`)
-- contextmenu (declared `body`)
+- colorpicker (declared in `body`)
+- confirm (declared in `body`)
+- contextmenu (declared in `body`)
 - dropdown
 - dropdowncheckbox
 - error
@@ -494,7 +498,8 @@ Bellow jComponents can be used in `Settings form`
 - importer
 - keyvalue
 - loading
-- message (declared `body`)
+- message (declared in `body`)
+- nosqlcounter
 - repeater
 - repeater-group
 - search
@@ -503,7 +508,6 @@ Bellow jComponents can be used in `Settings form`
 - textboxlist
 - validation
 - visible
-- nosqlcounter
 
 __References:__
 
@@ -542,3 +546,7 @@ TRIGGER('name', function(data) {
 
 TRIGGER('name', 'path.to.bind.response'); // window.path.to.bind.response === [1, 2, 3, 4]
 ```
+
+## Contribute
+
+This project is stored in private repository on GitHub. Contact me <petersirka@gmail.com> if you want be a contributor.

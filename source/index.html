@@ -3,25 +3,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@(Flow:) @{config.name}</title>
+	<title>@(Flow v2:) @{config.name}</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, user-scalable=no" />
 	<meta name="robots" content="all,follow" />
+	<link rel="apple-touch-icon" href="@{repository.url}img/icon.png" type="image/png" />
+	<link rel="icon" href="@{repository.url}img/icon.png" type="image/png" />
 	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
 	<script src="@{repository.url}default.js"></script>
 </head>
 <body data-jc="exec,binder" class="themedark">
 
-		<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
-		<div data-jc="confirm"></div>
-		<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
 		<div data-jc="autocomplete"></div>
 		<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
-		<div data-jc="autocomplete"></div>
+		<div data-jc="confirm"></div>
 		<div data-jc="contextmenu"></div>
+		<div data-jc="colorpicker"></div>
+		<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 		<div data-jc="message" data-button="@(Close)"></div>
+		<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
+
 		<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
 		<div class="panel">
@@ -240,14 +243,21 @@
 					mdraggable.y = t.pageY;
 					mdraggable.el.css({ left: t.pageX, top: t.pageY });
 					e.stopPropagation();
+					e.preventDefault();
 				}
 			});
 
 			$(document).on('touchend', '[draggable]', function(e) {
 				if (!mdraggable.drag)
 					return;
+
+				e.stopPropagation();
 				mdraggable.drag = false;
 				$('#tmpclone').empty();
+
+				if (mdraggable.x < 280)
+					return;
+
 				var d = FIND('designer');
 				var el = d.element;
 				var off = el.offset();
@@ -257,7 +267,6 @@
 				y += el.prop('scrollTop');
 				var zoom = d.getZoom();
 				EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
-				e.stopPropagation();
 			});
 
 		} else {
@@ -315,14 +324,7 @@
 
 			flow.components.push(obj);
 			flow.designer.push(obj);
-
-			if (!is) {
-				var com = FIND('designer');
-				com.add(obj);
-				com.rebind(null, true);
-				com.rebind_lines();
-			}
-
+			!is && SETTER('designer', 'add', obj);
 			EMIT('add.' + obj.component);
 			setState(MESSAGES.apply);
 		});
@@ -376,7 +378,7 @@
 		ON('designer.selectable', function(el) {
 			$('#designerbuttons a').each(function(index) {
 				var node = $(this);
-				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.classed('node') ? false : true));
+				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.hasClass('node') ? false : true));
 			});
 		});
 
@@ -877,11 +879,35 @@
 			setTimeout(function() {
 				SET('common.theme', common.theme === 'dark' ? '' : 'dark');
 				SETTER('loading', 'hide', 1000);
+				var color = common.theme === 'dark' ? 'white' : 'black';
+				$('.input,.output').each(function() {
+					var cur = this.getAttribute('fill');
+					if (cur !== 'white' && cur !== 'black')
+						return;
+					this.setAttribute('fill', color);
+				});
 			}, 1000);
 		}
 
 		function settings_menu(el) {
-			FIND('contextmenu').show('left', el, [{ name: '@(Database)', icon: 'fa-database', value: 'database' }, { name: '@(Export designer)', icon: 'fa-copy', value: 'export' }, { name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' }, { name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' }], function(value) {
+			var items = [];
+
+			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+			items.push({ name: '@(Export designer)', icon: 'fa-copy', value: 'export' });
+			items.push({ name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' });
+			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
+
+			@{if helpers.FLOWBOARD || helpers.DASHBOARD}
+			items.push('@(Applications)');
+			@{if helpers.DASHBOARD}
+			items.push({ name: '@(Dashboard)', icon: 'fa-dashboard', url: '@{helpers.DASHBOARD.url}' });
+			@{fi}
+			@{if helpers.FLOWBOARD}
+			items.push({ name: '@(Flowboard)', icon: 'fa-object-group', url: '@{helpers.FLOWBOARD.url}' });
+			@{fi}
+			@{fi}
+
+			FIND('contextmenu').show('left', el, items, function(value) {
 				switch (value) {
 					case 'database':
 					case 'import':
