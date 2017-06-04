@@ -182,6 +182,7 @@
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
+			this.touches = isTOUCH;
 			this.theme === undefined && (this.theme = 'dark');
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
@@ -193,6 +194,14 @@
 		CACHEPATH('common.panel', '1 month');
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
+
+		// Hybrid devices
+		common.touches && $(document).on('mousemove', mousecheck);
+
+		function mousecheck() {
+			common.touches = false;
+			$(document).off('mousemove', mousecheck);
+		}
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
@@ -209,84 +218,92 @@
 		var settings = {};
 		var mdraggable = {};
 
-		if (isMOBILE) {
-			$(document).on('touchstart', '[draggable]', function(e) {
+		$(document).on('touchstart', '[draggable]', function(e) {
 
-				var el = $(e.target);
-				var target = el.hasClass('component') ? el : el.closest('.component');
-				var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+			if (!common.touches)
+				return;
 
-				if (val) {
-					val = CLONE(val);
-					val.tab = common.tab.id;
-				}
+			var el = $(e.target);
+			var target = el.hasClass('component') ? el : el.closest('.component');
+			var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
 
-				mdraggable.drag = true;
-				mdraggable.component = val;
+			if (val) {
+				val = CLONE(val);
+				val.tab = common.tab.id;
+			}
 
-				$('#tmpclone').empty();
-				var clone = el.clone();
-				clone.appendTo('#tmpclone');
+			mdraggable.drag = true;
+			mdraggable.component = val;
 
+			$('#tmpclone').empty();
+			var clone = el.clone();
+			clone.appendTo('#tmpclone');
+
+			var t = e.originalEvent.touches[0];
+			clone.css({ position: 'absolute', left: t.pageX, top: t.pageY, 'z-index': 5 });
+			mdraggable.el = clone;
+
+			val && SETTER('designer', 'dragdrop', val);
+			e.stopPropagation();
+		});
+
+		$(document).on('touchmove', '[draggable]', function(e) {
+
+			if (!common.touches)
+				return;
+
+			if (mdraggable.drag) {
 				var t = e.originalEvent.touches[0];
-				clone.css({ position: 'absolute', left: t.pageX, top: t.pageY, 'z-index': 5 });
-				mdraggable.el = clone;
-
-				val && SETTER('designer', 'dragdrop', val);
+				mdraggable.x = t.pageX;
+				mdraggable.y = t.pageY;
+				mdraggable.el.css({ left: t.pageX, top: t.pageY });
 				e.stopPropagation();
-			});
+				e.preventDefault();
+			}
+		});
 
-			$(document).on('touchmove', '[draggable]', function(e) {
-				if (mdraggable.drag) {
-					var t = e.originalEvent.touches[0];
-					mdraggable.x = t.pageX;
-					mdraggable.y = t.pageY;
-					mdraggable.el.css({ left: t.pageX, top: t.pageY });
-					e.stopPropagation();
-					e.preventDefault();
-				}
-			});
+		$(document).on('touchend', '[draggable]', function(e) {
 
-			$(document).on('touchend', '[draggable]', function(e) {
-				if (!mdraggable.drag)
-					return;
+			if (!common.touches || !mdraggable.drag)
+				return;
 
-				e.stopPropagation();
-				mdraggable.drag = false;
-				$('#tmpclone').empty();
+			e.stopPropagation();
+			mdraggable.drag = false;
+			$('#tmpclone').empty();
 
-				if (mdraggable.x < 280)
-					return;
+			if (mdraggable.x < 280)
+				return;
 
-				var d = FIND('designer');
-				var el = d.element;
-				var off = el.offset();
-				var x = mdraggable.x - off.left;
-				var y = mdraggable.y - off.top;
-				x += el.prop('scrollLeft');
-				y += el.prop('scrollTop');
-				var zoom = d.getZoom();
-				EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
-			});
+			var d = FIND('designer');
+			var el = d.element;
+			var off = el.offset();
+			var x = mdraggable.x - off.left;
+			var y = mdraggable.y - off.top;
+			x += el.prop('scrollLeft');
+			y += el.prop('scrollTop');
+			var zoom = d.getZoom();
+			EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
+		});
 
-		} else {
-			$(document).on('dragstart', function(e) {
+		$(document).on('dragstart', function(e) {
 
-				var el = $(e.target);
-				var target = el.hasClass('component') ? el : el.closest('.component');
-				var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+			if (common.touches)
+				return;
 
-				if (val) {
-					val = CLONE(val);
-					val.tab = common.tab.id;
-				}
+			var el = $(e.target);
+			var target = el.hasClass('component') ? el : el.closest('.component');
+			var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
 
-				if (val) {
-					e.originalEvent.dataTransfer.setData('text', '1');
-					SETTER('designer', 'dragdrop', val);
-				}
-			});
-		}
+			if (val) {
+				val = CLONE(val);
+				val.tab = common.tab.id;
+			}
+
+			if (val) {
+				e.originalEvent.dataTransfer.setData('text', '1');
+				SETTER('designer', 'dragdrop', val);
+			}
+		});
 
 		ON('designer.add', function(component, x, y, is, cf, ct, index, duplicate) {
 			var obj = {};

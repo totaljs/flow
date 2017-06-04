@@ -867,6 +867,10 @@ COMPONENT('designer', function() {
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
+
+			if (common.touches)
+				return;
+
 			if (e.type === 'mousemove')
 				move.drag && self.mmove(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
 			else if (e.type === 'mouseup')
@@ -876,6 +880,10 @@ COMPONENT('designer', function() {
 		});
 
 		tmp.on('touchstart touchmove touchend', function(evt) {
+
+			if (!common.touches)
+				return;
+
 			var e = evt.touches[0];
 			var offset;
 			if (evt.type === 'touchmove') {
@@ -1104,6 +1112,9 @@ COMPONENT('designer', function() {
 		};
 
 		self.event('dragover dragenter drag drop', 'svg', function(e) {
+
+			if (common.touches)
+				return;
 
 			if (!dragdrop)
 				return;
