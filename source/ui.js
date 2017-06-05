@@ -867,16 +867,17 @@ COMPONENT('designer', function() {
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
-
 			if (common.touches)
 				return;
 
+			var offset = offsetter(e);
+
 			if (e.type === 'mousemove')
-				move.drag && self.mmove(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+				move.drag && self.mmove(e.pageX, e.pageY, offset.x, offset.y, e);
 			else if (e.type === 'mouseup')
-				self.mup(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+				self.mup(e.pageX, e.pageY, offset.x, offset.y, e);
 			else
-				self.mdown(e.pageX, e.pageY, e.offsetX, e.offsetY, e);
+				self.mdown(e.pageX, e.pageY, offset.x, offset.y, e);
 		});
 
 		tmp.on('touchstart touchmove touchend', function(evt) {
@@ -937,6 +938,7 @@ COMPONENT('designer', function() {
 			if ((e.keyCode !== 8 && e.keyCode !== 46) || !selected || self.disabled || e.target.tagName !== 'BODY')
 				return;
 			self.remove();
+			e.preventDefault();
 		});
 
 		self.mmove = function(x, y, offsetX, offsetY, e) {
@@ -946,7 +948,8 @@ COMPONENT('designer', function() {
 					return;
 				case 2:
 				case 3:
-					connection.attr('d', diagonal(move.x, move.y, offsetX, offsetY));
+					var off = svg.offset();
+					connection.attr('d', diagonal(move.x, move.y, x - off.left, y - off.top));
 					break;
 				case 5:
 					// Current node
@@ -1413,15 +1416,15 @@ function offsetter(evt){
 	if (evt.touches){
 		position.x = evt.touches[0].pageX;
 		position.y = evt.touches[0].pageY;
-		var parent = evt.target;
-		while (parent.offsetParent) {
-			position.x -= parent.offsetLeft;
-			position.y -= parent.offsetTop;
-			parent = parent.offsetParent;
-		}
 	} else {
-		position.x = evt.offsetX;
-		position.y = evt.offsetY;
+		position.x = evt.pageX;
+		position.y = evt.pageY;
+	}
+	var parent = evt.target;
+	while (parent.offsetParent) {
+		position.x -= parent.offsetLeft;
+		position.y -= parent.offsetTop;
+		parent = parent.offsetParent;
 	}
 	return position;
 }
