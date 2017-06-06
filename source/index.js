@@ -15,8 +15,8 @@ const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
-const FILEINMEMORY = '/flow/repository.json';
 const FLAGS = ['get', 'dnscache'];
+var FILEINMEMORY = '/flow/repository.json';
 
 var OPT;
 var DDOS = {};
@@ -84,8 +84,12 @@ exports.install = function(options) {
 	// ViewEngine helper
 	F.helpers.FLOW = FLOW;
 
-
+	// Service
 	F.on('service', service);
+
+	// Repository according "index" of cluster instance
+	if (F.isCluster)
+		FILEINMEMORY = FILEINMEMORY.replace('.json', F.id + '.json');
 
 	// Load flow's data
 	setTimeout(function() {
@@ -842,7 +846,7 @@ FLOW.save = function(data, callback) {
 	FLOW.save2(callback);
 };
 
-FLOW.clearerrors = function() {
+FLOW.clearerrors = function(noSync) {
 
 	var arr = Object.keys(FLOW.instances);
 	for (var i = 0, length = arr.length; i < length; i++)
@@ -853,8 +857,12 @@ FLOW.clearerrors = function() {
 			MESSAGE_DESIGNER.components[i].errors = undefined;
 	}
 
+	if (!noSync) {
+		F.cluster.emit('flow.cluster.clearerrors');
+		FLOW.save2(NOOP);
+	}
+
 	FLOW.send(MESSAGE_CLEARERRORS);
-	FLOW.save2(NOOP);
 	return FLOW;
 };
 
@@ -875,7 +883,7 @@ FLOW.save_inmemory = function() {
 	}, 500, 100);
 };
 
-FLOW.execute = function(filename) {
+FLOW.execute = function(filename, sync) {
 
 	var data = Fs.readFileSync(filename).toString('utf8');
 	if (data.indexOf('exports.install') === -1 || data.indexOf('exports.id') === -1)
@@ -898,6 +906,9 @@ FLOW.execute = function(filename) {
 			delete require.cache[name];
 		}, 500);
 	})(name, filename, FILENAME);
+
+
+	sync && F.cluster.emit('flow.cluster.execute', filename);
 	return FLOW;
 };
 
@@ -1031,7 +1042,7 @@ FLOW.install = function(filename, body, callback) {
 			var writer = Fs.createWriteStream(filename);
 			response.pipe(writer);
 			writer.on('finish', function() {
-				FLOW.execute(filename);
+				FLOW.execute(filename, true);
 				callback && callback(null);
 			});
 		});
@@ -1046,7 +1057,7 @@ FLOW.install = function(filename, body, callback) {
 			filename = F.path.root(PATH, U.GUID(10) + '.js');
 
 		Fs.writeFile(filename, body, function() {
-			FLOW.execute(filename);
+			FLOW.execute(filename, true);
 			callback && callback(null);
 		});
 	}
@@ -1054,7 +1065,7 @@ FLOW.install = function(filename, body, callback) {
 	return FLOW;
 };
 
-FLOW.uninstall = function(name) {
+FLOW.uninstall = function(name, noSync) {
 
 	var close = [];
 	var connections = [];
@@ -1086,12 +1097,15 @@ FLOW.uninstall = function(name) {
 	FLOW.reset(close, function() {
 		var com = FLOW.components[name];
 		com.uninstall && com.uninstall();
-		Fs.unlink(F.path.root(PATH + com.filename), NOOP);
 		close = [];
 		MESSAGE_DESIGNER.components = MESSAGE_DESIGNER.components.remove('component', name);
 		MESSAGE_DESIGNER.database = MESSAGE_DESIGNER.database.remove('id', name);
-		FLOW.send(MESSAGE_DESIGNER);
-		FLOW.save2();
+		if (!noSync) {
+			Fs.unlink(F.path.root(PATH + com.filename), NOOP);
+			FLOW.send(MESSAGE_DESIGNER);
+			FLOW.save2();
+			F.cluster.emit('flow.cluster.uninstall', name);
+		}
 	});
 
 	return FLOW;
