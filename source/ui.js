@@ -867,17 +867,24 @@ COMPONENT('designer', function() {
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
+
 			if (common.touches)
 				return;
 
-			var offset = offsetter(e);
+			var offset;
 
-			if (e.type === 'mousemove')
-				move.drag && self.mmove(e.pageX, e.pageY, offset.x, offset.y, e);
-			else if (e.type === 'mouseup')
-				self.mup(e.pageX, e.pageY, offset.x, offset.y, e);
-			else
-				self.mdown(e.pageX, e.pageY, offset.x, offset.y, e);
+			if (e.type === 'mousemove') {
+				if (move.drag) {
+					offset = offsetter(e);
+					self.mmove(e.pageX, e.pageY, offset.x, offset.y, e);
+				}
+			} else {
+				offset = offsetter(e);
+				if (e.type === 'mouseup')
+					self.mup(e.pageX, e.pageY, offset.x, offset.y, e);
+				else
+					self.mdown(e.pageX, e.pageY, offset.x, offset.y, e);
+			}
 		});
 
 		tmp.on('touchstart touchmove touchend', function(evt) {
@@ -949,7 +956,15 @@ COMPONENT('designer', function() {
 				case 2:
 				case 3:
 					var off = svg.offset();
-					connection.attr('d', diagonal(move.x, move.y, x - off.left, y - off.top));
+					var tx = x - off.left;
+					var ty = y - off.top;
+
+					if (zoom !== 1) {
+						tx = (tx / zoom);
+						ty = (ty / zoom);
+					}
+
+					connection.attr('d', diagonal(move.x, move.y, tx, ty));
 					break;
 				case 5:
 					// Current node
@@ -1426,6 +1441,7 @@ function offsetter(evt){
 		position.y -= parent.offsetTop;
 		parent = parent.offsetParent;
 	}
+
 	return position;
 }
 
