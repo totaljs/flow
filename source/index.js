@@ -150,6 +150,7 @@ function view_index() {
 		return;
 	}
 
+	this.theme('');
 	this.repository.url = OPT.url;
 	this.view('@flow/index');
 }
