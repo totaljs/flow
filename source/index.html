@@ -181,7 +181,7 @@
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
-			this.touches = isTOUCH;
+			this.touches = false;
 			this.theme === undefined && (this.theme = 'dark');
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
@@ -195,11 +195,11 @@
 		CACHEPATH('common.theme', '1 month');
 
 		// Hybrid devices
-		common.touches && $(document).on('mousemove', mousecheck);
+		$(document).on('touchstart', checktouches);
 
-		function mousecheck() {
-			common.touches = false;
-			$(document).off('mousemove', mousecheck);
+		function checktouches(e) {
+			common.touches = true;
+			$(document).off('touchstart', checktouches);
 		}
 
 		WATCH('common.theme', function(path, value) {
@@ -426,6 +426,8 @@
 			if (!component)
 				return;
 			var connections = component.connections[index];
+			if (!connections)
+				return;
 			connections = connections.remove(b);
 			component.connections[index] = connections;
 			!connections.length && (delete component.connections[index]);

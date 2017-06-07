@@ -396,8 +396,11 @@ Component.prototype.signal = function(index, data) {
 		conn && conn.$events.signal && conn.emit('signal', data, self);
 	} else {
 		var keys = Object.keys(self.connections);
-		for (var i = 0, length = keys.length; i < length; i++)
-			self.connections[i].$events.signal && self.connections[i].emit('signal', data, self);
+		for (var i = 0, length = keys.length; i < length; i++) {
+			var arr = self.connections[keys[i]];
+			for (var j = 0; j < arr.length; j++)
+				arr[j].$events.signal && arr[j].emit('signal', data, self);
+		}
 	}
 
 	return self;
@@ -455,6 +458,7 @@ Component.prototype.send = function(index, message) {
 			}
 		});
 	} else {
+
 		arr = connections[index.toString()];
 
 		if (!arr || !arr.length) {
@@ -626,7 +630,7 @@ FLOW.register = function(name, options, fn) {
 		name: options.title || name,
 		author: options.author || 'Unknown',
 		color: options.color,
-		input: options.input == null ? false : options.input,
+		input: options.input == null ? 0 : options.input,
 		output: options.output == null ? 0 : options.output,
 		click: options.click ? true : false,
 		group: options.group || 'Common',

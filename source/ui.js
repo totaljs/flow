@@ -853,6 +853,24 @@ COMPONENT('designer', function() {
 	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 
+	function findPoint(selector, x, y) {
+		var arr = svg.find(selector);
+		var o = svg.offset();
+
+		x += o.left;
+		y += o.top;
+
+		for (var i = 0, length = arr.length; i < length; i++) {
+			var el = arr[i];
+			var off = el.getBoundingClientRect();
+			var ax = x - off.width;
+			var ay = y - off.height;
+			if (off.left >= ax && x <= off.right && off.top >= ay && y <= off.bottom)
+				return el;
+		}
+		return svg.get(0);
+	}
+
 	self.readonly();
 	self.make = function() {
 		scroller = self.element.parent();
@@ -908,11 +926,13 @@ COMPONENT('designer', function() {
 			} else if (evt.type === 'touchend') {
 				offset = offsetter(touch);
 				e = touch.touches[0];
+
 				if (move.type === 2 || move.type === 3) {
 					offset.x += move.scrollX;
 					offset.y += move.scrollY;
 				}
-				touch.target = document.elementFromPoint(e.screenX, e.screenY);
+
+				touch.target = move.node ? findPoint(move.node.hasClass('output') ? '.input' : '.output', move.tx, move.ty) : svg.get(0);
 				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
 			} else {
 				offset = offsetter(evt);
@@ -965,6 +985,8 @@ COMPONENT('designer', function() {
 					}
 
 					connection.attr('d', diagonal(move.x, move.y, tx, ty));
+					move.tx = tx;
+					move.ty = ty;
 					break;
 				case 5:
 					// Current node
@@ -984,11 +1006,16 @@ COMPONENT('designer', function() {
 						var input = el.closest('.node');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
-							if (instance.connections[index])
-								instance.connections[index].push(input.attr('data-id'));
-							else
-								instance.connections[index] = [input.attr('data-id')];
-							self.connect(index, output, input);
+							var id = input.attr('data-id');
+							var is = false;
+							if (instance.connections[index]) {
+								if (instance.connections[index].indexOf(id) === -1)
+									instance.connections[index].push(id);
+								else
+									is = true;
+							} else
+								instance.connections[index] = [id];
+							!is && self.connect(index, output, input);
 						}
 					}
 					break;
@@ -1000,11 +1027,16 @@ COMPONENT('designer', function() {
 						var input = move.node.closest('.node');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
-							if (instance.connections[index])
-								instance.connections[index].push(input.attr('data-id'));
-							else
-								instance.connections[index] = [input.attr('data-id')];
-							self.connect(index, output, input);
+							var id = input.attr('data-id');
+							var is = false;
+							if (instance.connections[index]) {
+								if (instance.connections[index].indexOf(id) === -1)
+									instance.connections[index].push(id);
+								else
+									is = true;
+							} else
+								instance.connections[index] = [id];
+							!is && self.connect(index, output, input);
 						}
 					}
 			}
@@ -1426,8 +1458,12 @@ COMPONENT('designer', function() {
 	};
 });
 
-function offsetter(evt){
-	var position = {};
+function offsetter(evt) {
+	var position = { x: 0, y: 0 };
+
+	if (!evt)
+		return position;
+
 	if (evt.touches){
 		position.x = evt.touches[0].pageX;
 		position.y = evt.touches[0].pageY;
