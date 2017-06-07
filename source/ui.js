@@ -1001,42 +1001,44 @@ COMPONENT('designer', function() {
 				case 2:
 					connection.attr('d', '');
 					if (el.hasClass('input')) {
-						var index = +move.node.attr('data-index');
+						var oindex = +move.node.attr('data-index');
 						var output = move.node.closest('.node');
 						var input = el.closest('.node');
+						var iindex = el.attr('data-index');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
 							var id = input.attr('data-id');
 							var is = false;
-							if (instance.connections[index]) {
-								if (instance.connections[index].indexOf(id) === -1)
-									instance.connections[index].push(id);
-								else
+							if (instance.connections[oindex]) {
+								if (instance.connections[oindex].flowConnection(iindex, id))
 									is = true;
+								else
+									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
-								instance.connections[index] = [id];
-							!is && self.connect(index, output, input);
+								instance.connections[oindex] = [{ index: iindex, id: id }];
+							!is && self.connect(+iindex, oindex, output, input);
 						}
 					}
 					break;
 				case 3:
 					connection.attr('d', '');
 					if (el.hasClass('output')) {
-						var index = +el.attr('data-index');
+						var oindex = +el.attr('data-index');
 						var output = el.closest('.node');
 						var input = move.node.closest('.node');
+						var iindex = move.node.attr('data-index');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
 							var id = input.attr('data-id');
 							var is = false;
-							if (instance.connections[index]) {
-								if (instance.connections[index].indexOf(id) === -1)
-									instance.connections[index].push(id);
-								else
+							if (instance.connections[oindex]) {
+								if (instance.connections[oindex].flowConnection(iindex, id))
 									is = true;
+								else
+									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
-								instance.connections[index] = [id];
-							!is && self.connect(index, output, input);
+								instance.connections[oindex] = [{ index: iindex, id: id }];
+							!is && self.connect(+iindex, oindex, output, input);
 						}
 					}
 			}
@@ -1236,8 +1238,22 @@ COMPONENT('designer', function() {
 		var label = (item.name || item.reference) ? body.asvg('text').html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
 		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate(0, {0})'.format(label ? 14 : 5));
 
+		var inputcolors = null;
+		var input = 0;
 		var outputcolors = null;
 		var output = 0;
+
+		if (item.input != null) {
+			if (item.input instanceof Array) {
+				inputcolors = item.input;
+				input = inputcolors.length;
+			} else
+				input = item.input;
+		} else if (item.$component.input instanceof Array) {
+			inputcolors = item.$component.input;
+			input = inputcolors.length;
+		} else
+			input = item.$component.input;
 
 		if (item.output != null) {
 			if (item.output instanceof Array) {
@@ -1251,7 +1267,7 @@ COMPONENT('designer', function() {
 		} else
 			output = item.$component.output;
 
-		var count = output || 1;
+		var count = Math.max(output || 1, input || 1);
 		var height = 30 + count * 20;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
@@ -1264,7 +1280,15 @@ COMPONENT('designer', function() {
 		var points = g.asvg('g');
 		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
-		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 8).attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		top = ((height / 2) - ((input * 22) / 2)) + 10;
+		for (var i = 0; i < input; i++) {
+			var o = points.asvg('circle').attr('class', 'input').attr('data-index', i).attr('cx', 0).attr('cy', top + i * 22).attr('r', 8);
+			if (inputcolors)
+				o.attr('fill', inputcolors[i]);
+			else
+				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		}
+
 		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
 			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
@@ -1375,21 +1399,23 @@ COMPONENT('designer', function() {
 				continue;
 			Object.keys(instance.connections).forEach(function(index) {
 				var arr = instance.connections[index];
-				arr.forEach(function(id) {
-					var hash = 'c' + index + '_' + instance.id + 'x' + id;
+				arr.forEach(function(item) {
+					var hash = 'c' + index + '_' + instance.id + 'x' + item.id;
 					var e = lines.find('.' + hash);
 					if (e.length)
 						return;
-					var input = self.find('.node_' + id);
-					input.length && output.length && self.connect(+index, output, input);
+					var input = self.find('.node_' + item.id);
+					input.length && output.length && self.connect(+item.index, +index, output, input);
 				});
 			});
 		}
 	};
 
-	self.connect = function(index, output, input) {
-		var a = output.find('.output[data-index="{0}"]'.format(index));
-		var b = input.find('.input');
+	self.connect = function(iindex, oindex, output, input) {
+
+
+		var a = output.find('.output[data-index="{0}"]'.format(oindex));
+		var b = input.find('.input[data-index="{0}"]'.format(iindex));
 
 		var tmp = getTranslate(output);
 		var acx = +a.attr('cx');
@@ -1410,10 +1436,15 @@ COMPONENT('designer', function() {
 		attr['d'] = diagonal(ax, ay, bx, by);
 		attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
 		attr['stroke-width'] = 3;
-		attr['data-index'] = index;
+		attr['data-fromindex'] = iindex;
 		attr['data-from'] = aid;
 		attr['data-to'] = bid;
-		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (index + '_' + aid + 'x' + bid) + (flow.connections[index + aid + bid] ? '' : ' path_new');
+		attr['data-toindex'] = oindex;
+//		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (oindex + '_' + aid + 'x' + bid) + (flow.connections[oindex + aid + bid] ? '' : ' path_new');
+
+
+
+		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new');
 		lines.asvg('path').attr(attr);
 	};
 
@@ -3317,3 +3348,9 @@ COMPONENT('colorpicker', function() {
 		self.element.css({ left: x, top: y }).removeClass('hidden');
 	};
 });
+
+Array.prototype.flowConnection = function(index, id) {
+	for (var i = 0; i < this.length; i++)
+		if (this[i].index === index && this[i].id === id)
+			return this[i];
+};

@@ -24,7 +24,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
 
-exports.version = 'v2.0.0';
+exports.version = 'v3.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -363,8 +363,8 @@ Component.prototype.log = function(a, b, c, d, e, f) {
 	return this;
 };
 
-Component.prototype.make = function(data) {
-	return new FlowData(data);
+Component.prototype.make = function(data, index) {
+	return new FlowData(data, false, +index);
 };
 
 Component.prototype.click = function() {
@@ -391,17 +391,7 @@ Component.prototype.signal = function(index, data) {
 	if (!self.connections)
 		return self;
 
-	if (index) {
-		var conn = self.connections[index];
-		conn && conn.$events.signal && conn.emit('signal', data, self);
-	} else {
-		var keys = Object.keys(self.connections);
-		for (var i = 0, length = keys.length; i < length; i++) {
-			var arr = self.connections[keys[i]];
-			for (var j = 0; j < arr.length; j++)
-				arr[j].$events.signal && arr[j].emit('signal', data, self);
-		}
-	}
+	// @TODO: NOT IMPLEMENTED
 
 	return self;
 };
@@ -438,18 +428,30 @@ Component.prototype.send = function(index, message) {
 	var instance;
 
 	if (index === undefined) {
+
 		setImmediate(function() {
 			if (self.$closed)
 				return;
+
+			var tmp = {};
+
 			for (var i = 0, length = arr.length; i < length; i++) {
 				var ids = connections[arr[i]];
 				var canclone = true;
 				for (var j = 0, jl = ids.length; j < jl; j++) {
-					instance = FLOW.instances[ids[j]];
+					instance = FLOW.instances[ids[j].id];
 					if (instance && !instance.$closed) {
-						FLOW.traffic(instance.id, 'input');
+
+						if (!tmp[instance.id]) {
+							tmp[instance.id] = true;
+							FLOW.traffic(instance.id, 'input');
+						}
+
 						try {
-							instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
+							var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+							data.index = +ids[j].index;
+							instance.$events.data && instance.emit('data', data);
+							instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
 						} catch (e) {
 							instance.error(e, self.id);
 						}
@@ -457,6 +459,7 @@ Component.prototype.send = function(index, message) {
 				}
 			}
 		});
+
 	} else {
 
 		arr = connections[index.toString()];
@@ -468,14 +471,24 @@ Component.prototype.send = function(index, message) {
 
 		var canclone = arr.length > 1;
 		setImmediate(function() {
+
 			if (self.$closed)
 				return;
+
+			var tmp = {};
 			for (var i = 0, length = arr.length; i < length; i++) {
-				instance = FLOW.instances[arr[i]];
+				instance = FLOW.instances[arr[i].id];
 				if (instance && !instance.$closed) {
-					FLOW.traffic(instance.id, 'input');
+
+					if (!tmp[instance.id]) {
+						tmp[instance.id] = true;
+						FLOW.traffic(instance.id, 'input');
+					}
+
 					try {
-						instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
+						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+						data.index = +arr[i].index;
+						instance.$events.data && instance.emit('data', data);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
@@ -876,6 +889,7 @@ FLOW.save2 = function(callback) {
 	var data = {};
 	data.tabs = MESSAGE_DESIGNER.tabs;
 	data.components = MESSAGE_DESIGNER.components;
+	data.version = +exports.version.replace(/(v|\.)/g, '');
 	Fs.writeFile(F.path.root(FILEDESIGNER), JSON.stringify(data, (k,v) => k === '$component' ? undefined : v), function() {
 		callback && callback();
 		EMIT('flow.save');
@@ -942,6 +956,16 @@ FLOW.load = function(callback) {
 						var declaration = FLOW.components[item.component];
 						if (declaration && declaration.options)
 							item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
+						if (!data.version) {
+							// Backward compatibility
+							Object.keys(item.connections).forEach(function(index) {
+								var arr = item.connections[index];
+								for (var i = 0; i < arr.length; i++) {
+									if (typeof(arr[i]) === 'string')
+										arr[i] = { index: '0', id: arr[i] };
+								}
+							});
+						}
 					});
 
 					Fs.readFile(F.path.root(FILEINMEMORY), function(err, data) {
@@ -1164,7 +1188,8 @@ FLOW.findById = function(id) {
 // FLOW DATA DECLARATION
 // ===================================================
 
-function FlowData(data, clone) {
+function FlowData(data, clone, index) {
+	this.index = clone ? clone.index : (index || 0);
 	this.begin = clone ? clone.begin : new Date();
 	this.repository = clone ? clone.repository : {};
 	this.data = data;
@@ -1199,4 +1224,3 @@ FlowData.prototype.rem = function(key) {
 	this.repository[key] = undefined;
 	return this;
 };
-
