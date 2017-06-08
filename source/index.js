@@ -660,6 +660,7 @@ FLOW.register = function(name, options, fn) {
 		name: options.title || name,
 		author: options.author || 'Unknown',
 		color: options.color,
+		icon: (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '',
 		input: options.input == null ? 0 : options.input,
 		output: options.output == null ? 0 : options.output,
 		click: options.click ? true : false,
