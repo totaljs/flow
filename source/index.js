@@ -9,6 +9,7 @@ const MESSAGE_DESIGNER = { type: 'designer', database: [] };
 const MESSAGE_TRIGGER = { type: 'trigger' };
 const MESSAGE_TRAFFIC = { type: 'traffic' };
 const MESSAGE_STATIC = { type: 'callback' };
+const MESSAGE_VARIABLES = { type: 'variables' };
 const MESSAGE_TEMPLATES = { type: 'templates' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
@@ -22,7 +23,7 @@ var OPT;
 var DDOS = {};
 var FILENAME;
 
-global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
+global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
 exports.version = 'v3.0.0';
 exports.install = function(options) {
@@ -221,6 +222,17 @@ function websocket() {
 			return;
 		}
 
+		if (message.type === 'getvariables') {
+			MESSAGE_VARIABLES.body = FLOW.$variables;
+			client.send(MESSAGE_VARIABLES);
+			return;
+		}
+
+		if (message.type === 'variables') {
+			FLOW.refresh_variables(message.body);
+			return;
+		}
+
 		if (message.target) {
 			var instance = FLOW.instances[message.target];
 			if (!instance)
@@ -245,6 +257,7 @@ function websocket() {
 				}
 
 				instance.$events.options && instance.emit('options', instance.options, old_options);
+				EMIT('flow.options', instance);
 
 				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
 				if (tmp) {
@@ -394,6 +407,10 @@ Component.prototype.signal = function(index, data) {
 	// @TODO: NOT IMPLEMENTED
 
 	return self;
+};
+
+Component.prototype.variable = function(name) {
+	return FLOW.variables[name];
 };
 
 Component.prototype.send = function(index, message) {
@@ -806,6 +823,23 @@ FLOW.init = function(components) {
 	return FLOW;
 };
 
+FLOW.variable = function(name) {
+	return FLOW.variables[name];
+}
+
+FLOW.refresh_variables = function(data) {
+	FLOW.$variables = data;
+	FLOW.variables = data ? data.parseConfig() : EMPTYOBJECT;
+	var keys = Object.keys(FLOW.instances);
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		instance.$events.variables && instance.emit('variables', FLOW.variables);
+	}
+	EMIT('flow.variables', FLOW.variables);
+	FLOW.save2(NOOP);
+	return FLOW;
+};
+
 // Init the only one component
 FLOW.init_component = function(component) {
 	MESSAGE_DESIGNER.components.wait(function(com, next) {
@@ -890,6 +924,7 @@ FLOW.save2 = function(callback) {
 	data.tabs = MESSAGE_DESIGNER.tabs;
 	data.components = MESSAGE_DESIGNER.components;
 	data.version = +exports.version.replace(/(v|\.)/g, '');
+	data.variables = FLOW.$variables;
 	Fs.writeFile(F.path.root(FILEDESIGNER), JSON.stringify(data, (k,v) => k === '$component' ? undefined : v), function() {
 		callback && callback();
 		EMIT('flow.save');
@@ -949,9 +984,11 @@ FLOW.load = function(callback) {
 					else
 						data = {};
 
+					FLOW.$variables = data.variables || '';
+					FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+
 					MESSAGE_DESIGNER.tabs = data.tabs;
 					MESSAGE_DESIGNER.components = data.components || [];
-
 					MESSAGE_DESIGNER.components.forEach(function(item) {
 						var declaration = FLOW.components[item.component];
 						if (declaration && declaration.options)
@@ -1182,6 +1219,14 @@ FLOW.findByComponent = function(value) {
 
 FLOW.findById = function(id) {
 	return FLOW.instances[id];
+};
+
+FLOW.prototypes = function(fn) {
+	var proto = {};
+	proto.FlowData = FlowData;
+	proto.Component = Component;
+	fn.call(proto, proto);
+	return FLOW;
 };
 
 // ===================================================

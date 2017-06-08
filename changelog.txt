@@ -1,0 +1,6 @@
+======= 3.0.0
+
+- added global variables
+- added multiple inputs
+- improved exporting designer
+- updated jComponent version

@@ -101,6 +101,7 @@
 			<nav>
 				<a href="javascript:void(0)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</a>
 				<a href="javascript:void(0)" title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></a>
+				<a href="javascript:void(0)" title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></a>
 				<a href="javascript:void(0)" title="@(Settings)" class="exec onlyicon br" data-exec="settings_menu"><i class="fa fa-cogs"></i></a>
 				<a href="javascript:void(0)" class="exec onlyicon nb" style="float:right" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></a>
 			</nav>
@@ -164,6 +165,7 @@
 	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'export'" data-url="@{repository.url}templates/form-export.html" data-reload="formexport_reload"></div>
 	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'import'" data-url="@{repository.url}templates/form-import.html" data-reload="formimport_reload"></div>
 	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{repository.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'variables'" data-url="@{repository.url}templates/form-variables.html" data-reload="formvariables_reload"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -672,6 +674,11 @@
 				return;
 			}
 
+			if (message.type === 'variables') {
+				SET('formvariables.body', message.body, true);
+				return;
+			}
+
 			if (message.type === 'clearerrors') {
 				$('.node_errors').removeClass('node_errors');
 				$('.path_error').removeClass('path_error').attr('title', '');
@@ -911,6 +918,7 @@
 			var items = [];
 
 			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+			items.push({ name: '@(Variables)', icon: 'fa-sliders', value: 'variables' });
 			items.push({ name: '@(Export designer)', icon: 'fa-copy', value: 'export' });
 			items.push({ name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' });
 			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
@@ -928,6 +936,7 @@
 			FIND('contextmenu').show('left', el, items, function(value) {
 				switch (value) {
 					case 'database':
+					case 'variables':
 					case 'import':
 					case 'export':
 						SET('common.form', value);

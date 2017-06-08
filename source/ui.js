@@ -3150,6 +3150,8 @@ COMPONENT('textarea', function() {
 		self.classes('ui-textarea-container');
 		input = self.find('textarea');
 		container = self.find('.ui-textarea');
+		if (self.attr('data-monospace') === 'true')
+			input.css('font-family', 'monospace');
 	};
 
 	self.state = function(type) {

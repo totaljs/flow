@@ -191,14 +191,14 @@ svg { cursor: move; }
 .themedark .mainmenu .ui-textbox div { border-color: #404040; color: gray; }
 .themedark .traffic-container.b { color: white; }
 .themedark .debugoutput { border-color: #303030; }
-.themedark .hljs { background-color: #303030; color: gray; }
+.themedark .debugoutput .hljs { background-color: #303030; color: gray; }
 
 .themedark .designer-shadow-top { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-left { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-right { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .themechanger { color: white; }
-.themedark .hljs-keyword { color: #D0D0D0; }
+.themedark .debugoutput .hljs-keyword { color: #D0D0D0; }
 
 .themedark .markdown { color: #A0A0A0; }
 .themedark .markdown h1 { border-color: #303030; color: white; }
@@ -211,3 +211,7 @@ svg { cursor: move; }
 .mainmenu-hidden {  }
 .mainmenu-hidden .mainmenu { margin-left: -220px; }
 .mainmenu-hidden .body { margin-left: 40px; }
+
+.variablesexample { font-size: 12px; font-family: monospace; color: black; line-height: 16px; background-color: #F0F0F0; border-radius: 4px; padding: 15px; }
+.variablesexample span { color: #2B653F; }
+.variablesexample i { color: gray; }

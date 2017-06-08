@@ -38,9 +38,9 @@
 .ui-form-animate { transform: scale(1); opacity: 1; }
 .ui-form-animate-click { transform: scale(1.07); }
 .ui-form-padding { padding: 0 30px; }
-.ui-form-title { padding: 15px; font-size: 16px; user-select: none; color: #AAB2BD; border-bottom: 1px solid #F0F0F0; font-weight: bold; }
-.ui-form-title .fa-times { float: right; cursor: pointer; font-size: 18px; margin-top: 4px; }
-.ui-form-title .fa-times:hover { color: black; }
+.ui-form-title { padding: 15px; font-size: 16px; user-select: none; color: black; border-bottom: 1px solid #F0F0F0; font-weight: bold; }
+.ui-form-title .fa-times { float: right; cursor: pointer; font-size: 18px; margin-top: 4px; color: red; }
+.ui-form-title .fa-times:hover { opacity: 0.8; }
 .ui-form-title .fa-times:active { margin-top: 5px; }
 .ui-form-buttons { padding: 20px; border-top: 1px solid #F0F0F0; background: linear-gradient(#F8F8F8,white); border-radius: 0 0 4px 4px; }
 .ui-form-buttons button { border: 1px solid #D0D0D0; background-color: white; border-radius: 4px; height: 45px; padding: 0 15px; color: black; margin: 0; cursor: pointer; font-family: Arial; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; }

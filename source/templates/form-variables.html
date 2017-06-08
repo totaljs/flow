@@ -1,0 +1,46 @@
+<div data-jc="form" data-title="@(Global Variables)" data-jc-path="common.form" data-if="value === 'variables'" data-width="740px" class="hidden" data-jc-init="formvariables_init">
+	<div class="padding">
+		<div data-jc="textarea" data-jc-path="formvariables.body" data-monospace="true" data-height="250px" data-placeholder="@(key : value)">@(Variables)</div>
+		<div class="black mt10">
+			<strong>@(Example:)</strong>
+		</div>
+		<pre class="variablesexample"><code><i>// @(Comments can be used too)</i>
+@(key1)                                  : <b>@(A string value)</b>
+@(key2)                                  : <b>@(A string value)</b>
+
+<i>// @(Keys can contain own data types)</i>
+my-custom-object-raw      <span>(Object)</span>    : <b>{ name: 'Total.js', date: new Date() }</b>
+my-custom-object-json     <span>(JSON)</span>      : <b>{ "name": "Total.js" }</b>
+my-custom-number          <span>(number)</span>    : <b>320.34</b>
+my-custom-boolean         <span>(boolean)</span>   : <b>true</b>
+my-custom-date            <span>(date)</span>      : <b>2016-07-26</b>
+my-custom-array           <span>(array)</span>     : <b>[1, 2, 3, 4]</b>
+binds-environment-value   <span>(env)</span>       : <b>process.env</b></code></pre>
+	</div>
+	<div class="ui-form-buttons">
+		<div data-jc="validation" data-jc-path="formvariables">
+			<button name="submit" disabled="disabled">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(Close)</button>
+	</div>
+</div>
+
+<script>
+
+	function formvariables_reload() {
+		SETTER('websocket', 'send', { type: 'getvariables' });
+	}
+
+	function formvariables_init(component) {
+		component.submit = function(hide) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (index)
+					return;
+				SETTER('loading', 'hide', 1000);
+				SETTER('websocket', 'send', { type: 'variables', body: formvariables.body });
+				RESET('formvariables.*', true);
+				hide();
+			});
+		};
+	}
+</script>

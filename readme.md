@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Flow__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 3.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 Flow comes pre-installed with components such as:
 - `HTTP route` for creating web endpoints
@@ -71,6 +71,15 @@ INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/flow.package', options
 - `FLOW` is a global variable
 - URL address `http://127.0.0.1:8000/$flow/` (default, can be changed in config)
 
+__Properties__:
+
+```javascript
+FLOW.variables;
+// Returns all custom variables defined by user key/value
+// returns {Object}
+// +v3.0.0
+```
+
 __Methods__:
 
 ```javascript
@@ -125,6 +134,11 @@ FLOW.install(url, [callback]);
 FLOW.install(filename, body, [callback]);
 // Registers a new component and stores its content into the `/flow/` directory
 // returns {FLOW}
+
+FLOW.variable(key);
+// Returns a value of variable by key
+// return {Object}
+// +v3.0.0
 ```
 
 __Events__:
@@ -155,6 +169,16 @@ ON('flow.save', function(instance) {
 ON('flow.close', function(instance) {
     // A component instance will be closed
 });
+
+ON('flow.options', function(instance) {
+    // A component instance has changed options
+    // +v3.0.0
+});
+
+ON('flow.variables', function(variables) {
+    // Changed flow variables
+    // +v3.0.0
+});
 ```
 
 ## Component
@@ -174,13 +198,18 @@ exports.color = '#656D78'; // use darker colors because the font color is "white
 // {Boolean}, optional (default: false)
 exports.click = true;
 
-// {Boolean}, optional (default: true)
-exports.input = true;
+// {Number}, optional (default: 0)
+// +v3.0.0
+exports.input = 0;
+
+// or {Array of Colors}, input will have 2 inputs (red and blue)
+// +v3.0.0
+exports.input = ['red', 'blue'];
 
 // {Number}, optional (default: 0)
 exports.output = 1;
 
-// {Array of Colors}, output will have 2 outputs (red and blue)
+// or {Array of Colors}, output will have 2 outputs (red and blue)
 exports.output = ['red', 'blue'];
 
 // {String}, optional (default: "Common")
@@ -274,7 +303,14 @@ exports.install = function(component) {
     component.on('options', function(new_options, old_options) {
         // optional
         // options have changed in the designer
-        // self.options holds the new_options already
+        // instance.options holds the new_options already
+    });
+
+    component.on('variables', function(variables) {
+        // +v3.0.0
+        // optional
+        // global variables have been changed
+        // instance.variable(key)
     });
 
     component.on('close', function() {
