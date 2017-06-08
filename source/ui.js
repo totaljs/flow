@@ -1128,7 +1128,7 @@ COMPONENT('designer', function() {
 				idconnection = selected.attr('data-id');
 				EMIT('designer.rem', idconnection);
 			} else {
-				EMIT('designer.rem.connection', selected.attr('data-from'), selected.attr('data-to'), selected.attr('data-index'));
+				EMIT('designer.rem.connection', selected.attr('data-from'), selected.attr('data-to'), selected.attr('data-fromindex'), selected.attr('data-toindex'));
 				selected.remove();
 			}
 		};

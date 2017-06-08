@@ -359,7 +359,7 @@
 				flow.components.forEach(function(component) {
 					Object.keys(component.connections).forEach(function(key) {
 						var connections = component.connections[key];
-						component.connections[key] = connections.remove(id);
+						component.connections[key] = connections.remove('id', id);
 						!component.connections[key].length && (delete component.connections[key]);
 					});
 				});
@@ -423,16 +423,18 @@
 			setState(MESSAGES.apply);
 		});
 
-		ON('designer.rem.connection', function(a, b, index) {
+		ON('designer.rem.connection', function(a, b, ti, fi) {
 			var component = flow.components.findItem('id', a);
 			if (!component)
 				return;
-			var connections = component.connections[index];
+			var connections = component.connections[fi];
 			if (!connections)
 				return;
-			connections = connections.remove(b);
-			component.connections[index] = connections;
-			!connections.length && (delete component.connections[index]);
+			connections = connections.remove(function(item) {
+				return item.index === ti && item.id === b;
+			});
+			component.connections[fi] = connections;
+			!connections.length && (delete component.connections[fi]);
 			setState(MESSAGES.apply);
 		});
 
