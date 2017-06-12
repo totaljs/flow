@@ -43,8 +43,11 @@ nav .highlight:hover { opacity: 0.8; }
 .debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 12px; padding: 10px 15px; }
 .debugoutput .fa { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
+.debugoutput-id { font-size: 11px; color: #A0A0A0; float: right; }
 .debugoutput-name { font-size: 12px; line-height: 14px; }
 .debugoutput-name b { font-size: 11px; }
+
+.themedark .debugoutput-id { color: #505050; }
 
 .erroroutput { border-bottom: 1px solid #E0E0E0; font-size: 11px; padding: 10px 20px; }
 .erroroutput .fa { margin-right: 5px; }
@@ -215,3 +218,5 @@ svg { cursor: move; }
 .variablesexample { font-size: 12px; font-family: monospace; color: black; line-height: 16px; background-color: #F0F0F0; border-radius: 4px; padding: 15px; }
 .variablesexample span { color: #2B653F; }
 .variablesexample i { color: gray; }
+
+.fr { float: right; }

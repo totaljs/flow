@@ -74,8 +74,9 @@
 			<div id="debugpanel" class="scroller"></div>
 		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
-			<div class="padding npb">
-				<div><i class="fa fa-microchip mr5"></i>@(Memory consuption:) <span data-b="flow.traffic.memory" data-b-html="n => n" class="b">...</span></div>
+			<div class="padding npb fs12" style="line-height:18px">
+				<div><span data-b="flow.traffic.memory" data-b-html="n => n" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consuption:)</div>
+				<div><span data-b="flow.traffic.counter" data-b-html="n => (n || 0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr class="nmb" style="margin-top:10px" />
 			</div>
 			<div class="scroller">
@@ -449,7 +450,7 @@
 			});
 		});
 
-		ON('debug', function(id, value) {
+		ON('debug', function(id, value, identificator) {
 
 			var component = flow.components.findItem('id', id);
 			if (!component)
@@ -468,7 +469,7 @@
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
-			el.prepend('<div class="debugoutput"><div class="debugoutput-time"><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)'));
+			el.prepend('<div class="debugoutput"><div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
 					if (block.$processed)
@@ -710,6 +711,7 @@
 				});
 
 				arr.memory = message.memory;
+				arr.counter = message.counter;
 				arr.quicksort('order', false);
 				SET('flow.traffic', arr);
 				return;
@@ -761,7 +763,7 @@
 			}
 
 			if (message.type === 'debug') {
-				EMIT('debug', message.id, message.body);
+				EMIT('debug', message.id, message.body, message.identificator);
 				return;
 			}
 

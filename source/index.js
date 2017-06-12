@@ -19,6 +19,7 @@ const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
 var FILEINMEMORY = '/flow/repository.json';
 
+var COUNTER = 0;
 var OPT;
 var DDOS = {};
 var FILENAME;
@@ -102,6 +103,7 @@ exports.install = function(options) {
 			if (FLOW.ws) {
 				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
 				MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+				MESSAGE_TRAFFIC.counter = COUNTER;
 				FLOW.ws.send(MESSAGE_TRAFFIC);
 			}
 
@@ -118,6 +120,8 @@ function service(counter) {
 	counter % 5 === 0 && (DDOS = {});
 	FLOW.reset_traffic();
 	FLOW.emit('service', counter);
+	if (COUNTER > 999999000000)
+		COUNTER = 0;
 }
 
 function view_index() {
@@ -556,6 +560,7 @@ Component.prototype.status = function(text, color) {
 
 Component.prototype.debug = function(data, style) {
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
+	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.style = style || 'info';
 	MESSAGE_DEBUG.id = this.id;
 	FLOW.send(MESSAGE_DEBUG);
@@ -1235,6 +1240,7 @@ FLOW.prototypes = function(fn) {
 // ===================================================
 
 function FlowData(data, clone, index) {
+	this.id = clone ? clone.id : COUNTER++;
 	this.index = clone ? clone.index : (index || 0);
 	this.begin = clone ? clone.begin : new Date();
 	this.repository = clone ? clone.repository : {};

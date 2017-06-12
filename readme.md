@@ -442,6 +442,7 @@ When is the message instance created?
 // FIRST CASE:
 instance.on('data', function(message) {
     // Properties:
+    message.id;               // {Number} A message identificator
     message.begin;            // {Date} when it started
     message.data;             // {Anything} user defined data
     message.completed;        // {Boolean} is sending completed?
@@ -451,7 +452,7 @@ instance.on('data', function(message) {
     // Methods (private message repository):
     message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
     message.get(key);         // Gets a key-value (doesn't read data from "data")
-    message.rem(key);        // Removes a key-value (doesn't read data from "data")
+    message.rem(key);         // Removes a key-value (doesn't read data from "data")
 });
 
 // SECOND CASE
