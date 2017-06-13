@@ -384,6 +384,7 @@
 			model.comname = component.name;
 			model.comreference = component.reference;
 			settings.$output = component.output;
+			settings.$input = component.input;
 			staticContent(component.component, 'html', function() {
 				EMIT('open.' + component.component, component, model);
 				SET('settings.' + component.component, model);
@@ -553,10 +554,11 @@
 
 			EMIT('save.' + component.component, component, component.options);
 
-			var is_designer = tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output;
+			var is_designer = tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
 			component.options.comoutput = component.output;
+			component.options.cominput = component.input;
 
 			if (!component.isnew && is_server) {
 				SETTER('websocket', 'send', { target: settings.$id, type: 'options', body: component.options });
@@ -571,10 +573,25 @@
 				});
 			}
 
+			if (component.input != null) {
+				var count = component.input instanceof Array ? component.input.length : component.input;
+				flow.components.forEach(function(item) {
+					if (component === item)
+						return;
+					Object.keys(item.connections).forEach(function(key) {
+						item.connections[key] = item.connections[key].remove(function(item) {
+							return item.id === component.id && (+item.index) >= count;
+						});
+						!item.connections[key].length && (delete component.connections[key]);
+					});
+				});
+			}
+
 			setTimeout(function() {
 				component.options.comname = undefined;
 				component.options.comreference = undefined;
 				component.options.comoutput = undefined;
+				component.options.cominput = undefined;
 				is_designer && EMIT('designer.refresh');
 			}, 300);
 

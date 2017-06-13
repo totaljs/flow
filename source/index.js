@@ -243,34 +243,67 @@ function websocket() {
 				return;
 
 			if (message.type === 'options') {
+
+				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
+
+				// Component doesn't exist
+				if (!tmp)
+					return;
+
 				var old_options = instance.options;
+
 				instance.options = message.body;
 				instance.name = instance.options.comname || FLOW.components[instance.component].name;
 				instance.reference = instance.options.comreference;
 				instance.output = instance.options.comoutput;
+				instance.input = instance.options.cominput;
 				instance.options.comname = undefined;
 				instance.options.comreference = undefined;
 				instance.options.comoutput = undefined;
+				instance.options.cominput = undefined;
 
-				if (instance.output != null) {
-					var count = instance.output instanceof Array ? instance.output.length : instance.output;
-					Object.keys(instance.connections).forEach(function(key) {
-						var index = +key;
-						index >= count && (delete instance.connections[key]);
+				var count = instance.output instanceof Array ? instance.output.length : instance.output;
+				io_count(tmp.output) !== count && Object.keys(instance.connections).forEach(function(key) {
+					var index = +key;
+					index >= count && (delete instance.connections[key]);
+				});
+
+				count = instance.input instanceof Array ? instance.input.length : instance.input;
+				io_count(tmp.input) !== count && Object.keys(FLOW.instances).forEach(function(id) {
+
+					if (id === instance.id)
+						return;
+
+					var item = FLOW.instances[id];
+					var can = false;
+
+					Object.keys(item.connections).forEach(function(key) {
+						var l = item.connections[key].length;
+						item.connections[key] = item.connections[key].remove(function(item) {
+							return item.id === instance.id && (+item.index) >= count;
+						});
+						if (l !== item.connections[key].length)
+							can = true;
+						!item.connections[key].length && (delete instance.connections[key]);
 					});
-				}
+
+					if (can) {
+						var tmp = MESSAGE_DESIGNER.components.findItem('id', item.id);
+						tmp.connections = item.connections;
+					}
+
+				});
 
 				instance.$events.options && instance.emit('options', instance.options, old_options);
 				EMIT('flow.options', instance);
 
-				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
-				if (tmp) {
-					tmp.options = instance.options;
-					tmp.name = instance.name;
-					tmp.output = instance.output;
-					tmp.connections = instance.connections;
-					FLOW.save2();
-				}
+				tmp.options = instance.options;
+				tmp.name = instance.name;
+				tmp.output = instance.output;
+				tmp.input = instance.input;
+				tmp.connections = instance.connections;
+				FLOW.save2();
+
 			} else
 				instance.$events[message.event] && instance.emit(message.event, message.body);
 			return;
@@ -295,6 +328,10 @@ function websocket() {
 	});
 
 	FLOW.ws = self;
+}
+
+function io_count(o) {
+	return o instanceof Array ? o.length : (o || 0);
 }
 
 // ===================================================
@@ -831,7 +868,7 @@ FLOW.init = function(components) {
 
 FLOW.variable = function(name) {
 	return FLOW.variables[name];
-}
+};
 
 FLOW.refresh_variables = function(data) {
 	FLOW.$variables = data;

@@ -498,19 +498,23 @@ ON('apply', function() {
 
 ### Good to know
 
-__How to change count of outputs dynamically?__
+__How to change count of outputs/inputs dynamically?__
 
-This is possible on client-side only.
+`v3.0.0` This is possible on client-side only.
 
 ```javascript
 ON('save.componentname', function(component, options) {
+    
     component.output = 5;
+    // component.input = 3;
 
     // or
     component.output = ['green', 'red', 'blue'];
+    // component.input = ['green', 'red', 'blue'];
 
     // or set output to default
     component.output = null;
+    // component.input = null;
 });
 ```
 
