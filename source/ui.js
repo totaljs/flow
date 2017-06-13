@@ -708,16 +708,18 @@ COMPONENT('importer', function() {
 
 		if (imported) {
 			if (reload)
-				return EXEC(reload);
-			self.setter = null;
+				EXEC(reload);
+			else
+				self.setter = null;
 			return;
 		}
 
 		imported = true;
 		IMPORT(self.attr('data-url'), function() {
 			if (reload)
-				return EXEC(reload);
-			self.remove();
+				EXEC(reload);
+			else
+				self.remove();
 		});
 	};
 });
@@ -743,7 +745,7 @@ COMPONENT('visible', function() {
 		}
 
 		is && setTimeout2(self.id, function() {
-			self.broadcast('reload')();
+			self.exec('reload');
 		}, 100);
 
 		self.toggle('hidden', !is);
