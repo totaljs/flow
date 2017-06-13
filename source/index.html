@@ -611,9 +611,10 @@
 
 				flow.components.forEach(function(item) {
 					item.isnew = undefined;
+					item.$component = common.components.findItem('id', item.component);
 					Object.keys(item.connections).forEach(function(index) {
 						item.connections[index].forEach(function(conn) {
-							flow.connections[index + '' + item.id + conn] = true;
+							flow.connections[item.id + '#' + index + '#' + conn.index + '#' + conn.id] = true;
 						});
 					});
 				});
