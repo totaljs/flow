@@ -443,6 +443,7 @@ When is the message instance created?
 instance.on('data', function(message) {
     // Properties:
     message.id;               // {Number} A message identificator
+    message.index;            // {Number} An input number
     message.begin;            // {Date} when it started
     message.data;             // {Anything} user defined data
     message.completed;        // {Boolean} is sending completed?
@@ -457,6 +458,21 @@ instance.on('data', function(message) {
 
 // SECOND CASE
 var message = instance.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
+```
+
+## Multiple inputs
+
+```javascript
+// data from all inputs go to 'data' event
+instance.on('data', function(message) {
+    // message as specified above
+    message.index; // Input number
+});
+
+// data from specific input go also to the corresponding event -> input 0 to event '0'
+instance.on('0', function(message) {
+    // message as specified above
+});
 ```
 
 
