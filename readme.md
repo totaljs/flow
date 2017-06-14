@@ -263,41 +263,46 @@ exports.install = function(component) {
         // usefull for enabling/disabling some behavior or triggering some actions
     });
 
-    component.on('data', function(response) {
+    component.on('data', function(message) {
 
         // RAW DATA
         // returns {Object}
-        response.data;
+        message.data;
 
         // Write value to data repository
         // returns {Message}
-        response.set('key', 'value');
+        message.set('key', 'value');
 
         // Read value from data repository
         // returns {Object}
-        response.get('key');
+        message.get('key');
 
         // Remove value from data repository
         // returns {Message}
-        response.rem('key');
+        message.rem('key');
 
         // {Object Array} Array of all components the message has passed through (previous components)
-        response.tracking;
+        message.tracking;
 
         // {Object} Parent component (first component which started the flow)
-        response.parent;
+        message.parent;
 
         // {Boolean} Is completed?
-        response.completed;
+        message.completed;
 
         // {DateTime}
-        response.begin;
+        message.begin;
 
         // How can I modify data?
-        response.data = { newdata: true };
+        message.data = { newdata: true };
 
-        // send this response :-)
-        component.send(response);
+        // send this message :-)
+        component.send(message);
+    });
+
+    component.on('<input-number>', function(message) {
+        // message as specified above in 'data' event
+        // input 0 to event '0' and so on
     });
 
     component.on('options', function(new_options, old_options) {
@@ -440,7 +445,7 @@ When is the message instance created?
 
 ```javascript
 // FIRST CASE:
-instance.on('data', function(message) {
+component.on('data', function(message) {
     // Properties:
     message.id;               // {Number} A message identificator
     message.index;            // {Number} An input number
@@ -457,20 +462,20 @@ instance.on('data', function(message) {
 });
 
 // SECOND CASE
-var message = instance.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
+var message = component.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
 ```
 
 ## Multiple inputs
 
 ```javascript
 // data from all inputs go to 'data' event
-instance.on('data', function(message) {
+component.on('data', function(message) {
     // message as specified above
     message.index; // Input number
 });
 
 // data from specific input go also to the corresponding event -> input 0 to event '0'
-instance.on('0', function(message) {
+component.on('0', function(message) {
     // message as specified above
 });
 ```
