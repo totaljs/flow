@@ -283,6 +283,9 @@ label span { vertical-align: middle; }
 .themedark .ui-contextmenu-items span { color: #505050; }
 .themedark .ui-contextmenu-items .item:hover { background: linear-gradient(white,#F8F8F8); }
 
+.ui-error { margin: 15px 0; padding: 0; list-style-type: none; border: 2px solid #BE3A48; border-left-width: 0; border-right-width: 0; padding: 10px 0; color: #BE3A48; }
+.ui-error div .fa { margin-right: 7px; }
+
 @media(max-width: 767px) {
 	.ui-colorpicker { width: 90%; margin-left: 5%; }
 	.ui-colorpicker li { width: 10%; }

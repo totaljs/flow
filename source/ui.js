@@ -31,7 +31,7 @@ COMPONENT('error', function() {
 
 		var builder = [];
 		for (var i = 0, length = value.length; i < length; i++)
-			builder.push('<div><span class="fa fa-times-circle"></span>{0}</div>'.format(value[i].error));
+			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, self.attr('data-icon') || 'fa-times-circle'));
 
 		self.html(builder.join(''));
 		self.toggle('hidden', false);

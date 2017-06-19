@@ -84,6 +84,7 @@ svg { cursor: move; }
 .m { margin-bottom: 15px; }
 .npb { padding-bottom: 0; }
 .nmb { margin-bottom: 0; }
+.npt { padding-top: 0; }
 .nmt { margin-top: 0; }
 .mt5 { margin-top: 5px; }
 .mt10 { margin-top: 10px; }
