@@ -1058,6 +1058,7 @@ COMPONENT('designer', function() {
 				move.x = x + scroller.prop('scrollLeft');
 				move.y = y + scroller.prop('scrollTop');
 				move.type = 1;
+				self.select(null);
 				return;
 			}
 
@@ -1136,7 +1137,9 @@ COMPONENT('designer', function() {
 		};
 
 		self.duplicate = function() {
+
 			EMIT('designer.selectable', null);
+
 			var component = flow.components.findItem('id', selected.attr('data-id'));
 			var duplicate = {
 				options: CLONE(component.options),
@@ -1364,19 +1367,66 @@ COMPONENT('designer', function() {
 
 		e.preventDefault();
 
+		if (flow.selected) {
+			// Caching
+			if (flow.selected.get(0) !== self.allowedselected) {
+				self.allowed = {};
+				var find = function(com) {
+					if (!com)
+						return;
+					self.allowed[com.id] = true;
+					Object.keys(com.connections).forEach(function(index) {
+						com.connections[index].forEach(function(item) {
+							self.allowed[item.id] = true;
+							find(flow.components.findItem('id', item.id));
+						});
+					});
+				};
+				find(flow.components.findItem('id', flow.selected.attr('data-id')));
+				self.allowedselected = flow.selected.get(0);
+			}
+		} else
+			self.allowed = null;
+
 		self.find('.node_connection').each(function() {
+
 			var el = $(this);
+			if (self.allowed && !self.allowed[el.attr('data-to')] && !self.allowed[el.attr('data-from')])
+				return;
+
 			var off = el.attr('data-offset').split(',');
-			off[4] = +off[4] + x;
-			off[5] = +off[5] + y;
-			off[6] = +off[6] + x;
-			off[7] = +off[7] + y;
+
+			if (self.allowed) {
+
+				if (self.allowed[el.attr('data-from')]) {
+					off[4] = +off[4] + x;
+					off[5] = +off[5] + y;
+					off[6] = +off[6];
+					off[7] = +off[7];
+				}
+
+				if (self.allowed[el.attr('data-to')]) {
+					off[4] = +off[4];
+					off[5] = +off[5];
+					off[6] = +off[6] + x;
+					off[7] = +off[7] + y;
+				}
+
+			} else {
+				off[4] = +off[4] + x;
+				off[5] = +off[5] + y;
+				off[6] = +off[6] + x;
+				off[7] = +off[7] + y;
+			}
+
 			this.setAttribute('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
 			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
 		self.find('.node').each(function() {
 			var el = $(this);
+			if (self.allowed && !self.allowed[el.attr('data-id')])
+				return;
 			var offset = el.attr('transform');
 			offset = offset.substring(10, offset.length - 1).split(',');
 			var px = +offset[0] + x;
@@ -1415,7 +1465,6 @@ COMPONENT('designer', function() {
 
 	self.connect = function(iindex, oindex, output, input) {
 
-
 		var a = output.find('.output[data-index="{0}"]'.format(oindex));
 		var b = input.find('.input[data-index="{0}"]'.format(iindex));
 
@@ -1443,9 +1492,6 @@ COMPONENT('designer', function() {
 		attr['data-to'] = bid;
 		attr['data-toindex'] = oindex;
 //		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (oindex + '_' + aid + 'x' + bid) + (flow.connections[oindex + aid + bid] ? '' : ' path_new');
-
-
-
 		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new');
 		lines.asvg('path').attr(attr);
 	};

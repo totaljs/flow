@@ -143,13 +143,15 @@
 		<div class="designer-container">
 			<div id="designerstate"></div>
 			<nav id="designerbuttons">
-				<a href="javascript:void(0)" class="exec disabled" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-copy"></i></a>
-				<a href="javascript:void(0)" class="exec disabled" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></a>
+				<button class="exec disabled" title="@(Copy component)" data-exec="#designer.copy"><i class="fa fa-file-text-o"></i></button>
+				<button class="exec disabled" name="paste" title="@(Paste component)" data-exec="#designer.paste"><i class="fa fa-paste"></i></button>
+				<button class="exec disabled" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-files-o"></i></button>
+				<button class="exec disabled" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
 			</nav>
 			<div id="designerzoom">
-				<a href="javascript:void(0)" class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></a>
-				<a href="javascript:void(0)" class="exec" title="@(Reset zoom)" data-exec="#designer.zoomreset"><i class="fa fa-unsorted"></i></a>
-				<a href="javascript:void(0)" class="exec" title="@(Zoom out)" data-exec="#designer.zoomout"><i class="fa fa-search-minus"></i></a>
+				<button class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></button>
+				<button class="exec" title="@(Reset zoom)" data-exec="#designer.zoomreset"><i class="fa fa-unsorted"></i></button>
+				<button class="exec" title="@(Zoom out)" data-exec="#designer.zoomout"><i class="fa fa-search-minus"></i></button>
 			</div>
 			<div class="designer-scrollbar">
 				<div class="designer-shadow-top"></div>
@@ -338,7 +340,7 @@
 				obj.options = duplicate.options;
 				obj.name = duplicate.name;
 				obj.output = duplicate.output;
-				obj.tab = duplicate.tab;
+				obj.tab = common.tab.id;
 			}
 
 			flow.components.push(obj);
@@ -396,9 +398,16 @@
 		});
 
 		ON('designer.selectable', function(el) {
-			$('#designerbuttons a').each(function(index) {
+
+			flow.selected = el;
+			$('#designerbuttons button').each(function(index) {
 				var node = $(this);
-				node.toggleClass('disabled', index ? (el ? false : true) : (el && el.hasClass('node') ? false : true));
+				var disabled = index ? (el ? false : true) : (el && el.hasClass('node') ? false : true);
+
+				if (this.name === 'paste')
+					disabled = flow.clipboard == null;
+
+				node.toggleClass('disabled', disabled);
 			});
 		});
 
@@ -504,6 +513,7 @@
 		});
 
 		$(window).on('hashchange', function() {
+			EMIT('designer.selectable', null);
 			EMIT('designer.refresh');
 		}).trigger('hashchange');
 
@@ -872,6 +882,75 @@
 
 		OPERATION('designer.duplicate', function(el) {
 			!el.hasClass('disabled') && SETTER('designer', 'duplicate');
+		});
+
+		OPERATION('designer.copy', function(el) {
+			if (el.hasClass('disabled'))
+				return;
+
+			flow.clipboard = flow.components.findItem('id', flow.selected.attr('data-id'));
+
+			el.addClass('animate');
+			setTimeout(function() {
+				el.removeClass('animate');
+			}, 500);
+			EMIT('designer.selectable', flow.selected);
+		});
+
+		OPERATION('designer.paste', function(el) {
+
+			if (el.hasClass('disabled'))
+				return;
+
+			SETTER('loading', 'show');
+
+			var clone = function(component, callback) {
+
+				var obj = CLONE(component);
+				obj.$component = component.$component;
+				obj.tab = common.tab.id;
+				obj.id = Date.now().toString();
+				obj.x += 50;
+				obj.y += 50;
+
+				flow.components.push(obj);
+				flow.designer.push(obj);
+				EMIT('add.' + obj.component);
+
+				var items = [];
+
+				Object.keys(obj.connections).forEach(function(index) {
+					obj.connections[index].forEach(function(item) {
+						items.push(item);
+					});
+				});
+
+				setTimeout(function() {
+					items.waitFor(function(item, next) {
+
+						var old = flow.components.findItem('id', item.id);
+
+						clone(old, function(id) {
+							item.id = id;
+							next();
+						});
+
+					}, function() {
+						callback(obj.id);
+					});
+
+				}, 50);
+			};
+
+			clone(flow.clipboard, function(id) {
+				flow.clipboard = null;
+				EMIT('designer.selectable', flow.selected);
+				setState(MESSAGES.apply);
+				setTimeout(function() {
+					EMIT('designer.refresh');
+					SETTER('loading', 'hide', 1000);
+				}, 50);
+			});
 		});
 
 		OPERATION('errors.refresh', function() {

@@ -4,7 +4,7 @@
 .ui-designer * { user-select: none; }
 .ui-designer .node { cursor: pointer; }
 .ui-designer .selectable { cursor: crosshair; }
-.ui-designer .input, .ui-designer .output { stroke: white; stroke-width: 1; }
+.ui-designer .input, .ui-designer .output { stroke: white; stroke-width: 2; }
 .ui-designer .hover { stroke: white; stroke-width: 2px; }
 .ui-designer path { fill: none; }
 .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }
