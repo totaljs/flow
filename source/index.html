@@ -526,16 +526,30 @@
 		});
 
 		// Tabs operations
-
 		OPERATION('tabs.add', function() {
-			SET('formtab', {}, true);
+
+			formtabpositions = [];
+			for (var i = 0; i < flow.tabs.length + 1; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+			SET('formtab', { position: flow.tabs.length + 1 }, true);
 			SET('common.form', 'tab');
 		});
 
 		OPERATION('tabs.upd', function(id) {
-			var item = flow.tabs.findItem('id', id);
-			if (item) {
-				SET('formtab', CLONE(item), true);
+
+			formtabpositions = [];
+			for (var i = 0; i < flow.tabs.length; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+
+			var index = flow.tabs.findIndex('id', id);
+			if (index !== -1) {
+				var data = CLONE(flow.tabs[index]);
+				data.position = index + 1;
+				SET('formtab', data, true);
 				SET('common.form', 'tab');
 			}
 		});
@@ -664,6 +678,7 @@
 		});
 
 		ON('tabs.save', function(form) {
+
 			var o = form.id ? flow.tabs.findItem('id', form.id) : {};
 			o.name = form.name;
 			o.icon = form.icon;
@@ -672,6 +687,13 @@
 			if (!o.id) {
 				o.id = Date.now().toString();
 				flow.tabs.push(o);
+			}
+
+			var position = form.position - 1;
+
+			if (flow.tabs[position] && flow.tabs[position].id !== o.id) {
+				flow.tabs = flow.tabs.remove('id', o.id);
+				flow.tabs.splice(position, 0, o);
 			}
 
 			UPDATE('flow.tabs');
