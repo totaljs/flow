@@ -1058,6 +1058,7 @@ COMPONENT('designer', function() {
 				move.x = x + scroller.prop('scrollLeft');
 				move.y = y + scroller.prop('scrollTop');
 				move.type = 1;
+				move.node = null;
 				self.select(null);
 				return;
 			}
@@ -1159,8 +1160,10 @@ COMPONENT('designer', function() {
 			} else if (selected)
 				selected.removeClass('selected');
 
-			if (!el)
+			if (!el) {
+				selected = null;
 				return;
+			}
 
 			el.addClass('selected', true);
 			selected = el;
