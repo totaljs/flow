@@ -1266,8 +1266,8 @@ FLOW.findById = function(id) {
 
 FLOW.prototypes = function(fn) {
 	var proto = {};
-	proto.FlowData = FlowData;
-	proto.Component = Component;
+	proto.FlowData = FlowData.prototype;
+	proto.Component = Component.prototype;
 	fn.call(proto, proto);
 	return FLOW;
 };

@@ -101,7 +101,12 @@
 				} else {
 
 					tabs.forEach(function(item) {
-						!flow.tabs.findItem('id', item.id) && flow.tabs.push(item);
+						if (!flow.tabs.findItem('id', item.id)) {
+							flow.tabs.push(item);
+							var e = flow.tabs.findItem('tab', item.linker);
+							if (e)
+								item.linker = item.linker + '-' + GUID(3);
+						}
 					});
 
 					components.forEach(function(item) {

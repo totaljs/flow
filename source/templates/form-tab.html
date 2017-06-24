@@ -49,7 +49,7 @@
 		var connections = [];
 		var newtab = {};
 
-		newtab.name = formtab.name + ' (1)';
+		newtab.name = formtab.name;
 		newtab.id = Date.now().toString();
 
 		flow.components.forEach(function(item) {
@@ -75,10 +75,9 @@
 			flow.components.push(item);
 			setTimeout(next, 50);
 		}, function() {
+
 			connections.forEach(function(item) {
 				item.id = db[item.id];
-				if (item.id === null)
-					console.log('SHIT');
 			});
 
 			flow.tabs.push(newtab);

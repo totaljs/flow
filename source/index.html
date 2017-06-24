@@ -684,10 +684,20 @@
 			o.icon = form.icon;
 			o.linker = o.name.slug();
 
+			if (!o.linker)
+				o.linker = GUID(8);
+
 			if (!o.id) {
 				o.id = Date.now().toString();
 				flow.tabs.push(o);
 			}
+
+ 			var linker = flow.tabs.findItem(function(item) {
+ 				return item.id !== o.id && item.linker === o.linker;
+ 			});
+
+			if (linker)
+				o.linker += GUID(3);
 
 			var position = form.position - 1;
 
