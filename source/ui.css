@@ -286,6 +286,46 @@ label span { vertical-align: middle; }
 .ui-error { margin: 15px 0; padding: 0; list-style-type: none; border: 2px solid #BE3A48; border-left-width: 0; border-right-width: 0; padding: 10px 0; color: #BE3A48; }
 .ui-error div .fa { margin-right: 7px; }
 
+.ui-multioptions { background-color: white; padding: 0 0 15px; }
+.ui-multioptions-item { height: 36px; padding: 0 10px; background-color: #F5F7FA; border-top: 1px solid #E0E0E0; }
+.ui-multioptions-item:first-child { border-top: 0; border-top-right-radius: 4px; border-top-left-radius: 4px; }
+.ui-multioptions-item:last-child { border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; }
+
+.ui-moi-name { float: left; width: 30%; font-size: 12px; margin: 10px 0 0 0; padding-right: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ui-moi-value { float: right; width: 70%; }
+.ui-moi-value-inputtext { font-size: 11px; border: 0; background-color: white; width: 100%; margin: 8px 0 0 0; padding: 0 6px 0; color: black; outline: 0; height: 20px; line-height: 15px; }
+.ui-moi-value-inputnumber input { font-size: 11px; border: 0; background-color: white; width: 100%; margin: 8px 0 0 0; padding: 0 6px 0; color: black; outline: 0; height: 20px; line-height: 15px; }
+.ui-moi-value-inputnumber { margin-left: 40px; }
+.ui-moi-value-inputnumber-buttons { float: left; width: 40px; }
+.ui-moi-value-inputnumber-buttons span { width: 19px; float: left; text-align: center; margin: 8px 1px 0 0; padding: 3px 0 0 0; height: 20px; cursor: pointer; color: #656D78; font-size: 12px; background-color: #CCD1D9; }
+.ui-moi-value-inputnumber-buttons span:hover { background-color: #656D78; color: white; }
+
+.ui-moi-value-inputpath input { font-size: 11px; border: 0; background-color: white; width: 100%; margin: 8px 0 0 0; padding: 0 6px 0; color: black; outline: 0; height: 20px; line-height: 15px; }
+.ui-moi-value-inputpath { margin-left: 20px; }
+.ui-moi-value-inputpath-buttons { float: left; width: 20px; }
+.ui-moi-value-inputpath-buttons span { width: 19px; float: left; text-align: center; margin: 8px 1px 0 0; padding: 2px 0 0 0; height: 20px; cursor: pointer; color: #656D78; font-size: 12px; background-color: #CCD1D9; }
+.ui-moi-value-inputpath-buttons span:hover { background-color: #656D78; color: white; }
+
+.ui-moi-value-inputdate input { font-size: 11px; border: 0; background-color: white; width: 100%; margin: 8px 0 0 0; padding: 0 6px 0; color: black; outline: 0; height: 20px; line-height: 15px; }
+.ui-moi-value-inputdate { margin-left: 20px; }
+.ui-moi-value-inputdate-buttons { float: left; width: 20px; }
+.ui-moi-value-inputdate-buttons span { width: 19px; float: left; text-align: center; margin: 8px 1px 0 0; padding: 2px 0 0 0; height: 20px; cursor: pointer; color: #656D78; font-size: 12px; background-color: #CCD1D9; }
+.ui-moi-value-inputdate-buttons span:hover { background-color: #656D78; color: white; }
+
+.ui-moi-value-colors { margin: 8px 0 0 0; }
+.ui-moi-value-colors span { width: 4%; height: 20px; float: left; text-align: center; cursor: pointer; color: white; }
+.ui-moi-value-colors .fa { display: none; padding: 3px 0 0 0; }
+.ui-moi-value-colors .selected .fa { display: block; }
+
+.ui-moi-value-select { background-color: white; position: relative; width: 100%; overflow: hidden; margin: 7px 0 0 0; }
+.ui-moi-value-select select { width: 120%; outline: 0; border: 0; height: 20px; background-color: white; font-size: 11px; float: left; cursor: pointer; padding: 0; margin: 2px 0 0 8px; color: black; appearance: none; -moz-appearance: none; -webkit-appearance: none; }
+.ui-moi-value-select .fa { position: absolute; right: 7px; top: 5px; font-size: 10px; color: gray; }
+
+.ui-moi-value-boolean { margin: 9px 0 0 0; width: 19px; height: 19px; border: 1px solid #D0D0D0; text-align: center; font-size: 12px; color: white; padding: 2px 0 0 0; cursor: pointer; background-color: white; }
+.ui-moi-value-boolean .fa { display: none; }
+.ui-moi-value-boolean.checked .fa { display: block; }
+.ui-moi-value-boolean.checked { background-color: #017CCA; border-color: #017CCA; }
+
 @media(max-width: 767px) {
 	.ui-colorpicker { width: 90%; margin-left: 5%; }
 	.ui-colorpicker li { width: 10%; }

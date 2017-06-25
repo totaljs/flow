@@ -539,7 +539,7 @@ ON('save.componentname', function(component, options) {
 });
 ```
 
-### Components: jComponent +v10.0.0
+### Components: jComponent +v11.0.0
 
 Bellow jComponents can be used in `Settings form`:
 
@@ -570,6 +570,7 @@ Bellow jComponents can be used in `Settings form`:
 - textboxlist
 - validation
 - visible
+- multioptions
 
 __References:__
 
