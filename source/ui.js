@@ -244,8 +244,10 @@ COMPONENT('confirm', function() {
 			if (!visible)
 				return;
 			var index = e.keyCode === 13 ? 0 : e.keyCode === 27 ? 1 : null;
-			index != null && self.find('button[data-index="{0}"]'.format(index)).trigger('click');
-			e.preventDefault();
+			if (index != null) {
+				self.find('button[data-index="{0}"]'.format(index)).trigger('click');
+				e.preventDefault();
+			}
 		});
 	};
 
