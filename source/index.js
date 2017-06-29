@@ -302,6 +302,8 @@ function websocket() {
 				tmp.output = instance.output;
 				tmp.input = instance.input;
 				tmp.connections = instance.connections;
+				tmp.reference = instance.reference;
+
 				FLOW.save2();
 
 			} else
