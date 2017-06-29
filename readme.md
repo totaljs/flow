@@ -411,6 +411,9 @@ exports.install = function(component) {
     // Saves current options, useful when options are changed internally. Options from settings form are saved automatically
     // returns {Component}
 
+    component.reconfig();
+    // If the component options changes on the server (not by recieving new options from designer) then use this to update options in designer
+
     // =====================
     // PROPERTIES
     // =====================

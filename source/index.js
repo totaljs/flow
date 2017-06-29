@@ -14,6 +14,7 @@ const MESSAGE_TEMPLATES = { type: 'templates' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
+const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
@@ -612,6 +613,13 @@ Component.prototype.save = function() {
 		tmp.options = this.options;
 		FLOW.save2();
 	}
+	return this;
+};
+
+Component.prototype.reconfig = function() {
+	MESSAGE_COMPONENTOPTIONS.id = this.id;
+	MESSAGE_COMPONENTOPTIONS.options = this.options;
+	FLOW.send(MESSAGE_COMPONENTOPTIONS);
 	return this;
 };
 
