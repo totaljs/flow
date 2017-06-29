@@ -844,6 +844,12 @@
 					delete common.callbacks[message.id];
 				}
 			}
+
+			if (message.type === 'componentoptions') {
+				var component = flow.components.findItem('id', message.id);
+				if (component)
+					component.options = message.options;
+			}
 		});
 
 		// Prevention for "backspace"
