@@ -590,7 +590,11 @@ Component.prototype.error = function(e, parent) {
 	MESSAGE_ERRORS.id = self.id;
 	MESSAGE_ERRORS.body = self.errors;
 	setTimeout2('flow.' + self.id, function() {
-		MESSAGE_DESIGNER.components && (MESSAGE_DESIGNER.components.findItem('id', self.id).errors = self.errors);
+		if (MESSAGE_DESIGNER.components) {
+			var tmp = MESSAGE_DESIGNER.components.findItem('id', self.id);
+			if (tmp)
+				tmp.errors = self.errors;
+		}
 		FLOW.send(MESSAGE_ERRORS);
 	}, 100);
 	return this;

@@ -389,6 +389,12 @@ exports.install = function(component) {
     // @key {String}
     // returns {Component}
 
+    component.variable(key);
+    // +v3.0.0
+    // Reads a value from global variables
+    // @key {String}
+    // returns {Object}
+
     component.signal([index], [data]);
     // Sends a signal to first connection (it emits "signal" event in target connection)
     // @index {Number} - optional, an output index (default: "undefined" --> all connections)
