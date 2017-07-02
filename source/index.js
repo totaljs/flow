@@ -445,10 +445,28 @@ Component.prototype.signal = function(index, data) {
 	}
 
 	var self = this;
-	if (!self.connections)
+	var connections = self.connections;
+
+	if (!connections)
 		return self;
 
-	// @TODO: NOT IMPLEMENTED
+	var arr = Object.keys(connections);
+
+	if (!arr.length)
+		return self;
+
+	for (var i = 0, length = arr.length; i < length; i++) {
+		var dex = arr[i];
+
+		if (index !== undefined && dex != index)
+			continue;
+
+		var ids = connections[dex];
+		for (var j = 0, jl = ids.length; j < jl; j++) {
+			var instance = FLOW.instances[ids[j].id];
+			instance && !instance.$closed && instance.emit('signal', data);
+		}
+	}
 
 	return self;
 };
