@@ -1036,7 +1036,6 @@ FLOW.execute = function(filename, sync) {
 		}, 500);
 	})(name, filename, FILENAME);
 
-
 	sync && F.cluster.emit('flow.cluster.execute', filename);
 	return FLOW;
 };
