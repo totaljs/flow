@@ -893,7 +893,11 @@
 			common.callbacks[id] = function(response) {
 				if (type === 'html') {
 					common.statics[key] = 'html.' + target;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {0}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-placeholder="@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-placeholder="@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+					var com = common.components.findItem('id', 'monitorcpu');
+					var title = target;
+					if (com)
+						title = com.name;
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {2}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-placeholder="@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-placeholder="@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title)));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
