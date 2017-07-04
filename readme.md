@@ -580,6 +580,8 @@ Bellow jComponents can be used in `Settings form`:
 - validation
 - visible
 - multioptions
+- dragdropfiles
+- filereader
 
 __References:__
 
