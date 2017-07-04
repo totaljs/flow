@@ -985,7 +985,7 @@ FLOW.clearerrors = function(noSync) {
 	}
 
 	if (!noSync) {
-		F.cluster.emit('flow.cluster.clearerrors');
+		// @TODO: F.cluster.emit('flow.cluster.clearerrors');
 		FLOW.save2(NOOP);
 	}
 
@@ -1036,7 +1036,7 @@ FLOW.execute = function(filename, sync) {
 		}, 500);
 	})(name, filename, FILENAME);
 
-	sync && F.cluster.emit('flow.cluster.execute', filename);
+	// @TODO: sync && F.cluster.emit('flow.cluster.execute', filename);
 	return FLOW;
 };
 
@@ -1244,7 +1244,7 @@ FLOW.uninstall = function(name, noSync) {
 			Fs.unlink(F.path.root(PATH + com.filename), NOOP);
 			FLOW.send(MESSAGE_DESIGNER);
 			FLOW.save2();
-			F.cluster.emit('flow.cluster.uninstall', name);
+			// @TODO: F.cluster.emit('flow.cluster.uninstall', name);
 		}
 	});
 
