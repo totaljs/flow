@@ -3246,15 +3246,21 @@ COMPONENT('filereader', function() {
 	};
 
 	self.process = function(files) {
-		var file = files[0];
 		var el = this;
-		var reader = new FileReader();
-		reader.onload = function() {
+		SETTER('loading', 'show');
+		(files.length - 1).async(function(index, next) {
+			var file = files[index];
+			var reader = new FileReader();
+			reader.onload = function() {
+				self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
+				reader = null;
+				setTimeout(next, 500);
+			};
+			reader.readAsText(file);
+		}, function() {
+			SETTER('loading', 'hide', 1000);
 			el.value = '';
-			self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
-			reader = null;
-		};
-		reader.readAsText(file);
+		});
 	};
 
 });
