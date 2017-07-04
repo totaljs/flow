@@ -52,6 +52,7 @@
 .ui-form-buttons button[name="cancel"] { color: gray; }
 .ui-form-buttons div { position: relative; display: inline-block; vertical-align: middle; }
 .ui-form-buttons label { float: right; margin: 12px 0 0 0; font-size: 11px; }
+.ui-form-dragdrop { background-color: #F8F8F8; }
 
 .ui-confirm { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 100; width: 100%; display: table; height: 100%; transition: 0.5s all; opacity: 0; }
 .ui-confirm > div { display: table-cell; vertical-align: middle; text-align: center; color: white; padding: 15px; }
