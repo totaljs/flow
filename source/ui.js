@@ -955,14 +955,15 @@ COMPONENT('designer', function() {
 			}
 
 			if (e.target.tagName === 'BODY') {
+				var step = e.shiftKey ? 100 : 0;
 				if (e.keyCode === 38) {
-					self.move(0, -20, e);
+					self.move(0, -20 - step, e);
 				} else if (e.keyCode === 40) {
-					self.move(0, 20, e);
+					self.move(0, 20 + step, e);
 				} else if (e.keyCode === 39) {
-					self.move(20, 0, e);
+					self.move(20 + step, 0, e);
 				} else if (e.keyCode === 37) {
-					self.move(-20, 0, e);
+					self.move(-20 - step, 0, e);
 				}
 			}
 

@@ -963,11 +963,17 @@
 			var clone = function(component, callback) {
 
 				var obj = CLONE(component);
+				var org = component.$component;
 				obj.$component = component.$component;
 				obj.tab = common.tab.id;
 				obj.id = Date.now().toString();
 				obj.x += 50;
 				obj.y += 50;
+
+				if (typeof(org.status) === 'object')
+					obj.state = { text: org.status.text, color: org.status.color };
+				else
+					obj.state = { text: org.status || '', color: '' };
 
 				flow.components.push(obj);
 				flow.designer.push(obj);
