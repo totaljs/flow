@@ -43,7 +43,7 @@ var options = {};
 // options.limit = 50;
 
 // Predefined set of components (default value):
-// options.templates = 'https://github.com/totaljs/flowcomponents/blob/master/templates.json';
+// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
 
 // ====================================
 // Security (OPTIONAL)
