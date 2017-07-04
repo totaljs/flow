@@ -1,6 +1,10 @@
 <div data-jc="form" data-title="@(Export flow)" data-jc-path="common.form" data-if="value === 'export'" data-width="500px" class="hidden" data-jc-init="formexport_init">
+	<div class="padding bg-smoke">
+		<div data-jc="dropdowncheckbox" data-jc-path="formexport.tabs" data-source="flow.tabs" data-placeholder="@(All tabs)" class="m">@(Choose tabs)</div>
+		<div data-jc="checkbox" data-jc-path="formexport.variables">@(Export variables)</div>
+	</div>
 	<div class="padding npb">
-		<div data-jc="textarea" data-jc-path="formexport.body" class="m" data-height="200px">@(Copy data to clipboard)</div>
+		<div data-jc="textarea" data-jc-path="formexport.body" class="m" data-height="200px" data-icon="fa-clipboard">@(Copy data to clipboard)</div>
 	</div>
 	<div class="ui-form-buttons">
 		<button name="cancel" style="width:100%">@(Close)</button>
@@ -8,22 +12,52 @@
 </div>
 
 <script>
+
+	var formexport = {};
+	formexport.tabs = [];
+	formexport.variables = true;
+
 	function formexport_reload() {
+		SETTER('websocket', 'send', { type: 'getvariables' });
+	}
 
-		var obj = {};
-		obj.components = CLONE(flow.components);
-		obj.tabs = CLONE(flow.tabs);
-		obj.url = location.href;
-		obj.created = new Date();
+	function formexport_rebuild() {
+		setTimeout2('formexport.rebuild', function() {
+			var obj = {};
 
-		obj.components.forEach(function(o) {
-			delete o.$component;
-		});
+			if (formexport.tabs.length) {
+				obj.tabs = [];
+				formexport.tabs.forEach(function(item) {
+					var tab = flow.tabs.findItem('id', item);
+					obj.tabs.push(CLONE(tab));
+				});
+			} else
+				obj.tabs = CLONE(flow.tabs);
 
-		SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
+			obj.components = [];
+
+			flow.components.forEach(function(item) {
+				var tab = obj.tabs.findItem('id', item.tab);
+				tab && obj.components.push(CLONE(item));
+			});
+
+			if (formexport.variables)
+				obj.variables = formvariables.body;
+
+			obj.url = location.href;
+			obj.created = new Date();
+			obj.components.forEach(function(o) {
+				delete o.$component;
+			});
+
+			SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
+		}, 500);
 	}
 
 	function formexport_init(component) {
 		component.find('textarea').prop('readonly', true);
+		WATCH('formexport.tabs', formexport_rebuild);
+		WATCH('formexport.variables', formexport_rebuild);
+		formexport_rebuild();
 	}
 </script>

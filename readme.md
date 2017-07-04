@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Flow__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 3.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 Flow comes pre-installed with components such as:
 - `HTTP route` for creating web endpoints
@@ -71,6 +71,15 @@ INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/flow.package', options
 - `FLOW` is a global variable
 - URL address `http://127.0.0.1:8000/$flow/` (default, can be changed in config)
 
+__Properties__:
+
+```javascript
+FLOW.variables;
+// Returns all custom variables defined by user key/value
+// returns {Object}
+// +v3.0.0
+```
+
 __Methods__:
 
 ```javascript
@@ -125,6 +134,11 @@ FLOW.install(url, [callback]);
 FLOW.install(filename, body, [callback]);
 // Registers a new component and stores its content into the `/flow/` directory
 // returns {FLOW}
+
+FLOW.variable(key);
+// Returns a value of variable by key
+// return {Object}
+// +v3.0.0
 ```
 
 __Events__:
@@ -155,6 +169,16 @@ ON('flow.save', function(instance) {
 ON('flow.close', function(instance) {
     // A component instance will be closed
 });
+
+ON('flow.options', function(instance) {
+    // A component instance has changed options
+    // +v3.0.0
+});
+
+ON('flow.variables', function(variables) {
+    // Changed flow variables
+    // +v3.0.0
+});
 ```
 
 ## Component
@@ -174,13 +198,18 @@ exports.color = '#656D78'; // use darker colors because the font color is "white
 // {Boolean}, optional (default: false)
 exports.click = true;
 
-// {Boolean}, optional (default: true)
-exports.input = true;
+// {Number}, optional (default: 0)
+// +v3.0.0
+exports.input = 0;
+
+// or {Array of Colors}, input will have 2 inputs (red and blue)
+// +v3.0.0
+exports.input = ['red', 'blue'];
 
 // {Number}, optional (default: 0)
 exports.output = 1;
 
-// {Array of Colors}, output will have 2 outputs (red and blue)
+// or {Array of Colors}, output will have 2 outputs (red and blue)
 exports.output = ['red', 'blue'];
 
 // {String}, optional (default: "Common")
@@ -234,47 +263,59 @@ exports.install = function(component) {
         // usefull for enabling/disabling some behavior or triggering some actions
     });
 
-    component.on('data', function(response) {
+    component.on('data', function(message) {
 
         // RAW DATA
         // returns {Object}
-        response.data;
+        message.data;
 
         // Write value to data repository
         // returns {Message}
-        response.set('key', 'value');
+        message.set('key', 'value');
 
         // Read value from data repository
         // returns {Object}
-        response.get('key');
+        message.get('key');
 
         // Remove value from data repository
         // returns {Message}
-        response.rem('key');
+        message.rem('key');
 
         // {Object Array} Array of all components the message has passed through (previous components)
-        response.tracking;
+        message.tracking;
 
         // {Object} Parent component (first component which started the flow)
-        response.parent;
+        message.parent;
 
         // {Boolean} Is completed?
-        response.completed;
+        message.completed;
 
         // {DateTime}
-        response.begin;
+        message.begin;
 
         // How can I modify data?
-        response.data = { newdata: true };
+        message.data = { newdata: true };
 
-        // send this response :-)
-        component.send(response);
+        // send this message :-)
+        component.send(message);
+    });
+
+    component.on('<input-number>', function(message) {
+        // message as specified above in 'data' event
+        // input 0 to event '0' and so on
     });
 
     component.on('options', function(new_options, old_options) {
         // optional
         // options have changed in the designer
-        // self.options holds the new_options already
+        // instance.options holds the new_options already
+    });
+
+    component.on('variables', function(variables) {
+        // +v3.0.0
+        // optional
+        // global variables have been changed
+        // instance.variable(key)
     });
 
     component.on('close', function() {
@@ -348,6 +389,12 @@ exports.install = function(component) {
     // @key {String}
     // returns {Component}
 
+    component.variable(key);
+    // +v3.0.0
+    // Reads a value from global variables
+    // @key {String}
+    // returns {Object}
+
     component.signal([index], [data]);
     // Sends a signal to first connection (it emits "signal" event in target connection)
     // @index {Number} - optional, an output index (default: "undefined" --> all connections)
@@ -369,6 +416,9 @@ exports.install = function(component) {
     component.save();
     // Saves current options, useful when options are changed internally. Options from settings form are saved automatically
     // returns {Component}
+
+    component.reconfig();
+    // If the component options changes on the server (not by recieving new options from designer) then use this to update options in designer
 
     // =====================
     // PROPERTIES
@@ -404,8 +454,10 @@ When is the message instance created?
 
 ```javascript
 // FIRST CASE:
-instance.on('data', function(message) {
+component.on('data', function(message) {
     // Properties:
+    message.id;               // {Number} A message identificator
+    message.index;            // {Number} An input number
     message.begin;            // {Date} when it started
     message.data;             // {Anything} user defined data
     message.completed;        // {Boolean} is sending completed?
@@ -415,11 +467,26 @@ instance.on('data', function(message) {
     // Methods (private message repository):
     message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
     message.get(key);         // Gets a key-value (doesn't read data from "data")
-    message.rem(key);        // Removes a key-value (doesn't read data from "data")
+    message.rem(key);         // Removes a key-value (doesn't read data from "data")
 });
 
 // SECOND CASE
-var message = instance.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
+var message = component.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
+```
+
+## Multiple inputs
+
+```javascript
+// data from all inputs go to 'data' event
+component.on('data', function(message) {
+    // message as specified above
+    message.index; // Input number
+});
+
+// data from specific input go also to the corresponding event -> input 0 to event '0'
+component.on('0', function(message) {
+    // message as specified above
+});
 ```
 
 
@@ -461,23 +528,27 @@ ON('apply', function() {
 
 ### Good to know
 
-__How to change count of outputs dynamically?__
+__How to change count of outputs/inputs dynamically?__
 
-This is possible on client-side only.
+`v3.0.0` This is possible on client-side only.
 
 ```javascript
 ON('save.componentname', function(component, options) {
+    
     component.output = 5;
+    // component.input = 3;
 
     // or
     component.output = ['green', 'red', 'blue'];
+    // component.input = ['green', 'red', 'blue'];
 
     // or set output to default
     component.output = null;
+    // component.input = null;
 });
 ```
 
-### Components: jComponent +v10.0.0
+### Components: jComponent +v11.0.0
 
 Bellow jComponents can be used in `Settings form`:
 
@@ -508,6 +579,9 @@ Bellow jComponents can be used in `Settings form`:
 - textboxlist
 - validation
 - visible
+- multioptions
+- dragdropfiles
+- filereader
 
 __References:__
 

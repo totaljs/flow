@@ -1,59 +1,150 @@
 <div data-jc="form" data-title="@(Import flow)" data-jc-path="common.form" data-if="value === 'import'" data-width="500px" class="hidden" data-jc-init="formimport_init">
-	<div class="padding npb">
+	<div class="padding" data-b="formimportanalysis.is" data-b-class="n => n ? '+bg-smoke' : '-bg-smoke'">
 		<div data-jc="textarea" data-jc-path="formimport.body" class="m" data-height="200px" data-required="true" data-jc-value="''">@(Put exported data)</div>
+		<div data-jc="checkbox" data-jc-path="formimport.replace">@(Clear current design)</div>
+	</div>
+	<div class="hidden" data-b="formimportanalysis.is" data-b-visible="n => n === true">
+		<hr class="nmt" />
+		<div class="padding npt">
+			<div data-b="formimportanalysis.tabs" data-b-visible="n => n && n.length > 0" class="m">
+				<div data-jc="dropdowncheckbox" data-jc-path="formimport.tabs" data-source="formimportanalysis.tabs" data-placeholder="@(Import all tabs)">@(Choose tabs)</div>
+			</div>
+			<div data-b="formimportanalysis.variables" data-b-visible="n => n" class="m">
+				<div data-jc="checkbox" data-jc-path="formimport.variables">@(Import and replace variables)</div>
+			</div>
+			<div data-jc="error" data-jc-path="formimportanalysis.errors" data-icon="fa-warning"></div>
+		</div>
 	</div>
 	<div class="ui-form-buttons center">
-		<div data-jc="validation" data-jc-path="formimport">
-			<button name="submit" disabled="disabled">@(SUBMIT)</button>
+		<div data-jc="validation" data-jc-path="formimport" data-if="value.is === true">
+			<button name="submit" disabled="disabled">@(IMPORT)</button>
 		</div>
-		<button name="cancel">@(CANCEL)</button>
+		<button name="cancel">@(Close)</button>
 	</div>
 </div>
 
 <script>
+
 	function formimport_reload() {
-		SET('formimport.body', '');
+		SET('formimport.tabs', []);
+		SET('formimport.replace', false);
+		SET('formimport.variables', true);
+		SET('formimport.body', '', true);
+	}
+
+	function formimport_analyze() {
+		var data = null;
+
+		try {
+			data = PARSE(decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))));
+		} catch (e) {}
+
+		if (!data) {
+			SET('formimport.is', false);
+			SET('formimportanalysis', { is: false });
+			// bad data
+			return;
+		}
+
+		var errors = [];
+
+		data.components.forEach(function(item) {
+			var component = common.components.findItem('component', item.component);
+			!component && errors.push({ error: '@(Component "{0}" doesn\'t exist.)'.format(item.component) });
+		});
+
+		data.errors = errors.length ? errors : null;
+		data.is = true;
+		SET('formimport.is', true);
+		SET('formimportanalysis', data);
 	}
 
 	function formimport_init(component) {
+
+		WATCH('formimport.body', formimport_analyze);
+
 		component.submit = function(hide) {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to restore entered data?)', ['@(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
+
 				var err = false;
 				SETTER('loading', 'show');
-				try {
-					var data = PARSE(decodeURIComponent(atob(formimport.body)));
-					if (data) {
-						flow.tabs = data.tabs;
-						flow.components = data.components;
-						flow.designer = [];
-						flow.loaded = true;
 
-						if (!flow.tabs)
-							flow.tabs = [{ id: Date.now().toString(), name: 'Main', icon: 'fa-object-ungroup', linker: 'main' }];
+				var tabs = null;
+				var components = null;
 
-						location.hash = flow.tabs[0].linker;
+				if (formimport.tabs.length) {
+					tabs = [];
+					components = [];
 
-						if (!flow.components)
-							flow.components = [];
+					formimport.tabs.forEach(function(item) {
+						var tab = formimportanalysis.tabs.findItem('id', item);
+						tab && tabs.push(tab);
+					});
 
-						UPDATE('flow');
-						SETTER('binder', 'scan');
-						hide();
-						setTimeout(function() {
-							EMIT('designer.refresh');
-						}, 100);
-					} else
-						err = true;
-				} catch (ex) {
-					err = true;
+					tabs.forEach(function(item) {
+						formimportanalysis.components.forEach(function(component) {
+							if (component.tab === item.id)
+								components.push(component);
+						});
+					});
+
+				} else {
+					tabs = formimportanalysis.tabs;
+					components = formimportanalysis.components;
 				}
 
-				if (err) {
-					SETTER('message', 'alert', '@(Imported data are not valid.)');
-					DEFAULT('formimport.body');
+				if (formimport.replace) {
+					flow.tabs = tabs;
+					flow.components = components;
+				} else {
+
+					tabs.forEach(function(item) {
+						if (!flow.tabs.findItem('id', item.id)) {
+							flow.tabs.push(item);
+							var e = flow.tabs.findItem('tab', item.linker);
+							if (e)
+								item.linker = item.linker + '-' + GUID(3);
+						}
+					});
+
+					components.forEach(function(item) {
+						!flow.components.findItem('id', item.id) && flow.components.push(item);
+					});
 				}
+
+				flow.designer = [];
+				flow.loaded = true;
+
+				formimportanalysis.variables && SETTER('websocket', 'send', { type: 'variables', body: formimportanalysis.variables });
+
+				if (!flow.tabs || !flow.tabs.length)
+					flow.tabs = [{ id: Date.now().toString(), name: '@(Main)', icon: 'fa-object-ungroup', linker: 'main' }];
+
+				location.hash = flow.tabs[0].linker;
+				!flow.components && (flow.components = []);
+				flow.connections = {};
+
+				flow.components.forEach(function(item) {
+					item.$component = common.components.findItem('id', item.component);
+					Object.keys(item.connections).forEach(function(index) {
+						item.connections[index].forEach(function(conn) {
+							flow.connections[item.id + '#' + index + '#' + conn.index + '#' + conn.id] = true;
+						});
+					});
+				});
+
+				setState(MESSAGES.apply);
+				UPDATE('flow');
+				SETTER('binder', 'scan');
+				hide();
+
+				setTimeout(function() {
+					EMIT('designer.refresh');
+					success();
+				}, 100);
+
 				SETTER('loading', 'hide', 1000);
 			});
 		};

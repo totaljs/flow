@@ -31,7 +31,7 @@ COMPONENT('error', function() {
 
 		var builder = [];
 		for (var i = 0, length = value.length; i < length; i++)
-			builder.push('<div><span class="fa fa-times-circle"></span>{0}</div>'.format(value[i].error));
+			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, self.attr('data-icon') || 'fa-times-circle'));
 
 		self.html(builder.join(''));
 		self.toggle('hidden', false);
@@ -244,8 +244,10 @@ COMPONENT('confirm', function() {
 			if (!visible)
 				return;
 			var index = e.keyCode === 13 ? 0 : e.keyCode === 27 ? 1 : null;
-			index != null && self.find('button[data-index="{0}"]'.format(index)).trigger('click');
-			e.preventDefault();
+			if (index != null) {
+				self.find('button[data-index="{0}"]'.format(index)).trigger('click');
+				e.preventDefault();
+			}
 		});
 	};
 
@@ -708,16 +710,18 @@ COMPONENT('importer', function() {
 
 		if (imported) {
 			if (reload)
-				return EXEC(reload);
-			self.setter = null;
+				EXEC(reload);
+			else
+				self.setter = null;
 			return;
 		}
 
 		imported = true;
 		IMPORT(self.attr('data-url'), function() {
 			if (reload)
-				return EXEC(reload);
-			self.remove();
+				EXEC(reload);
+			else
+				self.remove();
 		});
 	};
 });
@@ -743,7 +747,7 @@ COMPONENT('visible', function() {
 		}
 
 		is && setTimeout2(self.id, function() {
-			self.broadcast('reload')();
+			self.exec('reload');
 		}, 100);
 
 		self.toggle('hidden', !is);
@@ -1001,42 +1005,44 @@ COMPONENT('designer', function() {
 				case 2:
 					connection.attr('d', '');
 					if (el.hasClass('input')) {
-						var index = +move.node.attr('data-index');
+						var oindex = +move.node.attr('data-index');
 						var output = move.node.closest('.node');
 						var input = el.closest('.node');
+						var iindex = el.attr('data-index');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
 							var id = input.attr('data-id');
 							var is = false;
-							if (instance.connections[index]) {
-								if (instance.connections[index].indexOf(id) === -1)
-									instance.connections[index].push(id);
-								else
+							if (instance.connections[oindex]) {
+								if (instance.connections[oindex].flowConnection(iindex, id))
 									is = true;
+								else
+									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
-								instance.connections[index] = [id];
-							!is && self.connect(index, output, input);
+								instance.connections[oindex] = [{ index: iindex, id: id }];
+							!is && self.connect(+iindex, oindex, output, input);
 						}
 					}
 					break;
 				case 3:
 					connection.attr('d', '');
 					if (el.hasClass('output')) {
-						var index = +el.attr('data-index');
+						var oindex = +el.attr('data-index');
 						var output = el.closest('.node');
 						var input = move.node.closest('.node');
+						var iindex = move.node.attr('data-index');
 						var instance = flow.components.findItem('id', output.attr('data-id'));
 						if (instance) {
 							var id = input.attr('data-id');
 							var is = false;
-							if (instance.connections[index]) {
-								if (instance.connections[index].indexOf(id) === -1)
-									instance.connections[index].push(id);
-								else
+							if (instance.connections[oindex]) {
+								if (instance.connections[oindex].flowConnection(iindex, id))
 									is = true;
+								else
+									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
-								instance.connections[index] = [id];
-							!is && self.connect(index, output, input);
+								instance.connections[oindex] = [{ index: iindex, id: id }];
+							!is && self.connect(+iindex, oindex, output, input);
 						}
 					}
 			}
@@ -1054,6 +1060,8 @@ COMPONENT('designer', function() {
 				move.x = x + scroller.prop('scrollLeft');
 				move.y = y + scroller.prop('scrollTop');
 				move.type = 1;
+				move.node = null;
+				self.select(null);
 				return;
 			}
 
@@ -1126,13 +1134,15 @@ COMPONENT('designer', function() {
 				idconnection = selected.attr('data-id');
 				EMIT('designer.rem', idconnection);
 			} else {
-				EMIT('designer.rem.connection', selected.attr('data-from'), selected.attr('data-to'), selected.attr('data-index'));
+				EMIT('designer.rem.connection', selected.attr('data-from'), selected.attr('data-to'), selected.attr('data-fromindex'), selected.attr('data-toindex'));
 				selected.remove();
 			}
 		};
 
 		self.duplicate = function() {
+
 			EMIT('designer.selectable', null);
+
 			var component = flow.components.findItem('id', selected.attr('data-id'));
 			var duplicate = {
 				options: CLONE(component.options),
@@ -1152,8 +1162,10 @@ COMPONENT('designer', function() {
 			} else if (selected)
 				selected.removeClass('selected');
 
-			if (!el)
+			if (!el) {
+				selected = null;
 				return;
+			}
 
 			el.addClass('selected', true);
 			selected = el;
@@ -1236,8 +1248,22 @@ COMPONENT('designer', function() {
 		var label = (item.name || item.reference) ? body.asvg('text').html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
 		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate(0, {0})'.format(label ? 14 : 5));
 
+		var inputcolors = null;
+		var input = 0;
 		var outputcolors = null;
 		var output = 0;
+
+		if (item.input != null) {
+			if (item.input instanceof Array) {
+				inputcolors = item.input;
+				input = inputcolors.length;
+			} else
+				input = item.input;
+		} else if (item.$component.input instanceof Array) {
+			inputcolors = item.$component.input;
+			input = inputcolors.length;
+		} else
+			input = item.$component.input;
 
 		if (item.output != null) {
 			if (item.output instanceof Array) {
@@ -1251,7 +1277,7 @@ COMPONENT('designer', function() {
 		} else
 			output = item.$component.output;
 
-		var count = output || 1;
+		var count = Math.max(output || 1, input || 1);
 		var height = 30 + count * 20;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
@@ -1264,7 +1290,15 @@ COMPONENT('designer', function() {
 		var points = g.asvg('g');
 		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
-		item.$component.input && points.asvg('circle').attr('class', 'input').attr('data-index', 0).attr('cx', 0).attr('cy', top).attr('r', 8).attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		top = ((height / 2) - ((input * 22) / 2)) + 10;
+		for (var i = 0; i < input; i++) {
+			var o = points.asvg('circle').attr('class', 'input').attr('data-index', i).attr('cx', 0).attr('cy', top + i * 22).attr('r', 8);
+			if (inputcolors)
+				o.attr('fill', inputcolors[i]);
+			else
+				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+		}
+
 		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
 			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
@@ -1338,19 +1372,66 @@ COMPONENT('designer', function() {
 
 		e.preventDefault();
 
+		if (flow.selected) {
+			// Caching
+			if (flow.selected.get(0) !== self.allowedselected) {
+				self.allowed = {};
+				var find = function(com) {
+					if (!com)
+						return;
+					self.allowed[com.id] = true;
+					Object.keys(com.connections).forEach(function(index) {
+						com.connections[index].forEach(function(item) {
+							self.allowed[item.id] = true;
+							find(flow.components.findItem('id', item.id));
+						});
+					});
+				};
+				find(flow.components.findItem('id', flow.selected.attr('data-id')));
+				self.allowedselected = flow.selected.get(0);
+			}
+		} else
+			self.allowed = null;
+
 		self.find('.node_connection').each(function() {
+
 			var el = $(this);
+			if (self.allowed && !self.allowed[el.attr('data-to')] && !self.allowed[el.attr('data-from')])
+				return;
+
 			var off = el.attr('data-offset').split(',');
-			off[4] = +off[4] + x;
-			off[5] = +off[5] + y;
-			off[6] = +off[6] + x;
-			off[7] = +off[7] + y;
+
+			if (self.allowed) {
+
+				if (self.allowed[el.attr('data-from')]) {
+					off[4] = +off[4] + x;
+					off[5] = +off[5] + y;
+					off[6] = +off[6];
+					off[7] = +off[7];
+				}
+
+				if (self.allowed[el.attr('data-to')]) {
+					off[4] = +off[4];
+					off[5] = +off[5];
+					off[6] = +off[6] + x;
+					off[7] = +off[7] + y;
+				}
+
+			} else {
+				off[4] = +off[4] + x;
+				off[5] = +off[5] + y;
+				off[6] = +off[6] + x;
+				off[7] = +off[7] + y;
+			}
+
 			this.setAttribute('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
 			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
 		self.find('.node').each(function() {
 			var el = $(this);
+			if (self.allowed && !self.allowed[el.attr('data-id')])
+				return;
 			var offset = el.attr('transform');
 			offset = offset.substring(10, offset.length - 1).split(',');
 			var px = +offset[0] + x;
@@ -1375,21 +1456,22 @@ COMPONENT('designer', function() {
 				continue;
 			Object.keys(instance.connections).forEach(function(index) {
 				var arr = instance.connections[index];
-				arr.forEach(function(id) {
-					var hash = 'c' + index + '_' + instance.id + 'x' + id;
+				arr.forEach(function(item) {
+					var hash = 'c' + index + '_' + instance.id + 'x' + item.id;
 					var e = lines.find('.' + hash);
 					if (e.length)
 						return;
-					var input = self.find('.node_' + id);
-					input.length && output.length && self.connect(+index, output, input);
+					var input = self.find('.node_' + item.id);
+					input.length && output.length && self.connect(+item.index, +index, output, input);
 				});
 			});
 		}
 	};
 
-	self.connect = function(index, output, input) {
-		var a = output.find('.output[data-index="{0}"]'.format(index));
-		var b = input.find('.input');
+	self.connect = function(iindex, oindex, output, input) {
+
+		var a = output.find('.output[data-index="{0}"]'.format(oindex));
+		var b = input.find('.input[data-index="{0}"]'.format(iindex));
 
 		var tmp = getTranslate(output);
 		var acx = +a.attr('cx');
@@ -1410,10 +1492,12 @@ COMPONENT('designer', function() {
 		attr['d'] = diagonal(ax, ay, bx, by);
 		attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
 		attr['stroke-width'] = 3;
-		attr['data-index'] = index;
+		attr['data-fromindex'] = iindex;
 		attr['data-from'] = aid;
 		attr['data-to'] = bid;
-		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (index + '_' + aid + 'x' + bid) + (flow.connections[index + aid + bid] ? '' : ' path_new');
+		attr['data-toindex'] = oindex;
+//		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + ' c' + (oindex + '_' + aid + 'x' + bid) + (flow.connections[oindex + aid + bid] ? '' : ' path_new');
+		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new');
 		lines.asvg('path').attr(attr);
 	};
 
@@ -3119,6 +3203,8 @@ COMPONENT('textarea', function() {
 		self.classes('ui-textarea-container');
 		input = self.find('textarea');
 		container = self.find('.ui-textarea');
+		if (self.attr('data-monospace') === 'true')
+			input.css('font-family', 'monospace');
 	};
 
 	self.state = function(type) {
@@ -3155,18 +3241,28 @@ COMPONENT('filereader', function() {
 		}
 
 		element.find('.ui-filereader-input').bind('change', function(evt) {
-			var files = evt.target.files;
-			var file = files[0];
-			var el = this;
-			var reader = new FileReader();
-			reader.onload = function() {
-				el.value = '';
-				self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
-				reader = null;
-			};
-			reader.readAsText(file);
+			self.process(evt.target.files);
 		});
 	};
+
+	self.process = function(files) {
+		var el = this;
+		SETTER('loading', 'show');
+		(files.length - 1).async(function(index, next) {
+			var file = files[index];
+			var reader = new FileReader();
+			reader.onload = function() {
+				self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
+				reader = null;
+				setTimeout(next, 500);
+			};
+			reader.readAsText(file);
+		}, function() {
+			SETTER('loading', 'hide', 1000);
+			el.value = '';
+		});
+	};
+
 });
 
 COMPONENT('nosqlcounter', function() {
@@ -3315,5 +3411,319 @@ COMPONENT('colorpicker', function() {
 		!is && self.render();
 		is = true;
 		self.element.css({ left: x, top: y }).removeClass('hidden');
+	};
+});
+
+Array.prototype.flowConnection = function(index, id) {
+	for (var i = 0; i < this.length; i++)
+		if (this[i].index === index && this[i].id === id)
+			return this[i];
+};
+
+COMPONENT('multioptions', function(self) {
+
+	var Tinput = Tangular.compile('<input class="ui-moi-save ui-moi-value-inputtext" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" />');
+	var Tselect = Tangular.compile('<div class="ui-moi-value-select"><i class="fa fa-chevron-down"></i><select data-name="{{ name }}" class="ui-moi-save ui-multioptions-select">{{ foreach m in values }}<option value="{{ $index }}"{{ if value === m.value }} selected="selected"{{ fi }}>{{ m.text }}</option>{{ end }}</select></div>');
+	var Tnumber = Tangular.compile('<div class="ui-moi-value-inputnumber-buttons"><span class="multioptions-operation" data-type="number" data-step="{{ step }}" data-name="plus" data-max="{{ max }}" data-min="{{ min }}"><i class="fa fa-plus"></i></span><span class="multioptions-operation" data-type="number" data-name="minus" data-step="{{ step }}" data-max="{{ max }}" data-min="{{ min }}"><i class="fa fa-minus"></i></span></div><div class="ui-moi-value-inputnumber"><input data-name="{{ name }}" class="ui-moi-save ui-moi-value-numbertext" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }} data-max="{{ max }}" data-min="{{ max }}" data-type="number" /></div>');
+	var Tboolean = Tangular.compile('<div data-name="{{ name }}" data-type="boolean" class="ui-moi-save multioptions-operation ui-moi-value-boolean{{ if value }} checked{{ fi }}"><i class="fa fa-check"></i></div>');
+	var Tdate = Tangular.compile('<div class="ui-moi-value-inputdate-buttons"><span class="multioptions-operation" data-type="date" data-name="date"><i class="fa fa-calendar"></i></span></div><div class="ui-moi-value-inputdate"><input class="ui-moi-save ui-moi-date" data-name="{{ name }}" type="text" value="{{ value | format(\'yyyy-MM-dd\') }}" placeholder="dd.mm.yyyy" maxlength="10" data-type="date" /></div>');
+	var Tcolor = null;
+	var skip = false;
+	var mapping = null;
+
+	self.readonly();
+
+	self.init = function() {
+		window.Tmultioptionscolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'].map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
+	};
+
+	self.form = function() {};
+
+	self.make = function() {
+
+		Tcolor = window.Tmultioptionscolor;
+		self.classes('ui-multioptions');
+
+		var el = self.find('script');
+		self.remap(el.html());
+		el.remove();
+
+		self.event('click', '.multioptions-operation', function(e) {
+			var el = $(this);
+			var name = el.attr('data-name');
+			var type = el.attr('data-type');
+
+			e.stopPropagation();
+
+			if (type === 'date') {
+				el = el.parent().parent().find('input');
+				FIND('calendar').show(el, el.val().parseDate(), function(date) {
+					el.val(date.format('yyyy-MM-dd'));
+					self.$save();
+				});
+				return;
+			}
+
+			if (type === 'color') {
+				el.parent().find('.selected').removeClass('selected');
+				el.addClass('selected');
+				self.$save();
+				return;
+			}
+
+			if (type === 'boolean') {
+				el.toggleClass('checked');
+				self.$save();
+				return;
+			}
+
+			if (type === 'number') {
+				var input = el.parent().parent().find('input');
+				var step = (el.attr('data-step') || '0').parseInt();
+				var min = el.attr('data-min');
+				var max = el.attr('data-max');
+
+				if (!step)
+					step = 1;
+
+				if (min)
+					min = min.parseInt();
+
+				if (max)
+					max = max.parseInt();
+
+				var value;
+
+				if (name === 'plus') {
+					value = input.val().parseInt() + step;
+					if (max !== 0 && max && value > max)
+						value = max;
+					input.val(value);
+				} else {
+					value = input.val().parseInt() - step;
+					if (min !== 0 && min && value < min)
+						value = min;
+					input.val(value);
+				}
+				self.$save();
+				return;
+			}
+
+			self.form(type, el.parent().parent().find('input'), name);
+			return;
+		});
+
+		self.event('change', 'input,select', self.$save);
+
+		self.event('click', '.ui-moi-date', function(e) {
+			e.stopPropagation();
+		});
+
+		self.event('focus', '.ui-moi-date', function() {
+			var el = $(this);
+			FIND('calendar').toggle(el, el.val().parseDate(), function(date) {
+				el.val(date.format('yyyy-MM-dd'));
+				self.$save();
+			});
+		});
+	};
+
+
+	self.remap = function(js) {
+
+		var fn = new Function('option', js);
+
+		mapping = {};
+		fn(function(key, label, def, type, max, min, step, validator) {
+			if (typeof(type) === 'number') {
+				validator = step;
+				step = min;
+				min = max;
+				max = type;
+				type = 'number';
+			} else if (!type)
+				type = def instanceof Date ? 'date' : typeof(def);
+
+			var values;
+
+			if (type instanceof Array) {
+
+				values = [];
+
+				type.forEach(function(val) {
+					values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
+				});
+
+				type = 'array';
+			}
+
+			if (validator && typeof(validator) !== 'function')
+				validator = null;
+
+			mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
+		});
+	};
+
+	self.$save = function() {
+		setTimeout2('multioptions.' + self._id, self.save, 500);
+	};
+
+	self.save = function() {
+		var obj = self.get();
+		var values = self.find('.ui-moi-save');
+
+		Object.keys(mapping).forEach(function(key) {
+
+			var opt = mapping[key];
+			var el = values.filter('[data-name="{0}"]'.format(opt.name));
+
+			if (el.hasClass('ui-moi-value-colors')) {
+				obj[key] = el.find('.selected').attr('data-value');
+				return;
+			}
+
+			if (el.hasClass('ui-moi-value-boolean')) {
+				obj[key] = el.hasClass('checked');
+				return;
+			}
+
+			if (el.hasClass('ui-moi-date')) {
+				obj[key] = el.val().parseDate();
+				return;
+			}
+
+			if (el.hasClass('ui-moi-value-inputtext')) {
+				obj[key] = el.val();
+				return;
+			}
+
+			if (el.hasClass('ui-moi-value-numbertext')) {
+				obj[key] = el.val().parseInt();
+				return;
+			}
+
+			if (el.hasClass('ui-moi-value-numbertext')) {
+				obj[key] = el.val().parseInt();
+				return;
+			}
+
+			if (el.hasClass('ui-multioptions-select')) {
+				var index = el.val().parseInt();
+				var val = opt.values[index];
+				obj[key] = val ? val.value : null;
+				if (obj[key] && obj[key].value)
+					obj[key] = obj[key].value;
+				return;
+			}
+		});
+
+		skip = true;
+		self.set(obj);
+	};
+
+	self.setter = function(options) {
+
+		if (!options || skip) {
+			skip = false;
+			return;
+		}
+
+		var builder = [];
+
+		Object.keys(mapping).forEach(function(key) {
+
+			var option = mapping[key];
+
+			// option.name
+			// option.label
+			// option.type (lowercase)
+			// option.def
+			// option.value
+			// option.max
+			// option.min
+			// option.step
+
+			option.value = options[key];
+
+			var value = '';
+
+			switch (option.type) {
+				case 'string':
+					value = Tinput(option);
+					break;
+				case 'number':
+					value = Tnumber(option);
+					break;
+				case 'boolean':
+					value = Tboolean(option);
+					break;
+				case 'color':
+					value = Tcolor(option);
+					break;
+				case 'array':
+					value = Tselect(option);
+					break;
+				case 'date':
+					value = Tdate(option);
+					break;
+			}
+
+			builder.push('<div class="ui-multioptions-item"><div class="ui-moi-name">{0}</div><div class="ui-moi-value">{1}</div></div>'.format(option.label, value));
+		});
+
+		self.html(builder);
+
+		self.find('.ui-moi-value-colors').each(function() {
+			var el = $(this);
+			var value = el.attr('data-value');
+			el.find('[data-value="{0}"]'.format(value)).addClass('selected');
+		});
+	};
+});
+
+COMPONENT('dragdropfiles', function() {
+	var self = this;
+	self.readonly();
+
+	self.mirror = function(cls) {
+		var arr = cls.split(' ');
+		for (var i = 0, length = arr.length; i < length; i++) {
+			arr[i] = arr[i].replace(/^(\+|\-)/g, function(c) {
+				return c === '+' ? '-' : '+';
+			});
+		}
+		return arr.join(' ');
+	};
+
+	self.make = function() {
+		var cls = self.attr('data-class');
+		var has = false;
+
+		self.event('dragenter dragover dragexit drop dragleave', function (e) {
+
+			e.stopPropagation();
+			e.preventDefault();
+
+			switch (e.type) {
+				case 'drop':
+					cls && has && self.classes(self.mirror(cls));
+					break;
+				case 'dragenter':
+				case 'dragover':
+					cls && !has && self.classes(cls);
+					has = true;
+					return;
+				case 'dragleave':
+				case 'dragexit':
+				default:
+					setTimeout2(self.id, function() {
+						cls && has && self.classes(self.mirror(cls));
+						has = false;
+					}, 100);
+					return;
+			}
+
+			EXEC(self.attr('data-files'), e.originalEvent.dataTransfer.files, e);
+		});
 	};
 });

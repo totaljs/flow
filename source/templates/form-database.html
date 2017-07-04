@@ -1,4 +1,4 @@
-<div data-jc="form" data-title="@(Flow components)" data-jc-path="common.form" data-if="value === 'database'" data-width="920px" data-jc-init="formdatabase_init" class="hidden">
+<div data-jc="form,dragdropfiles" data-title="@(Flow components)" data-jc-path="common.form" data-if="value === 'database'" data-width="920px" data-jc-init="formdatabase_init" class="hidden" data-files="formdatabase_dragdrop" data-class="+ui-form-dragdrop">
 	<div class="padding npb" style="background-color:#FFFCD3">
 		<div class="b m black"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
 		<div class="row">
@@ -6,7 +6,7 @@
 				<div data-jc="textbox" data-jc-path="formdatabase.url" data-maxlength="200" class="m" data-placeholder="@(E.g. https://domain.com/flowcomponent.js and press enter)" data-jc-type="url" data-jc-keypress="false" data-required="true">@(URL address)</div>
 			</div>
 			<div class="col-md-6 m">
-				<div data-jc="filereader" data-jc-path="formdatabase.file" class="m" data-placeholder="@(Browse device)" data-accept="text/javascript" data-required="true">@(Upload .js component)</div>
+				<div data-jc="filereader" data-jc-path="formdatabase.file" class="m" data-placeholder="@(Browse device)" data-accept="text/javascript" data-required="true" data-jc-id="formdatabasefile">@(Upload .js component)</div>
 			</div>
 		</div>
 		<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
@@ -123,6 +123,10 @@
 			SET('formdatabase.success', true);
 			SET('formdatabase.success', false, 3500);
 		});
+	}
+
+	function formdatabase_dragdrop(files) {
+		FIND('#formdatabasefile').process(files);
 	}
 
 </script>

@@ -9,22 +9,25 @@ const MESSAGE_DESIGNER = { type: 'designer', database: [] };
 const MESSAGE_TRIGGER = { type: 'trigger' };
 const MESSAGE_TRAFFIC = { type: 'traffic' };
 const MESSAGE_STATIC = { type: 'callback' };
+const MESSAGE_VARIABLES = { type: 'variables' };
 const MESSAGE_TEMPLATES = { type: 'templates' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
+const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
 var FILEINMEMORY = '/flow/repository.json';
 
+var COUNTER = 0;
 var OPT;
 var DDOS = {};
 var FILENAME;
 
-global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {} };
+global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v2.0.0';
+exports.version = 'v3.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -101,6 +104,7 @@ exports.install = function(options) {
 			if (FLOW.ws) {
 				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
 				MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+				MESSAGE_TRAFFIC.counter = COUNTER;
 				FLOW.ws.send(MESSAGE_TRAFFIC);
 			}
 
@@ -117,6 +121,8 @@ function service(counter) {
 	counter % 5 === 0 && (DDOS = {});
 	FLOW.reset_traffic();
 	FLOW.emit('service', counter);
+	if (COUNTER > 999999000000)
+		COUNTER = 0;
 }
 
 function view_index() {
@@ -221,39 +227,86 @@ function websocket() {
 			return;
 		}
 
+		if (message.type === 'getvariables') {
+			MESSAGE_VARIABLES.body = FLOW.$variables;
+			client.send(MESSAGE_VARIABLES);
+			return;
+		}
+
+		if (message.type === 'variables') {
+			FLOW.refresh_variables(message.body);
+			return;
+		}
+
 		if (message.target) {
 			var instance = FLOW.instances[message.target];
 			if (!instance)
 				return;
 
 			if (message.type === 'options') {
+
+				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
+
+				// Component doesn't exist
+				if (!tmp)
+					return;
+
 				var old_options = instance.options;
+
 				instance.options = message.body;
 				instance.name = instance.options.comname || FLOW.components[instance.component].name;
 				instance.reference = instance.options.comreference;
 				instance.output = instance.options.comoutput;
+				instance.input = instance.options.cominput;
 				instance.options.comname = undefined;
 				instance.options.comreference = undefined;
 				instance.options.comoutput = undefined;
+				instance.options.cominput = undefined;
 
-				if (instance.output != null) {
-					var count = instance.output instanceof Array ? instance.output.length : instance.output;
-					Object.keys(instance.connections).forEach(function(key) {
-						var index = +key;
-						index >= count && (delete instance.connections[key]);
+				var count = instance.output instanceof Array ? instance.output.length : instance.output;
+				io_count(tmp.output) !== count && Object.keys(instance.connections).forEach(function(key) {
+					var index = +key;
+					index >= count && (delete instance.connections[key]);
+				});
+
+				count = instance.input instanceof Array ? instance.input.length : instance.input;
+				io_count(tmp.input) !== count && Object.keys(FLOW.instances).forEach(function(id) {
+
+					if (id === instance.id)
+						return;
+
+					var item = FLOW.instances[id];
+					var can = false;
+
+					Object.keys(item.connections).forEach(function(key) {
+						var l = item.connections[key].length;
+						item.connections[key] = item.connections[key].remove(function(item) {
+							return item.id === instance.id && (+item.index) >= count;
+						});
+						if (l !== item.connections[key].length)
+							can = true;
+						!item.connections[key].length && (delete instance.connections[key]);
 					});
-				}
+
+					if (can) {
+						var tmp = MESSAGE_DESIGNER.components.findItem('id', item.id);
+						tmp.connections = item.connections;
+					}
+
+				});
 
 				instance.$events.options && instance.emit('options', instance.options, old_options);
+				EMIT('flow.options', instance);
 
-				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
-				if (tmp) {
-					tmp.options = instance.options;
-					tmp.name = instance.name;
-					tmp.output = instance.output;
-					tmp.connections = instance.connections;
-					FLOW.save2();
-				}
+				tmp.options = instance.options;
+				tmp.name = instance.name;
+				tmp.output = instance.output;
+				tmp.input = instance.input;
+				tmp.connections = instance.connections;
+				tmp.reference = instance.reference;
+
+				FLOW.save2();
+
 			} else
 				instance.$events[message.event] && instance.emit(message.event, message.body);
 			return;
@@ -278,6 +331,10 @@ function websocket() {
 	});
 
 	FLOW.ws = self;
+}
+
+function io_count(o) {
+	return o instanceof Array ? o.length : (o || 0);
 }
 
 // ===================================================
@@ -363,8 +420,8 @@ Component.prototype.log = function(a, b, c, d, e, f) {
 	return this;
 };
 
-Component.prototype.make = function(data) {
-	return new FlowData(data);
+Component.prototype.make = function(data, index) {
+	return new FlowData(data, false, +index);
 };
 
 Component.prototype.click = function() {
@@ -388,22 +445,34 @@ Component.prototype.signal = function(index, data) {
 	}
 
 	var self = this;
-	if (!self.connections)
+	var connections = self.connections;
+
+	if (!connections)
 		return self;
 
-	if (index) {
-		var conn = self.connections[index];
-		conn && conn.$events.signal && conn.emit('signal', data, self);
-	} else {
-		var keys = Object.keys(self.connections);
-		for (var i = 0, length = keys.length; i < length; i++) {
-			var arr = self.connections[keys[i]];
-			for (var j = 0; j < arr.length; j++)
-				arr[j].$events.signal && arr[j].emit('signal', data, self);
+	var arr = Object.keys(connections);
+
+	if (!arr.length)
+		return self;
+
+	for (var i = 0, length = arr.length; i < length; i++) {
+		var dex = arr[i];
+
+		if (index !== undefined && dex != index)
+			continue;
+
+		var ids = connections[dex];
+		for (var j = 0, jl = ids.length; j < jl; j++) {
+			var instance = FLOW.instances[ids[j].id];
+			instance && !instance.$closed && instance.emit('signal', data);
 		}
 	}
 
 	return self;
+};
+
+Component.prototype.variable = function(name) {
+	return FLOW.variables[name];
 };
 
 Component.prototype.send = function(index, message) {
@@ -438,18 +507,30 @@ Component.prototype.send = function(index, message) {
 	var instance;
 
 	if (index === undefined) {
+
 		setImmediate(function() {
 			if (self.$closed)
 				return;
+
+			var tmp = {};
+
 			for (var i = 0, length = arr.length; i < length; i++) {
 				var ids = connections[arr[i]];
 				var canclone = true;
 				for (var j = 0, jl = ids.length; j < jl; j++) {
-					instance = FLOW.instances[ids[j]];
+					instance = FLOW.instances[ids[j].id];
 					if (instance && !instance.$closed) {
-						FLOW.traffic(instance.id, 'input');
+
+						if (!tmp[instance.id]) {
+							tmp[instance.id] = true;
+							FLOW.traffic(instance.id, 'input');
+						}
+
 						try {
-							instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
+							var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+							data.index = +ids[j].index;
+							instance.$events.data && instance.emit('data', data);
+							instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
 						} catch (e) {
 							instance.error(e, self.id);
 						}
@@ -457,6 +538,7 @@ Component.prototype.send = function(index, message) {
 				}
 			}
 		});
+
 	} else {
 
 		arr = connections[index.toString()];
@@ -468,14 +550,24 @@ Component.prototype.send = function(index, message) {
 
 		var canclone = arr.length > 1;
 		setImmediate(function() {
+
 			if (self.$closed)
 				return;
+
+			var tmp = {};
 			for (var i = 0, length = arr.length; i < length; i++) {
-				instance = FLOW.instances[arr[i]];
+				instance = FLOW.instances[arr[i].id];
 				if (instance && !instance.$closed) {
-					FLOW.traffic(instance.id, 'input');
+
+					if (!tmp[instance.id]) {
+						tmp[instance.id] = true;
+						FLOW.traffic(instance.id, 'input');
+					}
+
 					try {
-						instance.$events.data && instance.emit('data', canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message);
+						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+						data.index = +arr[i].index;
+						instance.$events.data && instance.emit('data', data);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
@@ -498,7 +590,11 @@ Component.prototype.error = function(e, parent) {
 	MESSAGE_ERRORS.id = self.id;
 	MESSAGE_ERRORS.body = self.errors;
 	setTimeout2('flow.' + self.id, function() {
-		MESSAGE_DESIGNER.components && (MESSAGE_DESIGNER.components.findItem('id', self.id).errors = self.errors);
+		if (MESSAGE_DESIGNER.components) {
+			var tmp = MESSAGE_DESIGNER.components.findItem('id', self.id);
+			if (tmp)
+				tmp.errors = self.errors;
+		}
 		FLOW.send(MESSAGE_ERRORS);
 	}, 100);
 	return this;
@@ -526,6 +622,7 @@ Component.prototype.status = function(text, color) {
 
 Component.prototype.debug = function(data, style) {
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
+	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.style = style || 'info';
 	MESSAGE_DEBUG.id = this.id;
 	FLOW.send(MESSAGE_DEBUG);
@@ -538,6 +635,13 @@ Component.prototype.save = function() {
 		tmp.options = this.options;
 		FLOW.save2();
 	}
+	return this;
+};
+
+Component.prototype.reconfig = function() {
+	MESSAGE_COMPONENTOPTIONS.id = this.id;
+	MESSAGE_COMPONENTOPTIONS.options = this.options;
+	FLOW.send(MESSAGE_COMPONENTOPTIONS);
 	return this;
 };
 
@@ -630,6 +734,7 @@ FLOW.register = function(name, options, fn) {
 		name: options.title || name,
 		author: options.author || 'Unknown',
 		color: options.color,
+		icon: (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '',
 		input: options.input == null ? 0 : options.input,
 		output: options.output == null ? 0 : options.output,
 		click: options.click ? true : false,
@@ -793,6 +898,23 @@ FLOW.init = function(components) {
 	return FLOW;
 };
 
+FLOW.variable = function(name) {
+	return FLOW.variables[name];
+};
+
+FLOW.refresh_variables = function(data) {
+	FLOW.$variables = data;
+	FLOW.variables = data ? data.parseConfig() : EMPTYOBJECT;
+	var keys = Object.keys(FLOW.instances);
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		instance.$events.variables && instance.emit('variables', FLOW.variables);
+	}
+	EMIT('flow.variables', FLOW.variables);
+	FLOW.save2(NOOP);
+	return FLOW;
+};
+
 // Init the only one component
 FLOW.init_component = function(component) {
 	MESSAGE_DESIGNER.components.wait(function(com, next) {
@@ -863,7 +985,7 @@ FLOW.clearerrors = function(noSync) {
 	}
 
 	if (!noSync) {
-		F.cluster.emit('flow.cluster.clearerrors');
+		// @TODO: F.cluster.emit('flow.cluster.clearerrors');
 		FLOW.save2(NOOP);
 	}
 
@@ -876,6 +998,8 @@ FLOW.save2 = function(callback) {
 	var data = {};
 	data.tabs = MESSAGE_DESIGNER.tabs;
 	data.components = MESSAGE_DESIGNER.components;
+	data.version = +exports.version.replace(/(v|\.)/g, '');
+	data.variables = FLOW.$variables;
 	Fs.writeFile(F.path.root(FILEDESIGNER), JSON.stringify(data, (k,v) => k === '$component' ? undefined : v), function() {
 		callback && callback();
 		EMIT('flow.save');
@@ -912,8 +1036,7 @@ FLOW.execute = function(filename, sync) {
 		}, 500);
 	})(name, filename, FILENAME);
 
-
-	sync && F.cluster.emit('flow.cluster.execute', filename);
+	// @TODO: sync && F.cluster.emit('flow.cluster.execute', filename);
 	return FLOW;
 };
 
@@ -935,13 +1058,25 @@ FLOW.load = function(callback) {
 					else
 						data = {};
 
+					FLOW.$variables = data.variables || '';
+					FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+
 					MESSAGE_DESIGNER.tabs = data.tabs;
 					MESSAGE_DESIGNER.components = data.components || [];
-
 					MESSAGE_DESIGNER.components.forEach(function(item) {
 						var declaration = FLOW.components[item.component];
 						if (declaration && declaration.options)
 							item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
+						if (!data.version) {
+							// Backward compatibility
+							Object.keys(item.connections).forEach(function(index) {
+								var arr = item.connections[index];
+								for (var i = 0; i < arr.length; i++) {
+									if (typeof(arr[i]) === 'string')
+										arr[i] = { index: '0', id: arr[i] };
+								}
+							});
+						}
 					});
 
 					Fs.readFile(F.path.root(FILEINMEMORY), function(err, data) {
@@ -1109,7 +1244,7 @@ FLOW.uninstall = function(name, noSync) {
 			Fs.unlink(F.path.root(PATH + com.filename), NOOP);
 			FLOW.send(MESSAGE_DESIGNER);
 			FLOW.save2();
-			F.cluster.emit('flow.cluster.uninstall', name);
+			// @TODO: F.cluster.emit('flow.cluster.uninstall', name);
 		}
 	});
 
@@ -1160,11 +1295,21 @@ FLOW.findById = function(id) {
 	return FLOW.instances[id];
 };
 
+FLOW.prototypes = function(fn) {
+	var proto = {};
+	proto.FlowData = FlowData.prototype;
+	proto.Component = Component.prototype;
+	fn.call(proto, proto);
+	return FLOW;
+};
+
 // ===================================================
 // FLOW DATA DECLARATION
 // ===================================================
 
-function FlowData(data, clone) {
+function FlowData(data, clone, index) {
+	this.id = clone ? clone.id : COUNTER++;
+	this.index = clone ? clone.index : (index || 0);
 	this.begin = clone ? clone.begin : new Date();
 	this.repository = clone ? clone.repository : {};
 	this.data = data;
@@ -1199,4 +1344,3 @@ FlowData.prototype.rem = function(key) {
 	this.repository[key] = undefined;
 	return this;
 };
-
