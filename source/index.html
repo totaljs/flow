@@ -351,10 +351,9 @@
 		});
 
 		ON('designer.rem', function(id) {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected component?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			id && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected component?)', ['@(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
-
 				var instance = flow.components.findItem('id', id);
 				EMIT('rem.' + instance.component, instance);
 				flow.components = flow.components.remove('id', id);
@@ -376,6 +375,7 @@
 
 				el.remove();
 				setState(MESSAGES.apply);
+				OPERATION('designer.unselect')();
 			});
 		});
 
@@ -447,6 +447,7 @@
 			component.connections[fi] = connections;
 			!connections.length && (delete component.connections[fi]);
 			setState(MESSAGES.apply);
+			OPERATION('designer.unselect')();
 		});
 
 		ON('info', function(value) {
@@ -563,6 +564,7 @@
 				SETTER('binder', 'scan');
 				EMIT('designer.refresh');
 				setState(MESSAGES.apply);
+				OPERATION('designer.unselect')();
 			});
 		});
 
@@ -670,6 +672,7 @@
 			SETTER('binder', 'scan');
 			if (common.tab.id === id)
 				location.hash = flow.tabs[0].linker;
+			OPERATION('designer.unselect')();
 			setState(MESSAGES.apply);
 		});
 
@@ -920,6 +923,10 @@
 
 		OPERATION('designer.remove', function(el) {
 			!el.hasClass('disabled') && SETTER('designer', 'remove');
+		});
+
+		OPERATION('designer.unselect', function() {
+			SETTER('designer', 'select', null);
 		});
 
 		OPERATION('designer.duplicate', function(el) {
