@@ -893,7 +893,7 @@
 			common.callbacks[id] = function(response) {
 				if (type === 'html') {
 					common.statics[key] = 'html.' + target;
-					var com = common.components.findItem('id', 'monitorcpu');
+					var com = common.components.findItem('id', target);
 					var title = target;
 					if (com)
 						title = com.name;
