@@ -309,7 +309,7 @@
 			}
 		});
 
-		ON('designer.add', function(component, x, y, is, cf, ct, index, duplicate) {
+		ON('designer.add', function(component, x, y, is, cf, ct, toindex, duplicate, fromindex) {
 			var obj = {};
 			obj.component = component.id;
 			obj.$component = component;
@@ -329,11 +329,15 @@
 			if (is) {
 				obj.connections[0] = [ct];
 				var a = flow.components.findItem('id', cf);
-				a.connections[index] = a.connections[index].remove(ct);
-				a.connections[index].push(obj.id);
-				setTimeout(function() {
-					EMIT('designer.refresh');
-				}, 50);
+				var target = a.connections[toindex].findItem('id', ct);
+				if (target) {
+					if (obj.$component.output)
+						obj.connections[0] = [CLONE(target)];
+					target.id = obj.id;
+					setTimeout(function() {
+						EMIT('designer.refresh');
+					}, 50);
+				}
 			}
 
 			if (duplicate) {
@@ -447,7 +451,10 @@
 			component.connections[fi] = connections;
 			!connections.length && (delete component.connections[fi]);
 			setState(MESSAGES.apply);
-			OPERATION('designer.unselect')();
+
+			setTimeout(function() {
+				OPERATION('designer.unselect')();
+			}, 1000);
 		});
 
 		ON('info', function(value) {

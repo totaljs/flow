@@ -1200,6 +1200,7 @@ COMPONENT('designer', function() {
 				case 'drop':
 					var tmp = $(e.target);
 					var is = drag.conn ? true : false;
+
 					if (drag.conn) {
 						drag.conn.removeClass('dropselection');
 						drag.conn = null;
@@ -1207,13 +1208,13 @@ COMPONENT('designer', function() {
 
 					var off = self.element.offset();
 
-					var x = e.pageX - off.left; // e.offsetX
-					var y = e.pageY - off.top; // e.offsetY
+					var x = e.pageX - off.left;
+					var y = e.pageY - off.top;
 
 					x += self.element.prop('scrollLeft');
 					y += self.element.prop('scrollTop');
 
-					EMIT('designer.add', dragdrop, (x - 50) / zoom, (y - 30) / zoom, is, tmp.attr('data-from'), tmp.attr('data-to'), +tmp.attr('data-index'));
+					EMIT('designer.add', dragdrop, (x - 50) / zoom, (y - 30) / zoom, is, tmp.attr('data-from'), tmp.attr('data-to'), +tmp.attr('data-toindex'), null, +tmp.attr('data-fromindex'));
 					break;
 			}
 			e.preventDefault();
