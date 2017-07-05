@@ -10,9 +10,11 @@
 
 		<div data-b="formtab.id" data-b-visible="n => n" class="hidden m fs12">
 			<div class="mt5"><a href="javascript:void(0)" class="link exec" data-exec="formtab_duplicate"><i class="fa fa-copy"></i>@(Duplicate tab with all components)</a></div>
-			<hr style="margin:10px 0" />
-			<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
-			<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="formtab_remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
+			<div data-b="formtab.id" data-b-visible="n => n && flow.tabs.length > 1">
+				<hr style="margin:10px 0" />
+				<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
+				<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="formtab_remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
+			</div>
 		</div>
 	</div>
 	<div class="ui-form-buttons">
