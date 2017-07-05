@@ -475,6 +475,11 @@ Component.prototype.variable = function(name) {
 	return FLOW.variables[name];
 };
 
+Component.prototype.send2 = function(index, message) {
+	if (this.hasConnections)
+		return this.send(index, message);
+};
+
 Component.prototype.send = function(index, message) {
 
 	if (message === undefined) {
@@ -873,6 +878,7 @@ FLOW.init = function(components) {
 			if (instance) {
 				instance.name = com.name || declaration.name;
 				instance.connections = com.connections;
+				instance.hasConnections = Object.keys(instance.connections).length > 0;
 				instance.$events.$reinit && instance.emit('reinit');
 				continue;
 			}
@@ -884,6 +890,7 @@ FLOW.init = function(components) {
 			instance.cloning = declaration.cloning;
 			instance.name = com.name || declaration.name;
 			declaration.fn.call(instance, instance, declaration);
+			instance.hasConnections = Object.keys(instance.connections).length > 0;
 
 			if (com.state !== instance.state)
 				com.state = instance.state;

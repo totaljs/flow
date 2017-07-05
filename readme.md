@@ -368,6 +368,15 @@ exports.install = function(component) {
     // @data: {String/Object}
     // returns Message;
   
+    var message = component.send2([index], data);
+    if (message) {
+        // message will be sent
+    } else {
+        // no connections
+    }
+    // +v3.0.0
+    // Alias for component.send() but with a check of connections
+
     component.set(key, value);
     // Writes a value to a private key-value store (data are stored on HDD)
     // @key {String}
