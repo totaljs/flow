@@ -197,6 +197,7 @@ svg { cursor: move; }
 .themedark .traffic-container.b { color: white; }
 .themedark .debugoutput { border-color: #303030; }
 .themedark .debugoutput .hljs { background-color: #303030; color: gray; }
+.themedark #infopanel .hljs { background-color: #303030; color: gray; }
 
 .themedark .designer-shadow-top { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
