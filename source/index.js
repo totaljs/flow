@@ -27,7 +27,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v3.0.0';
+exports.version = 'v4.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -1308,6 +1308,12 @@ FLOW.prototypes = function(fn) {
 	proto.Component = Component.prototype;
 	fn.call(proto, proto);
 	return FLOW;
+};
+
+FLOW.clone = function(url, callback) {
+
+
+
 };
 
 // ===================================================
