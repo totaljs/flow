@@ -3,7 +3,7 @@ COMPONENT('exec', function() {
 	self.readonly();
 	self.blind();
 	self.make = function() {
-		self.event('click', self.attr('data-selector') || '.exec', function() {
+		self.event('click', self.attrd('selector') || '.exec', function() {
 			var el = $(this);
 			var attr = el.attr('data-exec');
 			var path = el.attr('data-path');
@@ -31,7 +31,7 @@ COMPONENT('error', function() {
 
 		var builder = [];
 		for (var i = 0, length = value.length; i < length; i++)
-			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, self.attr('data-icon') || 'fa-times-circle'));
+			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, self.attrd('icon') || 'fa-times-circle'));
 
 		self.html(builder.join(''));
 		self.toggle('hidden', false);
@@ -48,10 +48,10 @@ COMPONENT('search', function() {
 
 	self.readonly();
 	self.make = function() {
-		options_class = self.attr('data-class') || 'hidden';
-		options_selector = self.attr('data-selector');
-		options_attribute = self.attr('data-attribute') || 'data-search';
-		options_delay = (self.attr('data-delay') || '200').parseInt();
+		options_class = self.attrd('class') || 'hidden';
+		options_selector = self.attrd('selector');
+		options_attribute = self.attrd('attribute') || 'data-search';
+		options_delay = (self.attrd('delay') || '200').parseInt();
 	};
 
 	self.setter = function(value) {
@@ -338,12 +338,12 @@ COMPONENT('form', function() {
 	};
 
 	self.make = function() {
-		var width = self.attr('data-width') || '800px';
-		var enter = self.attr('data-enter');
-		autocenter = self.attr('data-autocenter') === 'true';
-		self.condition = self.attr('data-if');
+		var width = self.attrd('width') || '800px';
+		var enter = self.attrd('enter');
+		autocenter = self.attrd('autocenter') === 'true';
+		self.condition = self.attrd('if');
 
-		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}"><div class="ui-form-title"><span class="fa fa-times ui-form-button-close" data-path="{2}"></span>{3}</div>{4}</div></div>'.format(self._id, width, self.path, self.attr('data-title')));
+		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}"><div class="ui-form-title"><span class="fa fa-times ui-form-button-close" data-path="{2}"></span>{3}</div>{4}</div></div>'.format(self._id, width, self.path, self.attrd('title')));
 
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
@@ -493,7 +493,7 @@ COMPONENT('repeater-group', function() {
 	};
 
 	self.make = function() {
-		group = self.attr('data-group');
+		group = self.attrd('group');
 		self.element.find('script').each(function(index) {
 			var element = $(this);
 			var html = element.html();
@@ -564,8 +564,8 @@ COMPONENT('repeater-group', function() {
 COMPONENT('textbox', function() {
 
 	var self = this;
-	var isRequired = self.attr('data-required') === 'true';
-	var validation = self.attr('data-validate');
+	var isRequired = self.attrd('required') === 'true';
+	var validation = self.attrd('validate');
 	var input;
 	var container;
 
@@ -612,21 +612,21 @@ COMPONENT('textbox', function() {
 		var tmp;
 
 		attrs.attr('type', self.type === 'password' ? self.type : 'text');
-		attrs.attr('placeholder', self.attr('data-placeholder'));
-		attrs.attr('maxlength', self.attr('data-maxlength'));
-		attrs.attr('data-jc-keypress', self.attr('data-jc-keypress'));
-		attrs.attr('data-jc-keypress-delay', self.attr('data-jc-keypress-delay'));
+		attrs.attr('placeholder', self.attrd('placeholder'));
+		attrs.attr('maxlength', self.attrd('maxlength'));
+		attrs.attr('data-jc-keypress', self.attrd('jc-keypress'));
+		attrs.attr('data-jc-keypress-delay', self.attrd('jc-keypress-delay'));
 		attrs.attr('data-jc-bind', '');
 		attrs.attr('name', self.path);
 
-		tmp = self.attr('data-align');
+		tmp = self.attrd('align');
 		tmp && attrs.attr('class', 'ui-' + tmp);
-		self.attr('data-autofocus') === 'true' && attrs.attr('autofocus');
+		self.attrd('autofocus') === 'true' && attrs.attr('autofocus');
 
 		var content = self.html();
-		var icon = self.attr('data-icon');
-		var icon2 = self.attr('data-control-icon');
-		var increment = self.attr('data-increment') === 'true';
+		var icon = self.attrd('icon');
+		var icon2 = self.attrd('control-icon');
+		var increment = self.attrd('increment') === 'true';
 
 		builder.push('<input {0} />'.format(attrs.join(' ')));
 
@@ -700,12 +700,12 @@ COMPONENT('textbox', function() {
 COMPONENT('importer', function() {
 	var self = this;
 	var imported = false;
-	var reload = self.attr('data-reload');
+	var reload = self.attrd('reload');
 
 	self.readonly();
 	self.setter = function() {
 
-		if (!self.evaluate(self.attr('data-if')))
+		if (!self.evaluate(self.attrd('if')))
 			return;
 
 		if (imported) {
@@ -717,7 +717,7 @@ COMPONENT('importer', function() {
 		}
 
 		imported = true;
-		IMPORT(self.attr('data-url'), function() {
+		IMPORT(self.attrd('url'), function() {
 			if (reload)
 				EXEC(reload);
 			else
@@ -729,12 +729,12 @@ COMPONENT('importer', function() {
 COMPONENT('visible', function() {
 	var self = this;
 	var processed = false;
-	var template = self.attr('data-template');
+	var template = self.attrd('template');
 	self.readonly();
 	self.setter = function(value) {
 
 		var is = true;
-		var condition = self.attr('data-if');
+		var condition = self.attrd('if');
 
 		if (condition)
 			is = self.evaluate(condition);
@@ -763,9 +763,9 @@ COMPONENT('validation', function() {
 	self.readonly();
 
 	self.make = function() {
-		elements = self.find(self.attr('data-selector') || 'button');
+		elements = self.find(self.attrd('selector') || 'button');
 		elements.prop({ disabled: true });
-		self.evaluate = self.attr('data-if');
+		self.evaluate = self.attrd('if');
 		path = self.path.replace(/\.\*$/, '');
 		self.watch(self.path, self.state, true);
 	};
@@ -789,8 +789,8 @@ COMPONENT('websocket', function() {
 	self.readonly();
 
 	self.make = function() {
-		reconnect_timeout = (self.attr('data-reconnect') || '5000').parseInt();
-		url = self.attr('data-url');
+		reconnect_timeout = (self.attrd('reconnect') || '5000').parseInt();
+		url = self.attrd('url');
 		if (!url.match(/^(ws|wss)\:\/\//))
 			url = (location.protocol.length === 6 ? 'wss' : 'ws') + '://' + location.host + (url.substring(0, 1) !== '/' ? '/' : '') + url;
 		setTimeout(self.connect, 500);
@@ -1571,7 +1571,7 @@ COMPONENT('checkbox', function() {
 
 	var self = this;
 	var input;
-	var isRequired = self.attr('data-required') === 'true';
+	var isRequired = self.attrd('required') === 'true';
 
 	self.validate = function(value) {
 		var type = typeof(value);
@@ -1607,8 +1607,8 @@ COMPONENT('checkbox', function() {
 COMPONENT('checkboxlist', function() {
 
 	var self = this;
-	var isRequired = self.attr('data-required');
-	var template = Tangular.compile('<div class="{0} ui-checkboxlist-checkbox"><label><input type="checkbox" value="{{ id }}"><span>{{ name }}</span></label></div>'.format(self.attr('data-class')));
+	var isRequired = self.attrd('required');
+	var template = Tangular.compile('<div class="{0} ui-checkboxlist-checkbox"><label><input type="checkbox" value="{{ id }}"><span>{{ name }}</span></label></div>'.format(self.attrd('class')));
 
 	self.validate = function(value) {
 		return isRequired ? value && value.length > 0 : true;
@@ -1651,14 +1651,14 @@ COMPONENT('checkboxlist', function() {
 			self.set(arr);
 		});
 
-		var datasource = self.attr('data-source');
+		var datasource = self.attrd('source');
 		datasource && self.watch(datasource, function(path, value) {
 			if (!value)
 				value = [];
 			self.redraw(value);
 		}, true);
 
-		var options = self.attr('data-options');
+		var options = self.attrd('options');
 		if (!options)
 			return;
 
@@ -1681,8 +1681,8 @@ COMPONENT('checkboxlist', function() {
 
 	self.redraw = function(arr) {
 		var builder = [];
-		var kn = self.attr('data-source-text') || 'name';
-		var kv = self.attr('data-source-value') || 'id';
+		var kn = self.attrd('source-text') || 'name';
+		var kv = self.attrd('source-value') || 'id';
 
 		for (var i = 0, length = arr.length; i < length; i++) {
 			var item = arr[i];
@@ -1695,7 +1695,7 @@ COMPONENT('checkboxlist', function() {
 		if (!builder.length)
 			return;
 
-		var btn = self.attr('data-button') || '';
+		var btn = self.attrd('button') || '';
 		if (btn)
 			btn = '<div class="ui-checkboxlist-selectall"><a href="javascript:void(0)"><i class="fa fa-check-square-o mr5"></i>{0}</a></div>'.format(btn);
 
@@ -1803,7 +1803,7 @@ COMPONENT('dropdowncheckbox', function() {
 			self.set(arr, undefined, 2);
 		});
 
-		var ds = self.attr('data-source');
+		var ds = self.attrd('source');
 
 		if (!ds)
 			return;
@@ -1822,12 +1822,12 @@ COMPONENT('dropdowncheckbox', function() {
 		var clsempty = 'ui-dropdowncheckbox-values-empty';
 
 		if (!value) {
-			container.addClass(clsempty).empty().html(self.attr('data-empty'));
+			container.addClass(clsempty).empty().html(self.attrd('empty'));
 			return;
 		}
 
-		var kv = self.attr('data-source-value') || 'id';
-		var kt = self.attr('data-source-text') || 'name';
+		var kv = self.attrd('source-value') || 'id';
+		var kt = self.attrd('source-text') || 'name';
 		var builder = '';
 
 		data = [];
@@ -1841,7 +1841,7 @@ COMPONENT('dropdowncheckbox', function() {
 		if (builder)
 			container.removeClass(clsempty).empty().append(builder);
 		else
-			container.addClass(clsempty).empty().html(self.attr('data-empty'));
+			container.addClass(clsempty).empty().html(self.attrd('empty'));
 
 		self.setter(self.get());
 	}
@@ -1852,7 +1852,7 @@ COMPONENT('dropdowncheckbox', function() {
 			return;
 
 		var label = '';
-		var empty = self.attr('data-placeholder');
+		var empty = self.attrd('placeholder');
 
 		if (value && value.length) {
 			var remove = [];
@@ -1934,7 +1934,7 @@ COMPONENT('dropdowncheckbox', function() {
 COMPONENT('dropdown', function() {
 
 	var self = this;
-	var isRequired = self.attr('data-required') === 'true';
+	var isRequired = self.attrd('required') === 'true';
 	var select;
 	var container;
 
@@ -1974,9 +1974,9 @@ COMPONENT('dropdown', function() {
 		var builder = [];
 		var value = self.get();
 		var template = '<option value="{0}"{1}>{2}</option>';
-		var propText = self.attr('data-source-text') || 'name';
-		var propValue = self.attr('data-source-value') || 'id';
-		var emptyText = self.attr('data-empty');
+		var propText = self.attrd('source-text') || 'name';
+		var propValue = self.attrd('source-value') || 'id';
+		var emptyText = self.attrd('empty');
 
 		emptyText !== undefined && builder.push('<option value="">{0}</option>'.format(emptyText));
 
@@ -1995,7 +1995,7 @@ COMPONENT('dropdown', function() {
 
 		var options = [];
 
-		(self.attr('data-options') || '').split(';').forEach(function(item) {
+		(self.attrd('options') || '').split(';').forEach(function(item) {
 			item = item.split('|');
 			options.push('<option value="{0}">{1}</option>'.format(item[1] === undefined ? item[0] : item[1], item[0]));
 		});
@@ -2007,7 +2007,7 @@ COMPONENT('dropdown', function() {
 		var builder = [];
 
 		if (label.length) {
-			var icon = self.attr('data-icon');
+			var icon = self.attrd('icon');
 			builder.push('<div class="ui-dropdown-label{0}">{1}{2}:</div>'.format(isRequired ? ' ui-dropdown-label-required' : '', icon ? '<span class="fa {0}"></span> '.format(icon) : '', label));
 			builder.push('<div class="ui-dropdown-values">{0}</div>'.format(html));
 			self.html(builder.join(''));
@@ -2017,12 +2017,12 @@ COMPONENT('dropdown', function() {
 		select = self.find('select');
 		container = self.find('.ui-dropdown');
 
-		var ds = self.attr('data-source');
+		var ds = self.attrd('source');
 		if (!ds)
 			return;
 
 		var prerender = function() {
-			var value = self.get(self.attr('data-source'));
+			var value = self.get(self.attrd('source'));
 			!NOTMODIFIED(self.id, value) && self.render(value || EMPTYARRAY);
 		};
 
@@ -2044,7 +2044,7 @@ COMPONENT('selectbox', function() {
 
 	var self = this;
 	var Eitems, Eselected;
-	var isRequired = self.attr('data-required') === 'true';
+	var isRequired = self.attrd('required') === 'true';
 
 	self.datasource = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
@@ -2073,9 +2073,9 @@ COMPONENT('selectbox', function() {
 	};
 
 	self.make = function() {
-		var search = self.attr('data-search');
+		var search = self.attrd('search');
 
-		self.append((typeof(search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(search) : '') + '<div style="height:{0}"><ul></ul><ul style="height:{0}"></ul></div>'.format(self.attr('data-height') || '200px'));
+		self.append((typeof(search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(search) : '') + '<div style="height:{0}"><ul></ul><ul style="height:{0}"></ul></div>'.format(self.attrd('height') || '200px'));
 		self.classes('ui-selectbox');
 
 		self.find('ul').each(function(index) {
@@ -2085,10 +2085,10 @@ COMPONENT('selectbox', function() {
 				Eitems = $(this);
 		});
 
-		var datasource = self.attr('data-source');
+		var datasource = self.attrd('source');
 		datasource && self.watch(datasource, function(path, value) {
-			var propText = self.attr('data-source-text') || 'name';
-			var propValue = self.attr('data-source-value') || 'id';
+			var propText = self.attrd('source-text') || 'name';
+			var propValue = self.attrd('source-value') || 'id';
 			self.datasource = [];
 			value && value.forEach(function(item, index) {
 
@@ -2108,7 +2108,7 @@ COMPONENT('selectbox', function() {
 			self.redraw();
 		}, true);
 
-		datasource = self.attr('data-options');
+		datasource = self.attrd('options');
 		if (datasource) {
 			var items = [];
 			datasource.split(';').forEach(function(item, index) {
@@ -2196,12 +2196,12 @@ COMPONENT('textboxlist', function() {
 	self.template = Tangular.compile('<div class="ui-textboxlist-item"><div><i class="fa fa-times"></i></div><div><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder }}" value="{{ value }}" /></div></div>');
 	self.make = function() {
 
-		empty.max = (self.attr('data-maxlength') || '100').parseInt();
-		empty.placeholder = self.attr('data-placeholder');
+		empty.max = (self.attrd('maxlength') || '100').parseInt();
+		empty.placeholder = self.attrd('placeholder');
 		empty.value = '';
 
 		var html = self.html();
-		var icon = self.attr('data-icon');
+		var icon = self.attrd('icon');
 
 		if (icon)
 			icon = '<i class="fa {0}"></i>'.format(icon);
@@ -2464,10 +2464,10 @@ COMPONENT('calendar', function() {
 	var skipDay = false;
 	var visible = false;
 
-	self.days = self.attr('data-days').split(',');
-	self.months = self.attr('data-months').split(',');
-	self.first = parseInt(self.attr('data-firstday'));
-	self.today = self.attr('data-today');
+	self.days = self.attrd('days').split(',');
+	self.months = self.attrd('months').split(',');
+	self.first = parseInt(self.attrd('firstday'));
+	self.today = self.attrd('today');
 	self.months_short = [];
 
 	for (var i = 0, length = self.months.length; i < length; i++) {
@@ -2702,13 +2702,13 @@ COMPONENT('keyvalue', function() {
 	self.template = Tangular.compile('<div class="ui-keyvalue-item"><div class="ui-keyvalue-item-remove"><i class="fa fa-times"></i></div><div class="ui-keyvalue-item-key"><input type="text" name="key" maxlength="{{ max }}" placeholder="{{ placeholder_key }}" value="{{ key }}" /></div><div class="ui-keyvalue-item-value"><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder_value }}" value="{{ value }}" /></div></div>');
 	self.make = function() {
 
-		empty.max = (self.attr('data-maxlength') || '100').parseInt();
-		empty.placeholder_key = self.attr('data-placeholder-key');
-		empty.placeholder_value = self.attr('data-placeholder-value');
+		empty.max = (self.attrd('maxlength') || '100').parseInt();
+		empty.placeholder_key = self.attrd('placeholder-key');
+		empty.placeholder_value = self.attrd('placeholder-value');
 		empty.value = '';
 
 		var html = self.html();
-		var icon = self.attr('data-icon');
+		var icon = self.attrd('icon');
 
 		if (icon)
 			icon = '<i class="fa {0}"></i>'.format(icon);
@@ -2804,7 +2804,7 @@ COMPONENT('keyvalue', function() {
 COMPONENT('codemirror', function() {
 
 	var self = this;
-	var required = self.attr('data-required') === 'true';
+	var required = self.attrd('required') === 'true';
 	var skipA = false;
 	var skipB = false;
 	var editor;
@@ -2825,7 +2825,7 @@ COMPONENT('codemirror', function() {
 		self.html('<div class="ui-codemirror-label' + (required ? ' ui-codemirror-label-required' : '') + '">' + (icon ? '<span class="fa ' + icon + '"></span> ' : '') + content + ':</div><div class="ui-codemirror"></div>');
 
 		var container = self.find('.ui-codemirror');
-		self.editor = editor = CodeMirror(container.get(0), { lineNumbers: self.attr('data-linenumbers') === 'true', mode: self.attr('data-type') || 'htmlmixed', indentUnit: 4 });
+		self.editor = editor = CodeMirror(container.get(0), { lineNumbers: self.attrd('linenumbers') === 'true', mode: self.attrd('type') || 'htmlmixed', indentUnit: 4 });
 		height !== 'auto' && editor.setSize('100%', height || '200px');
 
 		editor.on('change', function(a, b) {
@@ -3081,7 +3081,7 @@ COMPONENT('message', function() {
 	};
 
 	self.content = function(cls, text, icon) {
-		!is && self.html('<div><div class="ui-message-body"><div class="text"></div><hr /><button>' + (self.attr('data-button') || 'Close') + '</button></div></div>');
+		!is && self.html('<div><div class="ui-message-body"><div class="text"></div><hr /><button>' + (self.attrd('button') || 'Close') + '</button></div></div>');
 		timer && clearTimeout(timer);
 		visible = true;
 		self.find('.ui-message-body').removeClass().addClass('ui-message-body ' + cls);
@@ -3103,9 +3103,9 @@ COMPONENT('disable', function() {
 	self.readonly();
 
 	self.make = function() {
-		condition = self.attr('data-if');
-		selector = self.attr('data-selector') || 'input,texarea,select';
-		validate = self.attr('data-validate');
+		condition = self.attrd('if');
+		selector = self.attrd('selector') || 'input,texarea,select';
+		validate = self.attrd('validate');
 		validate && (validate = validate.split(',').trim());
 	};
 
@@ -3138,7 +3138,7 @@ COMPONENT('disable', function() {
 COMPONENT('textarea', function() {
 
 	var self = this;
-	var isRequired = self.attr('data-required') === 'true';
+	var isRequired = self.attrd('required') === 'true';
 	var input;
 	var container;
 
@@ -3172,13 +3172,13 @@ COMPONENT('textarea', function() {
 		var builder = [];
 		var tmp;
 
-		attrs.attr('placeholder', self.attr('data-placeholder'));
-		attrs.attr('maxlength', self.attr('data-maxlength'));
+		attrs.attr('placeholder', self.attrd('placeholder'));
+		attrs.attr('maxlength', self.attrd('maxlength'));
 		attrs.attr('data-jc-bind', '');
 
-		tmp = self.attr('data-height');
+		tmp = self.attrd('height');
 		tmp && attrs.attr('style', 'height:' + tmp);
-		self.attr('data-autofocus') === 'true' && attrs.attr('autofocus');
+		self.attrd('autofocus') === 'true' && attrs.attr('autofocus');
 		builder.push('<textarea {0}></textarea>'.format(attrs.join(' ')));
 
 		var element = self.element;
@@ -3192,7 +3192,7 @@ COMPONENT('textarea', function() {
 			return;
 		}
 
-		var icon = self.attr('data-icon');
+		var icon = self.attrd('icon');
 		var html = builder.join('');
 
 		builder = [];
@@ -3205,7 +3205,7 @@ COMPONENT('textarea', function() {
 		self.classes('ui-textarea-container');
 		input = self.find('textarea');
 		container = self.find('.ui-textarea');
-		if (self.attr('data-monospace') === 'true')
+		if (self.attrd('monospace') === 'true')
 			input.css('font-family', 'monospace');
 	};
 
@@ -3222,7 +3222,7 @@ COMPONENT('textarea', function() {
 
 COMPONENT('filereader', function() {
 	var self = this;
-	var required = self.attr('data-required') === 'true';
+	var required = self.attrd('required') === 'true';
 
 	self.readonly();
 
@@ -3230,9 +3230,9 @@ COMPONENT('filereader', function() {
 
 		var element = self.element;
 		var content = self.html();
-		var placeholder = self.attr('data-placeholder');
-		var icon = self.attr('data-icon');
-		var accept = self.attr('data-accept');
+		var placeholder = self.attrd('placeholder');
+		var icon = self.attrd('icon');
+		var accept = self.attrd('accept');
 		var html = '<span class="fa fa-folder-o"></span><input type="file"' + (accept ? ' accept="' + accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (placeholder || '') + '" readonly="readonly" />';
 
 		if (content.length) {
@@ -3269,7 +3269,7 @@ COMPONENT('filereader', function() {
 
 COMPONENT('nosqlcounter', function() {
 	var self = this;
-	var count = (self.attr('data-count') || '0').parseInt();
+	var count = (self.attrd('count') || '0').parseInt();
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 	self.readonly();
@@ -3301,7 +3301,7 @@ COMPONENT('nosqlcounter', function() {
 		var current = dt.format('yyyyMM');
 		var stats = null;
 
-		if (self.attr('data-lastvalues') === 'true') {
+		if (self.attrd('lastvalues') === 'true') {
 			var max = value.length - maxbars;
 			if (max < 0)
 				max = 0;
@@ -3698,7 +3698,7 @@ COMPONENT('dragdropfiles', function() {
 	};
 
 	self.make = function() {
-		var cls = self.attr('data-class');
+		var cls = self.attrd('class');
 		var has = false;
 
 		self.event('dragenter dragover dragexit drop dragleave', function (e) {
@@ -3725,7 +3725,7 @@ COMPONENT('dragdropfiles', function() {
 					return;
 			}
 
-			EXEC(self.attr('data-files'), e.originalEvent.dataTransfer.files, e);
+			EXEC(self.attrd('files'), e.originalEvent.dataTransfer.files, e);
 		});
 	};
 });
