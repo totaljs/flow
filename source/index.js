@@ -1195,8 +1195,10 @@ FLOW.install = function(filename, body, callback) {
 		});
 	} else {
 
-		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1)
+		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1) {
+			callback && callback(new Error('Invalid file.'));
 			return;
+		}
 
 		if (filename)
 			filename = F.path.root(PATH + filename);
