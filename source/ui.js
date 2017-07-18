@@ -417,7 +417,7 @@ COMPONENT('loading', function() {
 
 	self.make = function() {
 		self.classes('ui-loading');
-		self.append('<ul><li class="a"></li><li class="b"></li><li class="c"></li><li class="d"></li><li class="e"></li></ul>');
+		self.append('<div></div>');
 	};
 
 	self.show = function() {
