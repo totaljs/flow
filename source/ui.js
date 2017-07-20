@@ -19,7 +19,7 @@ COMPONENT('error', function() {
 	self.readonly();
 
 	self.make = function() {
-		self.classes('ui-error hidden');
+		self.aclass('ui-error hidden');
 	};
 
 	self.setter = function(value) {
@@ -265,20 +265,20 @@ COMPONENT('confirm', function() {
 
 	self.hide = function(index) {
 		self.callback && self.callback(index);
-		self.classes('-ui-confirm-visible');
+		self.rclass('ui-confirm-visible');
 		setTimeout2(self.id, function() {
 			visible = false;
-			self.classes('hidden');
+			self.aclass('hidden');
 		}, 1000);
 	};
 
 	self.content = function(cls, text) {
 		!is && self.html('<div><div class="ui-confirm-body"></div></div>');
 		self.find('.ui-confirm-body').empty().append(text);
-		self.classes('-hidden');
+		self.rclass('hidden');
 		setTimeout2(self.id, function() {
 			visible = true;
-			self.classes('ui-confirm-visible');
+			self.aclass('ui-confirm-visible');
 		}, 5);
 	};
 });
@@ -347,7 +347,7 @@ COMPONENT('form', function() {
 
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
-		self.classes('-hidden');
+		self.rclass('hidden');
 		self.replace(el);
 
 		self.event('scroll', function() {
@@ -416,7 +416,7 @@ COMPONENT('loading', function() {
 	self.singleton();
 
 	self.make = function() {
-		self.classes('ui-loading');
+		self.aclass('ui-loading');
 		self.append('<div></div>');
 	};
 
@@ -666,7 +666,7 @@ COMPONENT('textbox', function() {
 		});
 
 		if (!content.length) {
-			self.classes('ui-textbox ui-textbox-container');
+			self.aclass('ui-textbox ui-textbox-container');
 			self.html(builder.join(''));
 			input = self.find('input');
 			container = self.find('.ui-textbox');
@@ -681,7 +681,7 @@ COMPONENT('textbox', function() {
 		builder.push(':</div><div class="ui-textbox">{0}</div>'.format(html));
 
 		self.html(builder.join(''));
-		self.classes('ui-textbox-container');
+		self.aclass('ui-textbox-container');
 		input = self.find('input');
 		container = self.find('.ui-textbox');
 	};
@@ -878,7 +878,7 @@ COMPONENT('designer', function() {
 	self.readonly();
 	self.make = function() {
 		scroller = self.element.parent();
-		self.classes('ui-designer');
+		self.aclass('ui-designer');
 		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"></svg></div>');
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
@@ -1590,7 +1590,7 @@ COMPONENT('checkbox', function() {
 	!isRequired && self.noValid();
 
 	self.make = function() {
-		self.classes('ui-checkbox');
+		self.aclass('ui-checkbox');
 		self.html('<div><i class="fa fa-check"></i></div><span{1}>{0}</span>'.format(self.html(), isRequired ? ' class="ui-checkbox-label-required"' : ''));
 		self.event('click', function() {
 			self.dirty(false);
@@ -1726,7 +1726,7 @@ COMPONENT('dropdowncheckbox', function() {
 
 		var options = [];
 		var element = self.element;
-		var arr = (element.attr('data-options') || '').split(';');
+		var arr = (self.attrd('options') || '').split(';');
 
 		for (var i = 0, length = arr.length; i < length; i++) {
 			var item = arr[i].split('|');
@@ -1739,7 +1739,7 @@ COMPONENT('dropdowncheckbox', function() {
 		}
 
 		var content = element.html();
-		var icon = element.attr('data-icon');
+		var icon = self.attrd('icon');
 		var html = '<div class="ui-dropdowncheckbox"><span class="fa fa-sort"></span><div class="ui-dropdowncheckbox-selected"></div></div><div class="ui-dropdowncheckbox-values hidden">' + options.join('') + '</div>';
 
 		if (content.length > 0) {
@@ -1749,7 +1749,7 @@ COMPONENT('dropdowncheckbox', function() {
 		} else
 			element.append(html);
 
-		self.classes('ui-dropdowncheckbox-container');
+		self.aclass('ui-dropdowncheckbox-container');
 		container = self.find('.ui-dropdowncheckbox-values');
 		values = self.find('.ui-dropdowncheckbox-selected');
 
@@ -2000,7 +2000,7 @@ COMPONENT('dropdown', function() {
 			options.push('<option value="{0}">{1}</option>'.format(item[1] === undefined ? item[0] : item[1], item[0]));
 		});
 
-		self.classes('ui-dropdown-container');
+		self.aclass('ui-dropdown-container');
 
 		var label = self.html();
 		var html = '<div class="ui-dropdown"><span class="fa fa-sort"></span><select data-jc-bind="">{0}</select></div>'.format(options.join(''));
@@ -2076,7 +2076,7 @@ COMPONENT('selectbox', function() {
 		var search = self.attrd('search');
 
 		self.append((typeof(search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(search) : '') + '<div style="height:{0}"><ul></ul><ul style="height:{0}"></ul></div>'.format(self.attrd('height') || '200px'));
-		self.classes('ui-selectbox');
+		self.aclass('ui-selectbox');
 
 		self.find('ul').each(function(index) {
 			if (index)
@@ -2302,7 +2302,7 @@ COMPONENT('autocomplete', function() {
 	self.singleton();
 
 	self.make = function() {
-		self.classes('ui-autocomplete-container hidden');
+		self.aclass('ui-autocomplete-container hidden');
 		self.html('<div class="ui-autocomplete"><ul></ul></div>');
 		container = self.find('ul');
 
@@ -2557,7 +2557,7 @@ COMPONENT('calendar', function() {
 	}
 
 	self.hide = function() {
-		self.classes('hidden');
+		self.aclass('hidden');
 		visible = false;
 		return self;
 	};
@@ -2587,7 +2587,7 @@ COMPONENT('calendar', function() {
 
 	self.make = function() {
 
-		self.classes('ui-calendar hidden');
+		self.aclass('ui-calendar hidden');
 
 		self.event('click', '.ui-calendar-today', function() {
 			var dt = new Date();
@@ -2896,7 +2896,7 @@ COMPONENT('contextmenu', function() {
 
 	self.make = function() {
 
-		self.classes('ui-contextmenu');
+		self.aclass('ui-contextmenu');
 		self.append('<span class="ui-contextmenu-arrow fa fa-caret-up"></span><div class="ui-contextmenu-items"></div>');
 		container = self.find('.ui-contextmenu-items');
 		arrow = self.find('.ui-contextmenu-arrow');
@@ -2909,7 +2909,7 @@ COMPONENT('contextmenu', function() {
 		});
 
 		$(document).on('touchstart mousedown', function() {
-			FIND('contextmenu').hide();
+			is && self.hide(0);
 		});
 	};
 
@@ -2997,7 +2997,7 @@ COMPONENT('contextmenu', function() {
 
 		self.element.show();
 		setTimeout(function() {
-			self.classes('ui-contextmenu-visible');
+			self.aclass('ui-contextmenu-visible');
 			self.emit('contextmenu', true, self, self.target);
 		}, 100);
 
@@ -3028,7 +3028,7 @@ COMPONENT('message', function() {
 	self.singleton();
 
 	self.make = function() {
-		self.classes('ui-message hidden');
+		self.aclass('ui-message hidden');
 
 		self.element.on('click', 'button', function() {
 			self.hide();
@@ -3072,11 +3072,11 @@ COMPONENT('message', function() {
 
 	self.hide = function() {
 		self.callback && self.callback();
-		self.classes('-ui-message-visible');
+		self.aclass('-ui-message-visible');
 		timer && clearTimeout(timer);
 		timer = setTimeout(function() {
 			visible = false;
-			self.classes('hidden');
+			self.aclass('hidden');
 		}, 1000);
 	};
 
@@ -3087,9 +3087,9 @@ COMPONENT('message', function() {
 		self.find('.ui-message-body').removeClass().addClass('ui-message-body ' + cls);
 		self.find('.fa').removeClass().addClass('fa ' + icon);
 		self.find('.text').html(text);
-		self.classes('-hidden');
+		self.rclass('hidden');
 		setTimeout(function() {
-			self.classes('ui-message-visible');
+			self.aclass('ui-message-visible');
 		}, 5);
 	};
 });
@@ -3185,7 +3185,7 @@ COMPONENT('textarea', function() {
 		var content = element.html();
 
 		if (!content.length) {
-			self.classes('ui-textarea ui-textarea-container');
+			self.aclass('ui-textarea ui-textarea-container');
 			self.html(builder.join(''));
 			input = self.find('textarea');
 			container = self.element;
@@ -3202,7 +3202,7 @@ COMPONENT('textarea', function() {
 		builder.push(':</div><div class="ui-textarea">{0}</div>'.format(html));
 
 		self.html(builder.join(''));
-		self.classes('ui-textarea-container');
+		self.aclass('ui-textarea-container');
 		input = self.find('textarea');
 		container = self.find('.ui-textarea');
 		if (self.attrd('monospace') === 'true')
@@ -3238,7 +3238,7 @@ COMPONENT('filereader', function() {
 		if (content.length) {
 			self.html('<div class="ui-filereader-label' + (required ? ' ui-filereader-label-required' : '') + '">' + (icon ? '<span class="fa ' + icon + '"></span> ' : '') + content + ':</div><div class="ui-filereader">' + html + '</div>');
 		} else {
-			self.classes('ui-filereader');
+			self.aclass('ui-filereader');
 			self.html(html);
 		}
 
@@ -3270,7 +3270,7 @@ COMPONENT('filereader', function() {
 COMPONENT('nosqlcounter', function() {
 	var self = this;
 	var count = (self.attrd('count') || '0').parseInt();
-	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	var months = MONTHS;
 
 	self.readonly();
 	self.make = function() {
@@ -3358,7 +3358,7 @@ COMPONENT('colorpicker', function() {
 	self.blind();
 
 	self.make = function() {
-		self.classes('ui-colorpicker hidden');
+		self.aclass('ui-colorpicker hidden');
 		self.append('<ul></ul>');
 		container = self.find('ul');
 
@@ -3387,7 +3387,7 @@ COMPONENT('colorpicker', function() {
 	self.hide = function() {
 		if (!is)
 			return;
-		self.classes('hidden');
+		self.aclass('hidden');
 		is = false;
 	};
 
@@ -3444,7 +3444,7 @@ COMPONENT('multioptions', function(self) {
 	self.make = function() {
 
 		Tcolor = window.Tmultioptionscolor;
-		self.classes('ui-multioptions');
+		self.aclass('ui-multioptions');
 
 		var el = self.find('script');
 		self.remap(el.html());
