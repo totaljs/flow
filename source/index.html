@@ -14,7 +14,7 @@
 	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
 	<script src="@{repository.url}default.js"></script>
 </head>
-<body data-jc="exec,binder" class="themedark">
+<body data-jc="exec,binder"@{if repository.dark} class="themedark"@{fi}>
 
 	<div data-jc="autocomplete"></div>
 	<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
@@ -187,7 +187,7 @@
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
 			this.touches = false;
-			this.theme === undefined && (this.theme = 'dark');
+			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
@@ -1071,6 +1071,10 @@
 				$('.input,.output').each(function() {
 					var cur = this.getAttribute('fill');
 					cur !== color && this.setAttribute('fill', color);
+				});
+				$('.consumption').each(function() {
+					var cur = this.getAttribute('fill');
+					this.setAttribute('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 				});
 				refreshTraffic();
 			}, 1000);

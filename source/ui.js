@@ -1310,7 +1310,7 @@ COMPONENT('designer', function() {
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		g.asvg('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
+		g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 		var plus = g.asvg('g').attr('class', 'node_traffic').attr('data-id', item.id);
 		plus.asvg('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
 		plus.asvg('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');

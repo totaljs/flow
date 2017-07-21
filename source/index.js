@@ -57,6 +57,9 @@ exports.install = function(options) {
 	if (!OPT.limit)
 		OPT.limit = 50;
 
+	if (OPT.dark == null)
+		OPT.dark = true;
+
 	// Routes
 	if (OPT.auth === true) {
 		F.route(OPT.url, view_index, ['authorize']);
@@ -158,6 +161,7 @@ function view_index() {
 
 	this.theme('');
 	this.repository.url = OPT.url;
+	this.repository.dark = OPT.dark;
 	this.view('@flow/index');
 }
 

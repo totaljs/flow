@@ -45,6 +45,10 @@ var options = {};
 // Predefined set of components (default value):
 // options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
 
+// +v4.0.0
+// Default light theme
+// options.dark = false;
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================
