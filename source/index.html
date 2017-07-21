@@ -209,7 +209,7 @@
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
-			var cls = body.attr('class').match(/theme\w+/g);
+			var cls = (body.attr('class') || '').match(/theme\w+/g);
 			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
 		}, true);
