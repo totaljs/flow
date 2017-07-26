@@ -1318,8 +1318,6 @@ FLOW.prototypes = function(fn) {
 
 FLOW.clone = function(url, callback) {
 
-
-
 };
 
 // ===================================================
@@ -1348,6 +1346,11 @@ FlowData.prototype.clone = function() {
 	var type = typeof(this.data);
 	var noclone = !this.data || type === 'string' || type === 'number' || type === 'boolean' || this.data instanceof Date;
 	return new FlowData(noclone ? this.data : clone(this.data), this);
+};
+
+FlowData.prototype.rewrite = function(data) {
+	this.data = data;
+	return this;
 };
 
 FlowData.prototype.set = function(key, value) {

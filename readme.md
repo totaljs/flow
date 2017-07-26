@@ -481,6 +481,7 @@ component.on('data', function(message) {
     message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
     message.get(key);         // Gets a key-value (doesn't read data from "data")
     message.rem(key);         // Removes a key-value (doesn't read data from "data")
+    message.rewrite(data);    // Rewrites the current with new
 });
 
 // SECOND CASE
