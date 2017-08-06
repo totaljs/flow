@@ -17,13 +17,13 @@
 <body data-jc="exec,binder"@{if repository.dark} class="themedark"@{fi}>
 
 	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
+	<div data-jc="calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data-jc="confirm"></div>
 	<div data-jc="contextmenu"></div>
 	<div data-jc="colorpicker"></div>
 	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
-	<div data-jc="message" data-button="@(Close)"></div>
-	<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="message" data-jc-config="button:@(Close)"></div>
+	<div data-jc="websocket" data-jc-config="url:@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -109,13 +109,13 @@
 		</section>
 
 		<div class="padding">
-			<div data-jc="textbox" data-jc-path="common.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search"></div>
+			<div data-jc="textbox" data-jc-path="common.search" data-jc-config="placeholder:@(Search components ...);type:search"></div>
 		</div>
 
-		<div data-jc="search" data-jc-path="common.search" data-selector="li">
+		<div data-jc="search" data-jc-path="common.search" data-jc-config="selector:li">
 			<div class="components-container">
 				<div class="scroller">
-					<ul data-jc="repeater-group" data-jc-path="common.components" data-group="group" class="components">
+					<ul data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
 								<div><i class="fa fa-square" style="color:{{ color }}"></i>{{ name }}</div>
@@ -163,12 +163,12 @@
 		</div>
 	</div>
 
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="@{repository.url}templates/form-tab.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'settings'" data-url="@{repository.url}templates/form-settings.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'export'" data-url="@{repository.url}templates/form-export.html" data-reload="formexport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'import'" data-url="@{repository.url}templates/form-import.html" data-reload="formimport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{repository.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'variables'" data-url="@{repository.url}templates/form-variables.html" data-reload="formvariables_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'tab';url:@{repository.url}templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'settings';url:@{repository.url}templates/form-settings.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'export';url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'import';url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'database';url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'variables';url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -907,7 +907,7 @@
 					var title = target;
 					if (com)
 						title = com.name;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {2}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-placeholder="@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-placeholder="@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title)));
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-config="title:@(Settings\\:) {2};if:settings-{0};width:800" data-jc-path="common.form" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-jc-config="placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-jc-config="placeholder:@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title)));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
