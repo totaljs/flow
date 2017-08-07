@@ -43,7 +43,7 @@ var options = {};
 // options.limit = 50;
 
 // Predefined set of components (default value):
-// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
+// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
 
 // ====================================
 // Security (OPTIONAL)
@@ -89,10 +89,11 @@ FLOW.emit('hello', 'arg1', 'arg..N');
 FLOW.send(message);
 // Sends a message to designer via WebSocket
 
-FLOW.debug(data, style);
+FLOW.debug(data, style, [group]);
 // Sends a debug message
 // message: {String/Object} - string will be formatted as markdown and object as JSON
 // style: {String} - "info", "warning", "error" (default: "info")
+// group: {String} (optional) - +v4.0.0
 
 FLOW.set(key, value);
 // Writes a value into the key-value store (data are stored on HDD)

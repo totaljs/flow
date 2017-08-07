@@ -1,6 +1,6 @@
-<div data-jc="form" data-title="@(Global Variables)" data-jc-path="common.form" data-if="value === 'variables'" data-width="740px" class="hidden" data-jc-init="formvariables_init">
+<div data-jc="form" data-jc-path="common.form" data-jc-config="if:variables;width:740;submit:formvariables_submit;title:@(Global Variables)" class="hidden">
 	<div class="padding">
-		<div data-jc="textarea" data-jc-path="formvariables.body" data-monospace="true" data-height="250px" data-placeholder="@(key : value)">@(Variables)</div>
+		<div data-jc="textarea" data-jc-path="formvariables.body" data-jc-config="monospace:true;height:250;placeholder:@(key \: value)">@(Variables)</div>
 		<div class="black mt10">
 			<strong>@(Example:)</strong>
 		</div>
@@ -31,16 +31,14 @@ binds-environment-value   <span>(env)</span>       : <b>process.env</b></code></
 		SETTER('websocket', 'send', { type: 'getvariables' });
 	}
 
-	function formvariables_init(component) {
-		component.submit = function(hide) {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['@(Yes)', '@(Cancel)'], function(index) {
-				if (index)
-					return;
-				SETTER('loading', 'hide', 1000);
-				SETTER('websocket', 'send', { type: 'variables', body: formvariables.body });
-				RESET('formvariables.*', true);
-				hide();
-			});
-		};
+	function formvariables_submit(hide) {
+		SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			if (index)
+				return;
+			SETTER('loading', 'hide', 1000);
+			SETTER('websocket', 'send', { type: 'variables', body: formvariables.body });
+			RESET('formvariables.*', true);
+			hide();
+		});
 	}
 </script>
