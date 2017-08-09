@@ -1140,6 +1140,8 @@
 			items.push({ name: '@(Flowboard)', icon: 'object-group', value: 9, url: '@{helpers.FLOWBOARD.url}' });
 			@{fi}
 
+			items.push({ name: '@(Create a new tab)', value: 16, icon: 'plus' });
+
 			flow.tabs.forEach(function(item) {
 				items.push({ name: '@(Show tab: {0})'.format(item.name), value: 12, icon: 'th-large', tab: item });
 			});
@@ -1197,6 +1199,9 @@
 						break;
 					case 15:
 						OPERATION('flow.apply')();
+						break;
+					case 16:
+						OPERATION('tabs.add')();
 						break;
 				}
 			});
