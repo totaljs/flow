@@ -52,7 +52,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
+		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
@@ -629,7 +629,8 @@ Component.prototype.status = function(text, color) {
 	return this;
 };
 
-Component.prototype.debug = function(data, style) {
+Component.prototype.debug = function(data, style, group) {
+	MESSAGE_DEBUG.group = group;
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.style = style || 'info';

@@ -45,6 +45,9 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 .debugoutput-id { font-size: 11px; color: #A0A0A0; float: right; }
 .debugoutput-name { font-size: 12px; line-height: 14px; }
 .debugoutput-name b { font-size: 11px; }
+.debuggroup-name { font-weight: bold; color: black; background-color: #F0F0F0; padding: 3px 5px; border-radius: 3px; }
+.themedark .debuggroup-name { color: #E0E0E0; background-color: black; }
+.debuggroup { padding: 5px 0 0 15px; }
 
 .themedark .debugoutput-id { color: #505050; }
 
@@ -54,7 +57,7 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 .erroroutput-name b { font-size: 11px; }
 .erroroutput-errors > div { border: 2px solid #DA4453; padding: 5px; border-radius: 3px; margin-bottom: 5px; }
 
-.bg-fade { background: linear-gradient(#F8F8F8, white); border-bottom: 1px solid #F0F0F0; margin-bottom: 5px; padding-bottom: 7px !important; }
+.bg-fade { background: linear-gradient(#F8F8F8, white); border-bottom: 1px solid #E0E0E0; margin-bottom: 5px; padding-bottom: 7px !important; }
 svg { cursor: move; }
 
 .link .fa { margin-right: 5px; }
@@ -128,7 +131,7 @@ svg { cursor: move; }
 #designerbuttons button:first-child { border-left: 0; border-bottom-left-radius: 4px; border-top-left-radius: 4px; }
 #designerbuttons button:last-child { border-bottom-right-radius: 4px; border-top-right-radius: 4px; background-color: #E33733; color: white; }
 #designerbuttons .disabled { color: silver !important; cursor: not-allowed; background-color: white !important; }
-.themedark #designerbuttons button:hover { color: white; }
+.themedark #designerbuttons button:hover { color: white !important; }
 
 .traffic-container { border-top: 1px solid #E0E0E0; height: 25px; font-size: 12px; padding: 0 20px 0 5px; }
 .traffic-container:first-child { border-top: 0; }
@@ -189,6 +192,7 @@ svg { cursor: move; }
 .themedark #designerzoom { background-color: #151515; }
 .themedark #designerzoom button { border-color: #202020; color: white; }
 .themedark #designerbuttons button { border-color: #202020; color: #A0A0A0; }
+.themedark #designerbuttons button.designerbuttons-remove { color: #E0E0E0; }
 .themedark #designerbuttons .disabled { color: #404040 !important; background-color: #303030 !important; }
 .themedark .mainmenu .ui-textbox { background-color: #303030; border-color: #303030; }
 .themedark .mainmenu .ui-textbox input { background-color: #303030; color: gray; }
