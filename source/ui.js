@@ -1,8 +1,9 @@
-COMPONENT('exec', function(self, config) {
+COMPONENT('exec', function() {
+	var self = this;
 	self.readonly();
 	self.blind();
 	self.make = function() {
-		self.event('click', config.selector || '.exec', function() {
+		self.event('click', self.attr('data-selector') || '.exec', function() {
 			var el = $(this);
 			var attr = el.attr('data-exec');
 			var path = el.attr('data-path');
@@ -12,42 +13,58 @@ COMPONENT('exec', function(self, config) {
 	};
 });
 
-COMPONENT('error', function(self, config) {
+COMPONENT('error', function() {
+	var self = this;
 
 	self.readonly();
 
 	self.make = function() {
-		self.aclass('ui-error hidden');
+		self.classes('ui-error hidden');
 	};
 
 	self.setter = function(value) {
 
 		if (!(value instanceof Array) || !value.length) {
-			self.tclass('hidden', true);
+			self.toggle('hidden', true);
 			return;
 		}
 
 		var builder = [];
 		for (var i = 0, length = value.length; i < length; i++)
-			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, 'fa-' + (config.icon || 'warning')));
+			builder.push('<div><span class="fa {1}"></span>{0}</div>'.format(value[i].error, self.attr('data-icon') || 'fa-times-circle'));
 
 		self.html(builder.join(''));
-		self.tclass('hidden', false);
+		self.toggle('hidden', false);
 	};
 });
 
-COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(self, config) {
+COMPONENT('search', function() {
+
+	var self = this;
+	var options_class;
+	var options_selector;
+	var options_attribute;
+	var options_delay;
+
 	self.readonly();
+	self.make = function() {
+		options_class = self.attr('data-class') || 'hidden';
+		options_selector = self.attr('data-selector');
+		options_attribute = self.attr('data-attribute') || 'data-search';
+		options_delay = (self.attr('data-delay') || '200').parseInt();
+	};
+
 	self.setter = function(value) {
 
-		if (!config.selector || !config.attribute || value == null)
+		if (!options_selector || !options_attribute || value == null)
 			return;
 
 		KEYPRESS(function() {
 
-			var elements = self.find(config.selector);
+			var elements = self.find(options_selector);
+
 			if (!value) {
-				elements.rclass(config.class);
+				elements.removeClass(options_class);
 				return;
 			}
 
@@ -57,7 +74,7 @@ COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(sel
 
 			elements.toArray().waitFor(function(item, next) {
 				var el = $(item);
-				var val = (el.attr(config.attribute) || '').toSearch();
+				var val = (el.attr(options_attribute) || '').toSearch();
 				if (val.indexOf(search) === -1)
 					hide.push(el);
 				else
@@ -66,21 +83,23 @@ COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(sel
 			}, function() {
 
 				hide.forEach(function(item) {
-					item.tclass(config.class, true);
+					item.toggleClass(options_class, true);
 				});
 
 				show.forEach(function(item) {
-					item.tclass(config.class, false);
+					item.toggleClass(options_class, false);
 				});
 			});
 
-		}, config.delay, 'search' + self.id);
+		}, options_delay, 'search' + self.id);
 	};
 });
 
-COMPONENT('binder', function(self) {
+COMPONENT('binder', function() {
 
-	var keys, keys_unique = null;
+	var self = this;
+	var keys;
+	var keys_unique;
 
 	self.readonly();
 	self.blind();
@@ -105,7 +124,7 @@ COMPONENT('binder', function(self) {
 			var value = self.get(item.path);
 			template.value = value;
 			item.classes && classes(item.element, item.classes(value));
-			item.visible && item.element.tclass('hidden', item.visible(value) ? false : true);
+			item.visible && item.element.toggleClass('hidden', item.visible(value) ? false : true);
 			item.html && item.element.html(item.html(value));
 			item.template && item.element.html(item.template(template));
 		});
@@ -127,8 +146,8 @@ COMPONENT('binder', function(self) {
 					break;
 			}
 		});
-		rem && element.rclass(rem);
-		add && element.aclass(add);
+		rem && element.removeClass(rem);
+		add && element.addClass(add);
 	}
 
 	function decode(val) {
@@ -196,8 +215,8 @@ COMPONENT('binder', function(self) {
 
 });
 
-COMPONENT('confirm', function(self) {
-
+COMPONENT('confirm', function() {
+	var self = this;
 	var is = false;
 	var visible = false;
 
@@ -205,7 +224,7 @@ COMPONENT('confirm', function(self) {
 	self.singleton();
 
 	self.make = function() {
-		self.aclass('ui-confirm hidden', true);
+		self.toggle('ui-confirm hidden', true);
 		self.event('click', 'button', function() {
 			self.hide($(this).attr('data-index').parseInt());
 		});
@@ -215,7 +234,7 @@ COMPONENT('confirm', function(self) {
 			if (t !== 'BUTTON')
 				return;
 			var el = self.find('.ui-confirm-body');
-			el.aclass('ui-confirm-click');
+			el.addClass('ui-confirm-click');
 			setTimeout(function() {
 				el.removeClass('ui-confirm-click');
 			}, 300);
@@ -246,107 +265,97 @@ COMPONENT('confirm', function(self) {
 
 	self.hide = function(index) {
 		self.callback && self.callback(index);
-		self.rclass('ui-confirm-visible');
+		self.classes('-ui-confirm-visible');
 		setTimeout2(self.id, function() {
 			visible = false;
-			self.aclass('hidden');
+			self.classes('hidden');
 		}, 1000);
 	};
 
 	self.content = function(cls, text) {
 		!is && self.html('<div><div class="ui-confirm-body"></div></div>');
 		self.find('.ui-confirm-body').empty().append(text);
-		self.rclass('hidden');
+		self.classes('-hidden');
 		setTimeout2(self.id, function() {
 			visible = true;
-			self.aclass('ui-confirm-visible');
+			self.classes('ui-confirm-visible');
 		}, 5);
 	};
 });
 
-COMPONENT('form', function(self, config) {
+COMPONENT('form', function() {
 
-	var W = window;
-	var header = null;
-	var csspos = {};
+	var self = this;
+	var autocenter;
 
-	if (!W.$$form) {
-		W.$$form_level = W.$$form_level || 1;
-		W.$$form = true;
+	if (!MAN.$$form) {
+		window.$$form_level = window.$$form_level || 1;
+		MAN.$$form = true;
 		$(document).on('click', '.ui-form-button-close', function() {
 			SET($(this).attr('data-path'), '');
-			W.$$form_level--;
+			window.$$form_level--;
 		});
 
 		$(window).on('resize', function() {
-			SETTER('form', 'resize');
+			FIND('form', true).forEach(function(component) {
+				!component.element.hasClass('hidden') && component.resize();
+			});
 		});
 
 		$(document).on('click', '.ui-form-container', function(e) {
 			var el = $(e.target);
-			if (!(el.hclass('ui-form-container-padding') || el.hclass('ui-form-container')))
+			if (!(el.hasClass('ui-form-container-padding') || el.hasClass('ui-form-container')))
 				return;
 			var form = $(this).find('.ui-form');
 			var cls = 'ui-form-animate-click';
-			form.aclass(cls);
+			form.addClass(cls);
 			setTimeout(function() {
-				form.rclass(cls);
+				form.removeClass(cls);
 			}, 300);
 		});
 	}
 
 	self.readonly();
-	self.submit = function() {
-		if (config.submit)
-			EXEC(config.submit, self);
-		else
-			self.hide();
-	};
-
-	self.cancel = function() {
-		config.cancel && EXEC(config.cancel, self);
-		self.hide();
-	};
+	self.submit = self.cancel = function() { self.hide(); };
+	self.onHide = function(){};
 
 	self.hide = function() {
 		self.set('');
+		self.onHide();
 	};
 
 	self.resize = function() {
-		if (!config.center || self.hclass('hidden'))
+		if (!autocenter)
 			return;
 		var ui = self.find('.ui-form');
 		var fh = ui.innerHeight();
-		var wh = $(W).height();
+		var wh = $(window).height();
 		var r = (wh / 2) - (fh / 2);
-		csspos.marginTop = (r > 30 ? (r - 15) : 20) + 'px';
-		ui.css(csspos);
+		if (r > 30)
+			ui.css({ marginTop: (r - 15) + 'px' });
+		else
+			ui.css({ marginTop: '20px' });
 	};
 
 	self.make = function() {
+		var width = self.attr('data-width') || '800px';
+		var enter = self.attr('data-enter');
+		autocenter = self.attr('data-autocenter') === 'true';
+		self.condition = self.attr('data-if');
 
-		var icon;
-
-		if (config.icon)
-			icon = '<i class="fa fa-{0}"></i>'.format(config.icon);
-		else
-			icon = '<i></i>';
-
-		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}"><div class="ui-form-title"><button class="ui-form-button-close" data-path="{2}"><i class="fa fa-times"></i></button>{4}<span>{3}</span></div></div></div>'.format(self._id, (config.width || 800) + 'px', self.path, config.title, icon));
+		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}"><div class="ui-form-title"><span class="fa fa-times ui-form-button-close" data-path="{2}"></span>{3}</div>{4}</div></div>'.format(self._id, width, self.path, self.attr('data-title')));
 
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
-		self.rclass('hidden');
+		self.classes('-hidden');
 		self.replace(el);
-
-		header = self.virtualize({ title: '.ui-form-title > span', icon: '.ui-form-title > i' });
 
 		self.event('scroll', function() {
 			EMIT('reflow', self.name);
 		});
 
 		self.find('button').on('click', function() {
-			W.$$form_level--;
+			window.$$form_level--;
 			switch (this.name) {
 				case 'submit':
 					self.submit(self.hide);
@@ -357,109 +366,81 @@ COMPONENT('form', function(self, config) {
 			}
 		});
 
-		config.enter && self.event('keydown', 'input', function(e) {
-			e.which === 13 && !self.find('button[name="submit"]').get(0).disabled && self.submit(self.hide);
+		enter === 'true' && self.event('keydown', 'input[type="text"]', function(e) {
+			e.keyCode === 13 && !self.find('button[name="submit"]').get(0).disabled && self.submit(self.hide);
 		});
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
-		switch (key) {
-			case 'icon':
-				header.icon.rclass(header.icon.attr('class'));
-				value && header.icon.aclass('fa fa-' + value);
-				break;
-			case 'title':
-				header.title.html(value);
-				break;
-		}
-	};
-
-	self.setter = function(value) {
+	self.setter = function() {
 
 		setTimeout2('noscroll', function() {
-			$('html').tclass('noscroll', $('.ui-form-container').not('.hidden').length ? true : false);
+			$('html').toggleClass('noscroll', $('.ui-form-container').not('.hidden').length ? true : false);
 		}, 50);
 
-		var isHidden = value !== config.if;
-
+		var isHidden = !EVALUATE(self.path, self.condition);
 		self.toggle('hidden', isHidden);
-
-		setTimeout2('formreflow', function() {
-			EMIT('reflow', self.name);
-		}, 10);
+		EMIT('reflow', self.name);
 
 		if (isHidden) {
 			self.release(true);
-			self.find('.ui-form').rclass('ui-form-animate');
+			self.find('.ui-form').removeClass('ui-form-animate');
 			return;
 		}
 
 		self.resize();
 		self.release(false);
 
-		config.reload && EXEC(config.reload, self);
-
 		var el = self.find('input[type="text"],select,textarea');
-		!isMOBILE && el.length && el.eq(0).focus();
+		el.length && el.eq(0).focus();
 
-		if (W.$$form_level < 1)
-			W.$$form_level = 1;
-
-		W.$$form_level++;
-		self.css('z-index', W.$$form_level * 10);
+		window.$$form_level++;
+		self.css('z-index', window.$$form_level * 10);
 		self.element.scrollTop(0);
 
 		setTimeout(function() {
-			self.find('.ui-form').aclass('ui-form-animate');
+			self.find('.ui-form').addClass('ui-form-animate');
 		}, 300);
 
 		// Fixes a problem with freezing of scrolling in Chrome
 		setTimeout2(self.id, function() {
-			self.css('z-index', (W.$$form_level * 10) + 1);
+			self.css('z-index', (window.$$form_level * 10) + 1);
 		}, 1000);
 	};
 });
 
-COMPONENT('loading', function(self) {
+COMPONENT('loading', function() {
+	var self = this;
 	var pointer;
 
 	self.readonly();
 	self.singleton();
 
 	self.make = function() {
-		self.aclass('ui-loading');
-		self.append('<div></div>');
+		self.classes('ui-loading');
+		self.append('<ul><li class="a"></li><li class="b"></li><li class="c"></li><li class="d"></li><li class="e"></li></ul>');
 	};
 
 	self.show = function() {
 		clearTimeout(pointer);
-		self.rclass('hidden');
+		self.toggle('hidden', false);
 		return self;
 	};
 
 	self.hide = function(timeout) {
 		clearTimeout(pointer);
 		pointer = setTimeout(function() {
-			self.aclass('hidden');
+			self.toggle('hidden', true);
 		}, timeout || 1);
 		return self;
 	};
 });
 
-COMPONENT('repeater', function(self) {
+COMPONENT('repeater', function() {
 
-	var filter = null;
+	var self = this;
 	var recompile = false;
-	var reg = /\$(index|path)/g;
 
 	self.readonly();
-
-	self.configure = function(key, value) {
-		if (key === 'filter')
-			filter = value ? GET(value) : null;
-	};
 
 	self.make = function() {
 		var element = self.find('script');
@@ -486,23 +467,20 @@ COMPONENT('repeater', function(self) {
 		for (var i = 0, length = value.length; i < length; i++) {
 			var item = value[i];
 			item.index = i;
-			if (!filter || filter(item)) {
-				builder.push(self.template(item).replace(reg, function(text) {
-					return text.substring(0, 2) === '$i' ? i.toString() : self.path + '[' + i + ']';
-				}));
-			}
+			builder.push(self.template(item).replace(/\$index/g, i.toString()));
 		}
 
-		self.html(builder.join(''));
-		recompile && self.compile();
+		self.html(builder);
+		recompile && COMPILE();
 	};
 });
 
-COMPONENT('repeater-group', function(self, config) {
+COMPONENT('repeater-group', function() {
 
-	var html, template_group, group = null;
-	var reg = /\$(index|path)/g;
-	var force = false;
+	var self = this;
+	var html;
+	var template_group;
+	var group;
 
 	self.readonly();
 
@@ -515,7 +493,8 @@ COMPONENT('repeater-group', function(self, config) {
 	};
 
 	self.make = function() {
-		self.find('script').each(function(index) {
+		group = self.attr('data-group');
+		self.element.find('script').each(function(index) {
 			var element = $(this);
 			var html = element.html();
 			element.remove();
@@ -526,15 +505,6 @@ COMPONENT('repeater-group', function(self, config) {
 		});
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
-		if (key === 'group') {
-			force = true;
-			self.refresh();
-		}
-	};
-
 	self.setter = function(value) {
 
 		if (!value || !value.length) {
@@ -542,16 +512,18 @@ COMPONENT('repeater-group', function(self, config) {
 			return;
 		}
 
-		if (!force && NOTMODIFIED(self.id, value))
+		if (NOTMODIFIED(self.id, value))
 			return;
 
-		force = false;
 		html = '';
 		var length = value.length;
 		var groups = {};
 
 		for (var i = 0; i < length; i++) {
-			var name = value[i][config.group] || '0';
+			var name = value[i][group];
+			if (!name)
+				name = '0';
+
 			if (groups[name])
 				groups[name].push(value[i]);
 			else
@@ -563,7 +535,7 @@ COMPONENT('repeater-group', function(self, config) {
 		var builder = '';
 		var keys = Object.keys(groups);
 
-		keys.quicksort();
+		keys.sort();
 		keys.forEach(function(key) {
 			var arr = groups[key];
 			var tmp = '';
@@ -571,14 +543,12 @@ COMPONENT('repeater-group', function(self, config) {
 			for (var i = 0, length = arr.length; i < length; i++) {
 				var item = arr[i];
 				item.index = index++;
-				tmp += self.template(item).replace(reg, function(text) {
-					return text.substring(0, 2) === '$i' ? index.toString() : self.path + '[' + index + ']';
-				});
+				tmp += self.template(item).replace(/\$index/g, index.toString()).replace(/\$/g, self.path + '[' + index + ']');
 			}
 
 			if (key !== '0') {
 				var options = {};
-				options[config.group] = key;
+				options[group] = key;
 				options.length = arr.length;
 				options.index = indexgroup++;
 				options.body = tmp;
@@ -587,23 +557,26 @@ COMPONENT('repeater-group', function(self, config) {
 
 		});
 
-		self.html(builder);
+		self.empty().append(builder);
 	};
 });
 
-COMPONENT('textbox', function(self, config) {
+COMPONENT('textbox', function() {
 
-	var input, container, content = null;
+	var self = this;
+	var isRequired = self.attr('data-required') === 'true';
+	var validation = self.attr('data-validate');
+	var input;
+	var container;
 
 	self.validate = function(value) {
 
-		if (!config.required || config.disabled)
+		if (input.prop('disabled') || !isRequired)
 			return true;
 
-		if (self.type === 'date')
-			return value instanceof Date && !isNaN(value.getTime());
+		var type = typeof(value);
 
-		if (value == null)
+		if (type === 'undefined' || type === 'object')
 			value = '';
 		else
 			value = value.toString();
@@ -620,290 +593,204 @@ COMPONENT('textbox', function(self, config) {
 				return value > 0;
 		}
 
-		return config.validation ? self.evaluate(value, config.validation, true) ? true : false : value.length > 0;
+		return validation ? self.evaluate(value, validation, true) ? true : false : value.length > 0;
+	};
+
+	!isRequired && self.noValid();
+
+	self.required = function(value) {
+		self.find('.ui-textbox-label').toggleClass('ui-textbox-label-required', value);
+		self.noValid(!value);
+		isRequired = value;
+		!value && self.state(1, 1);
 	};
 
 	self.make = function() {
-
-		content = self.html();
-
-		self.type = config.type;
-		self.format = config.format;
-
-		self.event('click', '.fa-calendar', function(e) {
-			if (config.disabled)
-				return;
-			if (config.type === 'date') {
-				e.preventDefault();
-				window.$calendar && window.$calendar.toggle(self.element, self.find('input').val(), function(date) {
-					self.set(date);
-				});
-			}
-		});
-
-		self.event('click', '.fa-caret-up,.fa-caret-down', function() {
-			if (config.disabled)
-				return;
-			if (config.increment) {
-				var el = $(this);
-				var inc = el.hasClass('fa-caret-up') ? 1 : -1;
-				self.change(true);
-				self.inc(inc);
-			}
-		});
-
-		self.event('click', '.ui-textbox-control-icon', function() {
-			if (config.disabled)
-				return;
-			if (self.type === 'search') {
-				self.$stateremoved = false;
-				$(this).rclass('fa-times').aclass('fa-search');
-				self.set('');
-			}
-		});
-
-		self.redraw();
-	};
-
-	self.redraw = function() {
 
 		var attrs = [];
 		var builder = [];
 		var tmp;
 
-		if (config.type === 'password')
-			tmp = 'password';
-		else
-			tmp = 'text';
-
-		self.tclass('ui-disabled', config.disabled === true);
-		self.type = config.type;
-		attrs.attr('type', tmp);
-		config.placeholder && attrs.attr('placeholder', config.placeholder);
-		config.maxlength && attrs.attr('maxlength', config.maxlength);
-		config.keypress != null && attrs.attr('data-jc-keypress', config.keypress);
-		config.delay && attrs.attr('data-jc-keypress-delay', config.delay);
-		config.disabled && attrs.attr('disabled');
-		config.error && attrs.attr('error');
+		attrs.attr('type', self.type === 'password' ? self.type : 'text');
+		attrs.attr('placeholder', self.attr('data-placeholder'));
+		attrs.attr('maxlength', self.attr('data-maxlength'));
+		attrs.attr('data-jc-keypress', self.attr('data-jc-keypress'));
+		attrs.attr('data-jc-keypress-delay', self.attr('data-jc-keypress-delay'));
 		attrs.attr('data-jc-bind', '');
+		attrs.attr('name', self.path);
 
-		config.autofill && attrs.attr('name', self.path.replace(/\./g, '_'));
-		config.align && attrs.attr('class', 'ui-' + config.align);
-		config.autofocus && attrs.attr('autofocus');
+		tmp = self.attr('data-align');
+		tmp && attrs.attr('class', 'ui-' + tmp);
+		self.attr('data-autofocus') === 'true' && attrs.attr('autofocus');
+
+		var content = self.html();
+		var icon = self.attr('data-icon');
+		var icon2 = self.attr('data-control-icon');
+		var increment = self.attr('data-increment') === 'true';
 
 		builder.push('<input {0} />'.format(attrs.join(' ')));
 
-		var icon = config.icon;
-		var icon2 = config.icon2;
-
 		if (!icon2 && self.type === 'date')
-			icon2 = 'calendar';
+			icon2 = 'fa-calendar';
 		else if (self.type === 'search') {
-			icon2 = 'search ui-textbox-control-icon';
+			icon2 = 'fa-search ui-textbox-control-icon';
+			self.event('click', '.ui-textbox-control-icon', function() {
+				self.$stateremoved = false;
+				$(this).removeClass('fa-times').addClass('fa-search');
+				self.set('');
+			});
 			self.getter2 = function(value) {
 				if (self.$stateremoved && !value)
 					return;
 				self.$stateremoved = value ? false : true;
-				self.find('.ui-textbox-control-icon').tclass('fa-times', value ? true : false).tclass('fa-search', value ? false : true);
+				self.find('.ui-textbox-control-icon').toggleClass('fa-times', value ? true : false).toggleClass('fa-search', value ? false : true);
 			};
 		}
 
-		icon2 && builder.push('<div><span class="fa fa-{0}"></span></div>'.format(icon2));
-		config.increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
+		icon2 && builder.push('<div><span class="fa {0}"></span></div>'.format(icon2));
+		increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
+		increment && self.event('click', '.fa-caret-up,.fa-caret-down', function() {
+			var el = $(this);
+			var inc = -1;
+			if (el.hasClass('fa-caret-up'))
+				inc = 1;
+			self.change(true);
+			self.inc(inc);
+		});
 
-		if (config.label)
-			content = config.label;
+		self.type === 'date' && self.event('click', '.fa-calendar', function(e) {
+			e.preventDefault();
+			window.$calendar && window.$calendar.toggle($(this).parent().parent(), self.find('input').val(), function(date) {
+				self.set(date);
+			});
+		});
 
-		if (content.length) {
-			var html = builder.join('');
-			builder = [];
-			builder.push('<div class="ui-textbox-label{0}">'.format(config.required ? ' ui-textbox-label-required' : ''));
-			icon && builder.push('<span class="fa fa-{0}"></span> '.format(icon));
-			builder.push(content);
-			builder.push(':</div><div class="ui-textbox">{0}</div>'.format(html));
-			config.error && builder.push('<div class="ui-textbox-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
+		if (!content.length) {
+			self.classes('ui-textbox ui-textbox-container');
 			self.html(builder.join(''));
-			self.aclass('ui-textbox-container');
 			input = self.find('input');
 			container = self.find('.ui-textbox');
-		} else {
-			config.error && builder.push('<div class="ui-textbox-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
-			self.aclass('ui-textbox ui-textbox-container');
-			self.html(builder.join(''));
-			input = self.find('input');
-			container = self.element;
-		}
-	};
-
-	self.configure = function(key, value, init) {
-
-		if (init)
 			return;
-
-		var redraw = false;
-
-		switch (key) {
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				self.find('input').prop('disabled', value);
-				break;
-			case 'format':
-				self.format = value;
-				self.refresh();
-				break;
-			case 'required':
-				self.noValid(!value);
-				!value && self.state(1, 1);
-				self.find('.ui-textbox-label').tclass('ui-textbox-label-required', value);
-				break;
-			case 'placeholder':
-				input.prop('placeholder', value || '');
-				break;
-			case 'maxlength':
-				input.prop('maxlength', value || 1000);
-				break;
-			case 'autofill':
-				input.prop('name', value ? self.path.replace(/\./g, '_') : '');
-				break;
-			case 'label':
-				content = value;
-				redraw = true;
-				break;
-			case 'type':
-				self.type = value;
-				if (value === 'password')
-					value = 'password';
-				else
-					self.type = 'text';
-				redraw = true;
-				break;
-			case 'align':
-				input.rclass(input.attr('class')).aclass('ui-' + value || 'left');
-				break;
-			case 'autofocus':
-				input.focus();
-				break;
-			case 'icon':
-			case 'icon2':
-			case 'increment':
-				redraw = true;
-				break;
 		}
 
-		redraw && setTimeout2('redraw.' + self.id, function() {
-			self.redraw();
-			self.refresh();
-		}, 100);
+		var html = builder.join('');
+		builder = [];
+		builder.push('<div class="ui-textbox-label{0}">'.format(isRequired ? ' ui-textbox-label-required' : ''));
+		icon && builder.push('<span class="fa {0}"></span> '.format(icon));
+		builder.push(content);
+		builder.push(':</div><div class="ui-textbox">{0}</div>'.format(html));
+
+		self.html(builder.join(''));
+		self.classes('ui-textbox-container');
+		input = self.find('input');
+		container = self.find('.ui-textbox');
 	};
 
 	self.state = function(type) {
 		if (!type)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
+		var invalid = self.isInvalid();
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-textbox-invalid', invalid);
-		config.error && self.find('.ui-box-helper').tclass('ui-box-helper-show', invalid);
+		container.toggleClass('ui-textbox-invalid', invalid);
 	};
 });
 
-COMPONENT('importer', function(self, config) {
-
+COMPONENT('importer', function() {
+	var self = this;
 	var imported = false;
+	var reload = self.attr('data-reload');
 
 	self.readonly();
 	self.setter = function() {
 
-		if (!self.evaluate(config.if))
+		if (!self.evaluate(self.attr('data-if')))
 			return;
 
 		if (imported) {
-			if (config.reload)
-				EXEC(config.reload);
+			if (reload)
+				EXEC(reload);
 			else
 				self.setter = null;
 			return;
 		}
 
 		imported = true;
-		IMPORT(config.url, function() {
-			if (config.reload)
-				EXEC(config.reload);
+		IMPORT(self.attr('data-url'), function() {
+			if (reload)
+				EXEC(reload);
 			else
 				self.remove();
 		});
 	};
 });
 
-COMPONENT('visible', function(self, config) {
-	var processed, is = false;
-	var old = null;
-
+COMPONENT('visible', function() {
+	var self = this;
+	var processed = false;
+	var template = self.attr('data-template');
 	self.readonly();
 	self.setter = function(value) {
 
-		var condition = config.if;
+		var is = true;
+		var condition = self.attr('data-if');
 
 		if (condition)
 			is = self.evaluate(condition);
 		else
 			is = value ? true : false;
 
-		if (old === is)
-			return;
-
-		if (is && config.template && !processed) {
-			self.import(config.template, NOOP, false);
+		if (is && template && !processed) {
+			IMPORT(template, self);
 			processed = true;
 		}
 
-		self.tclass('hidden', !is);
-		old = is;
+		is && setTimeout2(self.id, function() {
+			self.exec('reload');
+		}, 100);
+
+		self.toggle('hidden', !is);
 	};
 });
 
-COMPONENT('validation', function(self, config) {
+COMPONENT('validation', function() {
 
-	var path, elements = null;
+	var self = this;
+	var path;
+	var elements;
 
 	self.readonly();
 
 	self.make = function() {
-		!config.selector && (elements = self.find('button'));
+		elements = self.find(self.attr('data-selector') || 'button');
+		elements.prop({ disabled: true });
+		self.evaluate = self.attr('data-if');
 		path = self.path.replace(/\.\*$/, '');
-		setTimeout(function() {
-			self.watch(self.path, self.state, true);
-		}, 50);
-	};
-
-	self.configure = function(key, value) {
-		switch (key) {
-			case 'selector':
-				elements = self.find(value || 'button');
-				break;
-		}
+		self.watch(self.path, self.state, true);
 	};
 
 	self.state = function() {
-		var disabled = MAIN.disabled(path);
-		if (!disabled && config.if)
-			disabled = !EVALUATE(self.path, config.if);
-		elements.prop('disabled', disabled);
+		var disabled = DISABLED(path);
+		if (!disabled && self.evaluate)
+			disabled = !EVALUATE(self.path, self.evaluate);
+		elements.prop({ disabled: disabled });
 	};
 });
 
-COMPONENT('websocket', 'reconnect:2000', function(self, config) {
+COMPONENT('websocket', function() {
 
-	var ws, url;
-	var queue = [];
-	var sending = false;
+	var reconnect_timeout;
+	var self = this;
+	var ws;
+	var url;
 
 	self.online = false;
 	self.readonly();
 
 	self.make = function() {
-		url = config.url || '';
+		reconnect_timeout = (self.attr('data-reconnect') || '5000').parseInt();
+		url = self.attr('data-url');
 		if (!url.match(/^(ws|wss)\:\/\//))
 			url = (location.protocol.length === 6 ? 'wss' : 'ws') + '://' + location.host + (url.substring(0, 1) !== '/' ? '/' : '') + url;
 		setTimeout(self.connect, 500);
@@ -911,28 +798,8 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	};
 
 	self.send = function(obj) {
-		queue.push(encodeURIComponent(JSON.stringify(obj)));
-		self.process();
+		ws && ws.send(encodeURIComponent(JSON.stringify(obj)));
 		return self;
-	};
-
-	self.process = function(callback) {
-
-		if (!ws || sending || !queue.length || ws.readyState !== 1) {
-			callback && callback();
-			return;
-		}
-
-		sending = true;
-		var async = queue.splice(0, 3);
-		async.waitFor(function(item, next) {
-			ws.send(item);
-			setTimeout(next, 5);
-		}, function() {
-			callback && callback();
-			sending = false;
-			queue.length && self.process();
-		});
 	};
 
 	self.close = function(isClosed) {
@@ -948,30 +815,30 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 	function onClose() {
 		self.close(true);
-		setTimeout(self.connect, config.reconnect);
+		setTimeout(function() {
+			self.connect();
+		}, reconnect_timeout);
 	}
 
 	function onMessage(e) {
 		var data;
 		try {
-			data = PARSE(decodeURIComponent(e.data));
-			self.attrd('jc-path') && self.set(data);
-		} catch (e) {
-			WARN('WebSocket "{0}": {1}'.format(url, e.toString()));
+			data = JSON.parse(decodeURIComponent(e.data));
+		} catch (ex) {
+			window.console && console.warn('WebSocket "{0}": {1}'.format(url, ex.toString()));
+			return;
 		}
 		data && EMIT('message', data);
 	}
 
 	function onOpen() {
 		self.online = true;
-		self.process(function() {
-			EMIT('online', true);
-		});
+		EMIT('online', true);
 	}
 
 	self.connect = function() {
 		ws && self.close();
-		setTimeout2(self.id, function() {
+		setTimeout(function() {
 			ws = new WebSocket(url);
 			ws.onopen = onOpen;
 			ws.onclose = onClose;
@@ -1011,7 +878,7 @@ COMPONENT('designer', function() {
 	self.readonly();
 	self.make = function() {
 		scroller = self.element.parent();
-		self.aclass('ui-designer');
+		self.classes('ui-designer');
 		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"></svg></div>');
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
@@ -1443,7 +1310,7 @@ COMPONENT('designer', function() {
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
+		g.asvg('rect').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 		var plus = g.asvg('g').attr('class', 'node_traffic').attr('data-id', item.id);
 		plus.asvg('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
 		plus.asvg('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
@@ -1700,40 +1567,36 @@ function offsetter(evt) {
 	return position;
 }
 
-COMPONENT('checkbox', function(self, config) {
+COMPONENT('checkbox', function() {
+
+	var self = this;
+	var input;
+	var isRequired = self.attr('data-required') === 'true';
 
 	self.validate = function(value) {
-		return (config.disabled || !config.required) ? true : (value === true || value === 'true' || value === 'on');
+		var type = typeof(value);
+		if (input.prop('disabled') || !isRequired)
+			return true;
+		value = type === 'undefined' || type === 'object' ? '' : value.toString();
+		return value === 'true' || value === 'on';
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
-		switch (key) {
-			case 'label':
-				self.find('span').html(value);
-				break;
-			case 'required':
-				self.find('span').tclass('ui-checkbox-label-required', value);
-				break;
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				break;
-			case 'checkicon':
-				self.find('i').rclass().aclass('fa fa-' + value);
-				break;
-		}
+	self.required = function(value) {
+		self.find('span').toggleClass('ui-checkbox-label-required', value === true);
+		isRequired = value;
+		return self;
 	};
+
+	!isRequired && self.noValid();
 
 	self.make = function() {
-		self.aclass('ui-checkbox');
-		self.html('<div><i class="fa fa-{2}"></i></div><span{1}>{0}</span>'.format(config.label || self.html(), config.required ? ' class="ui-checkbox-label-required"' : '', config.checkicon || 'check'));
+		self.classes('ui-checkbox');
+		self.html('<div><i class="fa fa-check"></i></div><span{1}>{0}</span>'.format(self.html(), isRequired ? ' class="ui-checkbox-label-required"' : ''));
 		self.event('click', function() {
-			if (config.disabled)
-				return;
 			self.dirty(false);
 			self.getter(!self.get(), 2, true);
 		});
+		input = self.find('input');
 	};
 
 	self.setter = function(value) {
@@ -1741,352 +1604,180 @@ COMPONENT('checkbox', function(self, config) {
 	};
 });
 
-COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
+COMPONENT('checkboxlist', function() {
 
-	var W = window;
-	!W.$checkboxlist && (W.$checkboxlist = Tangular.compile('<div{{ if $.class }} class="{{ $.class }}"{{ fi }}><div class="ui-checkboxlist-item" data-index="{{ index }}"><div><i class="fa fa-{{ $.checkicon }}"></i></div><span>{{ text }}</span></div></div>'));
-
-	var template = W.$checkboxlist;
-	var container, data, datasource, content, dataold, render = null;
+	var self = this;
+	var isRequired = self.attr('data-required');
+	var template = Tangular.compile('<div class="{0} ui-checkboxlist-checkbox"><label><input type="checkbox" value="{{ id }}"><span>{{ name }}</span></label></div>'.format(self.attr('data-class')));
 
 	self.validate = function(value) {
-		return config.disabled || !config.required ? true : value && value.length > 0;
+		return isRequired ? value && value.length > 0 : true;
 	};
 
-	self.configure = function(key, value, init) {
-
-		if (init)
-			return;
-
-		var redraw = false;
-
-		switch (key) {
-
-			case 'type':
-				self.type = value;
-				break;
-
-			case 'checkicon':
-				self.find('i').rclass().aclass('fa fa-' + value);
-				break;
-
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				break;
-
-			case 'datasource':
-				var was = datasource;
-				was && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				was && self.refresh();
-				datasource = value;
-				break;
-
-			case 'icon':
-				if (!self.find('.ui-checkboxlist-label').find('i').rclass().aclass('fa fa-' + value).length)
-					redraw = true;
-				break;
-
-			case 'required':
-				self.find('.ui-checkboxlist-label').tclass('ui-checkboxlist-required', value);
-				self.state(1, 1);
-				break;
-
-			case 'label':
-				redraw = true;
-				break;
-
-			case 'items':
-
-				if (value instanceof Array) {
-					self.bind('', value);
-					return;
-				}
-
-				var items = [];
-				value.split(',').forEach(function(item) {
-					item = item.trim().split('|');
-					var val = (item[1] == null ? item[0] : item[1]).trim();
-					if (config.type === 'number')
-						val = +val;
-					items.push({ name: item[0].trim(), id: val });
-				});
-
-				self.bind('', items);
-				self.refresh();
-				break;
-		}
-
-		redraw && setTimeout2(self.id + '.redraw', function() {
-			self.redraw();
-			self.bind('', dataold);
-			self.refresh();
-		}, 100);
+	self.required = function(value) {
+		isRequired = value;
+		return self;
 	};
+
+	!isRequired && self.noValid();
 
 	self.make = function() {
 
-		self.aclass('ui-checkboxlist');
-		content = self.html();
-		config.type && (self.type = config.type);
-		self.redraw();
-
-		if (config.items)
-			self.reconfigure({ items: config.items });
-		else if (config.datasource)
-			self.reconfigure({ datasource: config.datasource });
-		else
-			self.bind('', null);
-
-		self.event('click', '.ui-checkboxlist-item', function(e) {
-
-			e.stopPropagation();
-
-			if (config.disabled)
-				return;
-
-			var el = $(this);
-			var is = !el.hasClass('ui-checkboxlist-checked');
-			var index = +el.attr('data-index');
-			var value = data[index];
-
-			if (value == null)
-				return;
-
-			value = value.value;
-
-			var arr = self.get();
-			if (!(arr instanceof Array))
-				arr = [];
-
+		self.event('click', 'input', function() {
+			var arr = self.get() || [];
+			var value = self.parser(this.value);
 			var index = arr.indexOf(value);
+			if (index === -1)
+				arr.push(value);
+			else
+				arr.splice(index, 1);
+			self.set(arr);
+		});
 
-			if (is) {
-				index === -1 && arr.push(value);
-			} else {
-				index !== -1 && arr.splice(index, 1);
+		self.event('click', '.ui-checkboxlist-selectall', function() {
+			var arr = [];
+			var inputs = self.find('input');
+			var value = self.get();
+
+			if (value && inputs.length === value.length) {
+				self.set(arr);
+				return;
 			}
 
-			self.reset(true);
-			self.set(arr, undefined, 2);
-		});
-	};
+			inputs.each(function() {
+				arr.push(self.parser(this.value));
+			});
 
-	self.redraw = function() {
-		var label = config.label || content;
-		self.html((label ? '<div class="ui-checkboxlist-label{1}">{2}{0}</div>'.format(label, config.required ? ' ui-checkboxlist-required' : '', config.icon ? '<i class="fa fa-{0}"></i>'.format(config.icon) : '') : '') + '<div class="ui-checkboxlist-container"></div>');
-		container = self.find('.ui-checkboxlist-container');
-	};
-
-	self.selectall = function() {
-
-		if (config.disabled)
-			return;
-
-		var arr = [];
-		var inputs = self.find('.ui-checkboxlist-item');
-		var value = self.get();
-
-		self.change(true);
-
-		if (value && inputs.length === value.length) {
 			self.set(arr);
-			return;
-		}
-
-		inputs.each(function() {
-			var el = $(this);
-			arr.push(self.parser(data[+el.attr('data-index')].value));
 		});
 
-		self.set(arr);
-	};
+		var datasource = self.attr('data-source');
+		datasource && self.watch(datasource, function(path, value) {
+			if (!value)
+				value = [];
+			self.redraw(value);
+		}, true);
 
-	self.bind = function(path, value) {
-
-		if (!value)
+		var options = self.attr('data-options');
+		if (!options)
 			return;
 
-		var kv = config.value || 'id';
-		var kt = config.text || 'name';
+		var arr = options.split(';');
+		var datasource = [];
 
-		render = '';
-		data = [];
-		dataold = value;
-
-		for (var i = 0, length = value.length; i < length; i++) {
-			var isString = typeof(value[i]) === 'string';
-			var item = { value: isString ? value[i] : value[i][kv], text: isString ? value[i] : value[i][kt], index: i };
-			render += template(item, config);
-			data.push(item);
+		for (var i = 0, length = arr.length; i < length; i++) {
+			var item = arr[i].split('|');
+			datasource.push({ id: item[1] === undefined ? item[0] : item[1], name: item[0] });
 		}
 
-		if (render)
-			container.html(render);
-		else
-			container.html(config.empty);
+		self.redraw(datasource);
 	};
 
 	self.setter = function(value) {
-		container.find('.ui-checkboxlist-item').each(function() {
-			var el = $(this);
-			var index = +el.attr('data-index');
-			var checked = false;
-			if (!value || !value.length)
-				checked = false;
-			else if (data[index])
-				checked = data[index];
-			checked && (checked = value.indexOf(checked.value) !== -1);
-			el.tclass('ui-checkboxlist-checked', checked);
+		self.find('input').each(function() {
+			this.checked = value && value.indexOf(self.parser(this.value)) !== -1;
 		});
 	};
 
-	self.state = function(type) {
-		if (!type)
+	self.redraw = function(arr) {
+		var builder = [];
+		var kn = self.attr('data-source-text') || 'name';
+		var kv = self.attr('data-source-value') || 'id';
+
+		for (var i = 0, length = arr.length; i < length; i++) {
+			var item = arr[i];
+			if (typeof(item) === 'string')
+				builder.push(template({ id: item, name: item }));
+			else
+				builder.push(template({ id: item[kv] === undefined ? item[kn] : item[kv], name: item[kn] }));
+		}
+
+		if (!builder.length)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
-		if (invalid === self.$oldstate)
-			return;
-		self.$oldstate = invalid;
-		self.find('.ui-checkboxlist').tclass('ui-checkboxlist-invalid', invalid);
+
+		var btn = self.attr('data-button') || '';
+		if (btn)
+			btn = '<div class="ui-checkboxlist-selectall"><a href="javascript:void(0)"><i class="fa fa-check-square-o mr5"></i>{0}</a></div>'.format(btn);
+
+		builder.push('<div class="clearfix"></div>' + btn);
+		self.html(builder.join(''));
+		return self;
 	};
 });
 
-COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
+COMPONENT('dropdowncheckbox', function() {
 
-	var data = [], render = '';
-	var container, values, content, datasource = null;
-	var prepared = false;
-	var W = window;
+	var self = this;
+	var required = self.element.attr('data-required') === 'true';
+	var container;
+	var data = [];
+	var values;
 
-	!W.$dropdowncheckboxtemplate && (W.$dropdowncheckboxtemplate = Tangular.compile('<div class="ui-dropdowncheckbox-item" data-index="{{ index }}"><div><i class="fa fa-{{ $.checkicon }}"></i></div><span>{{ text }}</span></div>'));
-	var template = W.$dropdowncheckboxtemplate;
+	if (!window.$dropdowncheckboxtemplate)
+		window.$dropdowncheckboxtemplate = Tangular.compile('<div><label><input type="checkbox" value="{{ index }}" /><span>{{ text }}</span></label></div>');
+
+	var template = window.$dropdowncheckboxtemplate;
 
 	self.validate = function(value) {
-		return config.disabled || !config.required ? true : value && value.length > 0;
-	};
-
-	self.configure = function(key, value, init) {
-
-		if (init)
-			return;
-
-		var redraw = false;
-
-		switch (key) {
-
-			case 'type':
-				self.type = value;
-				break;
-
-			case 'required':
-				self.find('.ui-dropdowncheckbox-label').tclass('ui-dropdowncheckbox-required', config.required);
-				break;
-
-			case 'label':
-				content = value;
-				redraw = true;
-				break;
-
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				break;
-
-			case 'checkicon':
-				self.find('i').rclass().aclass('fa fa-' + value);
-				break;
-
-			case 'icon':
-				redraw = true;
-				break;
-
-			case 'datasource':
-				var was = datasource;
-				was && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				was && self.refresh();
-				datasource = value;
-				break;
-
-			case 'items':
-
-				if (value instanceof Array) {
-					self.bind('', value);
-					return;
-				}
-
-				var items = [];
-				value.split(',').forEach(function(item) {
-					item = item.trim().split('|');
-					var val = (item[1] == null ? item[0] : item[1]).trim();
-					if (config.type === 'number')
-						val = +val;
-					items.push({ name: item[0].trim(), id: val });
-				});
-
-				self.bind('', items);
-				self.refresh();
-				break;
-		}
-
-		redraw && setTimeout2(self.id + '.redraw', self.redraw, 100);
-	};
-
-	self.redraw = function() {
-
-		var html = '<div class="ui-dropdowncheckbox"><span class="fa fa-sort"></span><div class="ui-dropdowncheckbox-selected"></div></div><div class="ui-dropdowncheckbox-values hidden">{0}</div>'.format(render);
-		if (content.length)
-			self.html('<div class="ui-dropdowncheckbox-label{0}">{1}{2}:</div>'.format(config.required ? ' ui-dropdowncheckbox-required' : '', config.icon ? ('<i class="fa fa-' + config.icon + '"></i>') : '', content) + html);
-		else
-			self.html(html);
-
-		container = self.find('.ui-dropdowncheckbox-values');
-		values = self.find('.ui-dropdowncheckbox-selected');
-		prepared && self.refresh();
-		self.tclass('ui-disabled', config.disabled === true);
+		return required ? value && value.length > 0 : true;
 	};
 
 	self.make = function() {
 
-		self.type = config.type;
+		var options = [];
+		var element = self.element;
+		var arr = (element.attr('data-options') || '').split(';');
 
-		content = self.html();
-		self.aclass('ui-dropdowncheckbox-container');
-		self.redraw();
+		for (var i = 0, length = arr.length; i < length; i++) {
+			var item = arr[i].split('|');
+			var value = item[1] === undefined ? item[0] : item[1];
+			if (self.type === 'number')
+				value = parseInt(value);
+			var obj = { value: value, text: item[0], index: i };
+			options.push(template(obj));
+			data.push(obj);
+		}
 
-		if (config.items)
-			self.reconfigure({ items: config.items });
-		else if (config.datasource)
-			self.reconfigure({ datasource: config.datasource });
-		else
-			self.bind('', null);
+		var content = element.html();
+		var icon = element.attr('data-icon');
+		var html = '<div class="ui-dropdowncheckbox"><span class="fa fa-sort"></span><div class="ui-dropdowncheckbox-selected"></div></div><div class="ui-dropdowncheckbox-values hidden">' + options.join('') + '</div>';
+
+		if (content.length > 0) {
+			element.empty();
+			element.append('<div class="ui-dropdowncheckbox-label' + (required ? ' ui-dropdowncheckbox-label-required' : '') + '">' + (icon ? '<span class="fa ' + icon + '"></span> ' : '') + content + ':</div>');
+			element.append(html);
+		} else
+			element.append(html);
+
+		self.classes('ui-dropdowncheckbox-container');
+		container = self.find('.ui-dropdowncheckbox-values');
+		values = self.find('.ui-dropdowncheckbox-selected');
 
 		self.event('click', '.ui-dropdowncheckbox', function(e) {
 
-			if (config.disabled)
+			var el = $(this);
+			if (el.hasClass('ui-disabled'))
 				return;
 
-			container.tclass('hidden');
+			container.toggleClass('hidden');
 
-			if (W.$dropdowncheckboxelement) {
-				W.$dropdowncheckboxelement.aclass('hidden');
-				W.$dropdowncheckboxelement = null;
+			if (window.$dropdowncheckboxelement) {
+				window.$dropdowncheckboxelement.addClass('hidden');
+				window.$dropdowncheckboxelement = null;
 			}
 
-			!container.hasClass('hidden') && (W.$dropdowncheckboxelement = container);
+			if (!container.hasClass('hidden'))
+				window.$dropdowncheckboxelement = container;
+
 			e.stopPropagation();
 		});
 
-		self.event('click', '.ui-dropdowncheckbox-item', function(e) {
+		self.event('click', 'input,label', function(e) {
 
 			e.stopPropagation();
 
-			if (config.disabled)
-				return;
-
-			var el = $(this);
-			var is = !el.hasClass('ui-dropdowncheckbox-checked');
-			var index = +el.attr('data-index');
+			var is = this.checked;
+			var index = parseInt(this.value);
 			var value = data[index];
 
 			if (value === undefined)
@@ -2095,57 +1786,73 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 			value = value.value;
 
 			var arr = self.get();
-
 			if (!(arr instanceof Array))
 				arr = [];
 
 			var index = arr.indexOf(value);
 
 			if (is) {
-				index === -1 && arr.push(value);
+				if (index === -1)
+					arr.push(value);
 			} else {
-				index !== -1 && arr.splice(index, 1);
+				if (index !== -1)
+					arr.splice(index, 1);
 			}
 
 			self.reset(true);
 			self.set(arr, undefined, 2);
 		});
+
+		var ds = self.attr('data-source');
+
+		if (!ds)
+			return;
+
+		self.watch(ds, prepare);
+		setTimeout(function() {
+			prepare(ds, GET(ds));
+		}, 500);
 	};
 
-	self.bind = function(path, value) {
+	function prepare(path, value) {
+
+		if (NOTMODIFIED(path, value))
+			return;
+
 		var clsempty = 'ui-dropdowncheckbox-values-empty';
-		prepared = true;
 
 		if (!value) {
-			container.aclass(clsempty).html(config.empty);
+			container.addClass(clsempty).empty().html(self.attr('data-empty'));
 			return;
 		}
 
-		var kv = config.value || 'id';
-		var kt = config.text || 'name';
+		var kv = self.attr('data-source-value') || 'id';
+		var kt = self.attr('data-source-text') || 'name';
+		var builder = '';
 
-		render = '';
 		data = [];
-
 		for (var i = 0, length = value.length; i < length; i++) {
 			var isString = typeof(value[i]) === 'string';
 			var item = { value: isString ? value[i] : value[i][kv], text: isString ? value[i] : value[i][kt], index: i };
-			render += template(item, config);
 			data.push(item);
+			builder += template(item);
 		}
 
-		if (render)
-			container.rclass(clsempty).html(render);
+		if (builder)
+			container.removeClass(clsempty).empty().append(builder);
 		else
-			container.aclass(clsempty).html(config.empty);
-	};
+			container.addClass(clsempty).empty().html(self.attr('data-empty'));
+
+		self.setter(self.get());
+	}
 
 	self.setter = function(value) {
 
-		if (!prepared)
+		if (NOTMODIFIED(self.id, value))
 			return;
 
 		var label = '';
+		var empty = self.attr('data-placeholder');
 
 		if (value && value.length) {
 			var remove = [];
@@ -2153,6 +1860,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 				var selected = value[i];
 				var index = 0;
 				var is = false;
+
 				while (true) {
 					var item = data[index++];
 					if (item === undefined)
@@ -2162,79 +1870,77 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 					label += (label ? ', ' : '') + item.text;
 					is = true;
 				}
-				!is && remove.push(selected);
+
+				if (!is)
+					remove.push(selected);
 			}
 
-			if (config.cleaner !== false) {
-				var refresh = false;
-				while (true) {
-					var item = remove.shift();
-					if (item === undefined)
-						break;
-					value.splice(value.indexOf(item), 1);
-					refresh = true;
-				}
-				refresh && self.set(value);
+			var refresh = false;
+
+			while (true) {
+				var item = remove.shift();
+				if (item === undefined)
+					break;
+				value.splice(value.indexOf(item), 1);
+				refresh = true;
 			}
+
+			if (refresh)
+				MAN.set(self.path, value);
 		}
 
-		container.find('.ui-dropdowncheckbox-item').each(function() {
-			var el = $(this);
-			var index = +el.attr('data-index');
+		container.find('input').each(function() {
+			var index = parseInt(this.value);
 			var checked = false;
 			if (!value || !value.length)
 				checked = false;
 			else if (data[index])
 				checked = data[index];
-			checked && (checked = value.indexOf(checked.value) !== -1);
-			el.tclass('ui-dropdowncheckbox-checked', checked);
+			if (checked)
+				checked = value.indexOf(checked.value) !== -1;
+			this.checked = checked;
 		});
 
 		if (!label && value) {
 			// invalid data
 			// it updates model without notification
-			self.rewrite([]);
+			MAN.set(self.path, []);
 		}
 
-		if (!label && config.placeholder) {
-			values.removeAttr('title', '');
-			values.html('<span>{0}</span>'.format(config.placeholder));
-		} else {
-			values.attr('title', label);
-			values.html(label);
+		if (!label && empty) {
+			values.html('<span>{0}</span>'.format(empty));
+			return;
 		}
+
+		values.html(label);
 	};
 
-	self.state = function(type) {
-		if (!type)
-			return;
-		var invalid = config.required ? self.isInvalid() : false;
-		if (invalid === self.$oldstate)
-			return;
-		self.$oldstate = invalid;
-		self.find('.ui-dropdowncheckbox').tclass('ui-dropdowncheckbox-invalid', invalid);
+	self.state = function() {
+		self.find('.ui-dropdowncheckbox').toggleClass('ui-dropdowncheckbox-invalid', self.isInvalid());
 	};
 
-	if (W.$dropdowncheckboxevent)
+	if (window.$dropdowncheckboxevent)
 		return;
 
-	W.$dropdowncheckboxevent = true;
+	window.$dropdowncheckboxevent = true;
 	$(document).on('click', function() {
-		if (W.$dropdowncheckboxelement) {
-			W.$dropdowncheckboxelement.aclass('hidden');
-			W.$dropdowncheckboxelement = null;
-		}
+		if (!window.$dropdowncheckboxelement)
+			return;
+		window.$dropdowncheckboxelement.addClass('hidden');
+		window.$dropdowncheckboxelement = null;
 	});
 });
 
-COMPONENT('dropdown', function(self, config) {
+COMPONENT('dropdown', function() {
 
-	var select, container, condition, content, datasource = null;
-	var render = '';
+	var self = this;
+	var isRequired = self.attr('data-required') === 'true';
+	var select;
+	var container;
 
 	self.validate = function(value) {
 
-		if (!config.required || config.disabled)
+		if (select.prop('disabled') || !isRequired)
 			return true;
 
 		var type = typeof(value);
@@ -2254,242 +1960,168 @@ COMPONENT('dropdown', function(self, config) {
 		return value.length > 0;
 	};
 
-	self.configure = function(key, value, init) {
+	!isRequired && self.noValid();
 
-		if (init)
-			return;
-
-		var redraw = false;
-
-		switch (key) {
-			case 'type':
-				self.type = value;
-				break;
-			case 'items':
-
-				if (value instanceof Array) {
-					self.bind('', value);
-					return;
-				}
-
-				var items = [];
-
-				value.split(',').forEach(function(item) {
-					item = item.trim().split('|');
-					var obj = { id: item[1] == null ? item[0] : item[1], name: item[0] };
-					items.push(obj);
-				});
-
-				self.bind('', items);
-
-				break;
-			case 'condition':
-				condition = value ? FN(value) : null;
-				break;
-			case 'required':
-				self.find('.ui-dropdown-label').tclass('ui-dropdown-label-required', value);
-				self.state(1, 1);
-				break;
-			case 'datasource':
-				datasource && self.unwatch(value, self.bind);
-				self.watch(value, self.bind, true);
-				break;
-			case 'label':
-				content = value;
-				redraw = true;
-				break;
-			case 'icon':
-				redraw = true;
-				break;
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				self.find('select').prop('disabled', value);
-				break;
-		}
-
-		redraw && setTimeout2(self.id + '.redraw', 100);
+	self.required = function(value) {
+		self.find('.ui-dropdown-label').toggleClass('ui-dropdown-label-required', value);
+		self.noValid(!value);
+		isRequired = value;
+		!value && self.state(1, 1);
 	};
 
-	self.bind = function(path, arr) {
+	self.render = function(arr) {
 
 		var builder = [];
 		var value = self.get();
 		var template = '<option value="{0}"{1}>{2}</option>';
-		var propText = config.text || 'name';
-		var propValue = config.value || 'id';
+		var propText = self.attr('data-source-text') || 'name';
+		var propValue = self.attr('data-source-value') || 'id';
+		var emptyText = self.attr('data-empty');
 
-		config.empty !== undefined && builder.push('<option value="">{0}</option>'.format(config.empty));
+		emptyText !== undefined && builder.push('<option value="">{0}</option>'.format(emptyText));
 
 		for (var i = 0, length = arr.length; i < length; i++) {
 			var item = arr[i];
-			if (condition && !condition(item))
-				continue;
 			if (item.length)
 				builder.push(template.format(item, value === item ? ' selected="selected"' : '', item));
 			else
 				builder.push(template.format(item[propValue], value === item[propValue] ? ' selected="selected"' : '', item[propText]));
 		}
 
-		render = builder.join('');
-		select.html(render);
-	};
-
-	self.redraw = function() {
-		var html = '<div class="ui-dropdown"><span class="fa fa-sort"></span><select data-jc-bind="">{0}</select></div>'.format(render);
-		var builder = [];
-		var label = content || config.label;
-		if (label) {
-			builder.push('<div class="ui-dropdown-label{0}">{1}{2}:</div>'.format(config.required ? ' ui-dropdown-label-required' : '', config.icon ? '<span class="fa fa-{0}"></span> '.format(config.icon) : '', label));
-			builder.push('<div class="ui-dropdown-values">{0}</div>'.format(html));
-			self.html(builder.join(''));
-		} else
-			self.html(html).aclass('ui-dropdown-values');
-		select = self.find('select');
-		container = self.find('.ui-dropdown');
-		render && self.refresh();
-		config.disabled && self.reconfigure('disabled:true');
+		select.html(builder.join(''));
 	};
 
 	self.make = function() {
-		self.type = config.type;
-		content = self.html();
-		self.aclass('ui-dropdown-container');
-		self.redraw();
-		config.items && self.reconfigure({ items: config.items });
-		config.datasource && self.reconfigure('datasource:' + config.datasource);
+
+		var options = [];
+
+		(self.attr('data-options') || '').split(';').forEach(function(item) {
+			item = item.split('|');
+			options.push('<option value="{0}">{1}</option>'.format(item[1] === undefined ? item[0] : item[1], item[0]));
+		});
+
+		self.classes('ui-dropdown-container');
+
+		var label = self.html();
+		var html = '<div class="ui-dropdown"><span class="fa fa-sort"></span><select data-jc-bind="">{0}</select></div>'.format(options.join(''));
+		var builder = [];
+
+		if (label.length) {
+			var icon = self.attr('data-icon');
+			builder.push('<div class="ui-dropdown-label{0}">{1}{2}:</div>'.format(isRequired ? ' ui-dropdown-label-required' : '', icon ? '<span class="fa {0}"></span> '.format(icon) : '', label));
+			builder.push('<div class="ui-dropdown-values">{0}</div>'.format(html));
+			self.html(builder.join(''));
+		} else
+			self.html(html).addClass('ui-dropdown-values');
+
+		select = self.find('select');
+		container = self.find('.ui-dropdown');
+
+		var ds = self.attr('data-source');
+		if (!ds)
+			return;
+
+		var prerender = function() {
+			var value = self.get(self.attr('data-source'));
+			!NOTMODIFIED(self.id, value) && self.render(value || EMPTYARRAY);
+		};
+
+		self.watch(ds, prerender, true);
 	};
 
 	self.state = function(type) {
 		if (!type)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
+		var invalid = self.isInvalid();
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-dropdown-invalid', invalid);
+		container.toggleClass('ui-dropdown-invalid', invalid);
 	};
 });
 
-COMPONENT('selectbox', function(self, config) {
+COMPONENT('selectbox', function() {
 
-	var Eitems, Eselected, datasource = null;
+	var self = this;
+	var Eitems, Eselected;
+	var isRequired = self.attr('data-required') === 'true';
 
 	self.datasource = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
 
 	self.validate = function(value) {
-		return config.disabled || !config.required ? true : value && value.length > 0;
+		return isRequired ? value && value.length > 0 : true;
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
+	!isRequired && self.noValid();
 
-		var redraw = false;
-
-		switch (key) {
-			case 'type':
-				self.type = value;
-				break;
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				self.find('input').prop('disabled', value);
-				if (value)
-					self.rclass('ui-selectbox-invalid');
-				else if (config.required)
-					self.state(1, 1);
-				break;
-			case 'required':
-				!value && self.state(1, 1);
-				break;
-			case 'height':
-			case 'search':
-				redraw = true;
-				break;
-			case 'items':
-				var arr = [];
-				value.split(',').forEach(function(item) {
-					item = item.trim().split('|');
-					var obj = {};
-					obj.name = item[0].trim();
-					obj.id = (item[1] == null ? item[0] : item[1]).trim();
-					if (config.type === 'number')
-						obj.id = +obj.id;
-					arr.push(obj);
-				});
-				self.bind('', arr);
-				break;
-			case 'datasource':
-				datasource && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				datasource = value;
-				break;
-		}
-
-		redraw && self.redraw();
+	self.required = function(value) {
+		self.noValid(!value);
+		isRequired = value;
+		!value && self.state(1, 1);
 	};
 
 	self.search = function() {
-		var search = config.search ? self.find('input').val().toSearch() : '';
+		var search = self.find('input').val().toSearch();
+
 		Eitems.find('li').each(function() {
 			var el = $(this);
 			el.toggleClass('hidden', el.attr('data-search').indexOf(search) === -1);
 		});
+
 		self.find('.ui-selectbox-search-icon').toggleClass('fa-search', search.length === 0).toggleClass('fa-times', search.length > 0);
 	};
 
-	self.redraw = function() {
-		self.html((typeof(config.search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(config.search) : '') + '<div style="height:{0}px"><ul></ul><ul style="height:{0}px"></ul></div>'.format(config.height || '200'));
+	self.make = function() {
+		var search = self.attr('data-search');
+
+		self.append((typeof(search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(search) : '') + '<div style="height:{0}"><ul></ul><ul style="height:{0}"></ul></div>'.format(self.attr('data-height') || '200px'));
+		self.classes('ui-selectbox');
+
 		self.find('ul').each(function(index) {
 			if (index)
 				Eselected = $(this);
 			else
 				Eitems = $(this);
 		});
-	};
 
-	self.bind = function(path, value) {
+		var datasource = self.attr('data-source');
+		datasource && self.watch(datasource, function(path, value) {
+			var propText = self.attr('data-source-text') || 'name';
+			var propValue = self.attr('data-source-value') || 'id';
+			self.datasource = [];
+			value && value.forEach(function(item, index) {
 
-		var kt = config.text || 'name';
-		var kv = config.value || 'id';
-		var builder = [];
+				var text;
+				var value;
 
-		self.datasource = [];
-		value && value.forEach(function(item, index) {
+				if (typeof(item) === 'string') {
+					text = item;
+					value = self.parser(item);
+				} else {
+					text = item[propText];
+					value = item[propValue];
+				}
 
-			var text;
-			var value;
+				self.datasource.push({ text: text, value: value, index: index, search: text.toSearch() });
+			});
+			self.redraw();
+		}, true);
 
-			if (typeof(item) === 'string') {
-				text = item;
-				value = self.parser(item);
-			} else {
-				text = item[kt];
-				value = item[kv];
-			}
-
-			var item = { text: text, value: value, index: index, search: text.toSearch() };
-			self.datasource.push(item);
-			builder.push(self.template(item));
-		});
-
-		self.search();
-		Eitems.empty().append(builder.join(''));
-	};
-
-	self.make = function() {
-
-		self.aclass('ui-selectbox');
-		self.redraw();
-
-		config.datasource && self.reconfigure('datasource:' + config.datasource);
-		config.items && self.reconfigure('items:' + config.items);
+		datasource = self.attr('data-options');
+		if (datasource) {
+			var items = [];
+			datasource.split(';').forEach(function(item, index) {
+				var val = item.split('|');
+				items.push({ text: val[0], value: self.parser(val[1] === undefined ? val[0] : val[1]), index: index, search: val[0].toSearch() });
+			});
+			self.datasource = items;
+			self.redraw();
+		}
 
 		self.event('click', 'li', function() {
-			if (config.disabled)
-				return;
 			var selected = self.get() || [];
-			var index = +this.getAttribute('data-index');
+			var index = this.getAttribute('data-index').parseInt();
 			var value = self.datasource[index];
 
 			if (selected.indexOf(value.value) === -1)
@@ -2502,42 +2134,42 @@ COMPONENT('selectbox', function(self, config) {
 		});
 
 		self.event('click', '.fa-times', function() {
-			if (config.disabled)
-				return;
 			self.find('input').val('');
 			self.search();
 		});
 
-		typeof(config.search) === 'string' && self.event('keydown', 'input', function() {
-			if (config.disabled)
-				return;
+		typeof(search) === 'string' && self.event('keydown', 'input', function() {
 			setTimeout2(self.id, self.search, 500);
 		});
 	};
 
-	self.setter = function(value) {
+	self.redraw = function() {
+		var builder = [];
+		self.datasource.forEach(function(item) {
+			builder.push(self.template(item));
+		});
+		self.search();
+		Eitems.empty().append(builder.join(''));
+	};
 
+	self.setter = function(value) {
 		var selected = {};
 		var builder = [];
 
-		var ds = self.datasource;
-		var dsl = ds.length;
-
-		if (value) {
-			for (var i = 0, length = value.length; i < length; i++) {
-				for (var j = 0; j < dsl; j++) {
-					if (ds[j].value === value[i]) {
-						selected[j] = true;
-						builder.push(self.template(ds[j]));
-					}
-				}
-			}
+		for (var i = 0, length = self.datasource.length; i < length; i++) {
+			var item = self.datasource[i];
+			if (value && value.indexOf(item.value) !== -1)
+				selected[i] = item;
 		}
 
 		Eitems.find('li').each(function() {
 			var el = $(this);
-			var index = +el.attr('data-index');
+			var index = el.attr('data-index').parseInt();
 			el.toggleClass('ui-selectbox-selected', selected[index] !== undefined);
+		});
+
+		Object.keys(selected).forEach(function(key) {
+			builder.push(self.template(selected[key]));
 		});
 
 		Eselected.empty().append(builder.join(''));
@@ -2547,92 +2179,38 @@ COMPONENT('selectbox', function(self, config) {
 	self.state = function(type) {
 		if (!type)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
+		var invalid = self.isInvalid();
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		self.tclass('ui-selectbox-invalid', invalid);
+		self.toggle('ui-selectbox-invalid', invalid);
 	};
 });
 
-COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
-
-	var container, content;
+COMPONENT('textboxlist', function() {
+	var self = this;
+	var container;
 	var empty = {};
 	var skip = false;
 
-	self.readonly();
-	self.template = Tangular.compile('<div class="ui-textboxlist-item"><div><i class="fa fa-times"></i></div><div><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder }}"{{ if disabled}} disabled="disabled"{{ fi }} value="{{ value }}" /></div></div>');
-
-	self.configure = function(key, value, init, prev) {
-		if (init)
-			return;
-
-		var redraw = false;
-		switch (key) {
-			case 'disabled':
-				self.tclass('ui-required', value);
-				self.find('input').prop('disabled', true);
-				empty.disabled = value;
-				break;
-			case 'maxlength':
-				empty.max = value;
-				self.find('input').prop(key, value);
-				break;
-			case 'placeholder':
-				empty.placeholder = value;
-				self.find('input').prop(key, value);
-				break;
-			case 'label':
-				redraw = true;
-				break;
-			case 'icon':
-				if (value && prev)
-					self.find('i').rclass().aclass(value);
-				else
-					redraw = true;
-				break;
-		}
-
-		if (redraw) {
-			skip = false;
-			self.redraw();
-			self.refresh();
-		}
-	};
-
-	self.redraw = function() {
-
-		var icon = '';
-		var html = config.label || content;
-
-		if (config.icon)
-			icon = '<i class="fa fa-{0}"></i>'.format(config.icon);
-
-		empty.value = '';
-		self.html((html ? '<div class="ui-textboxlist-label">{1}{0}:</div>'.format(html, icon) : '') + '<div class="ui-textboxlist-items"></div>' + self.template(empty).replace('-item"', '-item ui-textboxlist-base"'));
-		container = self.find('.ui-textboxlist-items');
-	};
-
+	self.template = Tangular.compile('<div class="ui-textboxlist-item"><div><i class="fa fa-times"></i></div><div><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder }}" value="{{ value }}" /></div></div>');
 	self.make = function() {
 
-		empty.max = config.max;
-		empty.placeholder = config.placeholder;
+		empty.max = (self.attr('data-maxlength') || '100').parseInt();
+		empty.placeholder = self.attr('data-placeholder');
 		empty.value = '';
-		empty.disabled = config.disabled;
 
-		if (config.disabled)
-			self.aclass('ui-disabled');
+		var html = self.html();
+		var icon = self.attr('data-icon');
 
-		content = self.html();
-		self.aclass('ui-textboxlist');
-		self.redraw();
+		if (icon)
+			icon = '<i class="fa {0}"></i>'.format(icon);
+
+		self.toggle('ui-textboxlist');
+		self.html((html ? '<div class="ui-textboxlist-label">{1}{0}:</div>'.format(html, icon) : '') + '<div class="ui-textboxlist-items"></div>' + self.template(empty).replace('-item"', '-item ui-textboxlist-base"'));
+		container = self.find('.ui-textboxlist-items');
 
 		self.event('click', '.fa-times', function() {
-
-			if (config.disabled)
-				return;
-
 			var el = $(this);
 			var parent = el.closest('.ui-textboxlist-item');
 			var value = parent.find('input').val();
@@ -2651,7 +2229,7 @@ COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
 
 		self.event('change keypress', 'input', function(e) {
 
-			if (config.disabled || (e.type !== 'change' && e.which !== 13))
+			if (e.type !== 'change' && e.keyCode !== 13)
 				return;
 
 			var el = $(this);
@@ -2706,9 +2284,16 @@ COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
 	};
 });
 
-COMPONENT('autocomplete', function(self) {
-
-	var container, old, onSearch, searchtimeout, searchvalue, blurtimeout, onCallback, datasource, offsetter = null;
+COMPONENT('autocomplete', function() {
+	var self = this;
+	var container;
+	var old;
+	var onSearch;
+	var searchtimeout;
+	var searchvalue;
+	var blurtimeout;
+	var onCallback;
+	var datasource;
 	var is = false;
 	var margin = {};
 
@@ -2717,7 +2302,7 @@ COMPONENT('autocomplete', function(self) {
 	self.singleton();
 
 	self.make = function() {
-		self.aclass('ui-autocomplete-container hidden');
+		self.classes('ui-autocomplete-container hidden');
 		self.html('<div class="ui-autocomplete"><ul></ul></div>');
 		container = self.find('ul');
 
@@ -2729,7 +2314,7 @@ COMPONENT('autocomplete', function(self) {
 		});
 
 		self.event('mouseenter mouseleave', 'li', function(e) {
-			$(this).tclass('selected', e.type === 'mouseenter');
+			$(this).toggleClass('selected', e.type === 'mouseenter');
 		});
 
 		$(document).on('click', function() {
@@ -2742,7 +2327,7 @@ COMPONENT('autocomplete', function(self) {
 	};
 
 	function keydown(e) {
-		var c = e.which;
+		var c = e.keyCode;
 		var input = this;
 
 		if (c !== 38 && c !== 40 && c !== 13) {
@@ -2766,11 +2351,11 @@ COMPONENT('autocomplete', function(self) {
 
 		if (c === 13) {
 			self.visible(false);
-			if (current.length) {
-				onCallback(datasource[+current.attr('data-index')], old);
-				e.preventDefault();
-				e.stopPropagation();
-			}
+			if (!current.length)
+				return;
+			onCallback(datasource[+current.attr('data-index')], old);
+			e.preventDefault();
+			e.stopPropagation();
 			return;
 		}
 
@@ -2778,13 +2363,13 @@ COMPONENT('autocomplete', function(self) {
 		e.stopPropagation();
 
 		if (current.length) {
-			current.rclass('selected');
+			current.removeClass('selected');
 			current = c === 40 ? current.next() : current.prev();
 		}
 
 		if (!current.length)
 			current = self.find('li:{0}-child'.format(c === 40 ? 'first' : 'last'));
-		current.aclass('selected');
+		current.addClass('selected');
 	}
 
 	function blur() {
@@ -2796,18 +2381,18 @@ COMPONENT('autocomplete', function(self) {
 
 	self.visible = function(visible) {
 		clearTimeout(blurtimeout);
-		self.tclass('hidden', !visible);
+		self.toggle('hidden', !visible);
 		is = visible;
 	};
 
 	self.resize = function() {
 
-		if (!offsetter || !old)
+		if (!old)
 			return;
 
-		var offset = offsetter.offset();
-		offset.top += offsetter.height();
-		offset.width = offsetter.width();
+		var offset = old.offset();
+		offset.top += old.height();
+		offset.width = old.width();
 
 		if (margin.left)
 			offset.left += margin.left;
@@ -2820,10 +2405,6 @@ COMPONENT('autocomplete', function(self) {
 	};
 
 	self.attach = function(input, search, callback, top, left, width) {
-		self.attachelement(input, input, search, callback, top, left, width);
-	};
-
-	self.attachelement = function(element, input, search, callback, top, left, width) {
 
 		clearTimeout(searchtimeout);
 
@@ -2847,7 +2428,6 @@ COMPONENT('autocomplete', function(self) {
 		margin.top = top;
 		margin.width = width;
 
-		offsetter = $(element);
 		self.resize();
 		self.refresh();
 		searchvalue = '';
@@ -2877,42 +2457,25 @@ COMPONENT('autocomplete', function(self) {
 	};
 });
 
-COMPONENT('calendar', function(self, config) {
+COMPONENT('calendar', function() {
 
+	var self = this;
 	var skip = false;
 	var skipDay = false;
 	var visible = false;
 
-	self.days = EMPTYARRAY;
-	self.months = EMPTYARRAY;
-	self.months_short = EMPTYARRAY;
+	self.days = self.attr('data-days').split(',');
+	self.months = self.attr('data-months').split(',');
+	self.first = parseInt(self.attr('data-firstday'));
+	self.today = self.attr('data-today');
+	self.months_short = [];
 
-	self.configure = function(key, value) {
-		switch (key) {
-			case 'days':
-				if (value instanceof Array)
-					self.days = value;
-				else
-					self.days = value.split(',').trim();
-				break;
-
-			case 'months':
-				if (value instanceof Array)
-					self.months = value;
-				else
-					self.months = value.split(',').trim();
-
-				self.months_short = [];
-
-				for (var i = 0, length = self.months.length; i < length; i++) {
-					var m = self.months[i];
-					if (m.length > 4)
-						m = m.substring(0, 3) + '.';
-					self.months_short.push(m);
-				}
-				break;
-		}
-	};
+	for (var i = 0, length = self.months.length; i < length; i++) {
+		var m = self.months[i];
+		if (m.length > 4)
+			m = m.substring(0, 3) + '.';
+		self.months_short.push(m);
+	}
 
 	self.readonly();
 	self.click = function() {};
@@ -2934,7 +2497,7 @@ COMPONENT('calendar', function(self, config) {
 
 		var d = new Date(year, month, 1);
 		var output = { header: [], days: [], month: month, year: year };
-		var firstDay = config.firstday;
+		var firstDay = self.first;
 		var firstCount = 0;
 		var from = d.getDay() - firstDay;
 		var today = new Date();
@@ -2994,30 +2557,20 @@ COMPONENT('calendar', function(self, config) {
 	}
 
 	self.hide = function() {
-		self.aclass('hidden');
+		self.classes('hidden');
 		visible = false;
 		return self;
 	};
 
 	self.toggle = function(el, value, callback, offset) {
-
-		if (self.older === el.get(0)) {
-			if (!self.hclass('hidden')) {
-				self.hide();
-				return;
-			}
-		}
-
-		self.older = el.get(0);
-		self.show(el, value, callback, offset);
+		if (self.element.hasClass('hidden'))
+			self.show(el, value, callback, offset);
+		else
+			self.hide();
 		return self;
 	};
 
 	self.show = function(el, value, callback, offset) {
-
-		setTimeout(function() {
-			clearTimeout2('calendarhide');
-		}, 5);
 
 		if (!el)
 			return self.hide();
@@ -3025,8 +2578,7 @@ COMPONENT('calendar', function(self, config) {
 		var off = el.offset();
 		var h = el.innerHeight();
 
-		self.css({ left: off.left + (offset || 0), top: off.top + h + 12 });
-		self.rclass('hidden');
+		self.css({ left: off.left + (offset || 0), top: off.top + h + 12 }).removeClass('hidden');
 		self.click = callback;
 		self.date(value);
 		visible = true;
@@ -3035,18 +2587,7 @@ COMPONENT('calendar', function(self, config) {
 
 	self.make = function() {
 
-		self.aclass('ui-calendar hidden');
-
-		var conf = {};
-
-		if (!config.days) {
-			conf.days = [];
-			for (var i = 0; i < DAYS.length; i++)
-				conf.days.push(DAYS[i].substring(0, 2).toUpperCase());
-		}
-
-		!config.months && (conf.months = MONTHS);
-		self.reconfigure(conf);
+		self.classes('ui-calendar hidden');
 
 		self.event('click', '.ui-calendar-today', function() {
 			var dt = new Date();
@@ -3083,10 +2624,8 @@ COMPONENT('calendar', function(self, config) {
 			self.date(dt);
 		});
 
-		$(document.body).on('scroll click', function() {
-			visible && setTimeout2('calendarhide', function() {
-				EXEC('$calendar.hide');
-			}, 20);
+		$(document.body).on('scroll', function() {
+			visible && EXEC('$calendar.hide');
 		});
 
 		window.$calendar = self;
@@ -3100,9 +2639,6 @@ COMPONENT('calendar', function(self, config) {
 
 		if (typeof(value) === 'string')
 			value = value.parseDate();
-
-		if (!value || isNaN(value.getTime()))
-			value = DATETIME;
 
 		var empty = !value;
 
@@ -3149,94 +2685,40 @@ COMPONENT('calendar', function(self, config) {
 		for (var i = 0; i < 7; i++)
 			header.push('<th>{0}</th>'.format(output.header[i].name));
 
-		self.html('<div class="ui-calendar-header"><button class="ui-calendar-header-prev" name="prev" data-date="{0}-{1}"><span class="fa fa-chevron-left"></span></button><div class="ui-calendar-header-info">{2} {3}</div><button class="ui-calendar-header-next" name="next" data-date="{0}-{1}"><span class="fa fa-chevron-right"></span></button></div><table cellpadding="0" cellspacing="0" border="0"><thead>{4}</thead><tbody>{5}</tbody></table>'.format(output.year, output.month, self.months[value.getMonth()], value.getFullYear(), header.join(''), builder.join('')) + (config.today ? '<div><a href="javascript:void(0)" class="ui-calendar-today">' + config.today + '</a></div>' : ''));
+		self.html('<div class="ui-calendar-header"><button class="ui-calendar-header-prev" name="prev" data-date="{0}-{1}"><span class="fa fa-chevron-left"></span></button><div class="ui-calendar-header-info">{2} {3}</div><button class="ui-calendar-header-next" name="next" data-date="{0}-{1}"><span class="fa fa-chevron-right"></span></button></div><table cellpadding="0" cellspacing="0" border="0"><thead>{4}</thead><tbody>{5}</tbody></table>'.format(output.year, output.month, self.months[value.getMonth()], value.getFullYear(), header.join(''), builder.join('')) + (self.today ? '<div><a href="javascript:void(0)" class="ui-calendar-today">' + self.today + '</a></div>' : ''));
 	};
 });
 
-COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
-
-	var container, content = null;
-	var skip = false;
+COMPONENT('keyvalue', function() {
+	var self = this;
+	var container;
 	var empty = {};
-
-	self.template = Tangular.compile('<div class="ui-keyvalue-item"><div class="ui-keyvalue-item-remove"><i class="fa fa-times"></i></div><div class="ui-keyvalue-item-key"><input type="text" name="key" maxlength="{{ max }}"{{ if disabled }} disabled="disabled"{{ fi }} placeholder="{{ placeholder_key }}" value="{{ key }}" /></div><div class="ui-keyvalue-item-value"><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder_value }}" value="{{ value }}" /></div></div>');
+	var skip = false;
 
 	self.binder = function(type, value) {
 		return value;
 	};
 
-	self.configure = function(key, value, init, prev) {
-		if (init)
-			return;
-
-		var redraw = false;
-
-		switch (key) {
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				self.find('input').prop('disabled', value);
-				empty.disabled = value;
-				break;
-			case 'maxlength':
-				self.find('input').prop('maxlength', value);
-				break;
-			case 'placeholderkey':
-				self.find('input[name="key"]').prop('placeholder', value);
-				break;
-			case 'placeholdervalue':
-				self.find('input[name="value"]').prop('placeholder', value);
-				break;
-			case 'icon':
-				if (value && prev)
-					self.find('i').rclass('fa').aclass('fa fa-' + value);
-				else
-					redraw = true;
-				break;
-
-			case 'label':
-				redraw = true;
-				break;
-		}
-
-		if (redraw) {
-			self.redraw();
-			self.refresh();
-		}
-	};
-
-	self.redraw = function() {
-
-		var icon = config.icon;
-		var label = config.label || content;
-
-		if (icon)
-			icon = '<i class="fa fa-{0}"></i>'.format(icon);
-
-		empty.value = '';
-
-		self.html((label ? '<div class="ui-keyvalue-label">{1}{0}:</div>'.format(label, icon) : '') + '<div class="ui-keyvalue-items"></div>' + self.template(empty).replace('-item"', '-item ui-keyvalue-base"'));
-		container = self.find('.ui-keyvalue-items');
-	};
-
+	self.template = Tangular.compile('<div class="ui-keyvalue-item"><div class="ui-keyvalue-item-remove"><i class="fa fa-times"></i></div><div class="ui-keyvalue-item-key"><input type="text" name="key" maxlength="{{ max }}" placeholder="{{ placeholder_key }}" value="{{ key }}" /></div><div class="ui-keyvalue-item-value"><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder_value }}" value="{{ value }}" /></div></div>');
 	self.make = function() {
 
-		empty.max = config.maxlength;
-		empty.placeholder_key = config.placeholderkey;
-		empty.placeholder_value = config.placeholdervalue;
+		empty.max = (self.attr('data-maxlength') || '100').parseInt();
+		empty.placeholder_key = self.attr('data-placeholder-key');
+		empty.placeholder_value = self.attr('data-placeholder-value');
 		empty.value = '';
-		empty.disabled = config.disabled;
 
-		content = self.html();
+		var html = self.html();
+		var icon = self.attr('data-icon');
 
-		self.aclass('ui-keyvalue');
-		self.disabled && self.aclass('ui-disabled');
-		self.redraw();
+		if (icon)
+			icon = '<i class="fa {0}"></i>'.format(icon);
+
+		self.toggle('ui-keyvalue');
+		self.html((html ? '<div class="ui-keyvalue-label">{1}{0}:</div>'.format(html, icon) : '') + '<div class="ui-keyvalue-items"></div>' + self.template(empty).replace('-item"', '-item ui-keyvalue-base"'));
+
+		container = self.find('.ui-keyvalue-items');
 
 		self.event('click', '.fa-times', function() {
-
-			if (config.disabled)
-				return;
-
 			var el = $(this);
 			var parent = el.closest('.ui-keyvalue-item');
 			var inputs = parent.find('input');
@@ -3251,7 +2733,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 
 		self.event('change keypress', 'input', function(e) {
 
-			if (config.disabled || (e.type !== 'change' && e.which !== 13))
+			if (e.type !== 'change' && e.keyCode !== 13)
 				return;
 
 			var el = $(this);
@@ -3319,60 +2801,34 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	};
 });
 
-COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
+COMPONENT('codemirror', function() {
 
+	var self = this;
+	var required = self.attr('data-required') === 'true';
 	var skipA = false;
 	var skipB = false;
-	var editor = null;
-
-	self.getter = null;
-
-	self.reload = function() {
-		editor.refresh();
-	};
+	var editor;
 
 	self.validate = function(value) {
-		return config.disabled || !config.required ? true : value && value.length > 0;
+		return required ? value && value.length > 0 : true;
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
-
-		switch (key) {
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				editor.readOnly = value;
-				editor.refresh();
-				break;
-			case 'required':
-				self.find('.ui-codemirror-label').tclass('ui-codemirror-label-required', value);
-				self.state(1, 1);
-				break;
-			case 'icon':
-				self.find('i').rclass().aclass('fa fa-' + value);
-				break;
-		}
-
+	self.reload = function() {
+		self.editor.refresh();
 	};
 
 	self.make = function() {
-		var content = config.label || self.html();
-		self.html('<div class="ui-codemirror-label' + (config.required ? ' ui-codemirror-label-required' : '') + '">' + (config.icon ? '<i class="fa fa-' + config.icon + '"></i> ' : '') + content + ':</div><div class="ui-codemirror"></div>');
-		var container = self.find('.ui-codemirror');
-		editor = CodeMirror(container.get(0), { lineNumbers: config.linenumbers, mode: config.type || 'htmlmixed', indentUnit: 4 });
-		config.height !== 'auto' && editor.setSize('100%', (config.height || 200) + 'px');
 
-		if (config.disabled) {
-			self.aclass('ui-disabled');
-			editor.readOnly = true;
-			editor.refresh();
-		}
+		var height = self.element.attr('data-height');
+		var icon = self.element.attr('data-icon');
+		var content = self.html();
+		self.html('<div class="ui-codemirror-label' + (required ? ' ui-codemirror-label-required' : '') + '">' + (icon ? '<span class="fa ' + icon + '"></span> ' : '') + content + ':</div><div class="ui-codemirror"></div>');
+
+		var container = self.find('.ui-codemirror');
+		self.editor = editor = CodeMirror(container.get(0), { lineNumbers: self.attr('data-linenumbers') === 'true', mode: self.attr('data-type') || 'htmlmixed', indentUnit: 4 });
+		height !== 'auto' && editor.setSize('100%', height || '200px');
 
 		editor.on('change', function(a, b) {
-
-			if (config.disabled)
-				return;
 
 			if (skipB && b.origin !== 'paste') {
 				skipB = false;
@@ -3390,10 +2846,12 @@ COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
 		skipB = true;
 	};
 
+	self.getter = null;
 	self.setter = function(value) {
 
 		if (skipA === true) {
 			skipA = false;
+			editor.refresh();
 			return;
 		}
 
@@ -3405,7 +2863,6 @@ COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
 		CodeMirror.commands['selectAll'](editor);
 		skipB = true;
 		editor.setValue(editor.getValue());
-		skipB = true;
 
 		setTimeout(function() {
 			editor.refresh();
@@ -3420,19 +2877,13 @@ COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
 		}, 2000);
 	};
 
-	self.state = function(type) {
-		if (!type)
-			return;
-		var invalid = config.required ? self.isInvalid() : false;
-		if (invalid === self.$oldstate)
-			return;
-		self.$oldstate = invalid;
-		self.find('.ui-codemirror').tclass('ui-codemirror-invalid', invalid);
+	self.state = function() {
+		self.element.find('.ui-codemirror').toggleClass('ui-codemirror-invalid', self.isInvalid());
 	};
 });
 
-COMPONENT('contextmenu', function(self) {
-
+COMPONENT('contextmenu', function() {
+	var self = this;
 	var is = false;
 	var timeout;
 	var container;
@@ -3567,23 +3018,24 @@ COMPONENT('contextmenu', function(self) {
 	};
 });
 
-COMPONENT('message', function(self, config) {
-
-	var is, visible = false;
-	var timer = null;
+COMPONENT('message', function() {
+	var self = this;
+	var is = false;
+	var visible = false;
+	var timer;
 
 	self.readonly();
 	self.singleton();
 
 	self.make = function() {
-		self.aclass('ui-message hidden');
+		self.classes('ui-message hidden');
 
-		self.event('click', 'button', function() {
+		self.element.on('click', 'button', function() {
 			self.hide();
 		});
 
 		$(window).on('keyup', function(e) {
-			visible && e.which === 27 && self.hide();
+			visible && e.keyCode === 27 && self.hide();
 		});
 	};
 
@@ -3594,6 +3046,17 @@ COMPONENT('message', function(self, config) {
 		}
 		self.callback = fn;
 		self.content('ui-message-warning', message, icon || 'fa-warning');
+	};
+
+	self.info = function(message, icon, fn) {
+
+		if (typeof(icon) === 'function') {
+			fn = icon;
+			icon = undefined;
+		}
+
+		self.callback = fn;
+		self.content('ui-message-info', message, icon || 'fa-check-circle');
 	};
 
 	self.success = function(message, icon, fn) {
@@ -3609,52 +3072,62 @@ COMPONENT('message', function(self, config) {
 
 	self.hide = function() {
 		self.callback && self.callback();
-		self.rclass('ui-message-visible');
+		self.classes('-ui-message-visible');
 		timer && clearTimeout(timer);
 		timer = setTimeout(function() {
 			visible = false;
-			self.aclass('hidden');
+			self.classes('hidden');
 		}, 1000);
 	};
 
 	self.content = function(cls, text, icon) {
-		!is && self.html('<div><div class="ui-message-body"><div class="text"></div><hr /><button>' + (config.button || 'Close') + '</button></div></div>');
+		!is && self.html('<div><div class="ui-message-body"><div class="text"></div><hr /><button>' + (self.attr('data-button') || 'Close') + '</button></div></div>');
 		timer && clearTimeout(timer);
 		visible = true;
-		self.find('.ui-message-body').rclass().aclass('ui-message-body ' + cls);
-		self.find('.fa').rclass().aclass('fa ' + icon);
-		self.find('.ui-center').html(text);
-		self.rclass('hidden');
+		self.find('.ui-message-body').removeClass().addClass('ui-message-body ' + cls);
+		self.find('.fa').removeClass().addClass('fa ' + icon);
+		self.find('.text').html(text);
+		self.classes('-hidden');
 		setTimeout(function() {
-			self.aclass('ui-message-visible');
+			self.classes('ui-message-visible');
 		}, 5);
 	};
 });
 
-COMPONENT('disable', function(self, config) {
+COMPONENT('disable', function() {
+	var self = this;
+	var condition;
+	var selector;
+	var validate;
 
-	var validate = null;
 	self.readonly();
 
-	self.configure = function(key, value) {
-		if (key === 'validate')
-			validate = value.split(',').trim();
+	self.make = function() {
+		condition = self.attr('data-if');
+		selector = self.attr('data-selector') || 'input,texarea,select';
+		validate = self.attr('data-validate');
+		validate && (validate = validate.split(',').trim());
 	};
 
 	self.setter = function(value) {
 		var is = true;
 
-		if (config.if)
-			is = EVALUATE(self.path, config.if);
+		if (condition)
+			is = EVALUATE(self.path, condition);
 		else
 			is = value ? false : true;
 
-		self.find(config.selector || '[data-jc]').each(function() {
-			var com = $(this).component();
-			com && com.reconfigure('disabled:' + is);
+		self.find(selector).each(function() {
+			var el = $(this);
+			var tag = el.get(0).tagName;
+			if (tag === 'INPUT' || tag === 'SELECT') {
+				el.prop('disabled', is);
+				el.parent().toggleClass('ui-disabled', is);
+			} else
+				el.toggleClass('ui-disabled', is);
 		});
 
-		validate && validate.forEach(FN('n => MAIN.reset({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
+		validate && validate.forEach(FN('n => RESET({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
 	};
 
 	self.state = function() {
@@ -3662,141 +3135,110 @@ COMPONENT('disable', function(self, config) {
 	};
 });
 
-COMPONENT('textarea', function(self, config) {
+COMPONENT('textarea', function() {
 
-	var input, container, content = null;
+	var self = this;
+	var isRequired = self.attr('data-required') === 'true';
+	var input;
+	var container;
 
 	self.validate = function(value) {
-		if (config.disabled || !config.required)
+
+		var type = typeof(value);
+		if (input.prop('disabled') || !isRequired)
 			return true;
-		if (value == null)
+
+		if (type === 'undefined' || type === 'object')
 			value = '';
 		else
 			value = value.toString();
+
+		EMIT('reflow', self.name);
 		return value.length > 0;
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
+	!isRequired && self.noValid();
 
-		var redraw = false;
-
-		switch (key) {
-			case 'disabled':
-				self.tclass('ui-disabled', value);
-				self.find('input').prop('disabled', value);
-				break;
-			case 'required':
-				self.noValid(!value);
-				!value && self.state(1, 1);
-				self.find('.ui-textarea-label').tclass('ui-textarea-label-required', value);
-				break;
-			case 'placeholder':
-				input.prop('placeholder', value || '');
-				break;
-			case 'maxlength':
-				input.prop('maxlength', value || 1000);
-				break;
-			case 'label':
-				redraw = true;
-				break;
-			case 'autofocus':
-				input.focus();
-				break;
-			case 'monospace':
-				self.tclass('ui-textarea-monospace', value);
-				break;
-			case 'icon':
-				redraw = true;
-				break;
-			case 'format':
-				self.format = value;
-				self.refresh();
-				break;
-		}
-
-		redraw && setTimeout2('redraw' + self.id, function() {
-			self.redraw();
-			self.refresh();
-		}, 100);
+	self.required = function(value) {
+		self.find('.ui-textarea-label').toggleClass('ui-textarea-label-required', value);
+		self.noValid(!value);
+		isRequired = value;
+		!value && self.state(1, 1);
 	};
 
-	self.redraw = function() {
+	self.make = function() {
 
 		var attrs = [];
 		var builder = [];
+		var tmp;
 
-		self.tclass('ui-disabled', config.disabled === true);
-		self.tclass('ui-textarea-monospace', config.monospace === true);
-
-		config.placeholder && attrs.attr('placeholder', config.placeholder);
-		config.maxlength && attrs.attr('maxlength', config.maxlength);
-		config.error && attrs.attr('error');
+		attrs.attr('placeholder', self.attr('data-placeholder'));
+		attrs.attr('maxlength', self.attr('data-maxlength'));
 		attrs.attr('data-jc-bind', '');
-		config.height && attrs.attr('style', 'height:{0}px'.format(config.height));
-		config.autofocus === 'true' && attrs.attr('autofocus');
-		config.disabled && attrs.attr('disabled');
+
+		tmp = self.attr('data-height');
+		tmp && attrs.attr('style', 'height:' + tmp);
+		self.attr('data-autofocus') === 'true' && attrs.attr('autofocus');
 		builder.push('<textarea {0}></textarea>'.format(attrs.join(' ')));
 
-		var label = config.label || content;
+		var element = self.element;
+		var content = element.html();
 
-		if (!label.length) {
-			config.error && builder.push('<div class="ui-box-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
-			self.aclass('ui-textarea ui-textarea-container');
+		if (!content.length) {
+			self.classes('ui-textarea ui-textarea-container');
 			self.html(builder.join(''));
 			input = self.find('textarea');
 			container = self.element;
 			return;
 		}
 
+		var icon = self.attr('data-icon');
 		var html = builder.join('');
 
 		builder = [];
-		builder.push('<div class="ui-textarea-label{0}">'.format(config.required ? ' ui-textarea-label-required' : ''));
-		config.icon && builder.push('<i class="fa fa-{0}"></i>'.format(config.icon));
-		builder.push(label);
+		builder.push('<div class="ui-textarea-label{0}">'.format(isRequired ? ' ui-textarea-label-required' : ''));
+		icon && builder.push('<span class="fa {0}"></span>'.format(icon));
+		builder.push(content);
 		builder.push(':</div><div class="ui-textarea">{0}</div>'.format(html));
-		config.error && builder.push('<div class="ui-textarea-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
 
 		self.html(builder.join(''));
-		self.rclass('ui-textarea');
-		self.aclass('ui-textarea-container');
+		self.classes('ui-textarea-container');
 		input = self.find('textarea');
 		container = self.find('.ui-textarea');
-	};
-
-	self.make = function() {
-		content = self.html();
-		self.type = config.type;
-		self.format = config.format;
-		self.redraw();
+		if (self.attr('data-monospace') === 'true')
+			input.css('font-family', 'monospace');
 	};
 
 	self.state = function(type) {
 		if (!type)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
+		var invalid = self.isInvalid();
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-textarea-invalid', invalid);
-		config.error && self.find('.ui-textarea-helper').tclass('ui-textarea-helper-show', invalid);
+		container.toggleClass('ui-textarea-invalid', invalid);
 	};
 });
 
-COMPONENT('filereader', function(self, config) {
+COMPONENT('filereader', function() {
+	var self = this;
+	var required = self.attr('data-required') === 'true';
+
 	self.readonly();
+
 	self.make = function() {
 
 		var element = self.element;
 		var content = self.html();
-		var html = '<span class="fa fa-folder-o"></span><input type="file"' + (config.accept ? ' accept="' + config.accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (config.placeholder || '') + '" readonly="readonly" />';
+		var placeholder = self.attr('data-placeholder');
+		var icon = self.attr('data-icon');
+		var accept = self.attr('data-accept');
+		var html = '<span class="fa fa-folder-o"></span><input type="file"' + (accept ? ' accept="' + accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (placeholder || '') + '" readonly="readonly" />';
 
 		if (content.length) {
-			self.html('<div class="ui-filereader-label' + (config.required ? ' ui-filereader-label-required' : '') + '">' + (config.icon ? '<span class="fa fa-' + config.icon + '"></span> ' : '') + content + ':</div><div class="ui-filereader">' + html + '</div>');
+			self.html('<div class="ui-filereader-label' + (required ? ' ui-filereader-label-required' : '') + '">' + (icon ? '<span class="fa ' + icon + '"></span> ' : '') + content + ':</div><div class="ui-filereader">' + html + '</div>');
 		} else {
-			self.aclass('ui-filereader');
+			self.classes('ui-filereader');
 			self.html(html);
 		}
 
@@ -3822,26 +3264,19 @@ COMPONENT('filereader', function(self, config) {
 			el.value = '';
 		});
 	};
+
 });
 
-COMPONENT('nosqlcounter', 'count:0', function(self, config) {
-
-	var months = MONTHS;
+COMPONENT('nosqlcounter', function() {
+	var self = this;
+	var count = (self.attr('data-count') || '0').parseInt();
+	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 	self.readonly();
 	self.make = function() {
 		self.toggle('ui-nosqlcounter hidden', true);
-	};
-
-	self.configure = function(key, value) {
-		switch (key) {
-			case 'months':
-				if (value instanceof Array)
-					months = value;
-				else
-					months = value.split(',').trim();
-				break;
-		}
+		var calendar = FIND('calendar');
+		calendar && (months = calendar.months);
 	};
 
 	self.setter = function(value) {
@@ -3854,10 +3289,10 @@ COMPONENT('nosqlcounter', 'count:0', function(self, config) {
 
 		var maxbars = 12;
 
-		if (config.count === 0)
+		if (count === 0)
 			maxbars = self.element.width() / 30 >> 0;
 		else
-			maxbars = config.count;
+			maxbars = count;
 
 		if (WIDTH() === 'xs')
 			maxbars = maxbars / 2;
@@ -3866,7 +3301,7 @@ COMPONENT('nosqlcounter', 'count:0', function(self, config) {
 		var current = dt.format('yyyyMM');
 		var stats = null;
 
-		if (config.lastvalues) {
+		if (self.attr('data-lastvalues') === 'true') {
 			var max = value.length - maxbars;
 			if (max < 0)
 				max = 0;
@@ -3910,13 +3345,12 @@ COMPONENT('nosqlcounter', 'count:0', function(self, config) {
 	};
 });
 
-COMPONENT('colorpicker', function(self) {
-
-	var container = null;
+COMPONENT('colorpicker', function() {
+	var self = this;
+	var container;
 	var template = '<li data-index="{0}"><i class="fa fa-circle" style="color:#{1}"></i></li>';
-	var is = false;
 	var opener = {};
-	var css = {};
+	var is = false;
 	var colors = 'ff0000,ff4000,ff8000,ffbf00,ffff00,bfff00,80ff00,40ff00,00ff00,00ff40,00ff80,00ffbf,00ffff,00bfff,0080ff,0040ff,0000ff,4000ff,8000ff,bf00ff,ff00ff,ff00bf,ff0080,ff0040,ff0000,F0F0F0,D0D0D0,AAB2BD,505050,000000'.split(',');
 
 	self.singleton();
@@ -3924,7 +3358,7 @@ COMPONENT('colorpicker', function(self) {
 	self.blind();
 
 	self.make = function() {
-		self.aclass('ui-colorpicker hidden');
+		self.classes('ui-colorpicker hidden');
 		self.append('<ul></ul>');
 		container = self.find('ul');
 
@@ -3951,10 +3385,10 @@ COMPONENT('colorpicker', function(self) {
 	};
 
 	self.hide = function() {
-		if (is) {
-			self.aclass('hidden');
-			is = false;
-		}
+		if (!is)
+			return;
+		self.classes('hidden');
+		is = false;
 	};
 
 	self.show = function(x, y, target, callback) {
@@ -3978,11 +3412,7 @@ COMPONENT('colorpicker', function(self) {
 
 		!is && self.render();
 		is = true;
-
-		css.left = x;
-		css.top = y;
-
-		self.element.css(css).rclass('hidden');
+		self.element.css({ left: x, top: y }).removeClass('hidden');
 	};
 });
 
@@ -4014,7 +3444,7 @@ COMPONENT('multioptions', function(self) {
 	self.make = function() {
 
 		Tcolor = window.Tmultioptionscolor;
-		self.aclass('ui-multioptions');
+		self.classes('ui-multioptions');
 
 		var el = self.find('script');
 		self.remap(el.html());
@@ -4099,6 +3529,7 @@ COMPONENT('multioptions', function(self) {
 			});
 		});
 	};
+
 
 	self.remap = function(js) {
 
@@ -4252,8 +3683,8 @@ COMPONENT('multioptions', function(self) {
 	};
 });
 
-COMPONENT('dragdropfiles', function(self, config) {
-
+COMPONENT('dragdropfiles', function() {
+	var self = this;
 	self.readonly();
 
 	self.mirror = function(cls) {
@@ -4267,6 +3698,7 @@ COMPONENT('dragdropfiles', function(self, config) {
 	};
 
 	self.make = function() {
+		var cls = self.attr('data-class');
 		var has = false;
 
 		self.event('dragenter dragover dragexit drop dragleave', function (e) {
@@ -4276,24 +3708,24 @@ COMPONENT('dragdropfiles', function(self, config) {
 
 			switch (e.type) {
 				case 'drop':
-					config.class && has && self.classes(self.mirror(config.class));
+					cls && has && self.classes(self.mirror(cls));
 					break;
 				case 'dragenter':
 				case 'dragover':
-					config.class && !has && self.classes(config.class);
+					cls && !has && self.classes(cls);
 					has = true;
 					return;
 				case 'dragleave':
 				case 'dragexit':
 				default:
 					setTimeout2(self.id, function() {
-						config.class && has && self.classes(self.mirror(config.class));
+						cls && has && self.classes(self.mirror(cls));
 						has = false;
 					}, 100);
 					return;
 			}
 
-			EXEC(config.exec, e.originalEvent.dataTransfer.files, e);
+			EXEC(self.attr('data-files'), e.originalEvent.dataTransfer.files, e);
 		});
 	};
 });

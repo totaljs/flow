@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@(Flow v4:) @{config.name}</title>
+	<title>@(Flow v3:) @{config.name}</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
@@ -14,16 +14,16 @@
 	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
 	<script src="@{repository.url}default.js"></script>
 </head>
-<body data-jc="exec,binder"@{if repository.dark} class="themedark"@{fi}>
+<body data-jc="exec,binder" class="themedark">
 
 	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
+	<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
 	<div data-jc="confirm"></div>
 	<div data-jc="contextmenu"></div>
 	<div data-jc="colorpicker"></div>
 	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
-	<div data-jc="message" data-jc-config="button:@(Close)"></div>
-	<div data-jc="websocket" data-jc-config="url:@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="message" data-button="@(Close)"></div>
+	<div data-jc="websocket" data-url="@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -109,13 +109,13 @@
 		</section>
 
 		<div class="padding">
-			<div data-jc="textbox" data-jc-path="common.search" data-jc-config="placeholder:@(Search components ...);type:search"></div>
+			<div data-jc="textbox" data-jc-path="common.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search"></div>
 		</div>
 
-		<div data-jc="search" data-jc-path="common.search" data-jc-config="selector:li">
+		<div data-jc="search" data-jc-path="common.search" data-selector="li">
 			<div class="components-container">
 				<div class="scroller">
-					<ul data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group" class="components">
+					<ul data-jc="repeater-group" data-jc-path="common.components" data-group="group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
 								<div><i class="fa fa-square" style="color:{{ color }}"></i>{{ name }}</div>
@@ -146,7 +146,7 @@
 				<button class="exec disabled" title="@(Copy component)" data-exec="#designer.copy"><i class="fa fa-file-text-o"></i></button>
 				<button class="exec disabled" name="paste" title="@(Paste component)" data-exec="#designer.paste"><i class="fa fa-paste"></i></button>
 				<button class="exec disabled" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-files-o"></i></button>
-				<button class="exec disabled designerbuttons-remove" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
+				<button class="exec disabled" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
 			</nav>
 			<div id="designerzoom">
 				<button class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></button>
@@ -163,12 +163,12 @@
 		</div>
 	</div>
 
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'tab';url:@{repository.url}templates/form-tab.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'settings';url:@{repository.url}templates/form-settings.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'export';url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'import';url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'database';url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'variables';url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="@{repository.url}templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'settings'" data-url="@{repository.url}templates/form-settings.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'export'" data-url="@{repository.url}templates/form-export.html" data-reload="formexport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'import'" data-url="@{repository.url}templates/form-import.html" data-reload="formimport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{repository.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'variables'" data-url="@{repository.url}templates/form-variables.html" data-reload="formvariables_reload"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -187,7 +187,7 @@
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
 			this.touches = false;
-			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
+			this.theme === undefined && (this.theme = 'dark');
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
@@ -209,7 +209,7 @@
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
-			var cls = (body.attr('class') || '').match(/theme\w+/g);
+			var cls = body.attr('class').match(/theme\w+/g);
 			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
 		}, true);
@@ -468,7 +468,7 @@
 			});
 		});
 
-		ON('debug', function(id, value, identificator, group) {
+		ON('debug', function(id, value, identificator) {
 
 			var component = flow.components.findItem('id', id);
 			if (!component)
@@ -487,7 +487,7 @@
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
-			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : '')) + (group ? '</div>' : ''));
+			el.prepend('<div class="debugoutput"><div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
 					if (block.$processed)
@@ -833,7 +833,7 @@
 			}
 
 			if (message.type === 'debug') {
-				EMIT('debug', message.id, message.body, message.identificator, message.group);
+				EMIT('debug', message.id, message.body, message.identificator);
 				return;
 			}
 
@@ -907,7 +907,7 @@
 					var title = target;
 					if (com)
 						title = com.name;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-config="title:@(Settings\\:) {2};if:settings-{0};width:800" data-jc-path="common.form" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-jc-config="placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-jc-config="placeholder:@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title)));
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {2}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row mt10"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-placeholder="@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-placeholder="@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title)));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
@@ -1070,13 +1070,10 @@
 				var color = common.theme === 'dark' ? 'white' : 'black';
 				$('.input,.output').each(function() {
 					var cur = this.getAttribute('fill');
-					cur !== color && this.setAttribute('fill', color);
+					if (cur !== 'white' && cur !== 'black')
+						return;
+					this.setAttribute('fill', color);
 				});
-				$('.consumption').each(function() {
-					var cur = this.getAttribute('fill');
-					this.setAttribute('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
-				});
-				refreshTraffic();
 			}, 1000);
 		}
 

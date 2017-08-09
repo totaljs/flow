@@ -27,7 +27,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.0.0';
+exports.version = 'v3.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -52,13 +52,10 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
+		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
-
-	if (OPT.dark == null)
-		OPT.dark = true;
 
 	// Routes
 	if (OPT.auth === true) {
@@ -161,7 +158,6 @@ function view_index() {
 
 	this.theme('');
 	this.repository.url = OPT.url;
-	this.repository.dark = OPT.dark;
 	this.view('@flow/index');
 }
 
@@ -629,8 +625,7 @@ Component.prototype.status = function(text, color) {
 	return this;
 };
 
-Component.prototype.debug = function(data, style, group) {
-	MESSAGE_DEBUG.group = group;
+Component.prototype.debug = function(data, style) {
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.style = style || 'info';
@@ -1200,10 +1195,8 @@ FLOW.install = function(filename, body, callback) {
 		});
 	} else {
 
-		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1) {
-			callback && callback(new Error('Invalid file.'));
+		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1)
 			return;
-		}
 
 		if (filename)
 			filename = F.path.root(PATH + filename);
@@ -1317,10 +1310,6 @@ FLOW.prototypes = function(fn) {
 	return FLOW;
 };
 
-FLOW.clone = function(url, callback) {
-
-};
-
 // ===================================================
 // FLOW DATA DECLARATION
 // ===================================================
@@ -1347,11 +1336,6 @@ FlowData.prototype.clone = function() {
 	var type = typeof(this.data);
 	var noclone = !this.data || type === 'string' || type === 'number' || type === 'boolean' || this.data instanceof Date;
 	return new FlowData(noclone ? this.data : clone(this.data), this);
-};
-
-FlowData.prototype.rewrite = function(data) {
-	this.data = data;
-	return this;
 };
 
 FlowData.prototype.set = function(key, value) {
