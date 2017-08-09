@@ -1127,6 +1127,7 @@
 			items.push({ name: '@(Toggle tools)', value: 6, icon: 'eye', keywords: 'maximize minimize show hide' });
 			items.push({ name: '@(Toggle controls)', value: 7, icon: 'eye', keywords: 'components show hide' });
 			items.push({ name: '@(Toggle info)', value: 8, icon: 'eye', keywords: 'show hide' });
+			items.push({ name: '@(Apply)', value: 15, icon: 'play-circle', keywords: 'run save' });
 			items.push({ name: '@(Export designer)', value: 1, icon: 'copy', form: 'export' });
 			items.push({ name: '@(Import design)', value: 1, icon: 'folder-o', form: 'import' });
 			items.push({ name: '@(Clear errors)', value: 13, icon: 'trash-o' });
@@ -1193,6 +1194,9 @@
 						break;
 					case 14:
 						OPERATION('debug.clear')();
+						break;
+					case 15:
+						OPERATION('flow.apply')();
 						break;
 				}
 			});
