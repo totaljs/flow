@@ -362,7 +362,7 @@ COMPONENT('form', function(self, config) {
 		});
 	};
 
-	self.configure = function(key, value, init) {
+	self.configure = function(key, value, init, prev) {
 		if (init)
 			return;
 		switch (key) {
@@ -372,6 +372,9 @@ COMPONENT('form', function(self, config) {
 				break;
 			case 'title':
 				header.title.html(value);
+				break;
+			case 'width':
+				value !== prev && self.find('.ui-form').css('max-width', value + 'px');
 				break;
 		}
 	};
@@ -401,8 +404,10 @@ COMPONENT('form', function(self, config) {
 
 		config.reload && EXEC(config.reload, self);
 
-		var el = self.find('input[type="text"],select,textarea');
-		!isMOBILE && el.length && el.eq(0).focus();
+		if (!isMOBILE && config.autofocus) {
+			var el = self.find(config.autofocus === true ? 'input[type="text"],select,textarea' : config.autofocus);
+			el.length && el.eq(0).focus();
+		}
 
 		if (W.$$form_level < 1)
 			W.$$form_level = 1;
@@ -500,7 +505,7 @@ COMPONENT('repeater', function(self) {
 
 COMPONENT('repeater-group', function(self, config) {
 
-	var html, template_group, group = null;
+	var html, template_group = null;
 	var reg = /\$(index|path)/g;
 	var force = false;
 
@@ -700,7 +705,7 @@ COMPONENT('textbox', function(self, config) {
 			icon2 = 'calendar';
 		else if (self.type === 'search') {
 			icon2 = 'search ui-textbox-control-icon';
-			self.getter2 = function(value) {
+			self.setter2 = function(value) {
 				if (self.$stateremoved && !value)
 					return;
 				self.$stateremoved = value ? false : true;
