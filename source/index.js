@@ -296,9 +296,9 @@ function websocket() {
 						var tmp = MESSAGE_DESIGNER.components.findItem('id', item.id);
 						tmp.connections = item.connections;
 					}
-
 				});
 
+				instance.hasConnections = Object.keys(instance.connections).length > 0;
 				instance.$events.options && instance.emit('options', instance.options, old_options);
 				EMIT('flow.options', instance);
 
