@@ -4525,6 +4525,7 @@ COMPONENT('shortcuts', function(self) {
 
 	var items = [];
 	var length = 0;
+	var stop = {};
 
 	self.singleton();
 	self.readonly();
@@ -4532,10 +4533,18 @@ COMPONENT('shortcuts', function(self) {
 
 	self.make = function() {
 		$(window).on('keydown', function(e) {
-			length && setTimeout2(self.id, function() {
-				for (var i = 0; i < length; i++)
-					items[i].fn(e) && items[i].callback(e);
-			}, 100);
+			if (length) {
+				setTimeout2(self.id, function() {
+					for (var i = 0; i < length; i++)
+						items[i].fn(e) && items[i].callback(e);
+				}, 100);
+
+				// Disables F-keys
+				if (stop[e.key]) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
+			}
 		});
 	};
 
@@ -4595,7 +4604,9 @@ COMPONENT('shortcuts', function(self) {
 				case 'f10':
 				case 'f11':
 				case 'f12':
-					builder.push('e.key===\'{0}\''.format(item.toUpperCase()));
+					var a = item.toUpperCase();
+					builder.push('e.key===\'{0}\''.format(a));
+					stop[a] = true;
 					return;
 				case 'capslock':
 					builder.push('e.which===20');

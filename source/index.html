@@ -1118,9 +1118,6 @@
 
 		SETTER(true, 'shortcuts', 'register', 'F1', function(e) {
 
-			e.preventDefault();
-			e.stopPropagation();
-
 			var items = [];
 			items.push({ name: '@(Components)', value: 1, icon: 'database', keywords: 'database', form: 'database' });
 			items.push({ name: '@(Variables)', value: 1, icon: 'sliders', form: 'variables' });
