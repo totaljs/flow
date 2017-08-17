@@ -589,7 +589,7 @@
 
 			EMIT('save.' + component.component, component, component.options);
 
-			var is_designer = tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
+			var is_designer = tmp_n !== component.name || tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
 			component.options.comoutput = component.output;
