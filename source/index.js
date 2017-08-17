@@ -756,6 +756,7 @@ FLOW.register = function(name, options, fn) {
 		fn: fn,
 		readme: options.readme || '',
 		html: options.html || '',
+		trafic: options.trafic === false ? false : true,
 		filename: FILENAME,
 		dateupdated: options.dateupdated
 	};
