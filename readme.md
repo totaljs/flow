@@ -243,6 +243,11 @@ exports.options = { enabled: true };
 // Disables data cloning
 exports.cloning = false;
 
+// {Boolean}, optional (default: true)
+// +v4.0.0
+// hides stats under component box in designer UI
+exports.traffic = false;
+
 exports.install = function(component) {
 
     // =====================
