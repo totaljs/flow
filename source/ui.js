@@ -2289,7 +2289,6 @@ COMPONENT('dropdown', function(self, config) {
 				});
 
 				self.bind('', items);
-
 				break;
 			case 'condition':
 				condition = value ? FN(value) : null;
@@ -2319,6 +2318,9 @@ COMPONENT('dropdown', function(self, config) {
 	};
 
 	self.bind = function(path, arr) {
+
+		if (!arr)
+			arr = EMPTYARRAY;
 
 		var builder = [];
 		var value = self.get();
