@@ -738,28 +738,27 @@ FLOW.register = function(name, options, fn) {
 
 	var id = name.slug().replace(/\-/g, '');
 
-	FLOW.components[name] = {
-		id: id,
-		component: name,
-		name: options.title || name,
-		author: options.author || 'Unknown',
-		color: options.color,
-		icon: (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '',
-		input: options.input == null ? 0 : options.input,
-		output: options.output == null ? 0 : options.output,
-		click: options.click ? true : false,
-		group: options.group || 'Common',
-		options: options.options,
-		uninstall: options.uninstall,
-		status: options.status,
-		cloning: options.cloning,
-		fn: fn,
-		readme: options.readme || '',
-		html: options.html || '',
-		traffic: options.traffic === false ? false : true,
-		filename: FILENAME,
-		dateupdated: options.dateupdated
-	};
+	var obj = FLOW.components[name] = U.clone(options); // because of additional custom fields
+	obj.id = id;
+	obj.component = name;
+	obj.name = options.title || name;
+	obj.author = options.author || 'Unknown';
+	obj.color = options.color;
+	obj.icon = (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '';
+	obj.input = options.input == null ? 0 : options.input;
+	obj.output = options.output == null ? 0 : options.output;
+	obj.click = options.click ? true : false;
+	obj.group = options.group || 'Common';
+	obj.options = options.options;
+	obj.uninstall = options.uninstall;
+	obj.status = options.status;
+	obj.cloning = options.cloning;
+	obj.fn = fn;
+	obj.readme = options.readme || '';
+	obj.html = options.html || '';
+	obj.traffic = options.traffic === false ? false : true;
+	obj.filename = FILENAME;
+	obj.dateupdated = options.dateupdate;
 
 	var exec = function() {
 		var data = U.clone(FLOW.components[name]);
