@@ -1,5 +1,4 @@
 var MESSAGE_TRIGGER = { type: 'trigger' };
-var EMPTYTRANSLATE = { x: 0, y: 0 };
 var flowtriggers = {};
 
 function diagonal(x1, y1, x2, y2) {

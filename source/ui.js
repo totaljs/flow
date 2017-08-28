@@ -80,7 +80,7 @@ COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(sel
 
 COMPONENT('binder', function(self) {
 
-	var keys, keys_unique = null;
+	var keys, keys_unique;
 
 	self.readonly();
 	self.blind();
@@ -103,11 +103,13 @@ COMPONENT('binder', function(self) {
 		var template = {};
 		mapper && mapper.forEach(function(item) {
 			var value = self.get(item.path);
+			var element = item.selector ? item.element.find(item.selector) : item.element;
 			template.value = value;
-			item.classes && classes(item.element, item.classes(value));
-			item.visible && item.element.tclass('hidden', item.visible(value) ? false : true);
-			item.html && item.element.html(item.html(value));
-			item.template && item.element.html(item.template(template));
+			item.classes && classes(element, item.classes(value));
+			item.visible && element.tclass('hidden', item.visible(value) ? false : true);
+			item.html && element.html(item.Ta ? item.html(template) : item.html(value));
+			item.disable && element.prop('disabled', item.disable(value));
+			item.src && element.attr('src', item.src(value));
 		});
 	};
 
@@ -135,19 +137,26 @@ COMPONENT('binder', function(self) {
 		return val.replace(/\&\#39;/g, '\'');
 	}
 
+	self.prepare = function(code) {
+		return code.indexOf('=>') === -1 ? FN('value=>' + decode(code)) : FN(decode(code));
+	};
+
 	self.scan = function() {
 		keys = {};
 		keys_unique = {};
 		self.find('[data-b]').each(function() {
 
 			var el = $(this);
-			var path = el.attr('data-b');
+			var path = el.attrd('b');
 			var arr = path.split('.');
 			var p = '';
 
-			var classes = el.attr('data-b-class');
-			var html = el.attr('data-b-html');
-			var visible = el.attr('data-b-visible');
+			var classes = el.attrd('b-class');
+			var html = el.attrd('b-html');
+			var visible = el.attrd('b-visible');
+			var disable = el.attrd('b-disable');
+			var selector = el.attrd('b-selector');
+			var src = el.attrd('b-src');
 			var obj = el.data('data-b');
 
 			keys_unique[path] = true;
@@ -156,23 +165,28 @@ COMPONENT('binder', function(self) {
 				obj = {};
 				obj.path = path;
 				obj.element = el;
-				obj.classes = classes ? FN(decode(classes)) : undefined;
-				obj.html = html ? FN(decode(html)) : undefined;
-				obj.visible = visible ? FN(decode(visible)) : undefined;
+				obj.classes = classes ? self.prepare(classes) : undefined;
+				obj.visible = visible ? self.prepare(visible) : undefined;
+				obj.disable = disable ? self.prepare(disable) : undefined;
+				obj.selector = selector ? selector : null;
+				obj.src = src ? self.prepare(src) : undefined;
 
-				if (obj.html) {
+				if (el.attr('data-b-template') === 'true') {
 					var tmp = el.find('script[type="text/html"]');
 					var str = '';
+
 					if (tmp.length)
 						str = tmp.html();
 					else
 						str = el.html();
 
 					if (str.indexOf('{{') !== -1) {
-						obj.template = Tangular.compile(str);
+						obj.html = Tangular.compile(str);
+						obj.Ta = true;
 						tmp.length && tmp.remove();
 					}
-				}
+				} else
+					obj.html = html ? self.prepare(html) : undefined;
 
 				el.data('data-b', obj);
 			}
@@ -184,7 +198,6 @@ COMPONENT('binder', function(self) {
 				else
 					keys[p] = [obj];
 			}
-
 		});
 
 		Object.keys(keys_unique).forEach(function(key) {
@@ -193,7 +206,6 @@ COMPONENT('binder', function(self) {
 
 		return self;
 	};
-
 });
 
 COMPONENT('confirm', function(self) {
