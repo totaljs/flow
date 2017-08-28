@@ -4328,7 +4328,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 
 	self.oldsearch = '';
 	self.items = null;
-	self.template = Tangular.compile('<li data-index="{{ $.index }}"{{ if selected }} class="selected"{{ fi }}>{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ name | raw }}</li>');
+	self.template = Tangular.compile('<li data-search="{{ $.search }}" data-index="{{ $.index }}"{{ if selected }} class="selected"{{ fi }}>{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ name | raw }}</li>');
 	self.callback = null;
 	self.readonly();
 	self.singleton();
@@ -4436,8 +4436,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 
 		container.find('li').each(function() {
 			var el = $(this);
-			var val = el.text().toSearch();
-
+			var val = el.attr('data-search');
 			var h = false;
 
 			for (var i = 0; i < value.length; i++) {
@@ -4511,6 +4510,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
 			indexer.index = i;
+			indexer.search = (item.name + ' ' + (item.keywords || '')).trim().toSearch();
 			!item.value && (item.value = item.name);
 			builder.push(self.template(item, indexer));
 		}
