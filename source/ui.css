@@ -352,7 +352,7 @@ label span { vertical-align: middle; }
 .ui-features-visible { opacity: 1; transform: scale(1); }
 .ui-features-container { max-height: 150px; overflow-x: hidden; overflow-y: auto; overflow-scrolling: touch; }
 .ui-features ul { list-style-type: none; margin: 0; padding: 0; }
-.ui-features li { border-top: 1px solid #E5E5E5; font-size: 14px; padding: 8px 15px; background-color: white; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ui-features li { border-top: 1px solid #E5E5E5; font-size: 14px; padding: 8px 15px 0; background-color: white; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 37px; }
 .ui-features li .fa { margin-right: 10px; width: 25px; border-right: 1px solid #E0E0E0; }
 .ui-features li:hover { background-color: #F8F8F8; }
 .ui-features-noscroll { overflow: hidden !important; }

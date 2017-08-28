@@ -4321,14 +4321,14 @@ COMPONENT('dragdropfiles', function(self, config) {
 	};
 });
 
-COMPONENT('features', function(self, config) {
+COMPONENT('features', 'height:37', function(self, config) {
 
 	var container, timeout, input, search, scroller = null;
 	var is = false, results = false, selectedindex = 0, resultscount = 0;
 
 	self.oldsearch = '';
 	self.items = null;
-	self.template = Tangular.compile('<li data-search="{{ $.search }}" data-index="{{ $.index }}"{{ if selected }} class="selected"{{ fi }}>{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ name | raw }}</li>');
+	self.template = Tangular.compile('<li data-index="{{ $.index }}"{{ if selected }} class="selected"{{ fi }}>{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ name | raw }}</li>');
 	self.callback = null;
 	self.readonly();
 	self.singleton();
@@ -4427,19 +4427,31 @@ COMPONENT('features', function(self, config) {
 
 		if (self.oldsearch === value)
 			return;
+
 		self.oldsearch = value;
-		value = value.toSearch();
+		value = value.toSearch().split(' ');
 		results = false;
 		resultscount = 0;
 		selectedindex = 0;
+
 		container.find('li').each(function() {
 			var el = $(this);
-			var val = el.attr('data-search');
-			var h = val.indexOf(value) === -1;
+			var val = el.text().toSearch();
+
+			var h = false;
+
+			for (var i = 0; i < value.length; i++) {
+				if (val.indexOf(value[i]) === -1) {
+					h = true;
+					break;
+				}
+			}
+
 			if (!h) {
 				results = true;
 				resultscount++;
 			}
+
 			el.tclass('hidden', h);
 			el.rclass('selected');
 		});
@@ -4449,16 +4461,17 @@ COMPONENT('features', function(self, config) {
 	self.move = function() {
 		var counter = 0;
 		var h = scroller.css('max-height').parseInt();
-		container.find('li').each(function(index) {
+
+		container.find('li').each(function() {
 			var el = $(this);
 			if (el.hclass('hidden'))
 				return;
 			var is = selectedindex === counter;
 			el.tclass('selected', is);
 			if (is) {
-				var pos = (el.innerHeight() + 1.5) * index;
-				if (pos > h - 20)
-					scroller.scrollTop(pos);
+				var t = (config.height * counter) - config.height;
+				if ((t + config.height * 5) > h)
+					scroller.scrollTop(t);
 				else
 					scroller.scrollTop(0);
 			}
@@ -4498,7 +4511,6 @@ COMPONENT('features', function(self, config) {
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
 			indexer.index = i;
-			indexer.search = (item.name + ' ' + (item.keywords || '')).trim().toSearch();
 			!item.value && (item.value = item.name);
 			builder.push(self.template(item, indexer));
 		}
