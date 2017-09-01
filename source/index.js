@@ -655,6 +655,14 @@ Component.prototype.reconfig = function() {
 	return this;
 };
 
+Component.prototype.flowboard = function(){
+    console.log('FlowBoard not installed!');
+};
+
+Component.prototype.dashboard = function(){
+    console.log('DashBoard not installed!');
+};
+
 function print_buffer(buf) {
 	var response = '<Buffer';
 	var arr = buf.toString('hex').split('');
