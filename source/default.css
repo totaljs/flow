@@ -57,6 +57,8 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 .erroroutput-name b { font-size: 11px; }
 .erroroutput-errors > div { border: 2px solid #DA4453; padding: 5px; border-radius: 3px; margin-bottom: 5px; }
 
+.themedark .erroroutput { border-color: #404040; }
+
 .bg-fade { background: linear-gradient(#F8F8F8, white); border-bottom: 1px solid #E0E0E0; margin-bottom: 5px; padding-bottom: 7px !important; }
 svg { cursor: move; }
 

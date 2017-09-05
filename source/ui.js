@@ -100,17 +100,32 @@ COMPONENT('binder', function(self) {
 
 	self.autobind = function(path) {
 		var mapper = keys[path];
+
+		if (!mapper)
+			return;
+
 		var template = {};
-		mapper && mapper.forEach(function(item) {
-			var value = self.get(item.path);
+
+		for (var i = 0, length = mapper.length; i < length; i++) {
+			var item = mapper[i];
+			var value = GET(item.path);
 			var element = item.selector ? item.element.find(item.selector) : item.element;
 			template.value = value;
 			item.classes && classes(element, item.classes(value));
-			item.visible && element.tclass('hidden', item.visible(value) ? false : true);
-			item.html && element.html(item.Ta ? item.html(template) : item.html(value));
-			item.disable && element.prop('disabled', item.disable(value));
-			item.src && element.attr('src', item.src(value));
-		});
+
+			var is = true;
+
+			if (item.visible) {
+				is = item.visible(value) ? true : false;
+				element.tclass('hidden', !is);
+			}
+
+			if (is) {
+				item.html && element.html(item.Ta ? item.html(template) : item.html(value));
+				item.disable && element.prop('disabled', item.disable(value));
+				item.src && element.attr('src', item.src(value));
+			}
+		}
 	};
 
 	function classes(element, val) {
@@ -147,7 +162,7 @@ COMPONENT('binder', function(self) {
 		self.find('[data-b]').each(function() {
 
 			var el = $(this);
-			var path = el.attrd('b');
+			var path = el.attrd('b').replace('%', 'jctmp.');
 			var arr = path.split('.');
 			var p = '';
 
@@ -201,7 +216,7 @@ COMPONENT('binder', function(self) {
 		});
 
 		Object.keys(keys_unique).forEach(function(key) {
-			self.autobind(key, self.get(key));
+			self.autobind(key, GET(key));
 		});
 
 		return self;
@@ -813,6 +828,10 @@ COMPONENT('textbox', function(self, config) {
 		}, 100);
 	};
 
+	self.formatter(function(path, value) {
+		return config.type === 'date' ? (value ? value.format(config.format || 'yyyy-MM-dd') : value) : value;
+	});
+
 	self.state = function(type) {
 		if (!type)
 			return;
@@ -883,21 +902,24 @@ COMPONENT('visible', function(self, config) {
 COMPONENT('validation', function(self, config) {
 
 	var path, elements = null;
+	var def = 'button[name="submit"]';
 
 	self.readonly();
 
 	self.make = function() {
-		!config.selector && (elements = self.find('button'));
+		elements = self.find(config.selector || def);
 		path = self.path.replace(/\.\*$/, '');
 		setTimeout(function() {
 			self.watch(self.path, self.state, true);
 		}, 50);
 	};
 
-	self.configure = function(key, value) {
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
 		switch (key) {
 			case 'selector':
-				elements = self.find(value || 'button');
+				elements = self.find(value || def);
 				break;
 		}
 	};
@@ -4045,8 +4067,8 @@ COMPONENT('multioptions', function(self) {
 
 		self.event('click', '.multioptions-operation', function(e) {
 			var el = $(this);
-			var name = el.attr('data-name');
-			var type = el.attr('data-type');
+			var name = el.attrd('name');
+			var type = el.attrd('type');
 
 			e.stopPropagation();
 
@@ -4060,23 +4082,23 @@ COMPONENT('multioptions', function(self) {
 			}
 
 			if (type === 'color') {
-				el.parent().find('.selected').removeClass('selected');
-				el.addClass('selected');
+				el.parent().find('.selected').rclass('selected');
+				el.aclass('selected');
 				self.$save();
 				return;
 			}
 
 			if (type === 'boolean') {
-				el.toggleClass('checked');
+				el.tclass('checked');
 				self.$save();
 				return;
 			}
 
 			if (type === 'number') {
 				var input = el.parent().parent().find('input');
-				var step = (el.attr('data-step') || '0').parseInt();
-				var min = el.attr('data-min');
-				var max = el.attr('data-max');
+				var step = (el.attrd('step') || '0').parseInt();
+				var min = el.attrd('min');
+				var max = el.attrd('max');
 
 				if (!step)
 					step = 1;
@@ -4122,6 +4144,7 @@ COMPONENT('multioptions', function(self) {
 			});
 		});
 	};
+
 
 	self.remap = function(js) {
 
@@ -4171,37 +4194,37 @@ COMPONENT('multioptions', function(self) {
 			var opt = mapping[key];
 			var el = values.filter('[data-name="{0}"]'.format(opt.name));
 
-			if (el.hasClass('ui-moi-value-colors')) {
-				obj[key] = el.find('.selected').attr('data-value');
+			if (el.hclass('ui-moi-value-colors')) {
+				obj[key] = el.find('.selected').attrd('value');
 				return;
 			}
 
-			if (el.hasClass('ui-moi-value-boolean')) {
-				obj[key] = el.hasClass('checked');
+			if (el.hclass('ui-moi-value-boolean')) {
+				obj[key] = el.hclass('checked');
 				return;
 			}
 
-			if (el.hasClass('ui-moi-date')) {
+			if (el.hclass('ui-moi-date')) {
 				obj[key] = el.val().parseDate();
 				return;
 			}
 
-			if (el.hasClass('ui-moi-value-inputtext')) {
+			if (el.hclass('ui-moi-value-inputtext')) {
 				obj[key] = el.val();
 				return;
 			}
 
-			if (el.hasClass('ui-moi-value-numbertext')) {
+			if (el.hclass('ui-moi-value-numbertext')) {
 				obj[key] = el.val().parseInt();
 				return;
 			}
 
-			if (el.hasClass('ui-moi-value-numbertext')) {
+			if (el.hclass('ui-moi-value-numbertext')) {
 				obj[key] = el.val().parseInt();
 				return;
 			}
 
-			if (el.hasClass('ui-multioptions-select')) {
+			if (el.hclass('ui-multioptions-select')) {
 				var index = el.val().parseInt();
 				var val = opt.values[index];
 				obj[key] = val ? val.value : null;
@@ -4269,8 +4292,8 @@ COMPONENT('multioptions', function(self) {
 
 		self.find('.ui-moi-value-colors').each(function() {
 			var el = $(this);
-			var value = el.attr('data-value');
-			el.find('[data-value="{0}"]'.format(value)).addClass('selected');
+			var value = el.attrd('value');
+			el.find('[data-value="{0}"]'.format(value)).aclass('selected');
 		});
 	};
 });
