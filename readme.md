@@ -14,7 +14,7 @@ Flow comes pre-installed with components such as:
     - `Switch` for controlling the flow of the data
     - `Range` for converting incomming data to certain range, e.g. 0-1023 -> 0-100%
 - `NoSQL` for saving and retrieving data (uses Total.js embedded nosql db engine)
-- `Analitycs` for analyzing tha data 
+- `Analitycs` for analyzing tha data
 - __And many more to come__
 
 If You miss some specific component You can always write it by yourself :)
@@ -65,7 +65,7 @@ var options = {};
 // options.token = ['OUR_COMPANY_TOKEN'];
 // you can open flow using : /$flow/?token=OUR_COMPANY_TOKEN
 
-INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/flow.package', options);
+INSTALL('package', 'https://cdn.totaljs.com/flow.package', options);
 ```
 
 - __IMPORTANT__: it doesn't support `UPTODATE` mechanism
@@ -349,12 +349,12 @@ exports.install = function(component) {
     component.on('service', function(counter) {
         // optional
         // Service called each 1 minute
-    });    
+    });
 
     // =====================
     // METHODS
     // =====================
-    
+
     component.status(message, [color]);
     // Sends a status to designer
     // @message: {String/Object} - string will be formatted as markdown and object as JSON
@@ -377,7 +377,7 @@ exports.install = function(component) {
     // @index: {Number} - optional, the output index (otherwise all outputs)
     // @data: {String/Object}
     // returns Message;
-  
+
     var message = component.send2([index], data);
     if (message) {
         // message will be sent
@@ -423,7 +423,7 @@ exports.install = function(component) {
     component.click();
     // Performs click event.
     // returns {Component}
-    
+
     component.log([a], [b], [c], [d]);
     // Writes some info into the log file
     // returns {Component}
@@ -509,7 +509,6 @@ component.on('0', function(message) {
 });
 ```
 
-
 ---
 
 ## Client-Side
@@ -530,7 +529,7 @@ ON('select.componentname', function(component) {
 });
 
 ON('click.componentname', function(component) {
-    // Performed "click" 
+    // Performed "click"
 });
 
 ON('add.componentname', function(component) {
@@ -554,7 +553,7 @@ __How to change count of outputs/inputs dynamically?__
 
 ```javascript
 ON('save.componentname', function(component, options) {
-    
+
     component.output = 5;
     // component.input = 3;
 
@@ -616,7 +615,7 @@ __Server-side__:
 
 ```javascript
 // Register trigger
-FLOW.trigger('name', function(next, data) {    
+FLOW.trigger('name', function(next, data) {
     // Data sent from client-side
     console.log(data);
 
