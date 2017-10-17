@@ -52,7 +52,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/templates4.json';
+		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
