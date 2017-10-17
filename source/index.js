@@ -766,7 +766,7 @@ FLOW.register = function(name, options, fn) {
 	obj.html = options.html || '';
 	obj.traffic = options.traffic === false ? false : true;
 	obj.filename = FILENAME;
-	obj.dateupdated = options.dateupdate;
+	obj.dateupdated = typeof(options.dateupdated) === 'string' ? options.dateupdated.parseDate() : null;
 
 	var exec = function() {
 		var data = U.clone(FLOW.components[name]);

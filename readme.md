@@ -248,6 +248,11 @@ exports.cloning = false;
 // hides stats under component box in designer UI
 exports.traffic = false;
 
+// {String}, optional (format: 'yyyy-MM-dd HH:mm')
+// +v4.0.0
+// Updated date
+exports.dateupdated = '2017-17-10';
+
 exports.install = function(component) {
 
     // =====================

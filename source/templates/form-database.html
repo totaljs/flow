@@ -29,7 +29,7 @@
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
 							<div>
 								<div class="name">{{ name }}</div>
-								<div class="datetime"><i class="fa fa-clock-o"></i>{{ dateupdated | format('yyyy-MM-dd HH:mm') }}</div>
+								<div class="datetime"><i class="fa fa-clock-o"></i>{{ if dateupdated }}{{ dateupdated | format('yyyy-MM-dd HH:mm') }}{{ else }}@(Not defined){{ fi }}</div>
 								<div class="author">{{ author }}</div>
 							</div>
 						</div>
