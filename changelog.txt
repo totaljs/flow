@@ -1,3 +1,10 @@
+======= 4.0.0
+
+- updated jComponent version
+- improved UI components
+- added `group` for `debug` messages
+- added `export.traffic` property for hidding of stats under component box in designer
+
 ======= 3.0.0
 
 - added global variables

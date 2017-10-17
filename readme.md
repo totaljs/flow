@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Flow 3.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 4.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 Flow comes pre-installed with components such as:
 - `HTTP route` for creating web endpoints
@@ -14,7 +14,7 @@ Flow comes pre-installed with components such as:
     - `Switch` for controlling the flow of the data
     - `Range` for converting incomming data to certain range, e.g. 0-1023 -> 0-100%
 - `NoSQL` for saving and retrieving data (uses Total.js embedded nosql db engine)
-- `Analitycs` for analyzing tha data 
+- `Analitycs` for analyzing tha data
 - __And many more to come__
 
 If You miss some specific component You can always write it by yourself :)
@@ -27,7 +27,7 @@ __Terminology__:
 
 ## Installation
 
-- Total.js `+v2.5.0`
+- Total.js `+v2.8.0`
 - download and copy `flow.package` into the `/packages/` directory __or create a definition file with:__
 
 ```javascript
@@ -43,7 +43,11 @@ var options = {};
 // options.limit = 50;
 
 // Predefined set of components (default value):
-// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
+// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
+
+// +v4.0.0
+// Default light theme
+// options.dark = false;
 
 // ====================================
 // Security (OPTIONAL)
@@ -61,7 +65,7 @@ var options = {};
 // options.token = ['OUR_COMPANY_TOKEN'];
 // you can open flow using : /$flow/?token=OUR_COMPANY_TOKEN
 
-INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/flow.package', options);
+INSTALL('package', 'https://cdn.totaljs.com/flow.package', options);
 ```
 
 - __IMPORTANT__: it doesn't support `UPTODATE` mechanism
@@ -89,10 +93,11 @@ FLOW.emit('hello', 'arg1', 'arg..N');
 FLOW.send(message);
 // Sends a message to designer via WebSocket
 
-FLOW.debug(data, style);
+FLOW.debug(data, style, [group]);
 // Sends a debug message
 // message: {String/Object} - string will be formatted as markdown and object as JSON
 // style: {String} - "info", "warning", "error" (default: "info")
+// group: {String} (optional) - +v4.0.0
 
 FLOW.set(key, value);
 // Writes a value into the key-value store (data are stored on HDD)
@@ -238,6 +243,11 @@ exports.options = { enabled: true };
 // Disables data cloning
 exports.cloning = false;
 
+// {Boolean}, optional (default: true)
+// +v4.0.0
+// hides stats under component box in designer UI
+exports.traffic = false;
+
 exports.install = function(component) {
 
     // =====================
@@ -339,12 +349,12 @@ exports.install = function(component) {
     component.on('service', function(counter) {
         // optional
         // Service called each 1 minute
-    });    
+    });
 
     // =====================
     // METHODS
     // =====================
-    
+
     component.status(message, [color]);
     // Sends a status to designer
     // @message: {String/Object} - string will be formatted as markdown and object as JSON
@@ -367,7 +377,7 @@ exports.install = function(component) {
     // @index: {Number} - optional, the output index (otherwise all outputs)
     // @data: {String/Object}
     // returns Message;
-  
+
     var message = component.send2([index], data);
     if (message) {
         // message will be sent
@@ -413,7 +423,7 @@ exports.install = function(component) {
     component.click();
     // Performs click event.
     // returns {Component}
-    
+
     component.log([a], [b], [c], [d]);
     // Writes some info into the log file
     // returns {Component}
@@ -477,6 +487,7 @@ component.on('data', function(message) {
     message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
     message.get(key);         // Gets a key-value (doesn't read data from "data")
     message.rem(key);         // Removes a key-value (doesn't read data from "data")
+    message.rewrite(data);    // Rewrites the current with new
 });
 
 // SECOND CASE
@@ -498,7 +509,6 @@ component.on('0', function(message) {
 });
 ```
 
-
 ---
 
 ## Client-Side
@@ -519,7 +529,7 @@ ON('select.componentname', function(component) {
 });
 
 ON('click.componentname', function(component) {
-    // Performed "click" 
+    // Performed "click"
 });
 
 ON('add.componentname', function(component) {
@@ -543,7 +553,7 @@ __How to change count of outputs/inputs dynamically?__
 
 ```javascript
 ON('save.componentname', function(component, options) {
-    
+
     component.output = 5;
     // component.input = 3;
 
@@ -605,7 +615,7 @@ __Server-side__:
 
 ```javascript
 // Register trigger
-FLOW.trigger('name', function(next, data) {    
+FLOW.trigger('name', function(next, data) {
     // Data sent from client-side
     console.log(data);
 

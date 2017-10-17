@@ -27,7 +27,7 @@ var FILENAME;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v3.0.0';
+exports.version = 'v4.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -52,10 +52,13 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (!OPT.templates)
-		OPT.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/master/templates.json';
+		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
 
 	if (!OPT.limit)
 		OPT.limit = 50;
+
+	if (OPT.dark == null)
+		OPT.dark = true;
 
 	// Routes
 	if (OPT.auth === true) {
@@ -158,6 +161,7 @@ function view_index() {
 
 	this.theme('');
 	this.repository.url = OPT.url;
+	this.repository.dark = OPT.dark;
 	this.view('@flow/index');
 }
 
@@ -292,9 +296,9 @@ function websocket() {
 						var tmp = MESSAGE_DESIGNER.components.findItem('id', item.id);
 						tmp.connections = item.connections;
 					}
-
 				});
 
+				instance.hasConnections = Object.keys(instance.connections).length > 0;
 				instance.$events.options && instance.emit('options', instance.options, old_options);
 				EMIT('flow.options', instance);
 
@@ -625,7 +629,8 @@ Component.prototype.status = function(text, color) {
 	return this;
 };
 
-Component.prototype.debug = function(data, style) {
+Component.prototype.debug = function(data, style, group) {
+	MESSAGE_DEBUG.group = group;
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.style = style || 'info';
@@ -648,6 +653,14 @@ Component.prototype.reconfig = function() {
 	MESSAGE_COMPONENTOPTIONS.options = this.options;
 	FLOW.send(MESSAGE_COMPONENTOPTIONS);
 	return this;
+};
+
+Component.prototype.flowboard = function(){
+    console.log('FlowBoard is not initialized yet!');
+};
+
+Component.prototype.dashboard = function(){
+    console.log('DashBoard is not initialized yet!');
 };
 
 function print_buffer(buf) {
@@ -733,27 +746,27 @@ FLOW.register = function(name, options, fn) {
 
 	var id = name.slug().replace(/\-/g, '');
 
-	FLOW.components[name] = {
-		id: id,
-		component: name,
-		name: options.title || name,
-		author: options.author || 'Unknown',
-		color: options.color,
-		icon: (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '',
-		input: options.input == null ? 0 : options.input,
-		output: options.output == null ? 0 : options.output,
-		click: options.click ? true : false,
-		group: options.group || 'Common',
-		options: options.options,
-		uninstall: options.uninstall,
-		status: options.status,
-		cloning: options.cloning,
-		fn: fn,
-		readme: options.readme || '',
-		html: options.html || '',
-		filename: FILENAME,
-		dateupdated: options.dateupdated
-	};
+	var obj = FLOW.components[name] = U.clone(options); // because of additional custom fields
+	obj.id = id;
+	obj.component = name;
+	obj.name = options.title || name;
+	obj.author = options.author || 'Unknown';
+	obj.color = options.color;
+	obj.icon = (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '';
+	obj.input = options.input == null ? 0 : options.input;
+	obj.output = options.output == null ? 0 : options.output;
+	obj.click = options.click ? true : false;
+	obj.group = options.group || 'Common';
+	obj.options = options.options;
+	obj.uninstall = options.uninstall;
+	obj.status = options.status;
+	obj.cloning = options.cloning;
+	obj.fn = fn;
+	obj.readme = options.readme || '';
+	obj.html = options.html || '';
+	obj.traffic = options.traffic === false ? false : true;
+	obj.filename = FILENAME;
+	obj.dateupdated = options.dateupdate;
 
 	var exec = function() {
 		var data = U.clone(FLOW.components[name]);
@@ -1195,8 +1208,10 @@ FLOW.install = function(filename, body, callback) {
 		});
 	} else {
 
-		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1)
+		if (body.indexOf('exports.install') === -1 || body.indexOf('exports.id') === -1) {
+			callback && callback(new Error('Invalid file.'));
 			return;
+		}
 
 		if (filename)
 			filename = F.path.root(PATH + filename);
@@ -1310,6 +1325,10 @@ FLOW.prototypes = function(fn) {
 	return FLOW;
 };
 
+FLOW.clone = function(url, callback) {
+
+};
+
 // ===================================================
 // FLOW DATA DECLARATION
 // ===================================================
@@ -1336,6 +1355,11 @@ FlowData.prototype.clone = function() {
 	var type = typeof(this.data);
 	var noclone = !this.data || type === 'string' || type === 'number' || type === 'boolean' || this.data instanceof Date;
 	return new FlowData(noclone ? this.data : clone(this.data), this);
+};
+
+FlowData.prototype.rewrite = function(data) {
+	this.data = data;
+	return this;
 };
 
 FlowData.prototype.set = function(key, value) {

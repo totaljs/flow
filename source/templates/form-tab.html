@@ -1,10 +1,10 @@
-<div data-jc="form" data-title="@(Edit tab)" data-jc-path="common.form" data-if="value === 'tab'" data-width="500px" data-jc-init="formtab_init" class="hidden" data-enter="true">
+<div data-jc="form" data-jc-path="common.form" data-jc-config="if:tab;width:400;enter:true;title:@(Edit tab);submit:formtab_submit" class="hidden">
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formtab.name" data-maxlength="30" data-required="true" class="m" data-placeholder="@(Type a tab name)">@(Name)</div>
+		<div data-jc="textbox" data-jc-path="formtab.name" data-jc-config="maxlength:30;required:true;placeholder:@(Type a tab name)" class="m">@(Name)</div>
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data-jc="dropdown" data-jc-path="formtab.position" data-required="true" data-jc-type="number" data-source="formtabpositions">@(Position)</div>
+				<div data-jc="dropdown" data-jc-path="formtab.position" data-jc-config="required:true;type:number;datasource:formtabpositions">@(Position)</div>
 			</div>
 		</div>
 
@@ -27,11 +27,9 @@
 
 <script>
 
-	function formtab_init(component) {
-		component.submit = function(hide) {
-			EMIT('tabs.save', formtab);
-			hide();
-		};
+	function formtab_submit(form) {
+		EMIT('tabs.save', formtab);
+		form.hide();
 	}
 
 	function formtab_remove() {
