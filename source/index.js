@@ -656,11 +656,11 @@ Component.prototype.reconfig = function() {
 };
 
 Component.prototype.flowboard = function(){
-    console.log('FlowBoard is not initialized yet!');
+    console.log('Flowboard is not initialized yet!');
 };
 
 Component.prototype.dashboard = function(){
-    console.log('DashBoard is not initialized yet!');
+    console.log('Dashboard is not initialized yet!');
 };
 
 function print_buffer(buf) {
