@@ -24,6 +24,7 @@ var COUNTER = 0;
 var OPT;
 var DDOS = {};
 var FILENAME;
+var READY = false;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
@@ -180,7 +181,7 @@ function websocket() {
 			return;
 		}
 
-		if (client.query.designer === '1') {
+		if (client.query.designer === '1' && READY) {
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer');
 		}
@@ -1104,6 +1105,7 @@ FLOW.load = function(callback) {
 						EMIT('flow');
 						FLOW.init(MESSAGE_DESIGNER.components);
 						FLOW.send(MESSAGE_DESIGNER);
+						READY = true;
 						callback && callback();
 					});
 				});
