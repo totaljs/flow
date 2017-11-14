@@ -1502,6 +1502,9 @@ COMPONENT('designer', function() {
 
 	self.moveselected = function(x, y, e) {
 
+		x = Math.round(x / 3) * 3;
+		y = Math.round(y / 3) * 3;
+
 		e.preventDefault();
 
 		move.node.each(function() {
