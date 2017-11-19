@@ -175,6 +175,7 @@ svg { cursor: move; }
 .designer-shadow-right { position: absolute; bottom: 0; top: 0; right: -10px; height: 100%; box-shadow: 0 0 25px rgba(0,0,0,0.2); width: 10px; }
 
 .themedark { color: gray; background-color: #1B1A1D; }
+.themedark .ui-form-container { color: #505050; }
 .themedark .body { background-colo: #202020; border-color: #303030; }
 .themedark .designer-container { box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
 .themedark .mainmenu { background-color: #202020; color: gray; }

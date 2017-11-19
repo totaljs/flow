@@ -149,7 +149,7 @@ COMPONENT('binder', function(self) {
 	}
 
 	function decode(val) {
-		return val.replace(/\&\#39;/g, '\'');
+		return val.replace(/&#39;/g, '\'');
 	}
 
 	self.prepare = function(code) {
@@ -701,12 +701,16 @@ COMPONENT('textbox', function(self, config) {
 
 		var attrs = [];
 		var builder = [];
-		var tmp;
+		var tmp = 'text';
 
-		if (config.type === 'password')
-			tmp = 'password';
-		else
-			tmp = 'text';
+		switch (config.type) {
+			case 'password':
+				tmp = config.type;
+				break;
+			case 'number':
+				isMOBILE && (tmp = 'tel');
+				break;
+		}
 
 		self.tclass('ui-disabled', config.disabled === true);
 		self.type = config.type;
@@ -723,7 +727,7 @@ COMPONENT('textbox', function(self, config) {
 		config.align && attrs.attr('class', 'ui-' + config.align);
 		!isMOBILE && config.autofocus && attrs.attr('autofocus');
 
-		builder.push('<input {0} />'.format(attrs.join(' ')));
+		builder.push('<div class="ui-textbox-input"><input {0} /></div>'.format(attrs.join(' ')));
 
 		var icon = config.icon;
 		var icon2 = config.icon2;
@@ -740,8 +744,8 @@ COMPONENT('textbox', function(self, config) {
 			};
 		}
 
-		icon2 && builder.push('<div><span class="fa fa-{0}"></span></div>'.format(icon2));
-		config.increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
+		icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-{0}"></span></div>'.format(icon2));
+		config.increment && !icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
 
 		if (config.label)
 			content = config.label;
@@ -899,10 +903,11 @@ COMPONENT('visible', function(self, config) {
 	};
 });
 
-COMPONENT('validation', function(self, config) {
+COMPONENT('validation', 'delay:100;flags:visible', function(self, config) {
 
 	var path, elements = null;
 	var def = 'button[name="submit"]';
+	var flags = null;
 
 	self.readonly();
 
@@ -915,20 +920,29 @@ COMPONENT('validation', function(self, config) {
 	};
 
 	self.configure = function(key, value, init) {
-		if (init)
-			return;
 		switch (key) {
 			case 'selector':
-				elements = self.find(value || def);
+				if (!init)
+					elements = self.find(value || def);
+				break;
+			case 'flags':
+				if (value) {
+					flags = value.split(',');
+					for (var i = 0; i < flags.length; i++)
+						flags[i] = '@' + flags[i];
+				} else
+					flags = null;
 				break;
 		}
 	};
 
 	self.state = function() {
-		var disabled = MAIN.disabled(path);
-		if (!disabled && config.if)
-			disabled = !EVALUATE(self.path, config.if);
-		elements.prop('disabled', disabled);
+		setTimeout2(self.id, function() {
+			var disabled = MAIN.disabled(path, flags);
+			if (!disabled && config.if)
+				disabled = !EVALUATE(self.path, config.if);
+			elements.prop('disabled', disabled);
+		}, config.delay);
 	};
 });
 
@@ -943,7 +957,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 	self.make = function() {
 		url = config.url || '';
-		if (!url.match(/^(ws|wss)\:\/\//))
+		if (!url.match(/^(ws|wss):\/\//))
 			url = (location.protocol.length === 6 ? 'wss' : 'ws') + '://' + location.host + (url.substring(0, 1) !== '/' ? '/' : '') + url;
 		setTimeout(self.connect, 500);
 		self.destroy = self.close;
@@ -2046,10 +2060,8 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 				break;
 
 			case 'datasource':
-				var was = datasource;
-				was && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				was && self.refresh();
+				self.datasource(value, self.bind);
+				datasource && self.refresh();
 				datasource = value;
 				break;
 
@@ -2179,10 +2191,18 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 			data.push(item);
 		}
 
+		var h = HASH(render);
+		if (h === self.old)
+			return;
+
+		self.old = h;
+
 		if (render)
 			container.rclass(clsempty).html(render);
 		else
 			container.aclass(clsempty).html(config.empty);
+
+		self.refresh();
 	};
 
 	self.setter = function(value) {
@@ -2235,14 +2255,14 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 			el.tclass('ui-dropdowncheckbox-checked', checked);
 		});
 
-		if (!label && value) {
+		if (!label && value && config.cleaner !== false) {
 			// invalid data
 			// it updates model without notification
 			self.rewrite([]);
 		}
 
 		if (!label && config.placeholder) {
-			values.removeAttr('title', '');
+			values.rattr('title', '');
 			values.html('<span>{0}</span>'.format(config.placeholder));
 		} else {
 			values.attr('title', label);
@@ -2274,7 +2294,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check', function(self, config) {
 
 COMPONENT('dropdown', function(self, config) {
 
-	var select, container, condition, content, datasource = null;
+	var select, container, condition, content = null;
 	var render = '';
 
 	self.validate = function(value) {
@@ -2327,7 +2347,7 @@ COMPONENT('dropdown', function(self, config) {
 
 				self.bind('', items);
 				break;
-			case 'condition':
+			case 'if':
 				condition = value ? FN(value) : null;
 				break;
 			case 'required':
@@ -2335,8 +2355,7 @@ COMPONENT('dropdown', function(self, config) {
 				self.state(1, 1);
 				break;
 			case 'datasource':
-				datasource && self.unwatch(value, self.bind);
-				self.watch(value, self.bind, true);
+				self.datasource(value, self.bind);
 				break;
 			case 'label':
 				content = value;
@@ -2382,7 +2401,7 @@ COMPONENT('dropdown', function(self, config) {
 	};
 
 	self.redraw = function() {
-		var html = '<div class="ui-dropdown"><span class="fa fa-sort"></span><select data-jc-bind="">{0}</select></div>'.format(render);
+		var html = '<div class="ui-dropdown"><select data-jc-bind="">{0}</select></div>'.format(render);
 		var builder = [];
 		var label = content || config.label;
 		if (label) {
@@ -2402,6 +2421,7 @@ COMPONENT('dropdown', function(self, config) {
 		content = self.html();
 		self.aclass('ui-dropdown-container');
 		self.redraw();
+		config.if && (condition = FN(config.if));
 		config.items && self.reconfigure({ items: config.items });
 		config.datasource && self.reconfigure('datasource:' + config.datasource);
 	};
@@ -3366,20 +3386,24 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	};
 });
 
-COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
+COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, config) {
 
-	var skipA = false;
-	var skipB = false;
 	var editor = null;
 
 	self.getter = null;
+	self.bindvisible();
 
 	self.reload = function() {
 		editor.refresh();
 	};
 
 	self.validate = function(value) {
-		return config.disabled || !config.required ? true : value && value.length > 0;
+		return (config.disabled || !config.required ? true : value && value.length > 0) === true;
+	};
+
+	self.insert = function(value) {
+		editor.replaceSelection(value);
+		self.change(true);
 	};
 
 	self.configure = function(key, value, init) {
@@ -3405,10 +3429,28 @@ COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
 
 	self.make = function() {
 		var content = config.label || self.html();
-		self.html('<div class="ui-codemirror-label' + (config.required ? ' ui-codemirror-label-required' : '') + '">' + (config.icon ? '<i class="fa fa-' + config.icon + '"></i> ' : '') + content + ':</div><div class="ui-codemirror"></div>');
+		self.html((content ? '<div class="ui-codemirror-label' + (config.required ? ' ui-codemirror-label-required' : '') + '">' + (config.icon ? '<i class="fa fa-' + config.icon + '"></i> ' : '') + content + ':</div>' : '') + '<div class="ui-codemirror"></div>');
 		var container = self.find('.ui-codemirror');
-		editor = CodeMirror(container.get(0), { lineNumbers: config.linenumbers, mode: config.type || 'htmlmixed', indentUnit: 4 });
-		config.height !== 'auto' && editor.setSize('100%', (config.height || 200) + 'px');
+
+		var options = {};
+		options.lineNumbers = config.linenumbers;
+		options.mode = config.type || 'htmlmixed';
+		options.indentUnit = 4;
+
+		if (config.type === 'markdown') {
+			options.styleActiveLine = true;
+			options.lineWrapping = true;
+			options.matchBrackets = true;
+		}
+
+		editor = CodeMirror(container.get(0), options);
+		self.editor = editor;
+
+		if (config.height !== 'auto') {
+			var is = typeof(config.height) === 'number';
+			editor.setSize('100%', is ? (config.height + 'px') : (config.height || '200px'));
+			!is && self.css('height', config.height);
+		}
 
 		if (config.disabled) {
 			self.aclass('ui-disabled');
@@ -3416,46 +3458,30 @@ COMPONENT('codemirror', 'linenumbers:false', function(self, config) {
 			editor.refresh();
 		}
 
+		var can = {};
+		can['+input'] = can['+delete'] = can.undo = can.redo = can.paste = true;
+
 		editor.on('change', function(a, b) {
 
-			if (config.disabled)
+			if (config.disabled || !can[b.origin])
 				return;
-
-			if (skipB && b.origin !== 'paste') {
-				skipB = false;
-				return;
-			}
 
 			setTimeout2(self.id, function() {
-				skipA = true;
-				self.reset(true);
-				self.dirty(false);
-				self.set(editor.getValue());
+				self.$dirty && self.change(true);
+				self.rewrite(editor.getValue());
 			}, 200);
 		});
-
-		skipB = true;
 	};
 
 	self.setter = function(value) {
 
-		if (skipA === true) {
-			skipA = false;
-			return;
-		}
-
-		skipB = true;
 		editor.setValue(value || '');
 		editor.refresh();
-		skipB = true;
-
-		CodeMirror.commands['selectAll'](editor);
-		skipB = true;
-		editor.setValue(editor.getValue());
-		skipB = true;
 
 		setTimeout(function() {
 			editor.refresh();
+			editor.scrollTo(0, 0);
+			editor.setCursor(0);
 		}, 200);
 
 		setTimeout(function() {
@@ -3790,7 +3816,7 @@ COMPONENT('textarea', function(self, config) {
 		var label = config.label || content;
 
 		if (!label.length) {
-			config.error && builder.push('<div class="ui-box-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
+			config.error && builder.push('<div class="ui-textarea-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
 			self.aclass('ui-textarea ui-textarea-container');
 			self.html(builder.join(''));
 			input = self.find('textarea');
@@ -3833,6 +3859,7 @@ COMPONENT('textarea', function(self, config) {
 	};
 });
 
+
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
 	self.make = function() {
@@ -3872,13 +3899,19 @@ COMPONENT('filereader', function(self, config) {
 	};
 });
 
-COMPONENT('nosqlcounter', 'count:0', function(self, config) {
+COMPONENT('nosqlcounter', 'count:0;height:80', function(self, config) {
 
 	var months = MONTHS;
+	var container, labels;
 
+	self.bindvisible();
 	self.readonly();
+
 	self.make = function() {
-		self.toggle('ui-nosqlcounter hidden', true);
+		self.aclass('ui-nosqlcounter');
+		self.append('<div class="ui-nosqlcounter-table"{0}><div class="ui-nosqlcounter-cell"></div></div><div class="ui-nosqlcounter-labels"></div>'.format(config.height ? ' style="height:{0}px"'.format(config.height) : ''));
+		container = self.find('.ui-nosqlcounter-cell');
+		labels = self.find('.ui-nosqlcounter-labels');
 	};
 
 	self.configure = function(key, value) {
@@ -3892,23 +3925,11 @@ COMPONENT('nosqlcounter', 'count:0', function(self, config) {
 		}
 	};
 
-	self.setter = function(value) {
+	self.redraw = function(maxbars) {
 
-		var is = !value || !value.length;
-		self.toggle('hidden', is);
-
-		if (is)
-			return self.empty();
-
-		var maxbars = 12;
-
-		if (config.count === 0)
-			maxbars = self.element.width() / 30 >> 0;
-		else
-			maxbars = config.count;
-
-		if (WIDTH() === 'xs')
-			maxbars = maxbars / 2;
+		var value = self.get();
+		if (!value)
+			value = [];
 
 		var dt = new Date();
 		var current = dt.format('yyyyMM');
@@ -3933,28 +3954,51 @@ COMPONENT('nosqlcounter', 'count:0', function(self, config) {
 		var max = stats.scalar('max', 'value');
 		var bar = 100 / maxbars;
 		var builder = [];
+		var dates = [];
 		var cls = '';
+		var min = ((20 / config.height) * 100) >> 0;
+		var sum = '';
 
-		stats.forEach(function(item, index) {
+		for (var i = 0, length = stats.length; i < length; i++) {
+			var item = stats[i];
 			var val = item.value;
+
 			if (val > 999)
 				val = (val / 1000).format(1, 2) + 'K';
 
-			var h = (item.value / max) * 60;
-			h += 40;
+			sum += val + ',';
+
+			var h = max === 0 ? 0 : ((item.value / max) * (100 - min));
+			h += min;
 
 			cls = item.value ? '' : 'empty';
 
 			if (item.id === current)
 				cls += (cls ? ' ' : '') + 'current';
 
-			if (index === maxbars - 1)
+			if (i === maxbars - 1)
 				cls += (cls ? ' ' : '') + 'last';
 
-			builder.push('<div style="width:{0}%;height:{1}%" title="{3}" class="{4}"><span>{2}</span></div>'.format(bar.format(2, ''), h.format(0, ''), val, months[item.month - 1] + ' ' + item.year, cls));
-		});
+			var w = bar.format(2, '');
 
-		self.html(builder);
+			builder.push('<div style="width:{0}%" title="{3}" class="{4}"><div style="height:{1}%"><span>{2}</span></div></div>'.format(w, h.format(0, ''), val, months[item.month - 1] + ' ' + item.year, cls));
+			dates.push('<div style="width:{0}%">{1}</div>'.format(w, months[item.month - 1].substring(0, 3)));
+		}
+
+		if (self.old !== sum) {
+			self.old = sum;
+			labels.html(dates.join(''));
+			container.html(builder.join(''));
+		}
+	};
+
+	self.setter = function(value) {
+		if (config.count === 0) {
+			self.width(function(width) {
+				self.redraw(width / 30 >> 0);
+			});
+		} else
+			self.redraw(WIDTH() === 'xs' ? config.count / 2 : config.count, value);
 	};
 });
 
@@ -4051,7 +4095,8 @@ COMPONENT('multioptions', function(self) {
 	var skip = false;
 	var mapping = null;
 
-	self.readonly();
+	self.getter = null;
+	self.novalidate();
 
 	self.init = function() {
 		window.Tmultioptionscolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'].map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
@@ -4065,8 +4110,11 @@ COMPONENT('multioptions', function(self) {
 		self.aclass('ui-multioptions');
 
 		var el = self.find('script');
-		self.remap(el.html());
-		el.remove();
+
+		if (el.length) {
+			self.remap(el.html());
+			el.remove();
+		}
 
 		self.event('click', '.multioptions-operation', function(e) {
 			var el = $(this);
@@ -4133,7 +4181,8 @@ COMPONENT('multioptions', function(self) {
 			return;
 		});
 
-		self.event('change', 'input,select', self.$save);
+		self.event('change', 'select', self.$save);
+		self.event('input', 'input', self.$save);
 
 		self.event('click', '.ui-moi-date', function(e) {
 			e.stopPropagation();
@@ -4149,43 +4198,51 @@ COMPONENT('multioptions', function(self) {
 	};
 
 	self.remap = function(js) {
-
 		var fn = new Function('option', js);
-
 		mapping = {};
+		fn(self.mapping);
+		self.refresh();
+		self.change(false);
+	};
 
-		fn(function(key, label, def, type, max, min, step, validator) {
-			if (typeof(type) === 'number') {
-				validator = step;
-				step = min;
-				min = max;
-				max = type;
-				type = 'number';
-			} else if (!type)
-				type = def instanceof Date ? 'date' : typeof(def);
+	self.remap2 = function(callback) {
+		mapping = {};
+		callback(self.mapping);
+		self.refresh();
+		self.change(false);
+	};
 
-			var values;
+	self.mapping = function(key, label, def, type, max, min, step, validator) {
+		if (typeof(type) === 'number') {
+			validator = step;
+			step = min;
+			min = max;
+			max = type;
+			type = 'number';
+		} else if (!type)
+			type = def instanceof Date ? 'date' : typeof(def);
 
-			if (type instanceof Array) {
+		var values;
 
-				values = [];
+		if (type instanceof Array) {
 
-				type.forEach(function(val) {
-					values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
-				});
+			values = [];
 
-				type = 'array';
-			}
+			type.forEach(function(val) {
+				values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
+			});
 
-			if (validator && typeof(validator) !== 'function')
-				validator = null;
+			type = 'array';
+		}
 
-			mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
-		});
+		if (validator && typeof(validator) !== 'function')
+			validator = null;
+
+		mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
 	};
 
 	self.$save = function() {
-		setTimeout2('multioptions.' + self._id, self.save, 500);
+		setTimeout2('multioptions.' + self._id, self.save, 150);
 	};
 
 	self.save = function() {
@@ -4244,13 +4301,12 @@ COMPONENT('multioptions', function(self) {
 
 	self.setter = function(options) {
 
-		if (!options || skip) {
+		if (!options || skip || !mapping) {
 			skip = false;
 			return;
 		}
 
 		var builder = [];
-
 		Object.keys(mapping).forEach(function(key) {
 
 			var option = mapping[key];
@@ -4264,7 +4320,7 @@ COMPONENT('multioptions', function(self) {
 			// option.min
 			// option.step
 
-			option.value = options[key];
+			option.value = options[key] || option.def;
 
 			var value = '';
 
@@ -4292,7 +4348,7 @@ COMPONENT('multioptions', function(self) {
 			builder.push('<div class="ui-multioptions-item"><div class="ui-moi-name">{0}</div><div class="ui-moi-value">{1}</div></div>'.format(option.label, value));
 		});
 
-		self.html(builder);
+		self.empty().html(builder);
 
 		self.find('.ui-moi-value-colors').each(function() {
 			var el = $(this);
