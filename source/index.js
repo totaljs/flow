@@ -38,6 +38,7 @@ exports.install = function(options) {
 	// options.auth = true;
 	// options.token = 'qR3878SAadada';
 	// options.limit = 50;
+	// options.sharedfiles = true; // false by default, if true then it will use dep.min.jss/css from public directory /js/dep.min.js and /css/dep.min.css
 
 	OPT = options;
 	!OPT && (OPT = {});
@@ -71,12 +72,20 @@ exports.install = function(options) {
 	}
 
 	// Merging && Mapping
-	F.merge(OPT.url + 'default.css', '@flow/dep.min.css', '@flow/default.css', '@flow/ui.css');
-	F.merge(OPT.url + 'default.js', '@flow/dep.min.js', '@flow/default.js', '@flow/ui.js');
-	F.map(OPT.url + 'templates/', '@flow/templates/');
-	F.map(OPT.url + 'templates/', '@flow/templates/');
-	F.map(OPT.url + 'fonts/', '@flow/fonts/');
+	var depscss = [OPT.url + 'default.css', '@flow/default.css', '@flow/ui.css'];
+	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js'];
+
+	if (!OPT.sharedfiles) {
+		depscss.splice(1, 0, '@flow/dep.min.css');
+		depsjs.splice(1, 0, '@flow/dep.min.js');
+		F.map(OPT.url + 'fonts/', '@flow/fonts/');
+	}
+	
+	F.merge.apply(this, depscss);
+	F.merge.apply(this, depsjs);
+	
 	F.map(OPT.url + 'img/', '@flow/img/');
+	F.map(OPT.url + 'templates/', '@flow/templates/');
 
 	// Localization
 	F.localize(OPT.url + 'templates/*.html', ['compress']);
@@ -163,6 +172,7 @@ function view_index() {
 	this.theme('');
 	this.repository.url = OPT.url;
 	this.repository.dark = OPT.dark;
+	this.repository.sharedfiles = OPT.sharedfiles;
 	this.view('@flow/index');
 }
 

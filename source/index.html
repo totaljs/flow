@@ -11,7 +11,13 @@
 	<meta name="robots" content="all,follow" />
 	<link rel="apple-touch-icon" href="@{repository.url}img/icon.png" type="image/png" />
 	<link rel="icon" href="@{repository.url}img/icon.png" type="image/png" />
+	@{if repository.sharedfiles}
+	<link href="/css/dep.min.css" rel="stylesheet" type="text/css" />
+	@{fi}
 	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
+	@{if repository.sharedfiles}
+	<script src="/js/dep.min.js"></script>
+	@{fi}
 	<script src="@{repository.url}default.js"></script>
 </head>
 <body data-jc="exec,binder"@{if repository.dark} class="themedark"@{fi}>
