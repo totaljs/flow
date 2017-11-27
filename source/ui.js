@@ -3459,7 +3459,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 		}
 
 		var can = {};
-		can['+input'] = can['+delete'] = can.undo = can.redo = can.paste = true;
+		can['+input'] = can['+delete'] = can.undo = can.redo = can.paste = can.cut = can.clear = true;
 
 		editor.on('change', function(a, b) {
 
@@ -3467,9 +3467,13 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 				return;
 
 			setTimeout2(self.id, function() {
+				var val = editor.getValue();
+				self.getter2 && self.getter2(val);
 				self.$dirty && self.change(true);
-				self.rewrite(editor.getValue());
+				self.rewrite(val);
+				config.required && self.validate2();
 			}, 200);
+
 		});
 	};
 
