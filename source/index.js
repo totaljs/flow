@@ -80,10 +80,10 @@ exports.install = function(options) {
 		depsjs.splice(1, 0, '@flow/dep.min.js');
 		F.map(OPT.url + 'fonts/', '@flow/fonts/');
 	}
-	
+
 	F.merge.apply(this, depscss);
 	F.merge.apply(this, depsjs);
-	
+
 	F.map(OPT.url + 'img/', '@flow/img/');
 	F.map(OPT.url + 'templates/', '@flow/templates/');
 
@@ -772,6 +772,8 @@ FLOW.register = function(name, options, fn) {
 	obj.uninstall = options.uninstall;
 	obj.status = options.status;
 	obj.cloning = options.cloning;
+	obj.dashboard = options.dashboard ? true : false;
+	obj.flowboard = options.flowboard ? true : false;
 	obj.fn = fn;
 	obj.readme = options.readme || '';
 	obj.html = options.html || '';
