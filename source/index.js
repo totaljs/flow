@@ -1287,6 +1287,20 @@ FLOW.uninstall = function(name, noSync) {
 	return FLOW;
 };
 
+FLOW.find = function(fn) {
+	if (!fn || typeof(fn) !== 'function')
+		return;
+
+	var arr = [];
+	var keys = Object.keys(FLOW.instances);
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		fn(instance, FLOW.components[instance.component]) && arr.push(instance);
+	}
+	return arr;
+};
+
 FLOW.findByReference = function(value) {
 	var arr = [];
 	var keys = Object.keys(FLOW.instances);
