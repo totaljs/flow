@@ -108,6 +108,12 @@ FLOW.get(key);
 FLOW.rem(key);
 // Removes value from the key-value store (data are stored on HDD)
 
+FLOW.find(function(instance, definition){ 
+    // return true if this instance satisfies your search criteria
+});
+// Finds instances
+// returns {Array of Components}
+
 FLOW.findByReference('STRING');
 FLOW.findByReference(REGULAR_EXPRESSION);
 // Finds all instances by reference
