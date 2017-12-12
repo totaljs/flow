@@ -28,7 +28,7 @@ var READY = false;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.0.0';
+exports.version = 'v4.0.1';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
