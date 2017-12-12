@@ -577,6 +577,7 @@ Component.prototype.send = function(index, message) {
 			var tmp = {};
 			for (var i = 0, length = arr.length; i < length; i++) {
 				instance = FLOW.instances[arr[i].id];
+
 				if (instance && !instance.$closed) {
 
 					if (!tmp[instance.id]) {
@@ -588,6 +589,7 @@ Component.prototype.send = function(index, message) {
 						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
 						data.index = +arr[i].index;
 						instance.$events.data && instance.emit('data', data);
+						instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
