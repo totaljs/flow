@@ -204,6 +204,7 @@ svg { cursor: move; }
 .themedark .debugoutput { border-color: #303030; }
 .themedark .debugoutput .hljs { background-color: #303030; color: gray; }
 .themedark #infopanel .hljs { background-color: #303030; color: gray; }
+.themedark #infopanel .hljs-keyword { color: #D0D0D0; }
 
 .themedark .designer-shadow-top { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
@@ -211,7 +212,6 @@ svg { cursor: move; }
 .themedark .designer-shadow-right { box-shadow: 0 0 25px rgba(0,0,0,0.8); }
 .themedark .themechanger { color: white; }
 .themedark .debugoutput .hljs-keyword { color: #D0D0D0; }
-
 .themedark .markdown { color: #A0A0A0; }
 .themedark .markdown h1 { border-color: #303030; color: white; }
 .themedark .markdown h2 { border-color: #303030; color: white; }
