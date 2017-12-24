@@ -757,7 +757,7 @@ FLOW.register = function(name, options, fn) {
 		options = EMPTYOBJECT;
 	}
 
-	var id = name.slug().replace(/\-/g, '');
+	var id = name.slug().replace(/-/g, '');
 
 	var obj = FLOW.components[name] = U.clone(options); // because of additional custom fields
 	obj.id = id;
@@ -955,6 +955,7 @@ FLOW.init_component = function(component) {
 	MESSAGE_DESIGNER.components.wait(function(com, next) {
 		if (com.component !== component.id)
 			return next();
+
 		var declaration = FLOW.components[com.component];
 		if (!declaration)
 			return next();
@@ -971,6 +972,7 @@ FLOW.init_component = function(component) {
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 			instance.name = com.name || declaration.name;
 			instance.cloning = declaration.cloning;
+			instance.hasConnections = Object.keys(instance.connections).length > 0;
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
@@ -1047,7 +1049,7 @@ FLOW.save_inmemory = function() {
 	}, 500, 100);
 };
 
-FLOW.execute = function(filename, sync) {
+FLOW.execute = function(filename) {
 
 	var data = Fs.readFileSync(filename).toString('utf8');
 	if (data.indexOf('exports.install') === -1 || data.indexOf('exports.id') === -1)
@@ -1353,10 +1355,6 @@ FLOW.prototypes = function(fn) {
 	proto.Component = Component.prototype;
 	fn.call(proto, proto);
 	return FLOW;
-};
-
-FLOW.clone = function(url, callback) {
-
 };
 
 // ===================================================

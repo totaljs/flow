@@ -364,7 +364,7 @@
 		});
 
 		ON('designer.rem', function(id) {
-			id && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected component?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			id && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected component?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
 				var instance = flow.components.findItem('id', id);
@@ -572,7 +572,7 @@
 		});
 
 		OPERATION('flow.clear', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
 				flow.components = flow.components.remove('tab', common.tab.id);
@@ -641,7 +641,7 @@
 		});
 
 		OPERATION('flow.apply', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
 				$('.node_new').removeClass('node_new');
@@ -677,7 +677,7 @@
 		});
 
 		OPERATION('flow.restore', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to refresh this page?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to refresh this page?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				!index && location.reload(true);
 			});
 		});

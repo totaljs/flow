@@ -33,7 +33,7 @@ binds-config-value        <span>(config)</span>    : <b>name</b></code></pre>
 	}
 
 	function formvariables_submit(form) {
-		SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['@(Yes)', '@(Cancel)'], function(index) {
+		SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['"check-circle" @(Yes)', '@(Cancel)'], function(index) {
 			if (index)
 				return;
 			SETTER('loading', 'hide', 1000);

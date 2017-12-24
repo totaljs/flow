@@ -225,33 +225,34 @@ COMPONENT('binder', function(self) {
 
 COMPONENT('confirm', function(self) {
 
-	var is = false;
-	var visible = false;
+	var is, visible = false;
 
 	self.readonly();
 	self.singleton();
 
 	self.make = function() {
-		self.aclass('ui-confirm hidden', true);
+
+		self.aclass('ui-confirm hidden');
+
 		self.event('click', 'button', function() {
-			self.hide($(this).attr('data-index').parseInt());
+			self.hide($(this).attrd('index').parseInt());
 		});
 
 		self.event('click', function(e) {
 			var t = e.target.tagName;
-			if (t !== 'BUTTON')
+			if (t !== 'DIV')
 				return;
 			var el = self.find('.ui-confirm-body');
 			el.aclass('ui-confirm-click');
 			setTimeout(function() {
-				el.removeClass('ui-confirm-click');
+				el.rclass('ui-confirm-click');
 			}, 300);
 		});
 
 		$(window).on('keydown', function(e) {
 			if (!visible)
 				return;
-			var index = e.keyCode === 13 ? 0 : e.keyCode === 27 ? 1 : null;
+			var index = e.which === 13 ? 0 : e.which === 27 ? 1 : null;
 			if (index != null) {
 				self.find('button[data-index="{0}"]'.format(index)).trigger('click');
 				e.preventDefault();
@@ -259,14 +260,21 @@ COMPONENT('confirm', function(self) {
 		});
 	};
 
-	self.confirm = function(message, buttons, fn) {
+	self.show = self.confirm = function(message, buttons, fn) {
 		self.callback = fn;
 
 		var builder = [];
 
-		buttons.forEach(function(item, index) {
-			builder.push('<button data-index="{1}">{0}</button>'.format(item, index));
-		});
+		for (var i = 0; i < buttons.length; i++) {
+			var item = buttons[i];
+			var icon = item.match(/"[a-z0-9-]+"/);
+			if (icon) {
+				item = item.replace(icon, '').trim();
+				icon = '<i class="fa fa-{0}"></i>'.format(icon.toString().replace(/"/g, ''));
+			} else
+				icon = '';
+			builder.push('<button data-index="{1}">{2}{0}</button>'.format(item, i, icon));
+		}
 
 		self.content('ui-confirm-warning', '<div class="ui-confirm-message">{0}</div>{1}'.format(message.replace(/\n/g, '<br />'), builder.join('')));
 	};
@@ -274,18 +282,20 @@ COMPONENT('confirm', function(self) {
 	self.hide = function(index) {
 		self.callback && self.callback(index);
 		self.rclass('ui-confirm-visible');
+		visible = false;
 		setTimeout2(self.id, function() {
-			visible = false;
+			$('html').rclass('noscrollconfirm');
 			self.aclass('hidden');
 		}, 1000);
 	};
 
 	self.content = function(cls, text) {
+		$('html').aclass('noscrollconfirm');
 		!is && self.html('<div><div class="ui-confirm-body"></div></div>');
 		self.find('.ui-confirm-body').empty().append(text);
 		self.rclass('hidden');
+		visible = true;
 		setTimeout2(self.id, function() {
-			visible = true;
 			self.aclass('ui-confirm-visible');
 		}, 5);
 	};
@@ -3569,7 +3579,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 			setTimeout2(self.id, function() {
 				var val = editor.getValue();
 				self.getter2 && self.getter2(val);
-				self.$dirty && self.change(true);
+				self.change(true);
 				self.rewrite(val);
 				config.required && self.validate2();
 			}, 200);
