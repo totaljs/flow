@@ -87,8 +87,11 @@ FLOW.variables;
 __Methods__:
 
 ```javascript
-FLOW.emit('hello', 'arg1', 'arg..N');
+FLOW.emit2('hello', 'arg1', 'arg..N');
 // Emits event to all component instances
+
+FLOW.emit('hello', 'arg1', 'arg..N');
+// Emits event in main Flow instance
 
 FLOW.send(message);
 // Sends a message to designer via WebSocket
@@ -108,7 +111,7 @@ FLOW.get(key);
 FLOW.rem(key);
 // Removes value from the key-value store (data are stored on HDD)
 
-FLOW.find(function(instance, definition){ 
+FLOW.find(function(instance, definition){
     // return true if this instance satisfies your search criteria
 });
 // Finds instances

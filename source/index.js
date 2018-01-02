@@ -814,7 +814,7 @@ FLOW.instance = function(id) {
 	return FLOW.instances[id];
 };
 
-FLOW.emit = function() {
+FLOW.emit2 = function() {
 	var keys = Object.keys(FLOW.instances);
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
