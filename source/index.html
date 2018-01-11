@@ -171,12 +171,12 @@
 		</div>
 	</div>
 
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'tab';url:@{repository.url}templates/form-tab.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'settings';url:@{repository.url}templates/form-settings.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'export';url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'import';url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'database';url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:value === 'variables';url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:tab;url:@{repository.url}templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:settings;url:@{repository.url}templates/form-settings.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:export;url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:import;url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:database;url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:variables;url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
