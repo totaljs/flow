@@ -167,15 +167,25 @@ label span { vertical-align: middle; }
 .ui-selectbox.ui-disabled ul { color: gray; }
 .ui-selectbox.ui-disabled li:hover { background-color: white !important; }
 
-.ui-textboxlist-label { margin-bottom: 10px; }
+.ui-textboxlist-label { margin-bottom: 5px; font-size: 12px; text-align: left; }
+.ui-textboxlist-label-required:before { color: red; content: '***'; margin-right: 5px; }
 .ui-textboxlist-label .fa { margin-right: 5px; }
-.ui-textboxlist-item { height: 30px; background-color: #F8F8F8; margin-bottom: 1px; border-radius: 3px; }
-.ui-textboxlist-item > div:first-child { float: right; width: 25px; text-align: center; color: #DA4453; font-size: 14px; margin: 4px 0 0; }
-.ui-textboxlist-item > div:last-child { padding: 4px 0 0 0; margin-right: 25px; }
-.ui-textboxlist-item .fa { cursor: pointer; position: relative; display: inline-block; }
+.ui-textboxlist-items > div:first-child { border-radius: 2px 2px 0 0; }
+.ui-textboxlist-item { height: 32px; background-color: white; border: 1px solid #E0E0E0; border-bottom: 0; }
+.ui-textboxlist-item > div:first-child { float: right; width: 32px; text-align: center; color: #DA4453; font-size: 14px; height: 31px; border-left: 1px solid #E0E0E0; }
+.ui-textboxlist-item > div:last-child { padding: 4px 0 0 0; margin-right: 32px; }
+.ui-textboxlist-item .fa { cursor: pointer; display: block; padding: 7px 0 2px; }
 .ui-textboxlist-item .fa:active { margin-top: 1px; }
-.ui-textboxlist-item input { width: 100%; background-color: transparent; border: 0; padding: 3px 10px 0; border-radius: 4px; outline: 0; font-size: 12px; color: black; }
+.ui-textboxlist-item input { width: 100%; background-color: transparent; border: 0; padding: 1px 10px 0; border-radius: 4px; outline: 0; font-size: 14px; color: black; }
+.ui-textboxlist-base { border-radius: 0 0 2px 2px; border-bottom: 1px solid #E0E0E0; }
 .ui-textboxlist-base .fa { display: none; }
+.ui-textboxlist-base > div:first-child { display: none; }
+.ui-textboxlist-helper { margin-top: 8px; font-size: 11px; color: red !important; text-align: left; }
+.empty .ui-textboxlist-base { border-radius: 2px; }
+.ui-textboxlist-item-invalid { border-color: #E1A1A1; background-color: #FFF3F3 !important; }
+.ui-textboxlist-item-invalid:last-child{ border-bottom:1px solid #E1A1A1; }
+.ui-textboxlist-item-invalid > div:first-child { border-left-color: #E1A1A1; }
+.ui-textboxlist-item-invalid input { color: red; }
 
 .ui-autocomplete-container { position: absolute; z-index: 60; }
 .ui-autocomplete { background-color: white; width: 100%; margin: -5px 0 0 0; padding: 2px 0; border-radius: 0 0 4px 4px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid #D0D0D0; line-height: 14px; }

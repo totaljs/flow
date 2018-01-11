@@ -269,7 +269,7 @@ function websocket() {
 				var old_options = instance.options;
 
 				instance.options = message.body;
-				instance.name = instance.options.comname || FLOW.components[instance.component].name;
+				instance.name = instance.options.comname || '';
 				instance.reference = instance.options.comreference;
 				instance.output = instance.options.comoutput;
 				instance.input = instance.options.cominput;

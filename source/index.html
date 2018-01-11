@@ -496,7 +496,7 @@
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
-			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : '')) + (group ? '</div>' : ''));
+			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : '')) + (group ? '</div>' : ''));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
 					if (block.$processed)
