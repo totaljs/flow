@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Flow 4.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 4.1.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 Flow comes pre-installed with components such as:
 - `HTTP route` for creating web endpoints
@@ -10,9 +10,6 @@ Flow comes pre-installed with components such as:
 - `MQTT` for connecting IoT devices
 - `Template` for formating the output
 - `Email` and `SMS` sender for sending emails and text messages
-- Logic components such as:
-    - `Switch` for controlling the flow of the data
-    - `Range` for converting incomming data to certain range, e.g. 0-1023 -> 0-100%
 - `NoSQL` for saving and retrieving data (uses Total.js embedded nosql db engine)
 - `Analitycs` for analyzing tha data
 - __And many more to come__
@@ -27,7 +24,7 @@ __Terminology__:
 
 ## Installation
 
-- Total.js `+v2.8.0`
+- Total.js `+v2.9.2`
 - download and copy `flow.package` into the `/packages/` directory __or create a definition file with:__
 
 ```javascript

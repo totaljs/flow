@@ -1,3 +1,12 @@
+======= 4.1.0
+
+- added `options.templates2` for additional user-defined templates
+- added: `FlowData.arg()` for replacing dynamic parameters in strings
+- removed traffic from design in components with `input` & `output`
+- updated importing components from templates
+- updated jComponent
+- fixed UI components
+
 ======= 4.0.0
 
 - updated jComponent version
