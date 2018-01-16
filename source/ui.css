@@ -113,9 +113,9 @@ label span { vertical-align: middle; }
 .ui-checkboxlist.ui-disabled .ui-checkboxlist-checked div { background-color: #E0E0E0 !important; border-color: #E0E0E0 !important; color: #A0A0A0 !important; }
 
 .ui-dropdowncheckbox-container { display: block; text-align: left; position: relative; font-size:14px; }
-.ui-dropdowncheckbox { border: 1px solid #E0E0E0; padding: 0 10px; border-radius: 2px; outline: 0; overflow: hidden; width: 100%; background-color: white; height: 30px; cursor: pointer; }
-.ui-dropdowncheckbox div { padding: 4px 0 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: black; }
-.ui-dropdowncheckbox .fa { float: right; width: 20px; text-align: right; margin: 6px 0 0 0; }
+.ui-dropdowncheckbox { border: 1px solid #E0E0E0; padding: 0 10px; border-radius: 2px; outline: 0; overflow: hidden; width: 100%; background-color: white; height: 32px; cursor: pointer; }
+.ui-dropdowncheckbox div { padding: 5px 0 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: black; }
+.ui-dropdowncheckbox .fa { float: right; width: 20px; text-align: right; margin: 8px 0 0 0; }
 .ui-dropdowncheckbox-label .fa { width: 14px; }
 .ui-dropdowncheckbox-label { margin-bottom: 5px; font-size: 12px; color: gray; }
 .ui-dropdowncheckbox-required:before { color: red; content: '***'; margin-right: 5px; }
