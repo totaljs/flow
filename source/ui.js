@@ -1531,7 +1531,7 @@ COMPONENT('designer', function() {
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		if (item.$component.traffic) {
+		if ((item.$component.input || item.$component.output) && item.$component.traffic) {
 			g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 			var plus = g.asvg('g').attr('class', 'node_traffic').attr('data-id', item.id);
 			plus.asvg('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
@@ -2207,7 +2207,9 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 
 	self.bind = function(path, value) {
 		var clsempty = 'ui-dropdowncheckbox-values-empty';
-		prepared = true;
+
+		if (value !== undefined)
+			prepared = true;
 
 		if (!value || !value.length) {
 			var h = config.empty || '&nbsp;';
