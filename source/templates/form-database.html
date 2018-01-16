@@ -130,15 +130,12 @@
 	});
 
 	function formdatabase_install(el) {
-		var arr = common.templates.findItem('name', el.attr('data-value'));
-		SETTER('loading', 'show');
-		arr.items.waitFor(function(item, next) {
-			SETTER('websocket', 'send', { type: 'install', filename: item });
-			setTimeout(next, 500);
-		}, function() {
-			SETTER('loading', 'hide', 1000);
-			SETTER('snackbar', 'success', '@(Components have been installed successfully.)');
-		});
+		var name = el.attr('data-value');
+		var obj = common.templates.findItem('name', el.attr('data-value'));
+		obj.items.quicksort();
+		SET('formcomponents.database', obj.items);
+		SET('formcomponents.components', obj.items.slice(0), true);
+		SET('common.form2', 'components');
 	}
 
 	function formdatabase_dragdrop(files) {

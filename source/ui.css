@@ -104,7 +104,7 @@ label span { vertical-align: middle; }
 .ui-checkboxlist-label .fa { margin-right: 5px; }
 .ui-checkboxlist-label { margin-bottom: 5px; font-size: 12px; color: gray; }
 .ui-checkboxlist-required:before { color: red; content: '***'; margin-right: 5px; }
-.ui-checkboxlist-item { cursor: pointer; padding-bottom: 2px; }
+.ui-checkboxlist-item { cursor: pointer; padding-bottom: 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .ui-checkboxlist-item span { cursor: pointer; vertical-align: middle; }
 .ui-checkboxlist-item div { position: relative; display: inline-block; width: 16px; height: 16px; border: 2px solid #E0E0E0; margin-right: 6px; vertical-align: middle; cursor: pointer; color: white; font-size: 11px; text-align: center; padding: 1px 0 0 1px; background-color: white; border-radius: 3px; }
 .ui-checkboxlist-item .fa { display: none; }

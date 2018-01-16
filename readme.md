@@ -45,6 +45,10 @@ var options = {};
 // Predefined set of components (default value):
 // options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
 
+// +v4.0.2 Second user-defined set of components (default value is !!! EMPTY !!!):
+// It must have same structure as "options.template", example:
+// options.templates2 = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
+
 // +v4.0.0
 // Default light theme
 // options.dark = false;
@@ -323,7 +327,7 @@ exports.install = function(component) {
         // +v4.0.2
         // Replaces {KEY1} {KEY2} {KEY..N} according to the message repository
         // returns {String}
-        message.replace('Dynamic arguments {name} according to {message} repository.');
+        message.arg('Dynamic arguments {name} according to {message} repository.');
 
         // send this message :-)
         component.send(message);

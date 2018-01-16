@@ -211,12 +211,46 @@ function websocket() {
 		}
 
 		if (message.type === 'templates') {
-			OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
-				if (!err) {
-					MESSAGE_TEMPLATES.body = response.trim().parseJSON();
-					MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
+
+			var arr = [];
+			var templ = [];
+
+			OPT.templates2 && arr.push(OPT.templates2);
+			OPT.templates && arr.push(OPT.templates);
+
+			arr.wait(function(item, next) {
+				U.request(item, FLAGS, function(err, response) {
+					if (!err) {
+						var arr = response.trim().parseJSON();
+						for (var i = 0; i < arr.length; i++)
+							templ.push(arr[i]);
+					}
+					next();
+				});
+			}, function() {
+
+				var templates = [];
+
+				for (var a = 0; a < templ.length; a++) {
+					var template = templ[a];
+					var obj = templates.findItem('name', template.name);
+					if (obj == null) {
+						templates.push(template);
+						continue;
+					}
+
+					// Merge
+					for (var j = 0; j < template.items.length; j++) {
+						var url = template.items[j];
+						if (obj.items.indexOf(url) === -1)
+							obj.items.push(url);
+					}
 				}
+
+				MESSAGE_TEMPLATES.body = templates;
+				MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
 			});
+
 			return;
 		}
 
@@ -1405,7 +1439,7 @@ FlowData.prototype.rem = function(key) {
 	return this;
 };
 
-FlowData.prototype.replace = function(str) {
+FlowData.prototype.arg = function(str) {
 	var self = this;
 	return typeof(str) === 'string' ? str.replace(REGPARAM, function(text) {
 		var val = self.repository[text.substring(1, text.length - 1).trim()];
