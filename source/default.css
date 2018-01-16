@@ -151,6 +151,8 @@ svg { cursor: move; }
 .db-container { margin: 0 -10px; }
 .db-item { position: relative; display: inline-block; background-color: white; border: 1px solid #E0E0E0; padding: 4px 10px; width: 206px; margin: 10px 10px 5px; border-radius: 3px; }
 .db-item > span { float: right; width: 20px; text-align: right; margin: 0; cursor: pointer; color: #E33733; }
+.db-item > span .fa-refresh { color: #909090; }
+.db-item > span:hover { opacity: 0.8; }
 .db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .db-item .name { font-size: 14px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
 .db-item .author { font-size: 11px; color: gray; }

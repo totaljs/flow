@@ -18,6 +18,7 @@ const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
+const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
 var FILEINMEMORY = '/flow/repository.json';
 
 var COUNTER = 0;
@@ -28,7 +29,7 @@ var READY = false;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.0.1';
+exports.version = 'v4.0.2';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -1402,4 +1403,12 @@ FlowData.prototype.get = function(key) {
 FlowData.prototype.rem = function(key) {
 	this.repository[key] = undefined;
 	return this;
+};
+
+FlowData.prototype.replace = function(str) {
+	var self = this;
+	return typeof(str) === 'string' ? str.replace(REGPARAM, function(text) {
+		var val = self.repository[text.substring(1, text.length - 1).trim()];
+		return val == null ? text : val;
+	}) : str;
 };

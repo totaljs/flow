@@ -17,7 +17,6 @@
 		</div>
 		<br />
 	</div>
-	<div class="success hidden" data-b="formdatabase.success" data-b-visible="n => n"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
 	<div class="padding npb">
 		<div data-jc="textbox" data-jc-path="formdatabase.search" data-jc-config="type:search;placeholder:@(Search components ...)" class="mt10"></div>
 		<br />
@@ -27,8 +26,9 @@
 					<script type="text/html">
 						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ id }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
+							<span class="exec" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>
 							<div>
-								<div class="name">{{ name }}</div>
+								<div class="name" title="{{ name }}">{{ name }}</div>
 								<div class="datetime"><i class="fa fa-clock-o"></i>{{ if dateupdated }}{{ dateupdated | format('yyyy-MM-dd HH:mm') }}{{ else }}@(Not defined){{ fi }}</div>
 								<div class="author">{{ author }}</div>
 							</div>
@@ -64,6 +64,27 @@
 		}, 1000);
 	}
 
+	function formdatabase_refresh(el) {
+		var id = el.parent().attr('data-id');
+		var component = common.components.findItem('id', id);
+		var len = component.filename.length;
+		for (var i = 0, length = common.templates.length; i < length; i++) {
+			var template = common.templates[i];
+			var item = template.items.findItem(function(url) {
+				return url.substring(url.length - (len + 1)) === ('/' + component.filename);
+			});
+			if (item)
+				break;
+		}
+
+		if (item) {
+			SETTER('websocket', 'send', { type: 'install', filename: item });
+			SET('formdatabase.url', '', true);
+			SETTER('snackbar', 'success', '@(The component <b>{0}</b> has been refreshed successfully.)'.format(component.name));
+		} else
+			SETTER('snackbar', 'warning', '@(Sorry, the component doesn\'t exist in templates.)');
+	}
+
 	function formdatabase_remove(el) {
 		var id = el.parent().attr('data-id');
 		SETTER('confirm', 'confirm', '@(Are you sure you want to remove this component?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
@@ -75,8 +96,7 @@
 		if (value && value.isURL()) {
 			SETTER('websocket', 'send', { type: 'install', filename: value });
 			SET('formdatabase.url', '', true);
-			SET('formdatabase.success', true);
-			SET('formdatabase.success', false, 3500);
+			SETTER('snackbar', 'success', '@(<b>The component</b> has been installed successfully.)');
 		}
 	});
 
@@ -84,12 +104,12 @@
 		if (value && value.body) {
 
 			if (value.size / 1024 > 50) {
-				SETTER('message', 'warning', '@(The file is too big large. The maximum limit of file size is <b>50 kB</b>.)');
+				SETTER('snackbar', 'warning', '@(The file is too big large. The maximum limit of file size is <b>50 kB</b>.)');
 				return;
 			}
 
 			if (value.body.indexOf('exports.id') === -1 || value.body.indexOf('exports.install') === -1) {
-				SETTER('message', 'warning', '@(This file is not a Total.js Flow component.)');
+				SETTER('snackbar', 'warning', '@(This file doesn\'t contain Total.js Flow component.)');
 				return;
 			}
 
@@ -105,8 +125,7 @@
 			common.statics = {};
 			SETTER('websocket', 'send', { type: 'install', filename: value.filename, body: value.body });
 			SET('formdatabase.file', null, true);
-			SET('formdatabase.success', true);
-			SET('formdatabase.success', false, 3500);
+			SETTER('snackbar', 'success', '@(The component has been installed successfully.)');
 		}
 	});
 
@@ -118,8 +137,7 @@
 			setTimeout(next, 500);
 		}, function() {
 			SETTER('loading', 'hide', 1000);
-			SET('formdatabase.success', true);
-			SET('formdatabase.success', false, 3500);
+			SETTER('snackbar', 'success', '@(Components have been installed successfully.)');
 		});
 	}
 

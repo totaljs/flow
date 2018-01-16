@@ -384,6 +384,17 @@ label span { vertical-align: middle; }
 .ui-features li:hover { background-color: #F8F8F8; }
 .ui-features-noscroll { overflow: hidden !important; }
 
+.ui-snackbar { position: fixed; bottom: 0; left: 0; width: 100%; transition: all 0.3s; transform: translate(0,70px); font-size: 14px; z-index: 1000;}
+.ui-snackbar > div { margin: 0 auto; width: 80%; background-color: #303030; border-radius: 3px 3px 0 0; box-shadow: 0 -15px 25px rgba(0,0,0,0.08); }
+.ui-snackbar-dismiss { float: right; width: 100px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; text-decoration: none; color: #f44336; padding: 16px 0 0 0; text-transform: uppercase; background-color: #202020; border-radius: 0 3px 0 0; height: 50px; }
+.ui-snackbar-dismiss:hover { background-color: #505050; text-decoration: none; }
+.ui-snackbar-body { margin-right: 100px; padding: 15px; color: white; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.ui-snackbar-body .fa { margin-right: 5px; }
+.ui-snackbar-visible { transform: translate(0, 0); }
+.ui-snackbar-icon { float: left; font-size: 20px; border-right: 1px solid #505050; margin-right: 10px !important; padding: 0 10px 0 0; }
+.ui-snackbar-icon.fa-times-circle { color: red; }
+.ui-snackbar-icon.fa-check-circle { color: #60CD4F; }
+
 @media(max-width: 767px) {
 	.ui-colorpicker { width: 90%; margin-left: 5%; }
 	.ui-colorpicker li { width: 10%; }

@@ -320,8 +320,14 @@ exports.install = function(component) {
         // How can I modify data?
         message.data = { newdata: true };
 
+        // +v4.0.2
+        // Replaces {KEY1} {KEY2} {KEY..N} according to the message repository
+        // returns {String}
+        message.replace('Dynamic arguments {name} according to {message} repository.');
+
         // send this message :-)
         component.send(message);
+
     });
 
     component.on('<input-number>', function(message) {
