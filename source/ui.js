@@ -3596,7 +3596,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	};
 });
 
-COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, config) {
+COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false', function(self, config) {
 
 	var editor = null;
 
@@ -3647,6 +3647,11 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
 
+		if (config.tabs) {
+			options.indentWithTabs = true;
+			options.indentUnit = 2;
+		}
+
 		if (config.type === 'markdown') {
 			options.styleActiveLine = true;
 			options.lineWrapping = true;
@@ -3678,6 +3683,14 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 
 			setTimeout2(self.id, function() {
 				var val = editor.getValue();
+
+				if (config.trim) {
+					var lines = val.split('\n');
+					for (var i = 0, length = lines.length; i < length; i++)
+						lines[i] = lines[i].replace(/~+$/, '');
+					val = lines.join('\n').trim();
+				}
+
 				self.getter2 && self.getter2(val);
 				self.change(true);
 				self.rewrite(val);
