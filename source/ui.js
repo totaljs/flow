@@ -3647,10 +3647,8 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
 
-		if (config.tabs) {
+		if (config.tabs)
 			options.indentWithTabs = true;
-			options.indentUnit = 4;
-		}
 
 		if (config.type === 'markdown') {
 			options.styleActiveLine = true;
@@ -3687,7 +3685,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 				if (config.trim) {
 					var lines = val.split('\n');
 					for (var i = 0, length = lines.length; i < length; i++)
-						lines[i] = lines[i].replace(/~+$/, '');
+						lines[i] = lines[i].replace(/\s+$/, '');
 					val = lines.join('\n').trim();
 				}
 
