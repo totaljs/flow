@@ -3649,7 +3649,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 
 		if (config.tabs) {
 			options.indentWithTabs = true;
-			options.indentUnit = 2;
+			options.indentUnit = 4;
 		}
 
 		if (config.type === 'markdown') {
