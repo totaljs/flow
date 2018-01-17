@@ -1035,7 +1035,7 @@ FLOW.debug = function(data, style) {
 	return this;
 };
 
-// Saves new date
+// Saves new data
 FLOW.save = function(data, callback) {
 	for (var i = 0, length = data.components.length; i < length; i++)
 		data.components[i].isnew && (data.components[i].isnew = undefined);
