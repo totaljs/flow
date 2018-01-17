@@ -1087,10 +1087,15 @@ FLOW.save2 = function(callback) {
 	data.components = MESSAGE_DESIGNER.components;
 	data.version = +exports.version.replace(/(v|\.)/g, '');
 	data.variables = FLOW.$variables;
-	Fs.writeFile(F.path.root(FILEDESIGNER), JSON.stringify(data, (k,v) => k === '$component' ? undefined : v), function() {
+
+	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
+
+	Fs.writeFile(F.path.root(FILEDESIGNER), json, function() {
 		callback && callback();
 		EMIT('flow.save');
 	});
+
+	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
 };
 
 FLOW.save_inmemory = function() {

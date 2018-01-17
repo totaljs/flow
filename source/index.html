@@ -201,6 +201,7 @@
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
+			!this.tabscroll && (this.tabscroll = {});
 			this.touches = false;
 			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
 			this.beautify === undefined && (this.beautify = true);
@@ -213,6 +214,7 @@
 		CACHEPATH('common.panel', '1 month');
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
+		CACHEPATH('common.tabscroll', '1 month');
 
 		// Hybrid devices
 		$(document).on('touchstart', checktouches);
@@ -236,6 +238,10 @@
 		var flow = {};
 		var settings = {};
 		var mdraggable = {};
+
+		$('.designer-scrollbar').on('mousewheel', function() {
+			setTimeout2('wheel', savescrollposition, 500);
+		});
 
 		$(document).on('touchstart', '[draggable]', function(e) {
 
@@ -538,6 +544,13 @@
 				location.hash = tab.linker;
 			}
 
+			if (common.tab !== tab) {
+				savescrollposition();
+				var el = $('.designer-scrollbar');
+				var tmp = common.tabscroll['tab' + tab.id];
+				el.animate({ scrollLeft: tmp ? tmp.x : 0, scrollTop: tmp ? tmp.y : 0 }, 300);
+			}
+
 			SET('common.tab', tab);
 			flow.designer = [];
 
@@ -547,6 +560,7 @@
 
 			UPDATE('flow.designer');
 			setTimeout(refreshTraffic, 100);
+
 		});
 
 		$(window).on('hashchange', function() {
@@ -1254,6 +1268,16 @@
 				}
 			});
 		}, true);
+
+		function savescrollposition() {
+			if (common.tab) {
+				var el = $('.designer-scrollbar');
+				var tmp = common.tabscroll['tab' + common.tab.id];
+				var pos = { x: el.prop('scrollLeft'), y: el.prop('scrollTop') };
+				if (!tmp || (tmp.x !== pos.x && tmp.y !== pos.y))
+					SET('common.tabscroll.tab' + common.tab.id, pos);
+			}
+		}
 
 	</script>
 

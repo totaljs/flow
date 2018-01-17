@@ -1268,6 +1268,7 @@ COMPONENT('designer', function() {
 						}
 					}
 			}
+			move.type === 1 && savescrollposition();
 			move.type = 0;
 			move.drag = false;
 		};
