@@ -308,10 +308,19 @@ function websocket() {
 				instance.reference = instance.options.comreference;
 				instance.output = instance.options.comoutput;
 				instance.input = instance.options.cominput;
+
+				if (instance.options.comcolor != undefined)
+					instance.color = instance.options.comcolor;
+
+				if (instance.options.comnotes !== undefined)
+					instance.notes = instance.options.comnotes;
+
 				instance.options.comname = undefined;
 				instance.options.comreference = undefined;
 				instance.options.comoutput = undefined;
 				instance.options.cominput = undefined;
+				instance.options.comcolor = undefined;
+				instance.options.comnotes = undefined;
 
 				var count = instance.output instanceof Array ? instance.output.length : instance.output;
 				io_count(tmp.output) !== count && Object.keys(instance.connections).forEach(function(key) {
@@ -354,6 +363,8 @@ function websocket() {
 				tmp.input = instance.input;
 				tmp.connections = instance.connections;
 				tmp.reference = instance.reference;
+				tmp.color = instance.color;
+				tmp.notes = instance.notes;
 
 				FLOW.save2();
 
@@ -952,6 +963,8 @@ FLOW.init = function(components) {
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 			instance.cloning = declaration.cloning;
 			instance.name = com.name || declaration.name;
+			instance.color = com.color || declaration.color;
+			instance.notes = com.notes || '';
 			declaration.fn.call(instance, instance, declaration);
 			instance.hasConnections = Object.keys(instance.connections).length > 0;
 
@@ -1006,6 +1019,8 @@ FLOW.init_component = function(component) {
 			FLOW.instances[com.id] = instance;
 			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 			instance.name = com.name || declaration.name;
+			instance.color = com.color || declaration.color;
+			instance.notes = com.notes || '';
 			instance.cloning = declaration.cloning;
 			instance.hasConnections = Object.keys(instance.connections).length > 0;
 			declaration.fn.call(instance, instance, declaration);

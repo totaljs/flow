@@ -396,6 +396,14 @@ label span { vertical-align: middle; }
 .ui-snackbar-icon.fa-times-circle { color: red; }
 .ui-snackbar-icon.fa-check-circle { color: #60CD4F; }
 
+.ui-colorselector { margin: 0; padding: 0; list-style-type: none; }
+.ui-colorselector li { position: relative; display: inline-block; width: 10%; margin: 10px 0; height: 26px; vertical-align: middle; cursor: pointer; }
+.ui-colorselector li:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }
+.ui-colorselector li:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; }
+.ui-colorselector .selected { margin: 0; height: 32px; }
+.ui-colorselector-label { font-size: 12px; color: #656D78; }
+.ui-colorselector.ui-disabled li { cursor: not-allowed; opacity: 0.9; }
+
 @media(max-width: 767px) {
 	.ui-colorpicker { width: 90%; margin-left: 5%; }
 	.ui-colorpicker li { width: 10%; }

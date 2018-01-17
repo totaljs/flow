@@ -48,6 +48,10 @@
 		</section>
 		<div class="padding hidden" data-b="common.panel" data-b-visible="n => n === 'info'">
 			<div class="scroller">
+				<div class="hidden" id="infopanelnotes">
+					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
+					<div class="markdown mt5"></div>
+				</div>
 				<div class="markdown" id="infopanel"></div>
 			</div>
 		</div>
@@ -399,6 +403,8 @@
 			var model = CLONE(component.$component.options || {});
 			component.options && $.extend(true, model, component.options);
 			model.comname = component.name;
+			model.comcolor = component.color;
+			model.comnotes = component.notes;
 			model.comreference = component.reference;
 			settings.$output = component.output;
 			settings.$input = component.input;
@@ -432,7 +438,7 @@
 			var component = flow.components.findItem('id', id);
 			EMIT('select.' + component.component, component);
 			staticContent(component.component, 'readme', function(response) {
-				EMIT('info', response || '');
+				EMIT('info', response || '', component.notes);
 			});
 		});
 
@@ -468,15 +474,27 @@
 			}, 1000);
 		});
 
-		ON('info', function(value) {
+		ON('info', function(value, notes) {
 			var el = $('#infopanel');
 			el.html(markdown(value));
 			el.find('pre code').each(function(i, block) {
-				if (block.$processed)
-					return;
-				block.$processed = true;
-				hljs.highlightBlock(block);
+				if (!block.$processed) {
+					block.$processed = true;
+					hljs.highlightBlock(block);
+				}
 			});
+
+			el = $('#infopanelnotes').tclass('hidden', !notes);
+
+			if (notes) {
+				el.find('.markdown').html(markdown(notes));
+				el.find('pre code').each(function(i, block) {
+					if (!block.$processed) {
+						block.$processed = true;
+						hljs.highlightBlock(block);
+					}
+				});
+			}
 		});
 
 		ON('debug', function(id, value, identificator, group) {
@@ -592,13 +610,29 @@
 
 			var tmp_n = component.name;
 			var tmp_r = component.reference;
+			var tmp_c = component.color;
 
 			component.name = component.options.comname;
 			component.reference = component.options.comreference;
+			component.color = component.options.comcolor;
+			component.notes = component.options.comnotes;
 
 			EMIT('save.' + component.component, component, component.options);
 
-			var is_designer = tmp_n !== component.name || tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
+			var is_designer = tmp_c !== component.color || tmp_n !== component.name || tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
+
+			if (component.name !== component.options.comname)
+				component.options.comname = component.name;
+
+			if (component.reference !== component.options.comreference)
+				component.options.comreference = component.reference;
+
+			if (component.color !== component.options.comcolor)
+				component.options.comcolor = component.color;
+
+			if (component.notes !== component.options.comnotes)
+				component.options.comnotes = component.notes;
+
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
 			component.options.comoutput = component.output;
@@ -636,6 +670,8 @@
 				component.options.comreference = undefined;
 				component.options.comoutput = undefined;
 				component.options.cominput = undefined;
+				component.options.comcolor = undefined;
+				component.options.comnotes = undefined;
 				is_designer && EMIT('designer.refresh');
 			}, 300);
 
@@ -833,12 +869,14 @@
 			}
 
 			if (message.type === 'status') {
-				var component = flow.components.findItem('id', message.target);
-				if (component) {
-					!component.state && (component.state = {});
-					component.state.color = message.body.color || 'gray';
-					component.state.text = message.body.text;
-					$('.node_status_' + message.target).text(component.state.text).attr('fill', component.state.color);
+				if (flow.components) {
+					var component = flow.components.findItem('id', message.target);
+					if (component) {
+						!component.state && (component.state = {});
+						component.state.color = message.body.color || 'gray';
+						component.state.text = message.body.text;
+						$('.node_status_' + message.target).text(component.state.text).attr('fill', component.state.color);
+					}
 				}
 				return;
 			}
@@ -918,7 +956,7 @@
 					var title = target;
 					if (com)
 						title = com.name;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-config="title:@(Settings\\:) {2};if:settings-{0};width:960" data-jc-path="common.form" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comname" data-jc-config="placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-6 m"><div data-jc="textbox" data-jc-path="comreference" data-jc-config="placeholder:@(Type a reference for this instance)">@(Reference)</div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-config="title:@(Settings\\:) {2};if:settings-{0};width:960" data-jc-path="common.form" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox" data-jc-path="comname" data-jc-config="placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox" data-jc-path="comreference" data-jc-config="placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector" data-jc-path="comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);

@@ -8,6 +8,11 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .panel-minized .body { margin-right: 30px; }
 .body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
 
+#infopanelnotes .markdown { margin: 5px 0 20px; padding: 15px 15px 5px; border-radius: 3px; background-color: #FEFBE8; border: 1px solid #FDF5C8; color: #573C0F; }
+#infopanelnotes .markdown hr { border-color: #eae2b1; }
+.themedark #infopanelnotes .markdown { background-color: #171717; border-color: #252525; color: gray; }
+.themedark #infopanelnotes .markdown hr { border-color: #383838; }
+
 section > label .fa { margin-right: 5px; }
 section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 4px 4px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
 section > div { background-color: white; border-radius: 0 0 4px 4px; line-height: 18px; border: 1px solid #E0E0E0; }
@@ -18,14 +23,20 @@ nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display:
 nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 
-.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.08); height: 50px; }
-.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D0D0D0; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; }
+.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; }
+.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; }
 .tabs a:first-child { border-left: 0; }
 .tabs .fa { margin-right: 5px; }
 .tabs a:hover { text-decoration: none; color: black; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
-.tabs .br { border-right: 1px solid #D0D0D0; }
+.tabs .br { border-right: 1px solid #D9D9D9; }
 .nb { border: 0 !important; }
+
+.body > section.tabs { border-bottom: 1px solid #D9D9D9; }
+.body > section.tabs .selected { border-bottom: 1px solid #D9D9D9; }
+
+.themedark .body > section.tabs { border-bottom: 1px solid #202020; height: 51px; }
+.themedark .body > section.tabs .selected { border-bottom: 1px solid #202020; }
 
 .tag { position: relative; display: inline-block; padding: 2px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; }
 .tag:hover { opacity: 0.8; text-decoration: none; }
@@ -183,7 +194,7 @@ svg { cursor: move; }
 .themedark .mainmenu { background-color: #202020; color: gray; }
 .themedark .components .group { background: linear-gradient(#303030,#202020); color: white; }
 .themedark .components .component { border-color: #303030; }
-.themedark .tabs { background-color: #101010; }
+.themedark .tabs { background-color: #101010; box-shadow: inset 0 -2px 10px rgba(255,255,255,0.04); }
 .themedark .tabs .selected { background-color: #202020; color: white; }
 .themedark .tabs a { border-color: #303030; }
 .themedark .tabs .br { border-right-color: #303030; }
