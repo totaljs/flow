@@ -101,8 +101,8 @@
 				<div data-jc="repeater" data-jc-path="flow.traffic">
 					<script type="text/html">
 						<div class="traffic-container">
-							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ output }}%</div>
-							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ input }}%</div>
+							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}x</div>
+							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}x</div>
 							<div class="traffic-name gray">{{ name }}</div>
 						</div>
 					</script>
@@ -838,7 +838,7 @@
 					if (!component.$component)
 						return;
 					var stats = message.body[component.id] || empty;
-					arr.push({ name: component.name || component.$component.name, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output });
+					arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output });
 				});
 
 				arr.memory = message.memory;
@@ -1111,13 +1111,19 @@
 				var stats = common.traffic[id];
 				var input = 0;
 				var output = 0;
+				var inputc = 0;
+				var outputc = 0;
+
 				if (stats && (stats.input || stats.output)) {
 					input = ((stats.input / count) * 100 >> 0);
 					output = ((stats.output / count) * 100 >> 0);
+					inputc = stats.input;
+					outputc = stats.output;
 				}
+
 				var sum = input > output ? input : output;
 				el.toggleClass('m1', sum < 25).toggleClass('m2', sum > 24 && sum < 50).toggleClass('m3', sum > 49 && sum < 70).toggleClass('m4', sum > 69);
-				el.find('text').html('IO: <tspan>' + input + '%</tspan> &#8644; <tspan>' + output + '%</tspan>');
+				el.find('text').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
 				var rect = el.find('rect');
 				var w = +rect.attr('data-width');
 				var p = (w / 100) * sum;
@@ -1208,6 +1214,11 @@
 				items.push({ name: '@(Show tab: {0})'.format(item.name), value: 12, icon: 'th-large', tab: item });
 			});
 
+			flow.components.forEach(function(item) {
+				var tab = flow.tabs.findItem('id', item.tab);
+				items.push({ name: '@(Find: {0} (tab: {1}))'.format(item.name || item.component, tab ? tab.name : '???'), keywords: 'component', tab: tab, value: 17, icon: 'sitemap', item: item });
+			});
+
 			items.push({ name: '@(Refresh)', value: 10, icon: 'refresh', keywords: 'reload' });
 			items.push({ name: '@(Clear current tab)', value: 2, icon: 'trash-o' });
 
@@ -1264,6 +1275,30 @@
 						break;
 					case 16:
 						OPERATION('tabs.add')();
+						break;
+					case 17:
+						location.hash = item.tab.linker;
+						SETTER('loading', 'show');
+						var com;
+						var el = $('.designer-scrollbar');
+						setTimeout(function() {
+							SETTER('loading', 'hide');
+							com = $('.node_' + item.item.id);
+							com.aclass('highlight');
+
+							var sx = item.item.x - (el.width() / 2);
+							if (sx < 0)
+								sx = 0;
+
+							var sy = item.item.y - (el.height() / 2);
+							if (sy < 0)
+								sy = 0;
+
+							el.animate({ scrollTop: sy, scrollLeft: sx });
+						}, 1500);
+						setTimeout(function() {
+							com.rclass('highlight');
+						}, 8000);
 						break;
 				}
 			});

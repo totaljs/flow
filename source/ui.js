@@ -1506,7 +1506,7 @@ COMPONENT('designer', function() {
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
-		rect.attr('width', width).attr('height', height).attr('rx', 4).attr('ry', 4).attr('fill', item.color || item.$component.color || '#656D78');
+		rect.attr('width', width).attr('height', height).attr('rx', 4).attr('ry', 4).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
 
 		g.attr('data-width', width);
 		g.attr('data-height', height);

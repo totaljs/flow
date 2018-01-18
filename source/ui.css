@@ -14,7 +14,7 @@
 .ui-designer .connection { stroke-dasharray: 3; stroke-width: 2px; stroke: red; }
 .ui-designer .node_name { font-size: 11px; fill: rgba(255,255,255,0.8); }
 .ui-designer .node_label { font-size: 14px; fill: white; }
-.ui-designer .node_status { font-size: 11px; }
+.ui-designer .node_status { font-size: 12px; }
 .ui-designer .node_traffic { font-size: 11px; fill: #A0A0A0; }
 .ui-designer .node_error {}
 .ui-designer .m1 { fill: #9FA6B1; }
@@ -31,6 +31,7 @@
 .ui-designer .path_error { animation: 1s blink2 infinite alternate; }
 .ui-designer .node_new > rect:first-child { animation: 1s blinknew infinite alternate; stroke: #A0D468; stroke-width: 2; stroke-dasharray: 10, 8; }
 .ui-designer .path_new { animation: 1s blinknew infinite alternate; stroke: #A0D468; stroke-dasharray: 10, 8; }
+.ui-designer .highlight .rect { animation: highlight 0.5s alternate infinite; }
 
 .ui-form-container { width: 100%; position: fixed; left: 0; top: 0; bottom: 0; right: 0; background-color: rgba(230,233,237,0.8); z-index: 5; overflow-y: scroll; transform-style: preserve-3d; }
 .ui-form-container-padding { padding: 0 30px;}
@@ -378,7 +379,7 @@ label span { vertical-align: middle; }
 .ui-features-search > span { float: left; width: 32px; text-align: right; padding: 9px 0 0 0; font-size: 18px; }
 .ui-features .selected { font-weight: bold; background-color: #F8F8F8; color: #1484FC !important; }
 .ui-features-visible { opacity: 1; transform: scale(1); }
-.ui-features-container { max-height: 150px; overflow-x: hidden; overflow-y: auto; overflow-scrolling: touch; }
+.ui-features-container { max-height: 250px; overflow-x: hidden; overflow-y: auto; overflow-scrolling: touch; }
 .ui-features ul { list-style-type: none; margin: 0; padding: 0; }
 .ui-features li { border-top: 1px solid #E5E5E5; font-size: 14px; padding: 8px 15px 0; background-color: white; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 37px; }
 .ui-features li .fa { margin-right: 10px; width: 25px; border-right: 1px solid #E0E0E0; }
@@ -416,6 +417,11 @@ label span { vertical-align: middle; }
     transform: scale(0.4);
     background-color: silver;
   }
+}
+
+@keyframes highlight {
+	from { stroke: transparent; stroke-width: 3; transform: scale(1); }
+	to { stroke: #F9D549; stroke-width: 15; }
 }
 
 @keyframes blink {
