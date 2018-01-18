@@ -177,6 +177,7 @@ svg { cursor: move; }
 .themechanger:hover { opacity: 0.7; }
 
 .bg-smoke { background-color: #F8F8F8; }
+.bg-yellow { background-color: #FFFFD5; }
 
 @keyframes blinker {
 	0% { background-color: #9BD15F; }
