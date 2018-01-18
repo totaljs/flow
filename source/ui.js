@@ -1502,7 +1502,7 @@ COMPONENT('designer', function() {
 			output = item.$component.output;
 
 		var count = Math.max(output || 1, input || 1);
-		var height = 30 + count * 20;
+		var height = (count > 1 ? 16 : 30) + count * 22;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
