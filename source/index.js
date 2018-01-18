@@ -58,7 +58,7 @@ exports.install = function(options) {
 		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
 
 	if (!OPT.limit)
-		OPT.limit = 50;
+		OPT.limit = 150;
 
 	if (OPT.dark == null)
 		OPT.dark = true;
@@ -1052,8 +1052,10 @@ FLOW.debug = function(data, style) {
 
 // Saves new data
 FLOW.save = function(data, callback) {
+
 	for (var i = 0, length = data.components.length; i < length; i++)
 		data.components[i].isnew && (data.components[i].isnew = undefined);
+
 	MESSAGE_DESIGNER.tabs = data.tabs;
 	MESSAGE_DESIGNER.components = data.components;
 	MESSAGE_DESIGNER.components && FLOW.init(MESSAGE_DESIGNER.components);

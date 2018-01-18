@@ -1,8 +1,13 @@
 # Total.js Flow
 
-[![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
+[![Professional Support](https://www.totaljs.com/img/badge-support.svg)](https://www.totaljs.com/support/) [![Chat with contributors](https://www.totaljs.com/img/badge-chat.svg)](https://messenger.totaljs.com)
 
 __Total.js Flow 4.1.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+
+- [__Documentation__](https://wiki.totaljs.com/?q=flow)
+- [Website](https://www.totaljs.com/flow/)
+
+---
 
 Flow comes pre-installed with components such as:
 - `HTTP route` for creating web endpoints
@@ -37,7 +42,7 @@ var options = {};
 // options.url = '/$flow/';
 
 // A maximum length of request:
-// options.limit = 50;
+// options.limit = 150;
 
 // Predefined set of components (default value):
 // options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';

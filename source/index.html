@@ -701,6 +701,9 @@
 				var body = CLONE(flow);
 				body.loaded = undefined;
 				body.designer = undefined;
+				body.traffic = undefined;
+				body.selected = undefined;
+				body.connections = undefined;
 				flow.connections = {};
 
 				flow.components.forEach(function(item) {
@@ -722,6 +725,7 @@
 				var message = {};
 				message.type = 'apply';
 				message.body = body;
+
 				setState('');
 				SETTER('websocket', 'send', message);
 				setTimeout(success, 1000);
