@@ -55,6 +55,16 @@ var options = {};
 // Default light theme
 // options.dark = false;
 
+// +v4.1.0
+// Enables backing up of Flow designer
+// options.backup = true;
+// default: false
+
+// +v4.1.0
+// Enables real-time monitoring components (their files)
+// options.debug = true;
+// default: false
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================
