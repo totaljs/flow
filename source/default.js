@@ -9,7 +9,7 @@ ON('ready', function() {
 
 	setTimeout(function() {
 		SETTER('loading', 'hide');
-		$('.ui-loading').removeClass('ui-loading-firstload');
+		$('.ui-loading').rclass('ui-loading-firstload');
 	}, 2000);
 
 	EMIT('resize', $(window));
@@ -52,9 +52,9 @@ window.TRIGGER = function(name, data, callback) {
 function success() {
 	var el = $('#success');
 	el.show();
-	el.addClass('success-animation');
+	el.aclass('success-animation');
 	setTimeout(function() {
-		el.removeClass('success-animation');
+		el.rclass('success-animation');
 		setTimeout(function() {
 			el.hide();
 		}, 1000);

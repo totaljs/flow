@@ -4,10 +4,10 @@ COMPONENT('exec', function(self, config) {
 	self.make = function() {
 		self.event('click', config.selector || '.exec', function() {
 			var el = $(this);
-			var attr = el.attr('data-exec');
-			var path = el.attr('data-path');
+			var attr = el.attrd('exec');
+			var path = el.attrd('path');
 			attr && EXEC(attr, el);
-			path && SET(path, new Function('return ' + el.attr('data-value'))());
+			path && SET(path, new Function('return ' + el.attrd('value'))());
 		});
 	};
 });
@@ -328,7 +328,7 @@ COMPONENT('form', function(self, config) {
 		W.$$form = true;
 
 		$(document).on('click', '.ui-form-button-close', function() {
-			SET($(this).attr('data-path'), '');
+			SET($(this).attrd('path'), '');
 		});
 
 		$(window).on('resize', function() {
@@ -713,7 +713,7 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.increment) {
 				var el = $(this);
-				var inc = el.hasClass('fa-caret-up') ? 1 : -1;
+				var inc = el.hclass('fa-caret-up') ? 1 : -1;
 				self.change(true);
 				self.inc(inc);
 			}
@@ -1157,7 +1157,7 @@ COMPONENT('designer', function() {
 					offset.y += move.scrollY;
 				}
 
-				touch.target = move.node ? findPoint(move.node.hasClass('output') ? '.input' : '.output', move.tx, move.ty) : svg.get(0);
+				touch.target = move.node ? findPoint(move.node.hclass('output') ? '.input' : '.output', move.tx, move.ty) : svg.get(0);
 				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
 			} else {
 				offset = offsetter(evt);
@@ -1226,14 +1226,14 @@ COMPONENT('designer', function() {
 			switch (move.type) {
 				case 2:
 					connection.attr('d', '');
-					if (el.hasClass('input')) {
-						var oindex = +move.node.attr('data-index');
+					if (el.hclass('input')) {
+						var oindex = +move.node.attrd('index');
 						var output = move.node.closest('.node');
 						var input = el.closest('.node');
-						var iindex = el.attr('data-index');
-						var instance = flow.components.findItem('id', output.attr('data-id'));
+						var iindex = el.attrd('index');
+						var instance = flow.components.findItem('id', output.attrd('id'));
 						if (instance) {
-							var id = input.attr('data-id');
+							var id = input.attrd('id');
 							var is = false;
 							if (instance.connections[oindex]) {
 								if (instance.connections[oindex].flowConnection(iindex, id))
@@ -1248,14 +1248,14 @@ COMPONENT('designer', function() {
 					break;
 				case 3:
 					connection.attr('d', '');
-					if (el.hasClass('output')) {
-						var oindex = +el.attr('data-index');
+					if (el.hclass('output')) {
+						var oindex = +el.attrd('index');
 						var output = el.closest('.node');
 						var input = move.node.closest('.node');
-						var iindex = move.node.attr('data-index');
-						var instance = flow.components.findItem('id', output.attr('data-id'));
+						var iindex = move.node.attrd('index');
+						var instance = flow.components.findItem('id', output.attrd('id'));
 						if (instance) {
-							var id = input.attr('data-id');
+							var id = input.attrd('id');
 							var is = false;
 							if (instance.connections[oindex]) {
 								if (instance.connections[oindex].flowConnection(iindex, id))
@@ -1288,7 +1288,7 @@ COMPONENT('designer', function() {
 				return;
 			}
 
-			if (el.hasClass('output')) {
+			if (el.hclass('output')) {
 				// output point
 				move.type = 2;
 				move.node = el;
@@ -1297,7 +1297,7 @@ COMPONENT('designer', function() {
 				var y = tmp.y + (+el.attr('cy'));
 				move.x = x;
 				move.y = y;
-			} else if (el.hasClass('input')) {
+			} else if (el.hclass('input')) {
 				// input point
 				move.type = 3;
 				move.node = el;
@@ -1306,14 +1306,14 @@ COMPONENT('designer', function() {
 				var y = tmp.y + (+el.attr('cy'));
 				move.x = x;
 				move.y = y;
-			} else if (el.hasClass('node_connection')) {
+			} else if (el.hclass('node_connection')) {
 				// connection
 				move.type = 4;
 				move.node = el;
 				move.drag = false;
 				self.select(el);
-			} else if (el.hasClass('click')) {
-				tmp = el.closest('.node').attr('data-id');
+			} else if (el.hclass('click')) {
+				tmp = el.closest('.node').attrd('id');
 				move.drag = false;
 				if (BLOCKED('click.' + tmp, 1000))
 					return;
@@ -1327,7 +1327,7 @@ COMPONENT('designer', function() {
 				if (move.node && tmp.get(0) === move.node.get(0)) {
 					var diff = ticks - move.ticks;
 					if (diff < 300) {
-						EMIT('designer.settings', move.node.attr('data-id'));
+						EMIT('designer.settings', move.node.attrd('id'));
 						return;
 					}
 					same = true;
@@ -1353,11 +1353,11 @@ COMPONENT('designer', function() {
 		self.remove = function() {
 			EMIT('designer.selectable', null);
 			var idconnection;
-			if (selected.hasClass('node')) {
-				idconnection = selected.attr('data-id');
+			if (selected.hclass('node')) {
+				idconnection = selected.attrd('id');
 				EMIT('designer.rem', idconnection);
 			} else {
-				EMIT('designer.rem.connection', selected.attr('data-from'), selected.attr('data-to'), selected.attr('data-fromindex'), selected.attr('data-toindex'));
+				EMIT('designer.rem.connection', selected.attrd('from'), selected.attrd('to'), selected.attrd('fromindex'), selected.attrd('toindex'));
 				selected.remove();
 			}
 		};
@@ -1366,7 +1366,7 @@ COMPONENT('designer', function() {
 
 			EMIT('designer.selectable', null);
 
-			var component = flow.components.findItem('id', selected.attr('data-id'));
+			var component = flow.components.findItem('id', selected.attrd('id'));
 			var duplicate = {
 				options: CLONE(component.options),
 				name: component.name,
@@ -1378,22 +1378,22 @@ COMPONENT('designer', function() {
 
 		self.select = function(el) {
 			if ((selected && !el) || (selected && selected.get(0) === el.get(0))) {
-				selected.removeClass('selected');
+				selected.rclass('selected');
 				selected = null;
 				EMIT('designer.selectable', null);
 				return;
 			} else if (selected)
-				selected.removeClass('selected');
+				selected.rclass('selected');
 
 			if (!el) {
 				selected = null;
 				return;
 			}
 
-			el.addClass('selected', true);
+			el.aclass('selected', true);
 			selected = el;
 			EMIT('designer.selectable', selected);
-			EMIT('designer.select', selected.attr('data-id'));
+			EMIT('designer.select', selected.attrd('id'));
 		};
 
 		self.event('dragover dragenter drag drop', 'svg', function(e) {
@@ -1411,12 +1411,12 @@ COMPONENT('designer', function() {
 						return;
 
 					if (drag.conn) {
-						drag.conn.removeClass('dropselection');
+						drag.conn.rclass('dropselection');
 						drag.conn = null;
 					}
 
 					if (e.target.nodeName === 'path')
-						drag.conn = $(e.target).addClass('dropselection');
+						drag.conn = $(e.target).aclass('dropselection');
 
 					break;
 
@@ -1425,7 +1425,7 @@ COMPONENT('designer', function() {
 					var is = drag.conn ? true : false;
 
 					if (drag.conn) {
-						drag.conn.removeClass('dropselection');
+						drag.conn.rclass('dropselection');
 						drag.conn = null;
 					}
 
@@ -1437,7 +1437,7 @@ COMPONENT('designer', function() {
 					x += self.element.prop('scrollLeft');
 					y += self.element.prop('scrollTop');
 
-					EMIT('designer.add', dragdrop, (x - 50) / zoom, (y - 30) / zoom, is, tmp.attr('data-from'), tmp.attr('data-to'), +tmp.attr('data-toindex'), null, +tmp.attr('data-fromindex'));
+					EMIT('designer.add', dragdrop, (x - 50) / zoom, (y - 30) / zoom, is, tmp.attrd('from'), tmp.attrd('to'), +tmp.attrd('toindex'), null, +tmp.attrd('fromindex'));
 					break;
 			}
 			e.preventDefault();
@@ -1464,7 +1464,7 @@ COMPONENT('designer', function() {
 		var g = container.asvg('g');
 		var err = item.errors ? Object.keys(item.errors) : EMPTYARRAY;
 		g.attr('class', 'node node_unbinded selectable' + (err.length ? ' node_errors' : '') + ' node_' + item.id + (item.isnew ? ' node_new' : ''));
-		g.attr('data-id', item.id);
+		g.attrd('id', item.id);
 		var rect = g.asvg('rect');
 		g.asvg('text').attr('class', 'node_status node_status_' + item.id).attr('transform', 'translate(2,-8)').text((item.state ? item.state.text : '') || '').attr('fill', (item.state ? item.state.color : '') || 'gray');
 
@@ -1508,15 +1508,15 @@ COMPONENT('designer', function() {
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
 		rect.attr('width', width).attr('height', height).attr('rx', 4).attr('ry', 4).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
 
-		g.attr('data-width', width);
-		g.attr('data-height', height);
+		g.attrd('width', width);
+		g.attrd('height', height);
 
 		var points = g.asvg('g');
 		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
 
 		top = ((height / 2) - ((input * 22) / 2)) + 10;
 		for (var i = 0; i < input; i++) {
-			var o = points.asvg('circle').attr('class', 'input').attr('data-index', i).attr('cx', 0).attr('cy', top + i * 22).attr('r', 8);
+			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * 22).attr('r', 8);
 			if (inputcolors)
 				o.attr('fill', inputcolors[i]);
 			else
@@ -1525,7 +1525,7 @@ COMPONENT('designer', function() {
 
 		top = ((height / 2) - ((output * 22) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
-			var o = points.asvg('circle').attr('class', 'output').attr('data-index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
+			var o = points.asvg('circle').attr('class', 'output').attrd('index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
@@ -1534,17 +1534,17 @@ COMPONENT('designer', function() {
 
 		if ((item.$component.input || item.$component.output) && item.$component.traffic) {
 			g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
-			var plus = g.asvg('g').attr('class', 'node_traffic').attr('data-id', item.id);
-			plus.asvg('rect').attr('data-width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
+			var plus = g.asvg('g').attr('class', 'node_traffic').attrd('id', item.id);
+			plus.asvg('rect').attrd('width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
 			plus.asvg('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
 		}
 
 		g.attr('transform', 'translate({0},{1})'.format(item.x, item.y));
 
 		if (item.$component.click) {
-			var clicker = g.asvg('g').addClass('click');
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
-			clicker.asvg('rect').addClass('click').attr('data-click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
+			var clicker = g.asvg('g').aclass('click');
+			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
+			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
 		}
 
 		data[item.id] = item;
@@ -1560,7 +1560,7 @@ COMPONENT('designer', function() {
 		move.node.each(function() {
 
 			var el = $(this);
-			var id = el.attr('data-id');
+			var id = el.attrd('id');
 
 			el.attr('transform', 'translate({0},{1})'.format(x, y));
 
@@ -1572,27 +1572,27 @@ COMPONENT('designer', function() {
 
 			lines.find('.from_' + id).each(function() {
 				var el = $(this);
-				var off = el.attr('data-offset').split(',');
+				var off = el.attrd('offset').split(',');
 				var x1 = +off[0] + x;
 				var y1 = +off[1] + y;
 				var x2 = +off[6];
 				var y2 = +off[7];
 				off[4] = x1;
 				off[5] = y1;
-				el.attr('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+				el.attrd('offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
 				el.attr('d', diagonal(x1, y1, x2, y2));
 			});
 
 			lines.find('.to_' + id).each(function() {
 				var el = $(this);
-				var off = el.attr('data-offset').split(',');
+				var off = el.attrd('offset').split(',');
 				var x1 = +off[4];
 				var y1 = +off[5];
 				var x2 = +off[2] + x;
 				var y2 = +off[3] + y;
 				off[6] = x2;
 				off[7] = y2;
-				el.attr('data-offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
+				el.attrd('offset', '{0},{1},{2},{3},{4},{5},{6},{7}'.format(off[0], off[1], off[2], off[3], off[4], off[5], off[6], off[7]));
 				el.attr('d', diagonal(x1, y1, x2, y2));
 			});
 		});
@@ -1617,7 +1617,7 @@ COMPONENT('designer', function() {
 						});
 					});
 				};
-				find(flow.components.findItem('id', flow.selected.attr('data-id')));
+				find(flow.components.findItem('id', flow.selected.attrd('id')));
 				self.allowedselected = flow.selected.get(0);
 			}
 		} else
@@ -1626,21 +1626,21 @@ COMPONENT('designer', function() {
 		self.find('.node_connection').each(function() {
 
 			var el = $(this);
-			if (self.allowed && !self.allowed[el.attr('data-to')] && !self.allowed[el.attr('data-from')])
+			if (self.allowed && !self.allowed[el.attrd('to')] && !self.allowed[el.attrd('from')])
 				return;
 
-			var off = el.attr('data-offset').split(',');
+			var off = el.attrd('offset').split(',');
 
 			if (self.allowed) {
 
-				if (self.allowed[el.attr('data-from')]) {
+				if (self.allowed[el.attrd('from')]) {
 					off[4] = +off[4] + x;
 					off[5] = +off[5] + y;
 					off[6] = +off[6];
 					off[7] = +off[7];
 				}
 
-				if (self.allowed[el.attr('data-to')]) {
+				if (self.allowed[el.attrd('to')]) {
 					off[4] = +off[4];
 					off[5] = +off[5];
 					off[6] = +off[6] + x;
@@ -1660,14 +1660,14 @@ COMPONENT('designer', function() {
 
 		self.find('.node').each(function() {
 			var el = $(this);
-			if (self.allowed && !self.allowed[el.attr('data-id')])
+			if (self.allowed && !self.allowed[el.attrd('id')])
 				return;
 			var offset = el.attr('transform');
 			offset = offset.substring(10, offset.length - 1).split(',');
 			var px = +offset[0] + x;
 			var py = +offset[1] + y;
 			el.attr('transform', 'translate({0},{1})'.format(px, py));
-			var instance = flow.components.findItem('id', el.attr('data-id'));
+			var instance = flow.components.findItem('id', el.attrd('id'));
 			if (instance) {
 				instance.x = px;
 				instance.y = py;
@@ -1715,8 +1715,8 @@ COMPONENT('designer', function() {
 		var bx = tmp.x + bcx;
 		var by = tmp.y + bcy;
 
-		var aid = output.attr('data-id');
-		var bid = input.attr('data-id');
+		var aid = output.attrd('id');
+		var bid = input.attrd('id');
 
 		var attr = {};
 		attr['d'] = diagonal(ax, ay, bx, by);
@@ -1940,8 +1940,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 				return;
 
 			var el = $(this);
-			var is = !el.hasClass('ui-checkboxlist-checked');
-			var index = +el.attr('data-index');
+			var is = !el.hclass('ui-checkboxlist-checked');
+			var index = +el.attrd('index');
 			var value = data[index];
 
 			if (value == null)
@@ -1990,7 +1990,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 
 		inputs.each(function() {
 			var el = $(this);
-			arr.push(self.parser(data[+el.attr('data-index')].value));
+			arr.push(self.parser(data[+el.attrd('index')].value));
 		});
 
 		self.set(arr);
@@ -2024,7 +2024,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 	self.setter = function(value) {
 		container.find('.ui-checkboxlist-item').each(function() {
 			var el = $(this);
-			var index = +el.attr('data-index');
+			var index = +el.attrd('index');
 			var checked = false;
 			if (!value || !value.length)
 				checked = false;
@@ -2165,7 +2165,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 				W.$dropdowncheckboxelement = null;
 			}
 
-			!container.hasClass('hidden') && (W.$dropdowncheckboxelement = container);
+			!container.hclass('hidden') && (W.$dropdowncheckboxelement = container);
 			e.stopPropagation();
 		});
 
@@ -2177,8 +2177,8 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 				return;
 
 			var el = $(this);
-			var is = !el.hasClass('ui-dropdowncheckbox-checked');
-			var index = +el.attr('data-index');
+			var is = !el.hclass('ui-dropdowncheckbox-checked');
+			var index = +el.attrd('index');
 			var value = data[index];
 
 			if (value === undefined)
@@ -2289,7 +2289,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 
 		container.find('.ui-dropdowncheckbox-item').each(function() {
 			var el = $(this);
-			var index = +el.attr('data-index');
+			var index = +el.attrd('index');
 			var checked = false;
 			if (!value || !value.length)
 				checked = false;
@@ -2548,9 +2548,9 @@ COMPONENT('selectbox', function(self, config) {
 		var search = config.search ? self.find('input').val().toSearch() : '';
 		Eitems.find('li').each(function() {
 			var el = $(this);
-			el.toggleClass('hidden', el.attr('data-search').indexOf(search) === -1);
+			el.tclass('hidden', el.attrd('search').indexOf(search) === -1);
 		});
-		self.find('.ui-selectbox-search-icon').toggleClass('fa-search', search.length === 0).toggleClass('fa-times', search.length > 0);
+		self.find('.ui-selectbox-search-icon').tclass('fa-search', search.length === 0).tclass('fa-times', search.length > 0);
 	};
 
 	self.redraw = function() {
@@ -2651,8 +2651,8 @@ COMPONENT('selectbox', function(self, config) {
 
 		Eitems.find('li').each(function() {
 			var el = $(this);
-			var index = +el.attr('data-index');
-			el.toggleClass('ui-selectbox-selected', selected[index] !== undefined);
+			var index = +el.attrd('index');
+			el.tclass('ui-selectbox-selected', selected[index] !== undefined);
 		});
 
 		Eselected.empty().append(builder.join(''));
@@ -2906,7 +2906,7 @@ COMPONENT('autocomplete', function(self) {
 		self.event('click', 'li', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			onCallback && onCallback(datasource[+$(this).attr('data-index')], old);
+			onCallback && onCallback(datasource[+$(this).attrd('index')], old);
 			self.visible(false);
 		});
 
@@ -2949,7 +2949,7 @@ COMPONENT('autocomplete', function(self) {
 		if (c === 13) {
 			self.visible(false);
 			if (current.length) {
-				onCallback(datasource[+current.attr('data-index')], old);
+				onCallback(datasource[+current.attrd('index')], old);
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -3750,7 +3750,7 @@ COMPONENT('contextmenu', function() {
 		arrow = self.find('.ui-contextmenu-arrow');
 
 		self.event('touchstart mousedown', 'div[data-value]', function(e) {
-			self.callback && self.callback($(this).attr('data-value'), $(self.target));
+			self.callback && self.callback($(this).attrd('value'), $(self.target));
 			self.hide();
 			e.preventDefault();
 			e.stopPropagation();
@@ -3780,7 +3780,7 @@ COMPONENT('contextmenu', function() {
 			items = self.get(items);
 		else if (type === 'function') {
 			callback = items;
-			items = (target.attr('data-options') || '').split(';');
+			items = (target.attrd('options') || '').split(';');
 			for (var i = 0, length = items.length; i < length; i++) {
 				item = items[i];
 				if (!item)
@@ -3857,7 +3857,7 @@ COMPONENT('contextmenu', function() {
 			return;
 		clearTimeout(timeout);
 		timeout = setTimeout(function() {
-			self.element.hide().removeClass('ui-contextmenu-visible');
+			self.element.hide().rclass('ui-contextmenu-visible');
 			self.emit('contextmenu', false, self, self.target);
 			self.callback = null;
 			self.target = null;
@@ -4688,7 +4688,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 					o = true;
 					var sel = self.find('li.selected');
 					if (sel.length && self.callback)
-						self.callback(self.items[+sel.attr('data-index')]);
+						self.callback(self.items[+sel.attrd('index')]);
 					self.hide();
 					break;
 				case 38: // up
@@ -4745,7 +4745,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 
 		container.find('li').each(function() {
 			var el = $(this);
-			var val = el.attr('data-search');
+			var val = el.attrd('search');
 			var h = false;
 
 			for (var i = 0; i < value.length; i++) {

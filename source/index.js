@@ -708,9 +708,23 @@ Component.prototype.save = function() {
 };
 
 Component.prototype.reconfig = function() {
+
 	MESSAGE_COMPONENTOPTIONS.id = this.id;
 	MESSAGE_COMPONENTOPTIONS.options = this.options;
+	MESSAGE_COMPONENTOPTIONS.notes = this.notes;
+	MESSAGE_COMPONENTOPTIONS.color = this.color;
+	MESSAGE_COMPONENTOPTIONS.name = this.name;
+
+	var db = MESSAGE_DESIGNER.components.findItem('id', this.id);
+	if (db) {
+		db.options = this.options;
+		db.notes = this.notes;
+		db.color = this.color;
+		db.name = this.name;
+	}
+
 	FLOW.send(MESSAGE_COMPONENTOPTIONS);
+	setTimeout2('flow.reconfig', FLOW.save2, 5000);
 	return this;
 };
 
@@ -1084,6 +1098,9 @@ FLOW.clearerrors = function(noSync) {
 
 // Saves current state
 FLOW.save2 = function(callback) {
+
+	clearTimeout2('flow.reconfig');
+
 	var data = {};
 	data.tabs = MESSAGE_DESIGNER.tabs;
 	data.components = MESSAGE_DESIGNER.components;

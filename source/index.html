@@ -227,12 +227,12 @@
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
 			var cls = (body.attr('class') || '').match(/theme\w+/g);
-			cls && body.removeClass(cls.toString());
-			value && body.addClass('theme' + value);
+			cls && body.rclass(cls.toString());
+			value && body.aclass('theme' + value);
 		}, true);
 
 		WATCH('common.minimizedmainmenu', function(path, value) {
-			$(document.body).toggleClass('mainmenu-hidden', value);
+			$(document.body).tclass('mainmenu-hidden', value);
 		}, true);
 
 		var flow = {};
@@ -249,8 +249,8 @@
 				return;
 
 			var el = $(e.target);
-			var target = el.hasClass('component') ? el : el.closest('.component');
-			var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+			var target = el.hclass('component') ? el : el.closest('.component');
+			var val = target.length ? common.components.findItem('id', target.attrd('id')) : null;
 
 			if (val) {
 				val = CLONE(val);
@@ -316,8 +316,8 @@
 				return;
 
 			var el = $(e.target);
-			var target = el.hasClass('component') ? el : el.closest('.component');
-			var val = target.length ? common.components.findItem('id', target.attr('data-id')) : null;
+			var target = el.hclass('component') ? el : el.closest('.component');
+			var val = target.length ? common.components.findItem('id', target.attrd('id')) : null;
 
 			if (val) {
 				val = CLONE(val);
@@ -395,7 +395,7 @@
 
 				$('.node_connection').each(function() {
 					var el = $(this);
-					(el.attr('data-from') === id || el.attr('data-to') === id) && el.remove();
+					(el.attrd('from') === id || el.attrd('to') === id) && el.remove();
 				});
 
 				el.remove();
@@ -429,12 +429,12 @@
 			flow.selected = el;
 			$('#designerbuttons button').each(function(index) {
 				var node = $(this);
-				var disabled = index ? (el ? false : true) : (el && el.hasClass('node') ? false : true);
+				var disabled = index ? (el ? false : true) : (el && el.hclass('node') ? false : true);
 
 				if (this.name === 'paste')
 					disabled = flow.clipboard == null;
 
-				node.toggleClass('disabled', disabled);
+				node.tclass('disabled', disabled);
 			});
 		});
 
@@ -696,8 +696,8 @@
 			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
-				$('.node_new').removeClass('node_new');
-				$('.path_new').removeClass('path_new');
+				$('.node_new').rclass('node_new');
+				$('.path_new').rclass('path_new');
 				var body = CLONE(flow);
 				body.loaded = undefined;
 				body.designer = undefined;
@@ -798,13 +798,13 @@
 			}
 
 			if (message.type === 'errors') {
-				$('.node_' + message.id).addClass('node_errors');
+				$('.node_' + message.id).aclass('node_errors');
 				var instance = flow.components.findItem('id', message.id);
 				instance && (instance.errors = message.body);
 				Object.keys(message.body).forEach(function(key) {
 					key !== 'error' && $('path[data-from="{0}"]'.format(key)).each(function() {
 						var el = $(this);
-						el.attr('data-to') === message.id && el.addClass('path_error').attr('title', message.body[key]);
+						el.attrd('to') === message.id && el.aclass('path_error').attr('title', message.body[key]);
 					});
 				});
 
@@ -818,8 +818,8 @@
 			}
 
 			if (message.type === 'clearerrors') {
-				$('.node_errors').removeClass('node_errors');
-				$('.path_error').removeClass('path_error').attr('title', '');
+				$('.node_errors').rclass('node_errors');
+				$('.path_error').rclass('path_error').attr('title', '');
 				flow.components.forEach(function(instance) {
 					instance.errors = {};
 				});
@@ -924,8 +924,20 @@
 
 			if (message.type === 'componentoptions') {
 				var component = flow.components.findItem('id', message.id);
-				if (component)
+				if (component) {
+
+					if (component.color !== message.color) {
+						component.color = message.color;
+						$('.node_' + message.id).find('rect:first-child').attr('fill', component.color || component.$component.color);
+					}
+
+					component.notes = message.notes;
+
+					if (component.name !== message.name)
+						component.name = message.name;
+
 					component.options = message.options;
+				}
 			}
 		});
 
@@ -944,12 +956,12 @@
 		});
 
 		WATCH('common.minimized', function(path, value) {
-			$(document.body).toggleClass('panel-minized', value);
+			$(document.body).tclass('panel-minized', value);
 		}, true);
 
 		function setState(value) {
 			$('#designerstate').html(value);
-			$('.mainmenu').find('.highlight').toggleClass('blink', value ? true : false);
+			$('.mainmenu').find('.highlight').tclass('blink', value ? true : false);
 		}
 
 		function markdown(value) {
@@ -996,7 +1008,7 @@
 		});
 
 		OPERATION('designer.remove', function(el) {
-			!el.hasClass('disabled') && SETTER('designer', 'remove');
+			!el.hclass('disabled') && SETTER('designer', 'remove');
 		});
 
 		OPERATION('designer.unselect', function() {
@@ -1004,25 +1016,25 @@
 		});
 
 		OPERATION('designer.duplicate', function(el) {
-			!el.hasClass('disabled') && SETTER('designer', 'duplicate');
+			!el.hclass('disabled') && SETTER('designer', 'duplicate');
 		});
 
 		OPERATION('designer.copy', function(el) {
-			if (el.hasClass('disabled'))
+			if (el.hclass('disabled'))
 				return;
 
-			flow.clipboard = flow.components.findItem('id', flow.selected.attr('data-id'));
+			flow.clipboard = flow.components.findItem('id', flow.selected.attrd('id'));
 
-			el.addClass('animate');
+			el.aclass('animate');
 			setTimeout(function() {
-				el.removeClass('animate');
+				el.rclass('animate');
 			}, 500);
 			EMIT('designer.selectable', flow.selected);
 		});
 
 		OPERATION('designer.paste', function(el) {
 
-			if (el.hasClass('disabled'))
+			if (el.hclass('disabled'))
 				return;
 
 			SETTER('loading', 'show');
@@ -1111,7 +1123,7 @@
 			var count = common.traffic.count;
 			$('.node_traffic').each(function() {
 				var el = $(this);
-				var id = el.attr('data-id');
+				var id = el.attrd('id');
 				var stats = common.traffic[id];
 				var input = 0;
 				var output = 0;
@@ -1126,10 +1138,10 @@
 				}
 
 				var sum = input > output ? input : output;
-				el.toggleClass('m1', sum < 25).toggleClass('m2', sum > 24 && sum < 50).toggleClass('m3', sum > 49 && sum < 70).toggleClass('m4', sum > 69);
+				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
 				el.find('text').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
 				var rect = el.find('rect');
-				var w = +rect.attr('data-width');
+				var w = +rect.attrd('width');
 				var p = (w / 100) * sum;
 				rect.attr('width', p);
 			});
