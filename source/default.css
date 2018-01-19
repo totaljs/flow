@@ -3,10 +3,16 @@ html,body { height: 100%; overflow: hidden; }
 body { background-color: #E6E9ED; font-smoothing: antialiased; }
 
 .mainmenu { float: left; width: 260px; height: 100%; background-color: white; overflow: hidden; transition: margin 0.3s; }
-.panel { float: right; width: 380px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; }
+.panel { float: right; width: 380px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; position: relative; }
 .panel-minized .panel { margin-right: -334px; }
 .panel-minized .body { margin-right: 30px; }
 .body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
+
+#panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; }
+#panel-notification div { line-height: 14px; margin-top: 3px; }
+#panel-notification label { font-size: 10px; text-transform: uppercase; display: block; font-weight: bold; color: black; }
+#panel-notification label .fa { margin-right: 3px; margin-bottom: 3px; }
+.panel-notified { transform: translate(0px,0) !important; opacity: 1 !important; }
 
 #infopanelnotes .markdown { margin: 5px 0 20px; padding: 15px 15px 5px; border-radius: 3px; background-color: #FEFBE8; border: 1px solid #FDF5C8; color: #573C0F; }
 #infopanelnotes .markdown hr { border-color: #eae2b1; }
@@ -128,7 +134,7 @@ svg { cursor: move; }
 
 .mainmenu .ui-textbox-label { font-size: 11px; }
 .mainmenu .ui-textbox { padding: 3px 2px 4px 5px; }
-.mainmenu .ui-textbox input { font-size: 11px; }
+.mainmenu .ui-textbox input { font-size: 12px; }
 
 #designerstate { position: absolute; font-size: 11px; color: gray; margin: 0 0 0 20px; bottom: 18px; }
 
@@ -161,6 +167,7 @@ svg { cursor: move; }
 .blink { animation: blinker 0.5s infinite alternate; background-color: #8CC152 !important; }
 
 .db-container { margin: 0 -10px; }
+.db-norefresh .db-refresh { display: none; }
 .db-item { position: relative; display: inline-block; background-color: white; border: 1px solid #E0E0E0; padding: 4px 10px; width: 206px; margin: 10px 10px 5px; border-radius: 3px; }
 .db-item > span { float: right; width: 20px; text-align: right; margin: 0; cursor: pointer; color: #E33733; }
 .db-item > span .fa-refresh { color: #909090; }

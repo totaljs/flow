@@ -55,6 +55,10 @@
 				<div class="markdown" id="infopanel"></div>
 			</div>
 		</div>
+		<div id="panel-notification">
+			<label><i class="fa fa-bell"></i>@(Flow notification)</label>
+			<div></div>
+		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'errors'">
 			<div class="padding npb">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
@@ -209,12 +213,19 @@
 			this.statics = {}; // cache for static content
 		});
 
+		var flownotifications = [];
+		var flownotified = false;
+
 		CACHEPATH('common.minimized', '1 month');
 		CACHEPATH('common.minimizedmainmenu', '1 month');
 		CACHEPATH('common.panel', '1 month');
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
 		CACHEPATH('common.tabscroll', '1 month');
+
+		$(document).on('click', '#panel-notification', function() {
+			shownotifications(true);
+		});
 
 		// Hybrid devices
 		$(document).on('touchstart', checktouches);
@@ -503,7 +514,36 @@
 			}
 		});
 
+		function shownotifications(force) {
+			var el = $('#panel-notification');
+			if (force) {
+				var msg = flownotifications.shift();
+				if (msg) {
+					el.find('div').html(msg);
+					setTimeout(function() {
+						shownotifications(true);
+					}, 3000);
+					if (!flownotified) {
+						el.aclass('panel-notified');
+						flownotified = true;
+					}
+				} else if (flownotified) {
+					el.rclass('panel-notified');
+					flownotified = false;
+				}
+			} else if (!el.hclass('panel-notified'))
+				shownotifications(true);
+		}
+
 		ON('debug', function(id, value, identificator, group) {
+
+			if (!id) {
+				if (value) {
+					flownotifications.push(value);
+					shownotifications();
+				}
+				return;
+			}
 
 			var component = flow.components.findItem('id', id);
 			if (!component)
@@ -525,10 +565,10 @@
 			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : '')) + (group ? '</div>' : ''));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
-					if (block.$processed)
-						return;
-					block.$processed = true;
-					hljs.highlightBlock(block);
+					if (block.$processed) {
+						block.$processed = true;
+						hljs.highlightBlock(block);
+					}
 				});
 			}, 100);
 		});

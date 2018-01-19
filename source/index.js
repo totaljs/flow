@@ -26,6 +26,7 @@ var OPT;
 var DDOS = {};
 var FILENAME;
 var READY = false;
+var MODIFIED = null;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
@@ -54,10 +55,10 @@ exports.install = function(options) {
 
 	OPT.url = U.path(OPT.url || '/$flow/');
 
-	if (!OPT.templates)
+	if (OPT.templates == null)
 		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
 
-	if (!OPT.limit)
+	if (OPT.limit == null)
 		OPT.limit = 150;
 
 	if (OPT.dark == null)
@@ -127,9 +128,32 @@ exports.install = function(options) {
 				FLOW.indexer = 0;
 			}
 
+			OPT.debug && listingmodification();
+
 		}, 3000);
 	}, 2000);
+
+	if (OPT.debug)
+		MODIFIED = {};
 };
+
+function listingmodification() {
+	U.ls2(F.path.root(PATH), function(files) {
+		for (var i = 0, length = files.length; i < length; i++) {
+			var file = files[i];
+			var id = file.filename.substring(file.filename.lastIndexOf('/') + 1);
+			var time = file.stats.mtime.getTime();
+			if (MODIFIED[id]) {
+				if (MODIFIED[id] !== time) {
+					MODIFIED[id] = time;
+					FLOW.execute(file.filename);
+					FLOW.debug('The component has been modified: <b>' + id + '</b>');
+				}
+			} else
+				MODIFIED[id] = time;
+		}
+	}, n => (/\.js$/).test(n));
+}
 
 function service(counter) {
 	counter % 5 === 0 && (DDOS = {});
@@ -846,6 +870,8 @@ FLOW.register = function(name, options, fn) {
 	var exec = function() {
 		var data = U.clone(FLOW.components[name]);
 		data.fn = undefined;
+		data.readme = undefined;
+		data.html = undefined;
 		var index = MESSAGE_DESIGNER.database.findIndex('id', name);
 		if (index === -1)
 			MESSAGE_DESIGNER.database.push(data);
@@ -899,7 +925,6 @@ FLOW.reset = function(components, callback) {
 		count++;
 		EMIT('flow.close', instance);
 		instance.$closed = true;
-		FLOW.debug('Closing ' + instance.name);
 		instance.$events.close && instance.emit('close');
 
 		if (instance.close) {
@@ -1056,9 +1081,9 @@ FLOW.send = function(message) {
 	return FLOW;
 };
 
-FLOW.debug = function(data, style) {
+FLOW.debug = function(data) {
 	MESSAGE_DEBUG.body = data;
-	MESSAGE_DEBUG.style = style;
+	MESSAGE_DEBUG.style = undefined;
 	MESSAGE_DEBUG.id = undefined;
 	FLOW.send(MESSAGE_DEBUG);
 	return this;
