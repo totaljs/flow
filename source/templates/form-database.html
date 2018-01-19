@@ -9,27 +9,28 @@
 				<div data-jc="filereader" data-jc-path="formdatabase.file" data-jc-config="placeholder:@(Browse device);accept:text/javascript;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .js component)</div>
 			</div>
 		</div>
-		<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
-		<div data-jc="repeater" data-jc-path="common.templates">
-			<script type="text/html">
-				<span class="exec tag" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</span>
-			</script>
+		<div data-b="common.templates" data-b-visible="value && value.length > 0" class="hidden">
+			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
+			<div data-jc="repeater" data-jc-path="common.templates">
+				<script type="text/html">
+					<span class="exec tag" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</span>
+				</script>
+			</div>
+			<br />
 		</div>
-		<br />
 	</div>
 	<div class="padding npb">
 		<div data-jc="textbox" data-jc-path="formdatabase.search" data-jc-config="type:search;placeholder:@(Search components ...)" class="mt10"></div>
 		<br />
 		<div data-jc="search" data-jc-path="formdatabase.search" data-jc-config="selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group">
+				<div data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'">
 					<script type="text/html">
 						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ id }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
-							<span class="exec" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>
+							<span class="exec db-refresh" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>
 							<div>
-								<div class="name" title="{{ name }}">{{ name }}</div>
-								<div class="datetime"><i class="fa fa-clock-o"></i>{{ if dateupdated }}{{ dateupdated | format('yyyy-MM-dd HH:mm') }}{{ else }}@(Not defined){{ fi }}</div>
+								<div class="name" title="{{ name }}"><i class="fa fa-circle mr5" style="color:{{ color }}"></i>{{ name }}</div>
 								<div class="author">{{ author }}</div>
 							</div>
 						</div>
