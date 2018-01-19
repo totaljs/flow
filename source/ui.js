@@ -1370,6 +1370,8 @@ COMPONENT('designer', function() {
 			var duplicate = {
 				options: CLONE(component.options),
 				name: component.name,
+				color: component.color,
+				notes: component.notes,
 				output: component.output,
 				tab: component.tab
 			};
