@@ -1353,7 +1353,8 @@ COMPONENT('designer', function() {
 		self.remove = function() {
 			EMIT('designer.selectable', null);
 			var arr = [];
-			selected.forEach(function(sel){
+
+			selected.forEach(function(sel) {
 				if (sel.hclass('node'))
 					arr.push(sel.attrd('id'));
 				else
@@ -1363,10 +1364,14 @@ COMPONENT('designer', function() {
 			if (!arr.length)
 				return;
 
-			if (selected.$type === 'component')
+			if (selected.$type === 'component') {
 				EMIT('designer.rem', arr);
-			else if (selected.$type === 'connection')
+			} else if (selected.$type === 'connection') {
 				EMIT('designer.rem.connection', arr);
+				selected.forEach(function(el) {
+					el.remove();
+				});
+			}
 		};
 
 		self.duplicate = function() {
@@ -1389,17 +1394,36 @@ COMPONENT('designer', function() {
 		};
 
 		self.select = function(el, e, type) {
+
 			// reset cache for self.move function
 			self.allowedselected = [];
 
-			if ((selected.length && !el) || (selected.length && selected.filter(function(sel){ return sel.get(0) === el.get(0);}).length )) {
-				selected.forEach(function(el){ el.rclass('selected'); });
+			if (selected.$type !== type) {
+
+				selected.forEach(function(el) {
+					el.rclass('selected');
+				});
+
+				// reset
+				selected = [];
+				selected.$type = type;
+			}
+
+			if ((selected.length && !el) || (selected.length && selected.filter(function(sel) { return sel.get(0) === el.get(0); }).length)) {
+
+				selected.forEach(function(el) {
+					el.rclass('selected');
+				});
+
 				selected = [];
 				selected.$type = null;
 				EMIT('designer.selectable', null);
 				return;
-			} else if (selected.length)
-				selected.forEach(function(el){ el.rclass('selected'); });
+			} else if (selected.length) {
+				selected.forEach(function(el) {
+					el.rclass('selected');
+				});
+			}
 
 			if (!el) {
 				selected = [];
@@ -1419,7 +1443,9 @@ COMPONENT('designer', function() {
 
 			selected.$type = type;
 
-			selected.forEach(function(el){ el.aclass('selected', true); });
+			selected.forEach(function(el) {
+				el.aclass('selected', true);
+			});
 
 			EMIT('designer.selectable', selected);
 			EMIT('designer.select', el.attrd('id'));
