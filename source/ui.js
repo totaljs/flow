@@ -1100,7 +1100,7 @@ COMPONENT('designer', function() {
 	self.make = function() {
 		scroller = self.element.parent();
 		self.aclass('ui-designer');
-		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"></svg></div>');
+		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="img/theme{0}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="8000" height="8000" fill="url(#svggrid)" /></g></svg></div>'.format(common.theme || 'white'));
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
 		main = svg.asvg('g');
@@ -1110,7 +1110,6 @@ COMPONENT('designer', function() {
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
-
 			if (common.touches)
 				return;
 
@@ -1279,7 +1278,7 @@ COMPONENT('designer', function() {
 			var tmp;
 			move.drag = true;
 
-			if (e.target.tagName === 'svg') {
+			if (e.target.tagName === 'svg' || e.target.id === 'svggridbg') {
 				move.x = x + scroller.prop('scrollLeft');
 				move.y = y + scroller.prop('scrollTop');
 				move.type = 1;
@@ -1769,6 +1768,8 @@ COMPONENT('designer', function() {
 				zoom -= 0.1;
 				break;
 		}
+		zoom = zoom.floor(1);
+		self.find('.svggrid').attr('transform', 'scale({0})'.format(zoom));
 		main.attr('transform', 'scale({0})'.format(zoom));
 	};
 });
