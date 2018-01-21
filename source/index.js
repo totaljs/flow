@@ -377,7 +377,8 @@ function websocket() {
 					}
 				});
 
-				instance.hasConnections = Object.keys(instance.connections).length > 0;
+				instance.$connections = Object.keys(instance.connections);
+				instance.hasConnections = instance.$connections.length > 0;
 				instance.$events.options && instance.emit('options', instance.options, old_options);
 				EMIT('flow.options', instance);
 
@@ -535,8 +536,7 @@ Component.prototype.signal = function(index, data) {
 	if (!connections)
 		return self;
 
-	var arr = Object.keys(connections);
-
+	var arr = self.$connections;
 	if (!arr.length)
 		return self;
 
@@ -580,14 +580,12 @@ Component.prototype.send = function(index, message) {
 
 	message.parent = self;
 
-	FLOW.traffic(self.id, 'output');
-
 	if (!connections) {
 		message.completed = true;
 		return message;
 	}
 
-	var arr = Object.keys(connections);
+	var arr = self.$connections;
 	if (!arr.length) {
 		message.completed = true;
 		return message;
@@ -597,36 +595,34 @@ Component.prototype.send = function(index, message) {
 
 	if (index === undefined) {
 
-		setImmediate(function() {
-			if (self.$closed)
-				return;
+		FLOW.traffic(self.id, 'output');
 
-			var tmp = {};
+		if (self.$closed)
+			return;
 
-			for (var i = 0, length = arr.length; i < length; i++) {
-				var ids = connections[arr[i]];
-				var canclone = true;
-				for (var j = 0, jl = ids.length; j < jl; j++) {
-					instance = FLOW.instances[ids[j].id];
-					if (instance && !instance.$closed) {
+		var tmp = {};
 
-						if (!tmp[instance.id]) {
-							tmp[instance.id] = true;
-							FLOW.traffic(instance.id, 'input');
-						}
-
-						try {
-							var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
-							data.index = +ids[j].index;
-							instance.$events.data && instance.emit('data', data);
-							instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
-						} catch (e) {
-							instance.error(e, self.id);
-						}
+		for (var i = 0, length = arr.length; i < length; i++) {
+			var ids = connections[arr[i]];
+			var canclone = true;
+			for (var j = 0, jl = ids.length; j < jl; j++) {
+				instance = FLOW.instances[ids[j].id];
+				if (instance && !instance.$closed) {
+					if (!tmp[instance.id]) {
+						tmp[instance.id] = true;
+						FLOW.traffic(instance.id, 'input');
+					}
+					try {
+						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+						data.index = +ids[j].index;
+						instance.$events.data && instance.emit('data', data);
+						instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
+					} catch (e) {
+						instance.error(e, self.id);
 					}
 				}
 			}
-		});
+		}
 
 	} else {
 
@@ -638,33 +634,32 @@ Component.prototype.send = function(index, message) {
 		}
 
 		var canclone = arr.length > 1;
-		setImmediate(function() {
+		if (self.$closed)
+			return;
 
-			if (self.$closed)
-				return;
+		FLOW.traffic(self.id, 'output');
 
-			var tmp = {};
-			for (var i = 0, length = arr.length; i < length; i++) {
-				instance = FLOW.instances[arr[i].id];
+		var tmp = {};
+		for (var i = 0, length = arr.length; i < length; i++) {
+			instance = FLOW.instances[arr[i].id];
 
-				if (instance && !instance.$closed) {
+			if (instance && !instance.$closed) {
 
-					if (!tmp[instance.id]) {
-						tmp[instance.id] = true;
-						FLOW.traffic(instance.id, 'input');
-					}
+				if (!tmp[instance.id]) {
+					tmp[instance.id] = true;
+					FLOW.traffic(instance.id, 'input');
+				}
 
-					try {
-						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
-						data.index = +arr[i].index;
-						instance.$events.data && instance.emit('data', data);
-						instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
-					} catch (e) {
-						instance.error(e, self.id);
-					}
+				try {
+					var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
+					data.index = +arr[i].index;
+					instance.$events.data && instance.emit('data', data);
+					instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
+				} catch (e) {
+					instance.error(e, self.id);
 				}
 			}
-		});
+		}
 	}
 
 	return message;
@@ -990,7 +985,8 @@ FLOW.init = function(components) {
 			if (instance) {
 				instance.name = com.name || declaration.name;
 				instance.connections = com.connections;
-				instance.hasConnections = Object.keys(instance.connections).length > 0;
+				instance.$connections = Object.keys(instance.connections);
+				instance.hasConnections = instance.$connections.length > 0;
 				instance.$events.$reinit && instance.emit('reinit');
 				continue;
 			}
@@ -1004,7 +1000,8 @@ FLOW.init = function(components) {
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
 			declaration.fn.call(instance, instance, declaration);
-			instance.hasConnections = Object.keys(instance.connections).length > 0;
+			instance.$connections = Object.keys(instance.connections);
+			instance.hasConnections = instance.$connections.length > 0;
 
 			if (com.state !== instance.state)
 				com.state = instance.state;
@@ -1060,7 +1057,8 @@ FLOW.init_component = function(component) {
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
 			instance.cloning = declaration.cloning;
-			instance.hasConnections = Object.keys(instance.connections).length > 0;
+			instance.$connections = Object.keys(instance.connections);
+			instance.hasConnections = instance.$connections.length > 0;
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
