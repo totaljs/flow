@@ -319,9 +319,6 @@ exports.install = function(component) {
         // returns {Message}
         message.rem('key');
 
-        // {Object Array} Array of all components the message has passed through (previous components)
-        message.tracking;
-
         // {Object} Parent component (first component which started the flow)
         message.parent;
 
@@ -514,7 +511,6 @@ component.on('data', function(message) {
     message.begin;            // {Date} when it started
     message.data;             // {Anything} user defined data
     message.completed;        // {Boolean} is sending completed?
-    message.tracking;         // {Array of Instances} all instances in order which they modified data
     message.parent;           // {Component} a parent instance
 
     // Methods (private message repository):

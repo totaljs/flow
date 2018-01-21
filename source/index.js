@@ -578,7 +578,6 @@ Component.prototype.send = function(index, message) {
 	var self = this;
 	var connections = self.connections;
 
-	message.tracking.push(self);
 	message.parent = self;
 
 	FLOW.traffic(self.id, 'output');
@@ -1467,12 +1466,10 @@ function FlowData(data, clone, index) {
 	this.repository = clone ? clone.repository : {};
 	this.data = data;
 	this.completed = clone ? clone.completed : false;
-	this.tracking = clone ? clone.tracking : [];
 	this.parent = clone ? clone.parent : {};
 }
 
 FlowData.prototype.free = function() {
-	this.tracking = undefined;
 	this.data = undefined;
 	this.repository = undefined;
 	return this;
