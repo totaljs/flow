@@ -163,7 +163,7 @@
 				<button class="exec disabled" title="@(Copy component)" data-exec="#designer.copy"><i class="fa fa-file-text-o"></i></button>
 				<button class="exec disabled" name="paste" title="@(Paste component)" data-exec="#designer.paste"><i class="fa fa-paste"></i></button>
 				<button class="exec disabled" name="duplicate" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-files-o"></i></button>
-				<button class="exec disabled designerbuttons-remove" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
+				<button class="exec disabled designerbuttons-remove" name="remove" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
 			</nav>
 			<div id="designerzoom">
 				<button class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></button>
@@ -449,6 +449,8 @@
 				var disabled = false;
 				if (el && this.name === 'duplicate' && el.$type === 'connection') {
 					disabled = true;
+				} else if (this.name === 'remove') {
+					disabled = el == null;
 				} else {
 					disabled = index ? (el ? false : true) : (el && el.filter(function(sel) {
 						return sel.hclass('node');

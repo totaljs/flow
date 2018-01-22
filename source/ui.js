@@ -1428,6 +1428,7 @@ COMPONENT('designer', function() {
 			if (!el) {
 				selected = [];
 				selected.$type = null;
+				EMIT('designer.selectable', null);
 				return;
 			}
 
