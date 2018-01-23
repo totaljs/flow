@@ -30,7 +30,7 @@ var MODIFIED = null;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.1.0';
+exports.version = 'v4.1.1';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -710,6 +710,7 @@ Component.prototype.debug = function(data, style, group) {
 	MESSAGE_DEBUG.group = group;
 	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
+	MESSAGE_DEBUG.time = data instanceof FlowData ? ((new Date() - data.begin) / 1000).floor(2) : null;
 	MESSAGE_DEBUG.style = style || 'info';
 	MESSAGE_DEBUG.id = this.id;
 	FLOW.send(MESSAGE_DEBUG);
