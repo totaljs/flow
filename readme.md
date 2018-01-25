@@ -276,6 +276,11 @@ exports.traffic = false;
 // Updated date
 exports.dateupdated = '2017-17-10';
 
+// {Boolean}, optional (default: false)
+// +v4.1.1
+// Flow executes "options" event if global "variables" are changed
+exports.variables = false;
+
 exports.install = function(component) {
 
     // =====================
@@ -335,6 +340,10 @@ exports.install = function(component) {
         // Replaces {KEY1} {KEY2} {KEY..N} according to the message repository
         // returns {String}
         message.arg('Dynamic arguments {name} according to {message} repository.');
+
+        // +v4.1.1
+        // This method can bind global data repository to the current object
+        // message.arg({ name: '{repository-key}', secret: '{repository-secret}' }) returns {Object} (new instance)
 
         // send this message :-)
         component.send(message);
@@ -469,6 +478,12 @@ exports.install = function(component) {
 
     component.reconfig();
     // If the component options changes on the server (not by recieving new options from designer) then use this to update options in designer
+
+    component.arg(str);
+    component.arg(obj);
+    // This method can bind global Flow variables to the current object or string.
+    // component.arg('This pharse {variable-key} will be replaced.') returns {String}
+    // component.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
 
     // =====================
     // PROPERTIES

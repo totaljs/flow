@@ -747,6 +747,27 @@ Component.prototype.reconfig = function() {
 	return this;
 };
 
+Component.prototype.arg = function(str) {
+	if (typeof(str) === 'object' && str) {
+		var keys = Object.keys(str);
+		var output = {};
+		for (var i = 0; i < keys.length; i++) {
+			var key = keys[i];
+			var val = str[key];
+			if (typeof(val) === 'string')
+				output[key] = this.arg(val);
+			else
+				output[key] = val;
+		}
+		return output;
+	} else {
+		return typeof(str) === 'string' ? str.replace(REGPARAM, function(text) {
+			var val = FLOW.variables[text.substring(1, text.length - 1).trim()];
+			return val == null ? text : val;
+		}) : str;
+	}
+};
+
 Component.prototype.flowboard = function(){
 	console.log('Flowboard is not initialized yet!');
 };
@@ -859,6 +880,7 @@ FLOW.register = function(name, options, fn) {
 	obj.readme = options.readme || '';
 	obj.html = options.html || '';
 	obj.traffic = options.traffic === false ? false : true;
+	obj.variables = options.variables === true ? true : false;
 	obj.filename = FILENAME;
 	obj.dateupdated = typeof(options.dateupdated) === 'string' ? options.dateupdated.parseDate() : null;
 
@@ -1007,6 +1029,10 @@ FLOW.init = function(components) {
 			if (com.state !== instance.state)
 				com.state = instance.state;
 
+			declaration.variables && instance.on('variables', function() {
+				this.emit('options', this.options, this.options);
+			});
+
 			count++;
 			EMIT('flow.open', instance);
 		}
@@ -1064,6 +1090,10 @@ FLOW.init_component = function(component) {
 
 			if (com.state !== instance.state)
 				com.state = instance.state;
+
+			declaration.variables && instance.on('variables', function() {
+				this.emit('options', this.options, this.options);
+			});
 
 			EMIT('flow.open', instance);
 			FLOW.send(MESSAGE_DESIGNER);
@@ -1501,8 +1531,22 @@ FlowData.prototype.rem = function(key) {
 
 FlowData.prototype.arg = function(str) {
 	var self = this;
-	return typeof(str) === 'string' ? str.replace(REGPARAM, function(text) {
-		var val = self.repository[text.substring(1, text.length - 1).trim()];
-		return val == null ? text : val;
-	}) : str;
+	if (typeof(str) === 'object' && str) {
+		var keys = Object.keys(str);
+		var output = {};
+		for (var i = 0; i < keys.length; i++) {
+			var key = keys[i];
+			var val = str[key];
+			if (typeof(val) === 'string')
+				output[key] = self.arg(val);
+			else
+				output[key] = val;
+		}
+		return output;
+	} else {
+		return typeof(str) === 'string' ? str.replace(REGPARAM, function(text) {
+			var val = self.repository[text.substring(1, text.length - 1).trim()];
+			return val == null ? text : val;
+		}) : str;
+	}
 };
