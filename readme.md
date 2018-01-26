@@ -167,6 +167,13 @@ FLOW.variable(key);
 // Returns a value of variable by key
 // return {Object}
 // +v3.0.0
+
+
+FLOW.arg(str);
+FLOW.arg(obj);
+// This method can bind global Flow variables to the current object or string.
+// FLOW.arg('This pharse {variable-key} will be replaced.') returns {String}
+// FLOW.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
 ```
 
 __Events__:

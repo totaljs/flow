@@ -747,7 +747,7 @@ Component.prototype.reconfig = function() {
 	return this;
 };
 
-Component.prototype.arg = function(str) {
+FLOW.arg = Component.prototype.arg = function(str) {
 	if (typeof(str) === 'object' && str) {
 		var keys = Object.keys(str);
 		var output = {};
