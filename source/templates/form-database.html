@@ -11,6 +11,7 @@
 		</div>
 		<div data-b="common.templates" data-b-visible="value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
+			<span class="exec tag" data-exec="formdatabase_install" data-value="all">@(Install:)<b> @(All)</b></span>
 			<div data-jc="repeater" data-jc-path="common.templates">
 				<script type="text/html">
 					<span class="exec tag" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</span>
@@ -132,10 +133,18 @@
 
 	function formdatabase_install(el) {
 		var name = el.attr('data-value');
-		var obj = common.templates.findItem('name', el.attr('data-value'));
-		obj.items.quicksort();
-		SET('formcomponents.database', obj.items);
-		SET('formcomponents.components', obj.items.slice(0), true);
+		var items = [];
+
+		if (name  === 'all')
+			common.templates.forEach(function(t){
+				items = items.concat(t.items);
+			});
+		else
+			items = common.templates.findItem('name', name).items;
+
+		items.quicksort();
+		SET('formcomponents.database', items);
+		SET('formcomponents.components', items.slice(0), true);
 		SET('common.form2', 'components');
 	}
 
