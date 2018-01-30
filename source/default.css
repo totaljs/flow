@@ -45,8 +45,10 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 .themedark .body > section.tabs a { border-bottom-color: #202020; }
 .themedark .body > section.tabs .selected { border-bottom: 1px solid #202020; }
 
-.tag { position: relative; display: inline-block; padding: 6px 11px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; }
+.tag { position: relative; display: inline-block; padding: 5px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; }
 .tag:hover { opacity: 0.8; text-decoration: none; }
+.tag2 { background-color: #165b7b; }
+.block { display: block; }
 
 .components-container { width: 280px; overflow: hidden; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
