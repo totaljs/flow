@@ -1322,6 +1322,14 @@
 			}, 5);
 		}
 
+		SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
+			if (common.form) {
+				SET('common.form', '');
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
 		SETTER(true, 'shortcuts', 'register', 'F1', function(e) {
 
 			var items = [];
