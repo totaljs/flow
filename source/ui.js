@@ -1100,7 +1100,7 @@ COMPONENT('designer', function() {
 	self.make = function() {
 		scroller = self.element.parent();
 		self.aclass('ui-designer');
-		self.append('<div class="ui-designer-grid"><svg width="3000" height="3000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="img/theme{0}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="8000" height="8000" fill="url(#svggrid)" /></g></svg></div>'.format(common.theme || 'white'));
+		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="img/theme{0}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(common.theme || 'white'));
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
 		main = svg.asvg('g');
