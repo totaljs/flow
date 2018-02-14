@@ -1098,9 +1098,12 @@ COMPONENT('designer', function() {
 
 	self.readonly();
 	self.make = function() {
+		var url = location.pathname;
+		if (url.substring(url.length - 1) !== '/')
+			url += '/';
 		scroller = self.element.parent();
 		self.aclass('ui-designer');
-		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="{0}img/theme{1}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(NAV.url, common.theme || 'white'));
+		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="{0}img/theme{1}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(url, common.theme || 'white'));
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
 		main = svg.asvg('g');

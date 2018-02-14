@@ -240,7 +240,7 @@
 			var cls = (body.attr('class') || '').match(/theme\w+/g);
 			cls && body.rclass(cls.toString());
 			value && body.aclass('theme' + value);
-			$('#svggrid').find('image').attr('xlink:href', 'img/theme{0}.png'.format(common.theme || 'white'));
+			$('#svggrid').find('image').attr('xlink:href', '{0}img/theme{1}.png'.format(NAV.url, common.theme || 'white'));
 		}, true);
 
 		WATCH('common.minimizedmainmenu', function(path, value) {
