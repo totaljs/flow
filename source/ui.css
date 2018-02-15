@@ -16,6 +16,8 @@
 .ui-designer .node_label { font-size: 14px; fill: white; }
 .ui-designer .node_status { font-size: 12px; }
 .ui-designer .node_traffic { font-size: 11px; fill: #A0A0A0; }
+.ui-designer .pending { fill: #DA4453; animation: 0.3s pending infinite alternate; }
+.ui-designer .hide { visibility: hidden; }
 .ui-designer .node_error {}
 .ui-designer .m1 { fill: #9FA6B1; }
 .ui-designer .m2 { fill: #F6BB42; }
@@ -441,4 +443,9 @@ label span { vertical-align: middle; }
 @keyframes blinknew {
 	from { stroke-dashoffset: 0; }
 	to { stroke-dashoffset: 10; }
+}
+
+@keyframes pending {
+	from { transform: scale(1); }
+	to { transform: scale(1.15);}
 }

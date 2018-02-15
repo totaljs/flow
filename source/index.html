@@ -1252,17 +1252,21 @@
 				var output = 0;
 				var inputc = 0;
 				var outputc = 0;
+				var pending = 0;
 
 				if (stats && (stats.input || stats.output)) {
 					input = ((stats.input / count) * 100 >> 0);
 					output = ((stats.output / count) * 100 >> 0);
 					inputc = stats.input;
 					outputc = stats.output;
+					pending = stats.pending;
 				}
 
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-				el.find('text').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
+				el.find('.traffic').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
+				var pel = el.find('.pending').tclass('hide', pending ? false : true);
+				pending && pel.html(pending ? ('&#10711; ' + pending + 'x') : '');
 				var rect = el.find('rect');
 				var w = +rect.attrd('width');
 				var p = (w / 100) * sum;

@@ -30,7 +30,7 @@ var MODIFIED = null;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.1.1';
+exports.version = 'v4.2.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -431,7 +431,23 @@ function Component(options) {
 	U.extend(this, options);
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
+	this.$pending = 0;
 }
+
+Component.prototype.beg = function() {
+	var self = this;
+	self.$pending++;
+	FLOW.traffic(self.id, 'pending', self.$pending);
+	return self;
+};
+
+Component.prototype.end = function() {
+	var self = this;
+	self.$pending--;
+	self.$pending < 0 && (self.$pending = 0);
+	FLOW.traffic(self.id, 'pending', self.$pending);
+	return self;
+};
 
 Component.prototype.emit = function(name, a, b, c, d, e, f, g) {
 	var evt = this.$events[name];
@@ -1283,10 +1299,20 @@ FLOW.rem = function(key) {
 	return FLOW;
 };
 
-FLOW.traffic = function(id, type) {
-	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0 });
-	FLOW.alltraffic[id][type]++;
-	type === 'output' && (FLOW.alltraffic.count++);
+FLOW.traffic = function(id, type, count) {
+	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0 });
+	switch (type) {
+		case 'pending':
+			FLOW.alltraffic[id][type] = count;
+			break;
+		case 'output':
+			FLOW.alltraffic[id][type]++;
+			FLOW.alltraffic.count++;
+			break;
+		default:
+			FLOW.alltraffic[id][type]++;
+			break;
+	}
 	return FLOW;
 };
 
@@ -1294,13 +1320,11 @@ FLOW.reset_traffic = function() {
 	var keys = Object.keys(FLOW.alltraffic);
 	FLOW.alltraffic.count = 0;
 	for (var i = 0, length = keys.length; i < length; i++) {
-
-		if (keys[i] === 'count')
-			continue;
-
-		var item = FLOW.alltraffic[keys[i]];
-		item.input = 0;
-		item.output = 0;
+		if (keys[i] !== 'count' && keys[i] !== 'pending') {
+			var item = FLOW.alltraffic[keys[i]];
+			item.input = 0;
+			item.output = 0;
+		}
 	}
 	return FLOW;
 };
