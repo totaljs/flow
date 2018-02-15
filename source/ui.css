@@ -23,7 +23,7 @@
 .ui-designer .m4 { fill: #DA4453; }
 .ui-designer tspan { font-weight: bold; color: #303030; }
 .ui-designer .click rect:first-child { fill: white; stroke: black; stroke-width: 3; }
-.ui-designer .click rect:last-child { fill: black; }
+.ui-designer .click rect:last-child { fill: #505050; }
 .ui-designer .click:active rect:first-child { fill: black; }
 .ui-designer .click:active rect:last-child { fill: #404040; }
 .ui-designer .node_errors { }

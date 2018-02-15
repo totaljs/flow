@@ -1560,8 +1560,10 @@ COMPONENT('designer', function() {
 		} else
 			output = item.$component.output;
 
+		var padding = 20;
+		var radius = 7;
 		var count = Math.max(output || 1, input || 1);
-		var height = (count > 1 ? 16 : 30) + count * 22;
+		var height = (label ? (count > 1 ? 0 : 12) : 0) + 12 + count * padding;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
@@ -1571,20 +1573,20 @@ COMPONENT('designer', function() {
 		g.attrd('height', height);
 
 		var points = g.asvg('g');
-		var top = ((height / 2) - ((item.$component.input * 22) / 2)) + 10;
+		var top = ((height / 2) - ((item.$component.input * padding) / 2)) + 10;
 
-		top = ((height / 2) - ((input * 22) / 2)) + 10;
+		top = ((height / 2) - ((input * padding) / 2)) + 10;
 		for (var i = 0; i < input; i++) {
-			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * 22).attr('r', 8);
+			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * padding).attr('r', radius);
 			if (inputcolors)
 				o.attr('fill', inputcolors[i]);
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 		}
 
-		top = ((height / 2) - ((output * 22) / 2)) + 10;
+		top = ((height / 2) - ((output * padding) / 2)) + 10;
 		for (var i = 0; i < output; i++) {
-			var o = points.asvg('circle').attr('class', 'output').attrd('index', i).attr('cx', width).attr('cy', top + i * 22).attr('r', 8);
+			var o = points.asvg('circle').attr('class', 'output').attrd('index', i).attr('cx', width).attr('cy', top + i * padding).attr('r', radius);
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
@@ -1592,9 +1594,9 @@ COMPONENT('designer', function() {
 		}
 
 		if ((item.$component.input || item.$component.output) && item.$component.traffic) {
-			g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
+			g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + radius)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 			var plus = g.asvg('g').attr('class', 'node_traffic').attrd('id', item.id);
-			plus.asvg('rect').attrd('width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + 8));
+			plus.asvg('rect').attrd('width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + radius));
 			plus.asvg('text').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
 		}
 
@@ -1602,8 +1604,8 @@ COMPONENT('designer', function() {
 
 		if (item.$component.click) {
 			var clicker = g.asvg('g').aclass('click');
-			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 9, height - 9)).attr('width', 18).attr('height', 18).attr('rx', 10).attr('ry', 10);
-			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 4, height - 4)).attr('width', 8).attr('height', 8).attr('rx', 8).attr('ry', 8);
+			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 7, height - 7)).attr('width', 14).attr('height', 14).attr('rx', 1).attr('ry', 1);
+			clicker.asvg('rect').aclass('click').attrd('click', 'true').attr('transform', 'translate({0},{1})'.format(width / 2 - 2, height - 2)).attr('width', 4).attr('height', 4);
 		}
 
 		data[item.id] = item;

@@ -59,6 +59,7 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 50px; left: 0; }
 .designer-scrollbar { width: 111%; overflow: auto; height: 110%; }
+.themedark .designer-scrollbar { background-color: #101010; }
 .debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 12px; padding: 10px 15px; }
 .debugoutput .fa { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
