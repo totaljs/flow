@@ -622,8 +622,12 @@
 			});
 
 			UPDATE('flow.designer');
-			setTimeout(refreshTraffic, 100);
-
+			setTimeout(function() {
+				common.trafficnodes = $('.node_traffic').toArray();
+				for (var i = 0; i < common.trafficnodes.length; i++)
+					common.trafficnodes[i] = $(common.trafficnodes[i]);
+				refreshTraffic();
+			}, 100);
 		});
 
 		$(window).on('hashchange', function() {
@@ -1241,11 +1245,14 @@
 		});
 
 		function refreshTraffic() {
-			if (!common.traffic)
+
+			if (!common.traffic || !common.trafficnodes)
 				return;
+
 			var count = common.traffic.count;
-			$('.node_traffic').each(function() {
-				var el = $(this);
+			for (var i = 0, length = common.trafficnodes.length; i < length; i++) {
+
+				var el = common.trafficnodes[i];
 				var id = el.attrd('id');
 				var stats = common.traffic[id];
 				var input = 0;
@@ -1262,6 +1269,11 @@
 					pending = stats.pending;
 				}
 
+				var key = input + 'x' + output + 'x' + pending;
+				if (key === el.get(0).$traffic)
+					continue;
+
+				el.get(0).$traffic = key;
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
 				el.find('.traffic').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
@@ -1271,7 +1283,7 @@
 				var w = +rect.attrd('width');
 				var p = (w / 100) * sum;
 				rect.attr('width', p);
-			});
+			}
 		}
 
 		function themechanger() {

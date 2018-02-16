@@ -1560,14 +1560,14 @@ COMPONENT('designer', function() {
 		} else
 			output = item.$component.output;
 
-		var padding = 20;
+		var padding = 18;
 		var radius = 7;
 		var count = Math.max(output || 1, input || 1);
-		var height = (label ? (count > 1 ? 0 : 12) : 0) + 12 + count * padding;
+		var height = (label ? (count > 1 ? 0 : 20) : (count > 1 ? 0 : 4)) + 6 + count * padding;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
 
 		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
-		rect.attr('width', width).attr('height', height).attr('rx', 4).attr('ry', 4).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
+		rect.attr('width', width).attr('height', height).attr('rx', 3).attr('ry', 3).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
 
 		g.attrd('width', width);
 		g.attrd('height', height);

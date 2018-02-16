@@ -118,19 +118,22 @@ exports.install = function(options) {
 
 			if (FLOW.ws) {
 				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
-				MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+
+				if (FLOW.indexer % 2 === 0)
+					MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+
 				MESSAGE_TRAFFIC.counter = COUNTER;
 				FLOW.ws.send(MESSAGE_TRAFFIC);
 			}
 
-			if (FLOW.indexer % 5 === 0) {
+			if (FLOW.indexer % 10 === 0) {
 				FLOW.reset_traffic();
 				FLOW.indexer = 0;
 			}
 
-			OPT.debug && listingmodification();
+			OPT.debug && FLOW.indexer % 2 === 0 && listingmodification();
 
-		}, 3000);
+		}, 2000);
 	}, 2000);
 
 	if (OPT.debug)
@@ -326,25 +329,26 @@ function websocket() {
 					return;
 
 				var old_options = instance.options;
-
 				instance.options = message.body;
-				instance.name = instance.options.comname || '';
-				instance.reference = instance.options.comreference;
-				instance.output = instance.options.comoutput;
-				instance.input = instance.options.cominput;
 
-				if (instance.options.comcolor != undefined)
-					instance.color = instance.options.comcolor;
+				var options = instance.options;
+				instance.name = options.comname || '';
+				instance.reference = options.comreference;
+				instance.output = options.comoutput;
+				instance.input = options.cominput;
 
-				if (instance.options.comnotes !== undefined)
-					instance.notes = instance.options.comnotes;
+				if (options.comcolor != undefined)
+					instance.color = options.comcolor;
 
-				instance.options.comname = undefined;
-				instance.options.comreference = undefined;
-				instance.options.comoutput = undefined;
-				instance.options.cominput = undefined;
-				instance.options.comcolor = undefined;
-				instance.options.comnotes = undefined;
+				if (options.comnotes !== undefined)
+					instance.notes = options.comnotes;
+
+				options.comname = undefined;
+				options.comreference = undefined;
+				options.comoutput = undefined;
+				options.cominput = undefined;
+				options.comcolor = undefined;
+				options.comnotes = undefined;
 
 				var count = instance.output instanceof Array ? instance.output.length : instance.output;
 				io_count(tmp.output) !== count && Object.keys(instance.connections).forEach(function(key) {
