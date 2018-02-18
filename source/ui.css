@@ -42,7 +42,7 @@
 .ui-form-animate-click { transform: skewX(-5deg); }
 .ui-form-padding { padding: 0 30px; }
 .ui-form-title { padding: 18px 20px; font-size: 16px; user-select: none; color: black; background-color: white; border-bottom: 1px solid #F0F0F0; }
-.ui-form-title .ui-form-button-close { float: right; cursor: pointer; font-size: 18px; margin: -2px 0 0 0; transition: all 0.2s; background: none; border: 0; outline: 0; height: auto; color: red; }
+.ui-form-title .ui-form-button-close { float: right; cursor: pointer; font-size: 18px; margin: -2px 0 0 0; transition: all 0.2s; background: none; border: 0; outline: 0; height: auto; color: red; text-align: right !important; width: 20px; padding: 0; }
 .ui-form-title .ui-form-button-close:hover { transform: scale(1.2) rotate(-90deg); }
 .ui-form-title > span { font-weight: bold; }
 .ui-form-title > .fa { margin-right: 7px; }

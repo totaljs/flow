@@ -2,12 +2,34 @@ COMPONENT('exec', function(self, config) {
 	self.readonly();
 	self.blind();
 	self.make = function() {
-		self.event('click', config.selector || '.exec', function() {
+		self.event('click', config.selector || '.exec', function(e) {
 			var el = $(this);
+
 			var attr = el.attrd('exec');
 			var path = el.attrd('path');
-			attr && EXEC(attr, el);
-			path && SET(path, new Function('return ' + el.attrd('value'))());
+			var href = el.attrd('href');
+
+			if (el.attrd('prevent') === 'true') {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+
+			attr && EXEC(attr, el, e);
+			href && NAV.redirect(href);
+
+			if (path) {
+				var val = el.attrd('value');
+				if (val == null) {
+					var a = new Function('return ' + el.attrd('value-a'))();
+					var b = new Function('return ' + el.attrd('value-b'))();
+					var v = GET(path);
+					if (v === a)
+						SET(path, b, true);
+					else
+						SET(path, a, true);
+				} else
+					SET(path, new Function('return ' + val)(), true);
+			}
 		});
 	};
 });
@@ -89,18 +111,18 @@ COMPONENT('binder', function(self) {
 		self.watch('*', self.autobind);
 		self.scan();
 
-		self.on('component', function() {
+		var fn = function() {
 			setTimeout2(self.id, self.scan, 200);
-		});
+		};
 
-		self.on('destroy', function() {
-			setTimeout2(self.id, self.scan, 200);
-		});
+		self.on('import', fn);
+		self.on('component', fn);
+		self.on('destroy', fn);
 	};
 
 	self.autobind = function(path) {
-		var mapper = keys[path];
 
+		var mapper = keys[path];
 		if (!mapper)
 			return;
 
@@ -110,6 +132,7 @@ COMPONENT('binder', function(self) {
 			var item = mapper[i];
 			var value = GET(item.path);
 			var element = item.selector ? item.element.find(item.selector) : item.element;
+
 			template.value = value;
 			item.classes && classes(element, item.classes(value));
 
@@ -125,6 +148,7 @@ COMPONENT('binder', function(self) {
 				item.disable && element.prop('disabled', item.disable(value));
 				item.src && element.attr('src', item.src(value));
 				item.href && element.attr('href', item.href(value));
+				item.exec && EXEC(item.exec, element);
 			}
 		}
 	};
@@ -132,7 +156,10 @@ COMPONENT('binder', function(self) {
 	function classes(element, val) {
 		var add = '';
 		var rem = '';
-		val.split(' ').forEach(function(item) {
+		var classes = val.split(' ');
+
+		for (var i = 0; i < classes.length; i++) {
+			var item = classes[i];
 			switch (item.substring(0, 1)) {
 				case '+':
 					add += (add ? ' ' : '') + item.substring(1);
@@ -144,7 +171,7 @@ COMPONENT('binder', function(self) {
 					add += (add ? ' ' : '') + item;
 					break;
 			}
-		});
+		}
 		rem && element.rclass(rem);
 		add && element.aclass(add);
 	}
@@ -158,8 +185,12 @@ COMPONENT('binder', function(self) {
 	};
 
 	self.scan = function() {
+
 		keys = {};
 		keys_unique = {};
+
+		var keys_news = {};
+
 		self.find('[data-b]').each(function() {
 
 			var el = $(this);
@@ -186,6 +217,7 @@ COMPONENT('binder', function(self) {
 			var selector = el.attrd('b-selector');
 			var src = el.attrd('b-src');
 			var href = el.attrd('b-href');
+			var exec = el.attrd('b-exec');
 			var obj = el.data('data-b');
 
 			keys_unique[path] = true;
@@ -200,6 +232,7 @@ COMPONENT('binder', function(self) {
 				obj.selector = selector ? selector : null;
 				obj.src = src ? self.prepare(src) : undefined;
 				obj.href = href ? self.prepare(href) : undefined;
+				obj.exec = exec;
 
 				if (el.attrd('b-template') === 'true') {
 					var tmp = el.find('script[type="text/html"]');
@@ -219,6 +252,7 @@ COMPONENT('binder', function(self) {
 					obj.html = html ? self.prepare(html) : undefined;
 
 				el.data('data-b', obj);
+				keys_news[path] = true;
 			}
 
 			for (var i = 0, length = arr.length; i < length; i++) {
@@ -230,9 +264,9 @@ COMPONENT('binder', function(self) {
 			}
 		});
 
-		Object.keys(keys_unique).forEach(function(key) {
-			self.autobind(key, GET(key));
-		});
+		var nk = Object.keys(keys_news);
+		for (var i = 0; i < nk.length; i++)
+			self.autobind(nk[i]);
 
 		return self;
 	};
@@ -677,6 +711,9 @@ COMPONENT('textbox', function(self, config) {
 
 		EMIT('reflow', self.name);
 
+		if (config.minlength && value.length < config.minlength)
+			return false;
+
 		switch (self.type) {
 			case 'email':
 				return value.isEmail();
@@ -687,7 +724,7 @@ COMPONENT('textbox', function(self, config) {
 				return value > 0;
 		}
 
-		return config.validation ? self.evaluate(value, config.validation, true) ? true : false : value.length > 0;
+		return config.validation ? !!self.evaluate(value, config.validation, true) : value.length > 0;
 	};
 
 	self.make = function() {
@@ -702,7 +739,7 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.type === 'date') {
 				e.preventDefault();
-				window.$calendar && window.$calendar.toggle(self.element, self.find('input').val(), function(date) {
+				window.$calendar && window.$calendar.toggle(self.element, self.get(), function(date) {
 					self.set(date);
 				});
 			}
@@ -713,7 +750,7 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.increment) {
 				var el = $(this);
-				var inc = el.hclass('fa-caret-up') ? 1 : -1;
+				var inc = el.hasClass('fa-caret-up') ? 1 : -1;
 				self.change(true);
 				self.inc(inc);
 			}
@@ -726,7 +763,12 @@ COMPONENT('textbox', function(self, config) {
 				self.$stateremoved = false;
 				$(this).rclass('fa-times').aclass('fa-search');
 				self.set('');
-			}
+			} else if (config.icon2click)
+				EXEC(config.icon2click, self);
+		});
+
+		self.event('focus', 'input', function() {
+			config.autocomplete && EXEC(config.autocomplete, self);
 		});
 
 		self.redraw();
@@ -770,16 +812,16 @@ COMPONENT('textbox', function(self, config) {
 		if (!icon2 && self.type === 'date')
 			icon2 = 'calendar';
 		else if (self.type === 'search') {
-			icon2 = 'search ui-textbox-control-icon';
+			icon2 = 'search';
 			self.setter2 = function(value) {
 				if (self.$stateremoved && !value)
 					return;
-				self.$stateremoved = value ? false : true;
-				self.find('.ui-textbox-control-icon').tclass('fa-times', value ? true : false).tclass('fa-search', value ? false : true);
+				self.$stateremoved = !value;
+				self.find('.ui-textbox-control-icon').tclass('fa-times', !!value).tclass('fa-search', !value);
 			};
 		}
 
-		icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-{0}"></span></div>'.format(icon2));
+		icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-{0} ui-textbox-control-icon"></span></div>'.format(icon2));
 		config.increment && !icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
 
 		if (config.label)
@@ -882,6 +924,7 @@ COMPONENT('textbox', function(self, config) {
 		config.error && self.find('.ui-textbox-helper').tclass('ui-textbox-helper-show', invalid);
 	};
 });
+
 
 COMPONENT('importer', function(self, config) {
 
@@ -2958,9 +3001,9 @@ COMPONENT('textboxlist', 'maxlength:100;required:false;error:You reach the maxim
 
 });
 
-COMPONENT('autocomplete', function(self) {
+COMPONENT('autocomplete', 'height:200', function(self, config) {
 
-	var container, old, onSearch, searchtimeout, searchvalue, blurtimeout, onCallback, datasource, offsetter = null;
+	var container, old, onSearch, searchtimeout, searchvalue, blurtimeout, onCallback, datasource, offsetter, scroller;
 	var is = false;
 	var margin = {};
 
@@ -2971,12 +3014,20 @@ COMPONENT('autocomplete', function(self) {
 	self.make = function() {
 		self.aclass('ui-autocomplete-container hidden');
 		self.html('<div class="ui-autocomplete"><ul></ul></div>');
+
+		scroller = self.find('.ui-autocomplete');
 		container = self.find('ul');
 
 		self.event('click', 'li', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			onCallback && onCallback(datasource[+$(this).attrd('index')], old);
+			if (onCallback) {
+				var val = datasource[+$(this).attrd('index')];
+				if (typeof(onCallback) === 'string')
+					SET(onCallback, val.value === undefined ? val.name : val.value);
+				else
+					onCallback(val, old);
+			}
 			self.visible(false);
 		});
 
@@ -2991,6 +3042,14 @@ COMPONENT('autocomplete', function(self) {
 		$(window).on('resize', function() {
 			self.resize();
 		});
+	};
+
+	self.configure = function(name, value) {
+		switch (name) {
+			case 'height':
+				value && scroller.css('max-height', value);
+				break;
+		}
 	};
 
 	function keydown(e) {
@@ -3014,12 +3073,20 @@ COMPONENT('autocomplete', function(self) {
 			return;
 		}
 
-		var current = self.find('.selected');
+		if (!datasource || !datasource.length)
+			return;
 
+		var current = self.find('.selected');
 		if (c === 13) {
 			self.visible(false);
 			if (current.length) {
-				onCallback(datasource[+current.attrd('index')], old);
+				if (onCallback) {
+					var val = datasource[+current.attrd('index')];
+					if (typeof(onCallback) === 'string')
+						SET(onCallback, val.value === undefined ? val.name : val.value);
+					else
+						onCallback(val, old);
+				}
 				e.preventDefault();
 				e.stopPropagation();
 			}
@@ -3034,9 +3101,12 @@ COMPONENT('autocomplete', function(self) {
 			current = c === 40 ? current.next() : current.prev();
 		}
 
-		if (!current.length)
-			current = self.find('li:{0}-child'.format(c === 40 ? 'first' : 'last'));
+		!current.length && (current = self.find('li:{0}-child'.format(c === 40 ? 'first' : 'last')));
 		current.aclass('selected');
+		var index = +current.attrd('index');
+		var h = current.innerHeight();
+		var offset = ((index + 1) * h) + (h * 2);
+		scroller.prop('scrollTop', offset > config.height ? offset - config.height : 0);
 	}
 
 	function blur() {
@@ -3077,12 +3147,29 @@ COMPONENT('autocomplete', function(self) {
 
 	self.attachelement = function(element, input, search, callback, top, left, width) {
 
+		if (typeof(callback) === 'number') {
+			width = left;
+			left = top;
+			top = callback;
+			callback = null;
+		}
+
 		clearTimeout(searchtimeout);
 
 		if (input.setter)
 			input = input.find('input');
 		else
 			input = $(input);
+
+		if (input.get(0).tagName !== 'INPUT') {
+			input = input.find('input');
+		}
+
+		if (element.setter) {
+			if (!callback)
+				callback = element.path;
+			element = element.element;
+		}
 
 		if (old) {
 			old.removeAttr('autocomplete');
@@ -3121,6 +3208,8 @@ COMPONENT('autocomplete', function(self) {
 		for (var i = 0, length = arr.length; i < length; i++) {
 			var obj = arr[i];
 			obj.index = i;
+			if (!obj.name)
+				obj.name = obj.text;
 			builder.push(self.template(obj));
 		}
 
