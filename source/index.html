@@ -1261,11 +1261,13 @@
 				var outputc = 0;
 				var pending = 0;
 
-				if (stats && (stats.input || stats.output)) {
-					input = ((stats.input / count) * 100 >> 0);
-					output = ((stats.output / count) * 100 >> 0);
-					inputc = stats.input;
-					outputc = stats.output;
+				if (stats) {
+					if (stats.input || stats.output) {
+						input = ((stats.input / count) * 100 >> 0);
+						output = ((stats.output / count) * 100 >> 0);
+						inputc = stats.input;
+						outputc = stats.output;
+					}
 					pending = stats.pending;
 				}
 
