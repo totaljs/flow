@@ -1607,9 +1607,9 @@ COMPONENT('designer', function() {
 		var radius = 7;
 		var count = Math.max(output || 1, input || 1);
 		var height = (label ? (count > 1 ? 0 : 20) : (count > 1 ? 0 : 4)) + 6 + count * padding;
-		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + 30) >> 0;
+		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + (output || input ? 30 : 20)) >> 0;
 
-		body.attr('transform', 'translate(15, {0})'.format((height / 2) - 2));
+		body.attr('transform', 'translate({0}, {1})'.format(output || input ? 15 : 10, (height / 2) - 2));
 		rect.attr('width', width).attr('height', height).attr('rx', 3).attr('ry', 3).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
 
 		g.attrd('width', width);
