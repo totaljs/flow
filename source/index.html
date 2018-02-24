@@ -760,7 +760,7 @@
 		});
 
 		OPERATION('flow.apply', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(Yes)', '@(Cancel)'], function(index) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
 				$('.node_new').rclass('node_new');
