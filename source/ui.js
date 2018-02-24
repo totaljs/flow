@@ -4244,7 +4244,6 @@ COMPONENT('textarea', function(self, config) {
 	};
 });
 
-
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
 	self.make = function() {
