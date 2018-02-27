@@ -8,7 +8,7 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .panel-minized .body { margin-right: 30px; }
 .body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
 
-#panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; }
+#panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; z-index: 100 }
 #panel-notification div { line-height: 14px; margin-top: 3px; }
 #panel-notification label { font-size: 10px; text-transform: uppercase; display: block; font-weight: bold; color: black; }
 #panel-notification label .fa { margin-right: 3px; margin-bottom: 3px; }
@@ -47,6 +47,7 @@ nav .highlight { color: white !important; background-color: silver; font-weight:
 
 .tag { position: relative; display: inline-block; padding: 5px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; }
 .tag:hover { opacity: 0.8; text-decoration: none; }
+.tag-small { padding: 2px 5px; margin: 5px 5px 0 0; font-size: 11px; }
 .tag2 { background-color: #165b7b; }
 .block { display: block; }
 

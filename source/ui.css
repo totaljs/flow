@@ -317,7 +317,7 @@ label span { vertical-align: middle; }
 .ui-colorpicker .hidden { display: none !important; }
 
 .ui-loading { position: fixed; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); left: 0; top: 0; z-index: 1000; }
-.ui-loading div { animation: loading 333ms alternate infinite cubic-bezier(0.2,0,0.5,1); width: 50px; height: 50px; background-color: black; position: absolute; left: 90%; top: 90%; border-radius: 100px; }
+.ui-loading div { animation: loading 333ms alternate infinite cubic-bezier(0.2,0,0.5,1); width: 50px; height: 50px; background-color: black; position: absolute; left: 85%; top: 85%; border-radius: 100px; }
 .ui-loading-firstload { background: white; }
 .themedark .ui-loading-firstload { background: black; }
 

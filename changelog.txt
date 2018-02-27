@@ -1,22 +1,32 @@
+======= 4.2.0
+
+- added: `ESC` shortcut for closing of modal forms
+- added: `component.beg()` + `component.end()` for obtaining count of pending tasks
+- updated: importing supports missing components importing from templates
+- updated: jComponent + Tangular
+- improved: UI components
+- improved: design
+- fixed: importing designer with same name of tabs
+
 ======= 4.1.0
 
-- added `options.templates2` for additional user-defined templates
+- added: `options.templates2` for additional user-defined templates
 - added: `FlowData.arg()` for replacing dynamic parameters in strings
-- removed traffic from design in components with `input` & `output`
-- updated importing components from templates
-- updated jComponent
-- fixed UI components
+- removed: traffic from design in components with `input` & `output`
+- updated: importing components from templates
+- updated: jComponent
+- fixed: UI components
 
 ======= 4.0.0
 
-- updated jComponent version
-- improved UI components
-- added `group` for `debug` messages
-- added `export.traffic` property for hidding of stats under component box in designer
+- updated: jComponent version
+- improved: UI components
+- added: `group` for `debug` messages
+- added: `export.traffic` property for hidding of stats under component box in designer
 
 ======= 3.0.0
 
-- added global variables
-- added multiple inputs
-- improved exporting designer
-- updated jComponent version
+- added: global variables
+- added: multiple inputs
+- improved: exporting designer
+- updated: jComponent version
