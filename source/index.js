@@ -161,7 +161,7 @@ function listingmodification() {
 function service(counter) {
 	counter % 5 === 0 && (DDOS = {});
 	FLOW.reset_traffic();
-	FLOW.emit('service', counter);
+	FLOW.emit2('service', counter);
 	if (COUNTER > 999999000000)
 		COUNTER = 0;
 }
@@ -937,11 +937,11 @@ FLOW.instance = function(id) {
 	return FLOW.instances[id];
 };
 
-FLOW.emit2 = function() {
+FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
 	var keys = Object.keys(FLOW.instances);
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
-		instance.emit.apply(instance, arguments);
+		instance.$events[name] && instance.emit.call(instance, name, a, b, c, d, e, f, g);
 	}
 	return FLOW;
 };
