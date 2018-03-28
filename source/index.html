@@ -100,6 +100,7 @@
 				<div class="traffic-container b" style="margin-bottom:5px">
 					<div class="traffic-value">@(Output)</div>
 					<div class="traffic-value">@(Input)</div>
+					<div class="traffic-value" title="@(Average processing time)">@(Time)</div>
 					<div class="traffic-name">@(Component)</div>
 				</div>
 				<div data-jc="repeater" data-jc-path="flow.traffic">
@@ -107,6 +108,7 @@
 						<div class="traffic-container">
 							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}x</div>
 							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}x</div>
+							<div class="traffic-value">{{ duration }} @(sec.)</div>
 							<div class="traffic-name gray">{{ name }}</div>
 						</div>
 					</script>
@@ -763,6 +765,9 @@
 			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
+
+				flow.crashmode = false;
+
 				$('.node_new').rclass('node_new');
 				$('.path_new').rclass('path_new');
 				var body = CLONE(flow);
@@ -796,6 +801,11 @@
 				setState('');
 				SETTER('websocket', 'send', message);
 				setTimeout(success, 1000);
+
+				common.trafficnodes = $('.node_traffic').toArray();
+				for (var i = 0; i < common.trafficnodes.length; i++)
+					common.trafficnodes[i] = $(common.trafficnodes[i]);
+
 			});
 		});
 
@@ -909,7 +919,7 @@
 					if (!component.$component)
 						return;
 					var stats = message.body[component.id] || empty;
-					arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output });
+					arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: ((stats.duration || 0) / 1000).floor(1) });
 				});
 
 				arr.memory = message.memory;
@@ -943,6 +953,12 @@
 						});
 					});
 				});
+
+				flow.crashmode = message.crashmode;
+				if (flow.crashmode) {
+					setState(MESSAGES.apply);
+					SETTER('confirm', 'confirm', '@(<h3 class="nmb red">Crash mode</h3>Flow is in <b>crash mode</b> and data processing is paused. You need to press <b>APPLY</b> for re-init Flow again.)', ['"chevron-right"@(Continue in editing)'], NOOP);
+				}
 
 				message.database.quicksort('name');
 				SET('common.components', message.database);
@@ -1260,6 +1276,7 @@
 				var inputc = 0;
 				var outputc = 0;
 				var pending = 0;
+				var duration = 0;
 
 				if (stats) {
 					if (stats.input || stats.output) {
@@ -1268,17 +1285,18 @@
 						inputc = stats.input;
 						outputc = stats.output;
 					}
+					duration = (stats.duration / 1000).floor(1);
 					pending = stats.pending;
 				}
 
-				var key = input + 'x' + output + 'x' + pending;
+				var key = input + 'x' + output + 'x' + pending + 'x' + duration;
 				if (key === el.get(0).$traffic)
 					continue;
 
 				el.get(0).$traffic = key;
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-				el.find('.traffic').html('IO: <tspan>' + inputc + 'x</tspan> &#8644; <tspan>' + outputc + 'x</tspan>');
+				el.find('.traffic').html('IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? ('/ ' + duration + ' sec.') : ''));
 				var pel = el.find('.pending').tclass('hide', pending ? false : true);
 				pending && pel.html(pending ? ('&#10711; ' + pending + 'x') : '');
 				var rect = el.find('rect');
@@ -1295,8 +1313,9 @@
 				SETTER('loading', 'hide', 1000);
 				var color = common.theme === 'dark' ? 'white' : 'black';
 				$('.input,.output').each(function() {
-					var cur = this.getAttribute('fill');
-					cur !== color && this.setAttribute('fill', color);
+					var el = $(this);
+					var cur = el.attr('fill');
+					cur !== color && el.attr('fill', el.attrd('index') === '99' ? 'red' : color);
 				});
 				$('.consumption').each(function() {
 					var cur = this.getAttribute('fill');

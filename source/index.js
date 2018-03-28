@@ -30,7 +30,7 @@ var MODIFIED = null;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.2.0';
+exports.version = 'v4.3.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -52,6 +52,9 @@ exports.install = function(options) {
 			OPT.baa[hash] = user;
 		});
 	}
+
+	if (!OPT.crashmode)
+		OPT.crashmode = process.argv.findIndex(n => n.indexOf('crashmode') !== -1) !== -1;
 
 	OPT.url = U.path(OPT.url || '/$flow/');
 
@@ -220,6 +223,7 @@ function websocket() {
 		}
 
 		if (client.query.designer === '1' && READY) {
+			MESSAGE_DESIGNER.crashmode = OPT.crashmode;
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer');
 		}
@@ -381,8 +385,7 @@ function websocket() {
 					}
 				});
 
-				instance.$connections = Object.keys(instance.connections);
-				instance.hasConnections = instance.$connections.length > 0;
+				instance.$refresh();
 				instance.$events.options && instance.emit('options', instance.options, old_options);
 				EMIT('flow.options', instance);
 
@@ -433,6 +436,7 @@ function io_count(o) {
 
 function Component(options) {
 	U.extend(this, options);
+	this.duration = 0;
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
@@ -532,7 +536,7 @@ Component.prototype.make = function(data, index) {
 
 Component.prototype.click = function() {
 	try {
-		this.$events.click && this.emit('click');
+		!OPT.crashmode && this.$events.click && this.emit('click');
 	} catch (e) {
 		this.error(e);
 	}
@@ -553,7 +557,7 @@ Component.prototype.signal = function(index, data) {
 	var self = this;
 	var connections = self.connections;
 
-	if (!connections)
+	if (!connections || OPT.crashmode)
 		return self;
 
 	var arr = self.$connections;
@@ -563,7 +567,7 @@ Component.prototype.signal = function(index, data) {
 	for (var i = 0, length = arr.length; i < length; i++) {
 		var dex = arr[i];
 
-		if (index !== undefined && dex != index)
+		if (index !== undefined && dex != index && dex != '99')
 			continue;
 
 		var ids = connections[dex];
@@ -600,7 +604,7 @@ Component.prototype.send = function(index, message) {
 
 	message.parent = self;
 
-	if (!connections) {
+	if (!connections || OPT.crashmode) {
 		message.completed = true;
 		return message;
 	}
@@ -612,6 +616,13 @@ Component.prototype.send = function(index, message) {
 	}
 
 	var instance;
+	var now;
+
+	if (index !== 99) {
+		now = Date.now();
+		self.duration = self.$last ? now - self.$last : 0;
+		self.duration && FLOW.traffic(self.id, 'duration', self.duration);
+	}
 
 	if (index === undefined) {
 
@@ -623,23 +634,32 @@ Component.prototype.send = function(index, message) {
 		var tmp = {};
 
 		for (var i = 0, length = arr.length; i < length; i++) {
+
+			if (arr[i] == '99')
+				continue;
+
 			var ids = connections[arr[i]];
 			var canclone = true;
 			for (var j = 0, jl = ids.length; j < jl; j++) {
 				instance = FLOW.instances[ids[j].id];
 				if (instance && !instance.$closed) {
+
 					if (!tmp[instance.id]) {
 						tmp[instance.id] = true;
 						FLOW.traffic(instance.id, 'input');
 					}
+
 					try {
 						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
 						data.index = +ids[j].index;
+						if (index !== 99)
+							instance.$last = now;
 						instance.$events.data && instance.emit('data', data);
 						instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
+
 				}
 			}
 		}
@@ -663,16 +683,17 @@ Component.prototype.send = function(index, message) {
 		for (var i = 0, length = arr.length; i < length; i++) {
 			instance = FLOW.instances[arr[i].id];
 
+			if (!tmp[instance.id]) {
+				tmp[instance.id] = true;
+				FLOW.traffic(instance.id, 'input');
+			}
+
 			if (instance && !instance.$closed) {
-
-				if (!tmp[instance.id]) {
-					tmp[instance.id] = true;
-					FLOW.traffic(instance.id, 'input');
-				}
-
 				try {
 					var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
 					data.index = +arr[i].index;
+					if (index !== 99)
+						instance.$last = now;
 					instance.$events.data && instance.emit('data', data);
 					instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
 				} catch (e) {
@@ -703,7 +724,8 @@ Component.prototype.error = function(e, parent) {
 		}
 		FLOW.send(MESSAGE_ERRORS);
 	}, 100);
-	return this;
+	instance.throw(e);
+	return self;
 };
 
 Component.prototype.status = function(text, color) {
@@ -718,6 +740,7 @@ Component.prototype.status = function(text, color) {
 	this.state.color = comparecolor;
 	MESSAGE_STATUS.target = this.id;
 	MESSAGE_STATUS.body = this.state;
+
 	var com = MESSAGE_DESIGNER.components.findItem('id', this.id);
 	if (com) {
 		com.state = this.state;
@@ -738,11 +761,13 @@ Component.prototype.debug = function(data, style, group) {
 };
 
 Component.prototype.save = function() {
+
 	var tmp = MESSAGE_DESIGNER.components.findItem('id', this.id);
 	if (tmp) {
 		tmp.options = this.options;
 		FLOW.save2();
 	}
+
 	return this;
 };
 
@@ -796,6 +821,17 @@ Component.prototype.dashboard = function(){
 	console.log('Dashboard is not initialized yet!');
 };
 
+Component.prototype.throw = function(data) {
+	return this.send(99, message);
+};
+
+Component.prototype.$refresh = function() {
+	var self = this;
+	self.$connections = Object.keys(self.connections);
+	self.$connections = self.$connections.remove('99');
+	self.hasConnections = self.$connections.length > 0;
+};
+
 function print_buffer(buf) {
 	var response = '<Buffer';
 	var arr = buf.toString('hex').split('');
@@ -826,6 +862,10 @@ FLOW.on = function(name, fn) {
 };
 
 FLOW.emit = function(name, a, b, c, d, e, f, g) {
+
+	if (OPT.crashmode)
+		return F;
+
 	var evt = FLOW.$events[name];
 	if (evt) {
 		var clean = false;
@@ -1028,8 +1068,7 @@ FLOW.init = function(components) {
 			if (instance) {
 				instance.name = com.name || declaration.name;
 				instance.connections = com.connections;
-				instance.$connections = Object.keys(instance.connections);
-				instance.hasConnections = instance.$connections.length > 0;
+				instance.$refresh();
 				instance.$events.$reinit && instance.emit('reinit');
 				continue;
 			}
@@ -1043,8 +1082,7 @@ FLOW.init = function(components) {
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
 			declaration.fn.call(instance, instance, declaration);
-			instance.$connections = Object.keys(instance.connections);
-			instance.hasConnections = instance.$connections.length > 0;
+			instance.$refresh();
 
 			if (com.state !== instance.state)
 				com.state = instance.state;
@@ -1104,8 +1142,7 @@ FLOW.init_component = function(component) {
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
 			instance.cloning = declaration.cloning;
-			instance.$connections = Object.keys(instance.connections);
-			instance.hasConnections = instance.$connections.length > 0;
+			instance.$refresh();
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
@@ -1147,6 +1184,10 @@ FLOW.save = function(data, callback) {
 	MESSAGE_DESIGNER.components = data.components;
 	MESSAGE_DESIGNER.components && FLOW.init(MESSAGE_DESIGNER.components);
 	FLOW.save2(callback);
+
+	// Disables crash mode
+	if (OPT.crashmode)
+		OPT.crashmode = false;
 };
 
 FLOW.clearerrors = function(noSync) {
@@ -1304,9 +1345,10 @@ FLOW.rem = function(key) {
 };
 
 FLOW.traffic = function(id, type, count) {
-	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0 });
+	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0, duration: 0 });
 	switch (type) {
 		case 'pending':
+		case 'duration':
 			FLOW.alltraffic[id][type] = count;
 			break;
 		case 'output':
@@ -1316,6 +1358,7 @@ FLOW.traffic = function(id, type, count) {
 		default:
 			FLOW.alltraffic[id][type]++;
 			break;
+
 	}
 	return FLOW;
 };

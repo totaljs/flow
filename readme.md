@@ -2,7 +2,7 @@
 
 [![Professional Support](https://www.totaljs.com/img/badge-support.svg)](https://www.totaljs.com/support/) [![Chat with contributors](https://www.totaljs.com/img/badge-chat.svg)](https://messenger.totaljs.com)
 
-__Total.js Flow 4.1.1__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 4.2.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 - [__Documentation__](https://wiki.totaljs.com/?q=flow)
 - [Website](https://www.totaljs.com/flow/)
@@ -64,6 +64,12 @@ var options = {};
 // Enables real-time monitoring components (their files)
 // options.debug = true;
 // default: false
+
+// +v4.3.0
+// Enables crash mode (the flow won't be applied after start)
+// options.crashmode = true;
+// default: false
+// IMPORTANT: crash mode can be enabled via command line "node yourapp.js --crashmode"
 
 // ====================================
 // Security (OPTIONAL)
@@ -492,9 +498,17 @@ exports.install = function(component) {
     // component.arg('This pharse {variable-key} will be replaced.') returns {String}
     // component.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
 
+    component.throw(data);
+    // +v4.3.0
+    // Sends data through the error output
+
     // =====================
     // PROPERTIES
     // =====================
+
+    component.duration;
+    // {Number} - time of data processing between input and output in milliseconds
+    // +v4.3.0
 
     component.custom;
     // {Object} - empty object for custom variables and methods

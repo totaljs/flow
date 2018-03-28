@@ -1603,6 +1603,8 @@ COMPONENT('designer', function() {
 		} else
 			output = item.$component.output;
 
+		output++;
+
 		var padding = 18;
 		var radius = 7;
 		var count = Math.max(output || 1, input || 1);
@@ -1628,8 +1630,17 @@ COMPONENT('designer', function() {
 		}
 
 		top = ((height / 2) - ((output * padding) / 2)) + 10;
+
 		for (var i = 0; i < output; i++) {
-			var o = points.asvg('circle').attr('class', 'output').attrd('index', i).attr('cx', width).attr('cy', top + i * padding).attr('r', radius);
+
+			var err = i === output - 1;
+			var o = points.asvg('circle').attr('class', 'output').attrd('index', err ? 99 : i).attr('cx', width).attr('cy', (err ? 8 : 5) + top + i * padding).attr('r', (radius + (err ? -2 : 0)));
+
+			if (err) {
+				o.attr('fill', 'red');
+				continue;
+			}
+
 			if (outputcolors)
 				o.attr('fill', outputcolors[i]);
 			else
@@ -1837,7 +1848,7 @@ COMPONENT('designer', function() {
 		attr['data-from'] = aid;
 		attr['data-to'] = bid;
 		attr['data-toindex'] = oindex;
-		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new');
+		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
 		lines.asvg('path').attr(attr);
 	};
 
