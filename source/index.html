@@ -1277,6 +1277,8 @@
 				var outputc = 0;
 				var pending = 0;
 				var duration = 0;
+				var ci = 0;
+				var co = 0;
 
 				if (stats) {
 					if (stats.input || stats.output) {
@@ -1285,6 +1287,8 @@
 						inputc = stats.input;
 						outputc = stats.output;
 					}
+					ci = stats.ci;
+					co = stats.co;
 					duration = (stats.duration / 1000).floor(1);
 					pending = stats.pending;
 				}
@@ -1296,7 +1300,7 @@
 				el.get(0).$traffic = key;
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-				el.find('.traffic').html('IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? ('/ ' + duration + ' sec.') : ''));
+				el.find('.traffic').html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? ('/ ' + duration + ' sec.') : ''));
 				var pel = el.find('.pending').tclass('hide', pending ? false : true);
 				pending && pel.html(pending ? ('&#10711; ' + pending + 'x') : '');
 				var rect = el.find('rect');

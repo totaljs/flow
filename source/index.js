@@ -437,6 +437,8 @@ function io_count(o) {
 function Component(options) {
 	U.extend(this, options);
 	this.duration = 0;
+	this.countinput = 0;
+	this.countoutput = 0;
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
@@ -624,6 +626,11 @@ Component.prototype.send = function(index, message) {
 		self.duration && FLOW.traffic(self.id, 'duration', self.duration);
 	}
 
+	self.countoutput++;
+
+	if (FLOW.alltraffic[self.id])
+		FLOW.alltraffic[self.id].co = self.countoutput;
+
 	if (index === undefined) {
 
 		FLOW.traffic(self.id, 'output');
@@ -654,6 +661,12 @@ Component.prototype.send = function(index, message) {
 						data.index = +ids[j].index;
 						if (index !== 99)
 							instance.$last = now;
+
+						instance.countinput++;
+
+						if (FLOW.alltraffic[instance.id])
+							FLOW.alltraffic[instance.id].ci = instance.countinput;
+
 						instance.$events.data && instance.emit('data', data);
 						instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
 					} catch (e) {
@@ -694,6 +707,12 @@ Component.prototype.send = function(index, message) {
 					data.index = +arr[i].index;
 					if (index !== 99)
 						instance.$last = now;
+
+					instance.countinput++;
+
+					if (FLOW.alltraffic[instance.id])
+						FLOW.alltraffic[instance.id].ci = instance.countinput;
+
 					instance.$events.data && instance.emit('data', data);
 					instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
 				} catch (e) {
@@ -724,7 +743,8 @@ Component.prototype.error = function(e, parent) {
 		}
 		FLOW.send(MESSAGE_ERRORS);
 	}, 100);
-	instance.throw(e);
+	self.throw(e);
+	FLOW.$events.error && FLOW.emit('error', e, self, parent);
 	return self;
 };
 
@@ -822,7 +842,7 @@ Component.prototype.dashboard = function(){
 };
 
 Component.prototype.throw = function(data) {
-	return this.send(99, message);
+	return this.send(99, data);
 };
 
 Component.prototype.$refresh = function() {
@@ -1344,11 +1364,15 @@ FLOW.rem = function(key) {
 	return FLOW;
 };
 
+// ci = message count in input
+// co = message count in output
 FLOW.traffic = function(id, type, count) {
-	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0, duration: 0 });
+	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0, duration: 0, ci: 0, co: 0 });
 	switch (type) {
 		case 'pending':
 		case 'duration':
+		case 'ci':
+		case 'co':
 			FLOW.alltraffic[id][type] = count;
 			break;
 		case 'output':

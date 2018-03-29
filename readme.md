@@ -510,6 +510,14 @@ exports.install = function(component) {
     // {Number} - time of data processing between input and output in milliseconds
     // +v4.3.0
 
+    component.countinput;
+    // {Number} - count of message on input
+    // +v4.3.0
+
+    component.countoutput;
+    // {Number} - count of message on output
+    // +v4.3.0
+
     component.custom;
     // {Object} - empty object for custom variables and methods
 
