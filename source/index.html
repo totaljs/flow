@@ -435,6 +435,7 @@
 			settings.$output = component.output;
 			settings.$input = component.input;
 			staticContent(component.component, 'html', function() {
+				model.comreadme = markdown(common.statics['readme.' + component.component] || '');
 				EMIT('open.' + component.component, component, model);
 				SET('settings.' + component.component, model);
 				SET('common.form', 'settings-' + component.component);
@@ -517,25 +518,13 @@
 		});
 
 		ON('info', function(value, notes) {
-			var el = $('#infopanel');
-			el.html(markdown(value));
-			el.find('pre code').each(function(i, block) {
-				if (!block.$processed) {
-					block.$processed = true;
-					hljs.highlightBlock(block);
-				}
-			});
-
-			el = $('#infopanelnotes').tclass('hidden', !notes);
-
-			if (notes) {
-				el.find('.markdown').html(markdown(notes));
-				el.find('pre code').each(function(i, block) {
-					if (!block.$processed) {
-						block.$processed = true;
-						hljs.highlightBlock(block);
-					}
-				});
+			var key = value + (notes || '').toString();
+			if (common.bkreadme !== key) {
+				common.bkreadme = key;
+				var el = $('#infopanel');
+				el.html(markdown(value, el));
+				el = $('#infopanelnotes').tclass('hidden', !notes);
+				notes && el.find('.markdown').html(markdown(notes, el));
 			}
 		});
 
@@ -583,7 +572,7 @@
 			var text;
 
 			if (typeof(value) === 'string')
-				text = '<div class="markdown">{0}</div>'.format(markdown(value));
+				text = '<div class="markdown">{0}</div>'.format(markdown(value, el));
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
@@ -1047,7 +1036,15 @@
 			$('.mainmenu').find('.highlight').tclass('blink', value ? true : false);
 		}
 
-		function markdown(value) {
+		function markdown(value, el) {
+			setTimeout(function(el) {
+				$(el || document.body).find('pre code').each(function(i, block) {
+					if (!block.$processed) {
+						block.$processed = true;
+						hljs.highlightBlock(block);
+					}
+				});
+			}, 1, el);
 			return marked(value.trim()).replace(/<img/g, '<img class="img-responsive"').replace(/<table/g, '<table class="table table-bordered"').replace(/<a\s/g, '<a target="_blank"');
 		}
 
