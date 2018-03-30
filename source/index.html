@@ -65,7 +65,7 @@
 				<hr class="mt5 nmb" />
 			</div>
 			<div class="scroller">
-				<div data-jc="repeater" data-jc-path="common.errors">
+				<div data-jc="repeater__common.errors">
 					<script type="text/html">
 						<div class="erroroutput">
 							<div class="erroroutput-name"><i class="fa fa-square mr5" style="color:{{ color }}"></i><b>{{ name }}</b> / {{ tab }}</div>
@@ -85,16 +85,18 @@
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'debug'">
 			<div class="padding npb">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
-				<div data-jc="checkbox" data-jc-path="common.beautify">@(Beautify)</div>
+				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
 				<hr class="nmb" style="margin-top:10px" />
 			</div>
 			<div id="debugpanel" class="scroller"></div>
 		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
-			<div class="padding npb fs12" style="line-height:18px">
+			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
 				<div><span data-b="flow.traffic.memory" data-b-html="n => n" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-b="flow.traffic.counter" data-b-html="n => (n || 0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
-				<hr class="nmb" style="margin-top:10px" />
+				<hr style="margin:10px 0 15px" />
+				<div data-jc="checkbox__common.animations" class="b">@(Show traffic in designer)</div>
+				<hr class="nmb" style="margin:15px 0 10px" />
 			</div>
 			<div class="scroller">
 				<div class="traffic-container b" style="margin-bottom:5px">
@@ -103,7 +105,7 @@
 					<div class="traffic-value" title="@(Average processing time)">@(Time)</div>
 					<div class="traffic-name">@(Component)</div>
 				</div>
-				<div data-jc="repeater" data-jc-path="flow.traffic">
+				<div data-jc="repeater__flow.traffic">
 					<script type="text/html">
 						<div class="traffic-container">
 							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}x</div>
@@ -128,13 +130,13 @@
 		</section>
 
 		<div class="padding">
-			<div data-jc="textbox" data-jc-path="common.search" data-jc-config="placeholder:@(Search components ...);type:search"></div>
+			<div data-jc="textbox__common.search__placeholder:@(Search components ...);type:search"></div>
 		</div>
 
-		<div data-jc="search" data-jc-path="common.search" data-jc-config="selector:li">
+		<div data-jc="search__common.search__selector:li">
 			<div class="components-container">
 				<div class="scroller">
-					<ul data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group" class="components">
+					<ul data-jc="repeater-group__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
 								<div><i class="fa fa-square" style="color:{{ color }}"></i>{{ name }}</div>
@@ -152,7 +154,7 @@
 	<div class="body">
 		<a href="javascript:void(0)" class="themechanger exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></a>
 		<section class="tabs">
-			<nav data-jc="repeater" data-jc-path="flow.tabs">
+			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === flow.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
 				</script>
@@ -177,18 +179,18 @@
 				<div class="designer-shadow-right"></div>
 				<div class="designer-shadow-bottom"></div>
 				<div class="designer-shadow-left"></div>
-				<div data-jc="designer" data-jc-path="flow.designer"></div>
+				<div data-jc="designer__flow.designer"></div>
 			</div>
 		</div>
 	</div>
 
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:tab;url:@{repository.url}templates/form-tab.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:settings;url:@{repository.url}templates/form-settings.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:export;url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:import;url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:database;url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:variables;url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form2" data-jc-config="if:components;url:@{repository.url}templates/form-components.html"></div>
+	<div data-jc="importer__common.form__if:tab;url:@{repository.url}templates/form-tab.html"></div>
+	<div data-jc="importer__common.form__if:settings;url:@{repository.url}templates/form-settings.html"></div>
+	<div data-jc="importer__common.form__if:export;url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
+	<div data-jc="importer__common.form__if:import;url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
+	<div data-jc="importer__common.form__if:database;url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
+	<div data-jc="importer__common.form__if:variables;url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
+	<div data-jc="importer__common.form2__if:components;url:@{repository.url}templates/form-components.html"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -208,6 +210,7 @@
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
 			!this.tabscroll && (this.tabscroll = {});
+			!this.animations && (this.animations = true);
 			this.touches = false;
 			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
 			this.beautify === undefined && (this.beautify = true);
@@ -224,6 +227,7 @@
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
 		CACHEPATH('common.tabscroll', '1 month');
+		CACHEPATH('common.animations', '1 month');
 
 		$(document).on('click', '#panel-notification', function() {
 			shownotifications(true);
@@ -895,21 +899,20 @@
 
 			if (message.type === 'traffic') {
 
-				if (!NOTMODIFIED('traffic', message.body)) {
-					common.traffic = message.body;
-					refreshTraffic();
-				}
+				common.traffic = message.body;
+				refreshTraffic();
 
 				var arr = [];
 				var empty = { input: 0, output: 0 };
 				var count = message.body.count;
 
-				flow.components.forEach(function(component) {
-					if (!component.$component)
-						return;
-					var stats = message.body[component.id] || empty;
-					arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: ((stats.duration || 0) / 1000).floor(1) });
-				});
+				for (var i = 0, length = flow.components.length; i < length; i++) {
+					var component = flow.components[i];
+					if (component.$component) {
+						var stats = message.body[component.id] || empty;
+						arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: ((stats.duration || 0) / 1000).floor(1) });
+					}
+				}
 
 				arr.memory = message.memory;
 				arr.counter = message.counter;
@@ -1066,7 +1069,7 @@
 					var title = target;
 					if (com)
 						title = com.name;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-config="title:@(Settings\\:) {2};if:settings-{0};width:960" data-jc-path="common.form" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox" data-jc-path="comname" data-jc-config="placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox" data-jc-path="comreference" data-jc-config="placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector" data-jc-path="comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960 class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
@@ -1263,6 +1266,9 @@
 				return;
 
 			var count = common.traffic.count;
+			var key;
+			var animate = [];
+
 			for (var i = 0, length = common.trafficnodes.length; i < length; i++) {
 
 				var el = common.trafficnodes[i];
@@ -1278,16 +1284,32 @@
 				var co = 0;
 
 				if (stats) {
+
 					if (stats.input || stats.output) {
 						input = ((stats.input / count) * 100 >> 0);
 						output = ((stats.output / count) * 100 >> 0);
 						inputc = stats.input;
 						outputc = stats.output;
 					}
+
 					ci = stats.ci;
 					co = stats.co;
 					duration = (stats.duration / 1000).floor(1);
 					pending = stats.pending;
+
+					// analyze
+					if (stats.ni && common.animations) {
+						var keys = Object.keys(flow.connections);
+						for (var j = 0, jl = keys.length; j < jl; j++) {
+							key = keys[j];
+							if (key.substring(key.length - id.length) === id) {
+								var subid = key.substring(0, key.indexOf('#', id.length));
+								var tmpout = common.traffic[subid];
+								if (tmpout && tmpout.no)
+									animate.push({ id: 'id' + subid + id, count: tmpout.no });
+							}
+						}
+					}
 				}
 
 				var key = input + 'x' + output + 'x' + pending + 'x' + duration;
@@ -1304,6 +1326,13 @@
 				var w = +rect.attrd('width');
 				var p = (w / 100) * sum;
 				rect.attr('width', p);
+			}
+
+			if (common.animations) {
+				for (var i = 0; i < animate.length; i++) {
+					var item = animate[i];
+					SETTER('designer', 'newdata', item.id, item.count);
+				}
 			}
 		}
 

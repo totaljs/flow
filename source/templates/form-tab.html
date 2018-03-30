@@ -1,10 +1,10 @@
-<div data-jc="form" data-jc-path="common.form" data-jc-config="if:tab;width:400;enter:true;title:@(Edit tab);submit:formtab_submit;autofocus:true" class="hidden">
+<div data-jc="form__common.form__if:tab;width:400;enter:true;title:@(Edit tab);submit:formtab_submit;autofocus:true" class="hidden">
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formtab.name" data-jc-config="maxlength:30;required:true;placeholder:@(Type a tab name)" class="m">@(Name)</div>
+		<div data-jc="textbox__formtab.name__maxlength:30;required:true;placeholder:@(Type a tab name)" class="m">@(Name)</div>
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data-jc="dropdown" data-jc-path="formtab.position" data-jc-config="required:true;type:number;datasource:formtabpositions">@(Position)</div>
+				<div data-jc="dropdown__formtab.position__required:true;type:number;datasource:formtabpositions">@(Position)</div>
 			</div>
 		</div>
 
@@ -18,7 +18,7 @@
 		</div>
 	</div>
 	<div class="ui-form-buttons">
-		<div data-jc="validation" data-jc-path="formtab">
+		<div data-jc="validation__formtab">
 			<button name="submit" disabled="disabled">@(SUBMIT)</button>
 		</div>
 		<button name="cancel">@(Close)</button>

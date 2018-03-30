@@ -127,6 +127,13 @@ exports.install = function(options) {
 
 				MESSAGE_TRAFFIC.counter = COUNTER;
 				FLOW.ws.send(MESSAGE_TRAFFIC);
+
+				var keys = Object.keys(FLOW.alltraffic);
+				for (var i = 0, length = keys.length; i < length; i++) {
+					var item = FLOW.alltraffic[keys[i]];
+					item.ni = 0;
+					item.no = 0;
+				}
 			}
 
 			if (FLOW.indexer % 10 === 0) {
@@ -1366,8 +1373,10 @@ FLOW.rem = function(key) {
 
 // ci = message count in input
 // co = message count in output
+// ni = new messages on input
+// no = new messages on output
 FLOW.traffic = function(id, type, count) {
-	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0, duration: 0, ci: 0, co: 0 });
+	!FLOW.alltraffic[id] && (FLOW.alltraffic[id] = { input: 0, output: 0, pending: 0, duration: 0, ci: 0, co: 0, ni: 0, no: 0 });
 	switch (type) {
 		case 'pending':
 		case 'duration':
@@ -1377,7 +1386,12 @@ FLOW.traffic = function(id, type, count) {
 			break;
 		case 'output':
 			FLOW.alltraffic[id][type]++;
+			FLOW.alltraffic[id].no++;
 			FLOW.alltraffic.count++;
+			break;
+		case 'input':
+			FLOW.alltraffic[id][type]++;
+			FLOW.alltraffic[id].ni++;
 			break;
 		default:
 			FLOW.alltraffic[id][type]++;
@@ -1395,6 +1409,8 @@ FLOW.reset_traffic = function() {
 			var item = FLOW.alltraffic[keys[i]];
 			item.input = 0;
 			item.output = 0;
+			item.ni = 0;
+			item.no = 0;
 		}
 	}
 	return FLOW;

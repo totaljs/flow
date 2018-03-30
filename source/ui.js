@@ -1117,7 +1117,7 @@ COMPONENT('designer', function() {
 	var svg, connection;
 	var drag = {};
 	var skip = false;
-	var data, selected = [], dragdrop, container, lines, main, scroller, touch;
+	var data, selected = [], dragdrop, container, lines, main, scroller, touch, anim;
 	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 
@@ -1139,6 +1139,50 @@ COMPONENT('designer', function() {
 		return svg.get(0);
 	}
 
+	function pathStartPoint(path) {
+		return path.attr('d').split(' ')[1].split(',');
+	}
+
+	function translateAlong(count, path) {
+		var l = path.getTotalLength();
+		var t = (l / 100) * count;
+		var p = path.getPointAtLength(t);
+		return 'translate(' + p.x + ',' + p.y + ')';
+	}
+
+	self.newdata = function(id, count) {
+		var p = document.getElementById(id);
+		if (!p)
+			return;
+
+		if (count > 1) {
+			var length = (p.getTotalLength() / 30) >> 0;
+			if (count > length)
+				count = length;
+		}
+
+		if (count > 1) {
+			for (var i = 1; i < count + 1; i++) {
+				setTimeout(function() {
+					self.newdata(id);
+				}, 100 * i);
+			}
+			return;
+		}
+
+		var el = anim.asvg('circle').aclass('data').attr('r', 6);
+		el.$path = p;
+		el.$count = 0;
+		el.$id = setInterval(function(el) {
+			el.$count++;
+			if (el.$count >= 100 || !el.$path) {
+				clearInterval(el.$id);
+				el.remove();
+			} else
+				el.attr('transform', translateAlong(el.$count, el.$path));
+		}, 5, el);
+	};
+
 	self.readonly();
 	self.make = function() {
 		var url = location.pathname;
@@ -1153,6 +1197,7 @@ COMPONENT('designer', function() {
 		connection = main.asvg('path').attr('class', 'connection');
 		lines = main.asvg('g');
 		container = main.asvg('g');
+		anim = svg.asvg('g').attr('class', 'animations');
 		self.resize();
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
@@ -1849,6 +1894,7 @@ COMPONENT('designer', function() {
 		attr['data-to'] = bid;
 		attr['data-toindex'] = oindex;
 		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
+		attr['id'] = 'id' + aid + '' + bid;
 		lines.asvg('path').attr(attr);
 	};
 

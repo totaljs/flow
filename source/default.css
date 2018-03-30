@@ -215,7 +215,8 @@ svg { cursor: move; }
 .themedark nav .highlight { background-color: #404040; }
 .themedark .panel { background-color: #202020; }
 .themedark .panel hr { border-color: #303030; }
-.themedark .panel .ui-checkbox div { border-color: #303030; background-color: #303030; }
+.themedark .panel .ui-checkbox div { border-color: #606060; background-color: #606060; }
+.themedark .panel .ui-checkbox-checked div { background-color: #4299F7; border-color: #4299F7; }
 .themedark .traffic-container { border-color: #303030; }
 .themedark #designerbuttons { background-color: #151515; }
 .themedark #designerzoom { background-color: #151515; }

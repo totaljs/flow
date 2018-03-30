@@ -1,12 +1,12 @@
-<div data-jc="form,dragdropfiles" data-jc-path="common.form" data-jc-config="title:@(Flow components);if:database;width:932;exec:formdatabase_dragdrop;class:+ui-form-dragdrop;submit:formdatabase_submit;close:formdatabase_submit" class="hidden">
+<div data-jc="form,dragdropfiles__common.form__title:@(Flow components);if:database;width:932;exec:formdatabase_dragdrop;class:+ui-form-dragdrop;submit:formdatabase_submit;close:formdatabase_submit" class="hidden">
 	<div class="padding npb" style="background-color:#FFFCD3">
 		<div class="b m black"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
 		<div class="row">
 			<div class="col-md-6 m">
-				<div data-jc="textbox" data-jc-path="formdatabase.url" class="m" data-jc-config="maxlength:200;placeholder:@(E.g. https\://domain.com/flowcomponent.js and press enter);type:url;keypress:false;required:true">@(URL address)</div>
+				<div data-jc="textbox__formdatabase.url__maxlength:200;placeholder:@(E.g. https\://domain.com/flowcomponent.js and press enter);type:url;keypress:false;required:true" class="m">@(URL address)</div>
 			</div>
 			<div class="col-md-6 m">
-				<div data-jc="filereader" data-jc-path="formdatabase.file" data-jc-config="placeholder:@(Browse device);accept:text/javascript;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .js component)</div>
+				<div data-jc="filereader__formdatabase.file__placeholder:@(Browse device);accept:text/javascript;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .js component)</div>
 			</div>
 		</div>
 		<div data-b="common.templates" data-b-visible="value && value.length > 0" class="hidden">
@@ -15,7 +15,7 @@
 				<div class="col-md-3 col-sm-4">
 					<span class="exec tag tag2 block" data-exec="formdatabase_install" data-value="all">@(Install:)<b> @(All components)</b></span>
 				</div>
-				<div data-jc="repeater" data-jc-path="common.templates">
+				<div data-jc="repeater__common.templates">
 				<script type="text/html">
 					<div class="col-md-3 col-sm-4">
 						<span class="exec tag block" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</span>
@@ -27,11 +27,11 @@
 		</div>
 	</div>
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formdatabase.search" data-jc-config="type:search;placeholder:@(Search components ...)" class="mt10"></div>
+		<div data-jc="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
 		<br />
-		<div data-jc="search" data-jc-path="formdatabase.search" data-jc-config="selector:.jsearch">
+		<div data-jc="search__formdatabase.search__selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group" data-jc-path="common.components" data-jc-config="group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'">
+				<div data-jc="repeater-group__common.components__group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'">
 					<script type="text/html">
 						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ id }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
