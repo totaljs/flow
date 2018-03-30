@@ -1157,7 +1157,7 @@ COMPONENT('designer', function() {
 			return;
 
 		if (count > 1) {
-			var length = (p.getTotalLength() / 50) >> 0;
+			var length = (p.getTotalLength() / 93) >> 0;
 			if (count > length)
 				count = length;
 		}
