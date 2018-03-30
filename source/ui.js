@@ -1152,7 +1152,8 @@ COMPONENT('designer', function() {
 
 	self.newdata = function(id, count) {
 		var p = document.getElementById(id);
-		if (!p)
+
+		if (!p || document.hidden)
 			return;
 
 		if (count > 1) {
@@ -1164,7 +1165,7 @@ COMPONENT('designer', function() {
 		if (count > 1) {
 			for (var i = 1; i < count + 1; i++) {
 				setTimeout(function() {
-					self.newdata(id);
+					!document.hidden && self.newdata(id);
 				}, 100 * i);
 			}
 			return;
@@ -1173,14 +1174,18 @@ COMPONENT('designer', function() {
 		var el = anim.asvg('circle').aclass('data').attr('r', 6);
 		el.$path = p;
 		el.$count = 0;
-		el.$id = setInterval(function(el) {
-			el.$count++;
-			if (el.$count >= 100 || !el.$path) {
-				clearInterval(el.$id);
+
+		var fn = function() {
+			el.$count += 3;
+			if (el.$count >= 100 || !el.$path || document.hidden) {
 				el.remove();
+				return;
 			} else
 				el.attr('transform', translateAlong(el.$count, el.$path));
-		}, 5, el);
+			requestAnimationFrame(fn);
+		};
+
+		requestAnimationFrame(fn);
 	};
 
 	self.readonly();

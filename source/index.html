@@ -899,6 +899,9 @@
 
 			if (message.type === 'traffic') {
 
+				if (document.hidden)
+					return;
+
 				common.traffic = message.body;
 				refreshTraffic();
 
