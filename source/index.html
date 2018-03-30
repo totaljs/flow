@@ -93,7 +93,7 @@
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
 			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
-				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
+				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0)" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr style="margin:10px 0 15px" />
 				<div data-jc="checkbox__common.animations" class="b">@(Show traffic in designer)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
@@ -1324,7 +1324,7 @@
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
 				el.find('.traffic').html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? ('/ ' + duration + ' sec.') : ''));
 				var pel = el.find('.pending').tclass('hide', pending ? false : true);
-				pending && pel.html(pending ? ('&#10711; ' + pending + 'x') : '');
+				pending && pel.html(pending ? ('&#10711; ' + pending) : '');
 				var rect = el.find('rect');
 				var w = +rect.attrd('width');
 				var p = (w / 100) * sum;
