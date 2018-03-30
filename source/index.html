@@ -83,17 +83,17 @@
 			</div>
 		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'debug'">
-			<div class="padding npb">
+			<div style="padding:15px 15px 0">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
 				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
-				<hr class="nmb" style="margin-top:10px" />
+				<hr class="nmb" style="margin-top:15px" />
 			</div>
 			<div id="debugpanel" class="scroller"></div>
 		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
 			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
-				<div><span data-b="flow.traffic.memory" data-b-html="n => n" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
-				<div><span data-b="flow.traffic.counter" data-b-html="n => (n || 0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
+				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
+				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr style="margin:10px 0 15px" />
 				<div data-jc="checkbox__common.animations" class="b">@(Show traffic in designer)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
@@ -1069,7 +1069,7 @@
 					var title = target;
 					if (com)
 						title = com.name;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960 class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
