@@ -72,7 +72,7 @@
 		var arr = [];
 		var tmp = {};
 
-		formimportanalysis.errors.forEach(function(item) {
+		formimportanalysis.errors && formimportanalysis.errors.forEach(function(item) {
 			tmp['/' + item.name + '.js'] = true;
 		});
 
@@ -199,7 +199,7 @@
 				}, 100);
 			};
 
-			if (formimportanalysis.errors.length)
+			if (formimportanalysis.errors && formimportanalysis.errors.length)
 				formimport_installcomponents(fnapply);
 			else {
 				fnapply();
