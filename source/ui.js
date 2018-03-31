@@ -1747,11 +1747,14 @@ COMPONENT('designer', function() {
 		}
 
 		if ((item.$component.input || item.$component.output) && item.$component.traffic) {
-			g.asvg('rect').attr('class', 'consumption').attr('width', width - 5).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + radius)).attr('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
 			var plus = g.asvg('g').attr('class', 'node_traffic').attrd('id', item.id);
-			plus.asvg('rect').attrd('width', width - 5).attr('width', 0).attr('height', 3).attr('transform', 'translate(2, {0})'.format(height + radius));
-			plus.asvg('text').aclass('traffic').attr('transform', 'translate(2,{0})'.format(height + 25)).text('...');
-			plus.asvg('g').attr('transform', 'translate(2,{0})'.format(height + 40)).asvg('text').aclass('pending');
+			plus.asvg('text').aclass('traffic').attr('transform', 'translate(2,{0})'.format(height + 17)).text('...');
+			var plustop = 31;
+			if (item.$component.input && item.$component.output) {
+				plus.asvg('text').aclass('duration').attr('transform', 'translate(2,{0})'.format(height + plustop)).text('...');
+				plustop += 14;
+			}
+			plus.asvg('g').attr('transform', 'translate(2,{0})'.format(height + plustop)).asvg('text').aclass('pending');
 		}
 
 		g.attr('transform', 'translate({0},{1})'.format(item.x, item.y));

@@ -6,7 +6,7 @@ function diagonal(x1, y1, x2, y2, err) {
 }
 
 Tangular.register('duration', function(ms) {
-	return (ms / 1000).format(1) + ' s';
+	return (ms / 1000).format(2) + ' s';
 });
 
 ON('ready', function() {

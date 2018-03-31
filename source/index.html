@@ -622,8 +622,16 @@
 			UPDATE('flow.designer');
 			setTimeout(function() {
 				common.trafficnodes = $('.node_traffic').toArray();
-				for (var i = 0; i < common.trafficnodes.length; i++)
+				for (var i = 0; i < common.trafficnodes.length; i++) {
 					common.trafficnodes[i] = $(common.trafficnodes[i]);
+					var el = common.trafficnodes[i];
+					var item = el.get(0);
+					item.$io = el.find('.traffic');
+					item.$duration = el.find('.duration');
+					if (!item.$duration.length)
+						item.$duration = null;
+					item.$pending = el.find('.pending');
+				}
 				refreshTraffic();
 			}, 100);
 		});
@@ -1321,16 +1329,14 @@
 				if (key === el.get(0).$traffic)
 					continue;
 
-				el.get(0).$traffic = key;
+				var item = el.get(0);
+				item.$traffic = key;
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-				el.find('.traffic').html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? (' &#9201; ' + Thelpers.duration(duration)) : ''));
-				var pel = el.find('.pending').tclass('hide', pending ? false : true);
+				item.$io.html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan>');
+				item.$duration && item.$duration.html('&empty; ' + Thelpers.duration(duration || 0));
+				var pel = item.$pending.tclass('hide', pending ? false : true);
 				pending && pel.html(pending ? ('&#10711; ' + pending) : '');
-				var rect = el.find('rect');
-				var w = +rect.attrd('width');
-				var p = (w / 100) * sum;
-				rect.attr('width', p);
 			}
 
 			if (common.animations) {
