@@ -1122,6 +1122,7 @@ COMPONENT('designer', function() {
 	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
 	var animcache = {};
+	var animrunning = {};
 	var animtoken = 0;
 
 	function findPoint(selector, x, y) {
@@ -1162,9 +1163,11 @@ COMPONENT('designer', function() {
 		var speed = 3;
 
 		if (count) {
+
 			if (animcache[id]) {
 				animcache[id] += count;
-				return;
+				if (animrunning[id] > 0)
+					return;
 			} else
 				animcache[id] = count;
 
@@ -1190,7 +1193,9 @@ COMPONENT('designer', function() {
 					!document.hidden && self.animdata(id, p);
 				}, delay * i);
 			}
+
 		} else if (animcache[id]) {
+
 			animcache[id]--;
 
 			if (animcache[id] < 0)
@@ -1199,6 +1204,7 @@ COMPONENT('designer', function() {
 			setTimeout(function() {
 				self.animdata(id, p, speed);
 			}, 100);
+
 		}
 	};
 
@@ -1209,16 +1215,23 @@ COMPONENT('designer', function() {
 		el.$count = 0;
 		el.$token = animtoken;
 
+		if (animrunning[id])
+			animrunning[id]++;
+		else
+			animrunning[id] = 1;
+
 		var fn = function() {
 
 			el.$count += (speed || 3);
 
 			if (!el.$path || document.hidden || el.$token !== animtoken) {
 				el.remove();
+				animrunning[id]--;
 				return;
 			}
 
 			if (el.$count >= 100) {
+				animrunning[id]--;
 				el.remove();
 				self.newdata(id);
 				return;
@@ -1966,6 +1979,7 @@ COMPONENT('designer', function() {
 			return;
 
 		animcache = {};
+		animrunning = {};
 		data = {};
 		selected = [];
 		animtoken = (Math.random() * 1000).floor(0);

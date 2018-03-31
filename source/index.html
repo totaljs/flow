@@ -94,7 +94,7 @@
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0)" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr style="margin:10px 0 15px" />
-				<div data-jc="checkbox__common.animations" class="b">@(Show traffic in designer)</div>
+				<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
 			</div>
 			<div class="scroller">
@@ -583,7 +583,7 @@
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
-			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}{7}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : ''), duration != null ? (' <i class="fa fa-hourglass-half mr5"></i><b>' + Thelpers.duration(duration) + '</b>') : '') + (group ? '</div>' : ''));
+			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}{7}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : ''), duration != null ? (' <i class="fa fa-hourglass-half mr5"></i><b>' + duration.format(2) + ' s</b>') : '') + (group ? '</div>' : ''));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
 					if (!block.$processed) {
@@ -621,20 +621,24 @@
 
 			UPDATE('flow.designer');
 			setTimeout(function() {
-				common.trafficnodes = $('.node_traffic').toArray();
-				for (var i = 0; i < common.trafficnodes.length; i++) {
-					common.trafficnodes[i] = $(common.trafficnodes[i]);
-					var el = common.trafficnodes[i];
-					var item = el.get(0);
-					item.$io = el.find('.traffic');
-					item.$duration = el.find('.duration');
-					if (!item.$duration.length)
-						item.$duration = null;
-					item.$pending = el.find('.pending');
-				}
+				refreshTrafficNodes();
 				refreshTraffic();
 			}, 100);
 		});
+
+		function refreshTrafficNodes() {
+			common.trafficnodes = $('.node_traffic').toArray();
+			for (var i = 0; i < common.trafficnodes.length; i++) {
+				common.trafficnodes[i] = $(common.trafficnodes[i]);
+				var el = common.trafficnodes[i];
+				var item = el.get(0);
+				item.$io = el.find('.traffic');
+				item.$duration = el.find('.duration');
+				if (!item.$duration.length)
+					item.$duration = null;
+				item.$pending = el.find('.pending');
+			}
+		}
 
 		$(window).on('hashchange', function() {
 			EMIT('designer.selectable', null);
@@ -805,11 +809,7 @@
 				setState('');
 				SETTER('websocket', 'send', message);
 				setTimeout(success, 1000);
-
-				common.trafficnodes = $('.node_traffic').toArray();
-				for (var i = 0; i < common.trafficnodes.length; i++)
-					common.trafficnodes[i] = $(common.trafficnodes[i]);
-
+				refreshTrafficNodes();
 			});
 		});
 
@@ -1342,7 +1342,9 @@
 			if (common.animations) {
 				for (var i = 0; i < animate.length; i++) {
 					var item = animate[i];
-					SETTER('designer', 'newdata', item.id, item.count);
+					setTimeout(function(item) {
+						SETTER('designer', 'newdata', item.id, item.count);
+					}, i * 50, item);
 				}
 			}
 		}
