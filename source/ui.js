@@ -1168,22 +1168,24 @@ COMPONENT('designer', function() {
 		var speed = 3;
 
 		if (count) {
-
+			var length = (p.getTotalLength() / 60) >> 0;
 			if (animcache[id]) {
 				animcache[id] += count;
-				if (animrunning[id] > 0)
+				if (animrunning[id] > 0) {
+					if (animrunning[id] < length) {
+						length = length - animrunning[id];
+						for (var i = 0; i < length + 1; i++)
+							self.animdata(id, p, speed);
+					}
 					return;
+				}
 			} else
 				animcache[id] = count;
 
 			var delay = 100;
 
-			if (count > 1) {
-				var length = p.getTotalLength();
-				length = (length / 90) >> 0;
-				if (count > length)
-					count = length;
-			}
+			if (count > 1 && count > length)
+				count = length;
 
 			animcache[id] -= count;
 
@@ -1195,7 +1197,7 @@ COMPONENT('designer', function() {
 
 			for (var i = 0; i < count; i++) {
 				setTimeout(function() {
-					!document.hidden && self.animdata(id, p);
+					!document.hidden && self.animdata(id, p, speed);
 				}, delay * i);
 			}
 

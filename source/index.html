@@ -92,7 +92,7 @@
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
 			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
-				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0)" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
+				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr style="margin:10px 0 15px" />
 				<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
