@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@(Flow v4:) @{config.name}</title>
+	<title>@(Flow v4.3:) @{config.name}</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
@@ -98,18 +98,20 @@
 				<hr class="nmb" style="margin:15px 0 10px" />
 			</div>
 			<div class="scroller">
-				<div class="traffic-container b" style="margin-bottom:5px">
-					<div class="traffic-value">@(Output)</div>
-					<div class="traffic-value">@(Input)</div>
-					<div class="traffic-value" title="@(Average processing time)">@(Time)</div>
-					<div class="traffic-name">@(Component)</div>
+				<div class="traffic-container b" style="margin-bottom:5px" data-b="common.trafficsort" data-b-template="true">
+					<script type="text/html">
+						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="outputs">{{ value | trafficsort('outputs') }}@(Output)</div>
+						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="inputs">{{ value | trafficsort('inputs') }}@(Input)</div>
+						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="duration" title="@(Average processing time)">{{ value | trafficsort('duration') }}@(Time)</div>
+						<div class="traffic-name sort exec" data-exec="trafficSort" data-name="name">{{ value | trafficsort('name') }}@(Component)</div>
+					</script>
 				</div>
 				<div data-jc="repeater__flow.traffic">
 					<script type="text/html">
 						<div class="traffic-container">
-							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}x</div>
-							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}x</div>
-							<div class="traffic-value">{{ duration | duration }}</div>
+							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}</div>
+							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}</div>
+							<div class="traffic-value">{{ if isduration }}{{ duration | duration }}{{ else }}---{{ fi }}</div>
 							<div class="traffic-name gray">{{ name }}</div>
 						</div>
 					</script>
@@ -231,6 +233,7 @@
 		CACHEPATH('common.theme', '1 month');
 		CACHEPATH('common.tabscroll', '1 month');
 		CACHEPATH('common.animations', '1 month');
+		CACHEPATH('common.trafficsort', '1 month');
 
 		$(document).on('click', '#panel-notification', function() {
 			shownotifications(true);
@@ -801,6 +804,7 @@
 				});
 
 				EMIT('apply');
+				SETTER('designer', 'animclear');
 
 				var message = {};
 				message.type = 'apply';
@@ -924,12 +928,21 @@
 					var component = flow.components[i];
 					if (component.$component) {
 						var stats = message.body[component.id] || empty;
-						arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: stats.duration || 0 });
+						arr.push({ name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input ? (stats.input + 'x') : '---', outputc: stats.output ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
 					}
 				}
 
 				arr.memory = message.memory;
 				arr.counter = message.counter;
+
+				if (common.trafficsort) {
+					var name = common.trafficsort;
+					var asc = name.substring(0, 1) !== '!';
+					if (!asc)
+						name = name.substring(1);
+					arr.quicksort(name, asc);
+				}
+
 				SET('flow.traffic', arr);
 				return;
 			}
@@ -1544,6 +1557,19 @@
 					SET('common.tabscroll.tab' + common.tab.id, pos);
 			}
 		}
+
+		function trafficSort(el) {
+			var name = el.attrd('name');
+			var old = common.trafficsort;
+
+			if (old === name)
+				name = '!' + name;
+			else if (old === ('!' + name))
+				name = '';
+
+			SET('common.trafficsort', name);
+		}
+
 	</script>
 
 	@{components('flow')}

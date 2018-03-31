@@ -1154,6 +1154,11 @@ COMPONENT('designer', function() {
 		return 'translate(' + p.x + ',' + p.y + ')';
 	}
 
+	self.animclear = function() {
+		animcache = {};
+		animrunning = {};
+	};
+
 	self.newdata = function(id, count) {
 
 		var p = document.getElementById(id);

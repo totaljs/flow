@@ -627,10 +627,10 @@ Component.prototype.send = function(index, message) {
 	var instance;
 	var now = index !== 99 ? Date.now() : null;
 
-	if (index !== 99 && !self.$duration) {
+	if (index !== 99 && self.$duration) {
 		self.duration = self.$last ? now - self.$last : 0;
 		self.duration && FLOW.traffic(self.id, 'duration', self.duration);
-		self.$duration = 1;
+		self.$duration = 0;
 	}
 
 	self.countoutput++;
@@ -667,9 +667,9 @@ Component.prototype.send = function(index, message) {
 						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
 						data.index = +ids[j].index;
 
-						if (index !== 99 && instance.$duration) {
+						if (index !== 99 && !instance.$duration) {
 							instance.$last = now;
-							instance.$duration = 0;
+							instance.$duration = 1;
 						}
 
 						instance.countinput++;
@@ -716,9 +716,9 @@ Component.prototype.send = function(index, message) {
 					var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
 					data.index = +arr[i].index;
 
-					if (index !== 99 && instance.$duration) {
+					if (index !== 99 && !instance.$duration) {
 						instance.$last = now;
-						instance.$duration = 0;
+						instance.$duration = 1;
 					}
 
 					instance.countinput++;

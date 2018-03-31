@@ -177,8 +177,11 @@ svg { cursor: move; }
 
 .traffic-container { border-top: 1px solid #E0E0E0; height: 25px; font-size: 11px; padding: 0 20px 0 5px; }
 .traffic-container:first-child { border-top: 0; }
+.traffic-container .sort { cursor: pointer; }
+.traffic-container .sort .fa { margin-right: 3px; font-size: 10px; }
+.traffic-container .sort:hover { text-decoration: underline; }
 .traffic-name { margin-right: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 5px 10px; }
-.traffic-value { float: right; width: 50px; text-align: right; padding: 5px 0 0; }
+.traffic-value { float: right; width: 60px; text-align: right; padding: 5px 0 0; }
 
 .button { text-decoration: none; position: relative; display: inline-block; margin: 0; font-size: 11px; border: 1px solid #D0D0D0; border-radius: 4px; background-color: white; background: linear-gradient(white,#F0F0F0); padding: 10px 13px; font: normal normal 11px Arial; vertical-align: middle; color: gray; cursor: pointer; outline: 0; }
 .button:hover { border: 1px solid silver; text-decoration: none; }

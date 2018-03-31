@@ -6,7 +6,16 @@ function diagonal(x1, y1, x2, y2, err) {
 }
 
 Tangular.register('duration', function(ms) {
-	return (ms / 1000).format(2) + ' s';
+	return ms > 999 ? ((ms / 1000).format(1) + ' s') : (ms + ' ms');
+});
+
+Tangular.register('trafficsort', function(value, name) {
+	var str = '<i class="fa fa-caret-{0}"></i>';
+	if (value === name)
+		return str.format('up');
+	if (value === ('!' + name))
+		return str.format('down');
+	return '';
 });
 
 ON('ready', function() {
