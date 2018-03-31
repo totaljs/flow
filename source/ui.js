@@ -1248,6 +1248,11 @@ COMPONENT('designer', function() {
 		anim = svg.asvg('g').attr('class', 'animations');
 		self.resize();
 
+		tmp.on('mouseleave', function(e) {
+			if (!common.touches && move.drag)
+				self.mup(e.pageX, e.pageY, 0, 0, e);
+		});
+
 		tmp.on('mousedown mousemove mouseup', function(e) {
 
 			if (common.touches)
@@ -1361,6 +1366,7 @@ COMPONENT('designer', function() {
 		};
 
 		self.mup = function(x, y, offsetX, offsetY, e) {
+
 			var el = $(e.target);
 			switch (move.type) {
 				case 2:
