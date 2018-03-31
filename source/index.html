@@ -95,6 +95,7 @@
 				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<hr style="margin:10px 0 15px" />
 				<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
+				<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
 			</div>
 			<div class="scroller">
@@ -234,6 +235,7 @@
 		CACHEPATH('common.tabscroll', '1 month');
 		CACHEPATH('common.animations', '1 month');
 		CACHEPATH('common.trafficsort', '1 month');
+		CACHEPATH('common.traffictab', '1 month');
 
 		$(document).on('click', '#panel-notification', function() {
 			shownotifications(true);
@@ -927,6 +929,8 @@
 				for (var i = 0, length = flow.components.length; i < length; i++) {
 					var component = flow.components[i];
 					if (component.$component) {
+						if (common.traffictab && common.tab && component.tab !== common.tab.id)
+							continue;
 						var stats = message.body[component.id] || empty;
 						arr.push({ name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input ? (stats.input + 'x') : '---', outputc: stats.output ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
 					}
