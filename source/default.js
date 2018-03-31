@@ -5,6 +5,10 @@ function diagonal(x1, y1, x2, y2, err) {
 	return 'M' + x1 + ',' + y1 + 'C' + ((x1 + x2 ) / 1.9) + ',' + y1 + ' ' + ((x1 + x2) / 2.1) + ',' + y2 + ' ' + x2 + ',' + y2;
 }
 
+Tangular.register('duration', function(ms) {
+	return (ms / 1000).format(1) + ' s';
+});
+
 ON('ready', function() {
 
 	setTimeout(function() {

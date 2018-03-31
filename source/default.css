@@ -2,11 +2,18 @@
 html,body { height: 100%; overflow: hidden; }
 body { background-color: #E6E9ED; font-smoothing: antialiased; }
 
-.mainmenu { float: left; width: 260px; height: 100%; background-color: white; overflow: hidden; transition: margin 0.3s; }
-.panel { float: right; width: 380px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; position: relative; }
-.panel-minized .panel { margin-right: -334px; }
-.panel-minized .body { margin-right: 30px; }
-.body { margin-left: 260px; margin-right: 380px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
+.mainmenu { float: left; width: 217px; height: 100%; background-color: white; overflow: hidden; transition: margin 0.3s; }
+.panel { float: right; width: 340px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; position: relative; }
+.panel-minized .panel { margin-right: -340px; }
+.panel-minized .body { margin-right: 0; }
+.body { margin-left: 217px; margin-right: 340px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
+
+.hidetools { position: relative; width: 100%; }
+.hidetools button { background-color: white; font-size: 11px; height: 20px; width: 20px; border: 0; outline: 0; position: absolute; top: 50px; z-index: 10; padding: 0; }
+.hidetools button:hover { opacity: 0.9; }
+.hidetools button:first-child { right: 0; border-radius: 0 0 0 3px; }
+.hidetools button:last-child { left: 0; border-radius: 0 0 3px 0; }
+.themedark .hidetools button { background-color: #404040; }
 
 #panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; z-index: 100 }
 #panel-notification div { line-height: 14px; margin-top: 3px; }
@@ -19,6 +26,8 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .themedark #infopanelnotes .markdown { background-color: #171717; border-color: #252525; color: gray; }
 .themedark #infopanelnotes .markdown hr { border-color: #383838; }
 
+.panel .tabs button { width: 25%; font-size: 12px; }
+
 section > label .fa { margin-right: 5px; }
 section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 4px 4px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
 section > div { background-color: white; border-radius: 0 0 4px 4px; line-height: 18px; border: 1px solid #E0E0E0; }
@@ -28,12 +37,17 @@ nav > .onlyicon { min-width: 30px; }
 nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 3px; }
 nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
+nav button.highlight .fa { color: white; }
+nav button.highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 
 .tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; }
 .tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; border-bottom-color: #D9D9D9; }
 .tabs a:first-child { border-left: 0; }
-.tabs .fa { margin-right: 5px; }
 .tabs a:hover { text-decoration: none; color: black; }
+.tabs button { float: left; padding: 0 14px 0; font-size: 14px; color: gray; height: 50px; border: 0; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; border-bottom-color: #D9D9D9; outline: 0; background-color: transparent; cursor: pointer; }
+.tabs button:first-child { border-left: 0; }
+.tabs button:hover { text-decoration: none; color: black; }
+.tabs .fa { margin-right: 5px; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
 .tabs .br { border-right: 1px solid #D9D9D9; }
 .nb { border: 0 !important; }
@@ -209,9 +223,11 @@ svg { cursor: move; }
 .themedark .components .component { border-color: #303030; }
 .themedark .tabs { background-color: #101010; box-shadow: inset 0 -2px 10px rgba(255,255,255,0.04); }
 .themedark .tabs .selected { background-color: #202020; color: white; }
-.themedark .tabs a { border-color: #303030; }
 .themedark .tabs .br { border-right-color: #303030; }
+.themedark .tabs a { border-color: #303030; }
 .themedark .tabs a:hover { color: white; }
+.themedark .tabs button { border-color: #303030; }
+.themedark .tabs button:hover { color: white; }
 .themedark nav .highlight { background-color: #404040; }
 .themedark .panel { background-color: #202020; }
 .themedark .panel hr { border-color: #303030; }
@@ -247,9 +263,8 @@ svg { cursor: move; }
 .themedark .markdown th { background-color: #404040; }
 .themedark .markdown blockquote { border-color: #303030; color: gray; }
 
-.mainmenu-hidden {  }
-.mainmenu-hidden .mainmenu { margin-left: -220px; }
-.mainmenu-hidden .body { margin-left: 40px; }
+.mainmenu-hidden .mainmenu { margin-left: -216px; }
+.mainmenu-hidden .body { margin-left: 0; }
 
 .variablesexample { font-size: 12px; font-family: monospace; color: black; line-height: 16px; background-color: #F0F0F0; border-radius: 4px; padding: 15px; }
 .variablesexample span { color: #2B653F; }

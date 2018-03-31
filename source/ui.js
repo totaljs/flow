@@ -1113,6 +1113,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 });
 
 COMPONENT('designer', function() {
+
 	var self = this;
 	var svg, connection;
 	var drag = {};
@@ -1120,6 +1121,8 @@ COMPONENT('designer', function() {
 	var data, selected = [], dragdrop, container, lines, main, scroller, touch, anim;
 	var move = { x: 0, y: 0, drag: false, node: null, offsetX: 0, offsetY: 0, type: 0, scrollX: 0, scrollY: 0 };
 	var zoom = 1;
+	var animcache = {};
+	var animtoken = 0;
 
 	function findPoint(selector, x, y) {
 		var arr = svg.find(selector);
@@ -1151,37 +1154,77 @@ COMPONENT('designer', function() {
 	}
 
 	self.newdata = function(id, count) {
-		var p = document.getElementById(id);
 
+		var p = document.getElementById(id);
 		if (!p || document.hidden)
 			return;
 
-		if (count > 1) {
-			var length = (p.getTotalLength() / 93) >> 0;
-			if (count > length)
-				count = length;
-		}
+		var speed = 3;
 
-		if (count > 1) {
-			for (var i = 1; i < count + 1; i++) {
-				setTimeout(function() {
-					!document.hidden && self.newdata(id);
-				}, 100 * i);
+		if (count) {
+			if (animcache[id]) {
+				animcache[id] += count;
+				return;
+			} else
+				animcache[id] = count;
+
+			var delay = 100;
+
+			if (count > 1) {
+				var length = p.getTotalLength();
+				length = (length / 90) >> 0;
+				if (count > length)
+					count = length;
 			}
-			return;
-		}
 
-		var el = anim.asvg('circle').aclass('data').attr('r', 6);
+			animcache[id] -= count;
+
+			if (animcache[id] < 0)
+				animcache[id] = 0;
+
+			if (animcache[id] > 20)
+				speed = 5;
+
+			for (var i = 0; i < count; i++) {
+				setTimeout(function() {
+					!document.hidden && self.animdata(id, p);
+				}, delay * i);
+			}
+		} else if (animcache[id]) {
+			animcache[id]--;
+
+			if (animcache[id] < 0)
+				animcache[id] = 0;
+
+			setTimeout(function() {
+				self.animdata(id, p, speed);
+			}, 100);
+		}
+	};
+
+	self.animdata = function(id, p, speed) {
+
+		var el = anim.asvg('circle').aclass('data').attr('r', 5);
 		el.$path = p;
 		el.$count = 0;
+		el.$token = animtoken;
 
 		var fn = function() {
-			el.$count += 3;
-			if (el.$count >= 100 || !el.$path || document.hidden) {
+
+			el.$count += (speed || 3);
+
+			if (!el.$path || document.hidden || el.$token !== animtoken) {
 				el.remove();
+				return;
+			}
+
+			if (el.$count >= 100) {
+				el.remove();
+				self.newdata(id);
 				return;
 			} else
 				el.attr('transform', translateAlong(el.$count, el.$path));
+
 			requestAnimationFrame(fn);
 		};
 
@@ -1913,9 +1956,12 @@ COMPONENT('designer', function() {
 		if (!value)
 			return;
 
+		animcache = {};
 		data = {};
 		selected = [];
+		animtoken = (Math.random() * 1000).floor(0);
 
+		anim.empty();
 		lines.empty();
 		container.empty();
 
@@ -1943,6 +1989,7 @@ COMPONENT('designer', function() {
 		zoom = zoom.floor(1);
 		self.find('.svggrid').attr('transform', 'scale({0})'.format(zoom));
 		main.attr('transform', 'scale({0})'.format(zoom));
+		anim.attr('transform', 'scale({0})'.format(zoom));
 	};
 });
 

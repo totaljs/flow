@@ -18,7 +18,7 @@
 .ui-designer .node_label { font-size: 14px; fill: white; }
 .ui-designer .node_status { font-size: 12px; }
 .ui-designer .node_traffic { font-size: 11px; fill: #A0A0A0; }
-.ui-designer .data { fill: #4299F7; }
+.ui-designer .data { fill: black; }
 .ui-designer .pending { fill: #DA4453; animation: 0.3s pending infinite alternate; }
 .ui-designer .hide { visibility: hidden; }
 .ui-designer .node_error {}
@@ -324,6 +324,7 @@ label span { vertical-align: middle; }
 .themedark .ui-loading-firstload { background: black; }
 
 .themedark .ui-designer .node_connection { stroke: #505050; }
+.themedark .ui-designer .data { fill: #3084E1; }
 .themedark .ui-designer .m1 { fill: white; }
 .themedark .ui-designer .input, .themedark .ui-designer .output { stroke: black; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }

@@ -39,11 +39,10 @@
 	<div class="panel">
 		<section class="tabs">
 			<nav>
-				<a href="javascript:void(0)" class="exec onlyicon" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></a>
-				<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'info'" data-b="common.panel" data-b-class="n => (n === 'info' ? '+' : '-') + 'selected'"><i class="fa fa-info-circle"></i>@(Info)</a>
-				<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'debug'" data-b="common.panel" data-b-class="n => (n === 'debug' ? '+' : '-') + 'selected'"><i class="fa fa-history"></i>@(Console)</a>
-				<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'errors'" data-b="common.panel" data-b-class="n => (n === 'errors' ? '+' : '-') + 'selected'"><i class="fa fa-bug" data-b="common.errors" data-b-class="n => (n && n.length ? '+' : '-') + 'red'"></i>@(Errors)</a>
-				<a href="javascript:void(0)" class="exec" data-path="common.panel" data-value="'traffic'" data-b="common.panel" data-b-class="n => (n === 'traffic' ? '+' : '-') + 'selected'"><i class="fa fa-tasks"></i>@(Traffic)</a>
+				<button class="exec" data-path="common.panel" data-value="'info'" data-b="common.panel" data-b-class="n => (n === 'info' ? '+' : '-') + 'selected'"><i class="fa fa-info-circle"></i>@(Info)</button>
+				<button class="exec" data-path="common.panel" data-value="'debug'" data-b="common.panel" data-b-class="n => (n === 'debug' ? '+' : '-') + 'selected'">@(Console)</button>
+				<button class="exec" data-path="common.panel" data-value="'errors'" data-b="common.panel" data-b-class="n => (n === 'errors' ? '+' : '-') + 'selected'"><i class="fa fa-bug" data-b="common.errors" data-b-class="n => (n && n.length ? '+' : '-') + 'red'"></i>@(Errors)</button>
+				<button class="exec" data-path="common.panel" data-value="'traffic'" data-b="common.panel" data-b-class="n => (n === 'traffic' ? '+' : '-') + 'selected'"><i class="fa fa-tasks"></i>@(Traffic)</button>
 			</nav>
 		</section>
 		<div class="padding hidden" data-b="common.panel" data-b-visible="n => n === 'info'">
@@ -60,9 +59,9 @@
 			<div></div>
 		</div>
 		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'errors'">
-			<div class="padding npb">
+			<div class="padding npb npt mt10">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
-				<hr class="mt5 nmb" />
+				<hr class="mt10 nmb" />
 			</div>
 			<div class="scroller">
 				<div data-jc="repeater__common.errors">
@@ -110,7 +109,7 @@
 						<div class="traffic-container">
 							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}x</div>
 							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}x</div>
-							<div class="traffic-value">{{ duration }} @(sec.)</div>
+							<div class="traffic-value">{{ duration | duration }}</div>
 							<div class="traffic-name gray">{{ name }}</div>
 						</div>
 					</script>
@@ -121,11 +120,11 @@
 	<div class="mainmenu">
 		<section class="tabs">
 			<nav>
-				<a href="javascript:void(0)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</a>
-				<a href="javascript:void(0)" title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></a>
-				<a href="javascript:void(0)" title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></a>
-				<a href="javascript:void(0)" title="@(Settings)" class="exec onlyicon br" data-exec="settings_menu"><i class="fa fa-cogs"></i></a>
-				<a href="javascript:void(0)" class="exec onlyicon nb" style="float:right;padding-left:0" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></a>
+				<button class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
+				<button title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
+				<button title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></button>
+				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
+				<!-- <a href="javascript:void(0)" class="exec onlyicon nb" style="float:right;padding-left:0" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></a> -->
 			</nav>
 		</section>
 
@@ -152,7 +151,11 @@
 		</div>
 	</div>
 	<div class="body">
-		<a href="javascript:void(0)" class="themechanger exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></a>
+		<a href="javascript:void(0)" class="themechanger exec"  style="float:right" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></a>
+		<div class="hidetools">
+			<button class="exec onlyicon" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
+			<button class="exec onlyicon nb" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></button>
+		</div>
 		<section class="tabs">
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
@@ -580,7 +583,7 @@
 			else
 				text = '<pre><code class="lang-json hljs">{0}</code></pre>'.format(Tangular.helpers.encode(common.beautify ? JSON.stringify(value, null, '  ') : JSON.stringify(value)));
 
-			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}{7}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : ''), duration != null ? (' <i class="fa fa-hourglass-half mr5"></i><b>' + duration + ' sec.</b>') : '') + (group ? '</div>' : ''));
+			el.prepend('<div class="debugoutput">{6}<div class="debugoutput-time"><div class="debugoutput-id">@(ID:) {5}</div><i class="fa fa-clock-o"></i>{0}{7}</div><div class="debugoutput-name"><i class="fa fa-square" style="color:{3}"></i>{1} / {4}</div>{2}</div>'.format(new Date().format('yyyy-MM-dd HH:mm:ss'), component.name && component.name !== component.$component.name ? ('{1}, <b>{0}</b>'.format(component.name, component.$component.name)) : component.$component.name, text, component.$component.color || 'gray', tab ? tab.name : '@(Unknown tab)', identificator === null ? '-' : identificator, (group ? ('<div class="debuggroup-name">' + group + '</div><div class="debuggroup">') : ''), duration != null ? (' <i class="fa fa-hourglass-half mr5"></i><b>' + Thelpers.duration(duration) + '</b>') : '') + (group ? '</div>' : ''));
 			setTimeout2('debug.highlight', function() {
 				el.find('pre code').each(function(i, block) {
 					if (!block.$processed) {
@@ -913,13 +916,12 @@
 					var component = flow.components[i];
 					if (component.$component) {
 						var stats = message.body[component.id] || empty;
-						arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: ((stats.duration || 0) / 1000).floor(1) });
+						arr.push({ name: component.name || component.$component.name, inputc: stats.input, outputc: stats.output, input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, duration: stats.duration || 0 });
 					}
 				}
 
 				arr.memory = message.memory;
 				arr.counter = message.counter;
-				arr.quicksort('order', false);
 				SET('flow.traffic', arr);
 				return;
 			}
@@ -1297,7 +1299,7 @@
 
 					ci = stats.ci;
 					co = stats.co;
-					duration = (stats.duration / 1000).floor(1);
+					duration = stats.duration;
 					pending = stats.pending;
 
 					// analyze
@@ -1322,7 +1324,7 @@
 				el.get(0).$traffic = key;
 				var sum = input > output ? input : output;
 				el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-				el.find('.traffic').html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? ('/ ' + duration + ' sec.') : ''));
+				el.find('.traffic').html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan> ' + (duration ? (' &#9201; ' + Thelpers.duration(duration)) : ''));
 				var pel = el.find('.pending').tclass('hide', pending ? false : true);
 				pending && pel.html(pending ? ('&#10711; ' + pending) : '');
 				var rect = el.find('rect');
@@ -1534,7 +1536,6 @@
 					SET('common.tabscroll.tab' + common.tab.id, pos);
 			}
 		}
-
 	</script>
 
 	@{components('flow')}
