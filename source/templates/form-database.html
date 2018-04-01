@@ -169,9 +169,9 @@
 		if (item && version) {
 			if (item.version !== version) {
 				container.find('.db-item[data-id="{0}"]'.format(item.name)).aclass('db-item-update');
-				formdatabase.updates[item.name] = version;
 				INC('formdatabase.updatescount');
 			}
+			formdatabase.updates[item.name] = version;
 			container.find('.refresh-' + item.name).rclass('hidden');
 		}
 
@@ -180,7 +180,7 @@
 		formdatabase.versioncurrent = item = formdatabase.versions[formdatabase.versionindex++];
 		item && setTimeout(function() {
 			SETTER('websocket', 'send', { type: 'componentversion', url: item.url });
-		}, version ? 200 : 0);
+		}, version ? 150 : 0);
 	}
 
 	function formdatabase_install(el) {
