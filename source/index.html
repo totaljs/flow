@@ -1332,7 +1332,7 @@
 								var subid = key.substring(0, key.indexOf('#', id.length));
 								var tmpout = common.traffic[subid];
 								if (tmpout && tmpout.no)
-									animate.push({ id: 'id' + subid + id, count: tmpout.no });
+									animate.push({ id: 'id' + subid + id, com: id, parent: subid, count: tmpout.no });
 							}
 						}
 					}
@@ -1352,12 +1352,25 @@
 				pending && pel.html(pending ? ('&#10711; ' + pending) : '');
 			}
 
-			if (common.animations) {
+			if (common.animations && !common.form) {
 				for (var i = 0; i < animate.length; i++) {
+
 					var item = animate[i];
+					var sleep = 0;
+
+					if (item.parent) {
+						var tmp = item;
+						while (true) {
+							tmp = animate.findItem('com', tmp.parent);
+							if (!tmp)
+								break;
+							sleep += 500;
+						}
+					}
+
 					setTimeout(function(item) {
 						SETTER('designer', 'newdata', item.id, item.count);
-					}, i * 50, item);
+					}, sleep, item);
 				}
 			}
 		}
