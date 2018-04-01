@@ -1077,18 +1077,6 @@
 			$('.mainmenu').find('.highlight').tclass('blink', value ? true : false);
 		}
 
-		function markdown(value, el) {
-			setTimeout(function(el) {
-				$(el || document.body).find('pre code').each(function(i, block) {
-					if (!block.$processed) {
-						block.$processed = true;
-						hljs.highlightBlock(block);
-					}
-				});
-			}, 1, el);
-			return marked(value.trim()).replace(/<img/g, '<img class="img-responsive"').replace(/<table/g, '<table class="table table-bordered"').replace(/<a\s/g, '<a target="_blank"');
-		}
-
 		function staticContent(target, type, callback) {
 
 			var key = type + '.' + target;
@@ -1559,16 +1547,6 @@
 				}
 			});
 		}, true);
-
-		function savescrollposition() {
-			if (common.tab) {
-				var el = $('.designer-scrollbar');
-				var tmp = common.tabscroll['tab' + common.tab.id];
-				var pos = { x: el.prop('scrollLeft'), y: el.prop('scrollTop') };
-				if (!tmp || (tmp.x !== pos.x && tmp.y !== pos.y))
-					SET('common.tabscroll.tab' + common.tab.id, pos);
-			}
-		}
 
 		function trafficSort(el) {
 			var name = el.attrd('name');

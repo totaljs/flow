@@ -639,7 +639,6 @@ COMPONENT('repeater-group', function(self, config) {
 			return;
 
 		force = false;
-		html = '';
 		var length = value.length;
 		var groups = {};
 
@@ -1133,10 +1132,6 @@ COMPONENT('designer', function() {
 				return el;
 		}
 		return svg.get(0);
-	}
-
-	function pathStartPoint(path) {
-		return path.attr('d').split(' ')[1].split(',');
 	}
 
 	function translateAlong(count, path) {
