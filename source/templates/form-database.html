@@ -28,7 +28,7 @@
 	</div>
 	<div class="padding npb">
 		<div data-jc="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
-		<div data-b="formdatabase.updatescount" data-b-visible="value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="formdatabase_update"><i class="fa fa-caret-right mr5"></i>@(Update components)</a></div>
+		<div data-b="formdatabase.updatescount" data-b-visible="value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="formdatabase_update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
 		<div data-b="formdatabase.progress" data-b-visible="value && value < 99" class="hidden">
 			<br />
 			<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
@@ -169,7 +169,7 @@
 		if (item && version) {
 			if (item.version !== version) {
 				container.find('.db-item[data-id="{0}"]'.format(item.name)).aclass('db-item-update');
-				INC('formdatabase.updatescount');
+				INC('formdatabase.updatescount', 1);
 			}
 			formdatabase.updates[item.name] = version;
 			container.find('.refresh-' + item.name).rclass('hidden');
@@ -241,7 +241,7 @@
 
 	Tangular.register('componentrefresh', function(name) {
 		var version = formdatabase.updates[name];
-		return '<span class="exec db-refresh{1} refresh-{0}" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>'.format(name, version == null ? ' hidden' : '');
+		return '<span class="exec db-refresh{1} refresh-{0}" title="@(Update from repository)" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>'.format(name, version == null ? ' hidden' : '');
 	});
 
 </script>

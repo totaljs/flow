@@ -16,6 +16,7 @@ const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
 const MESSAGE_COMPONENTVERSION = { type: 'componentversion' };
 const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
+const MESSAGE_ONLINE = { type: 'online' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
@@ -26,6 +27,7 @@ var FILEINMEMORY = '/flow/repository.json';
 var COUNTER = 0;
 var OPT;
 var DDOS = {};
+var UPDATES = {};
 var FILENAME;
 var READY = false;
 var MODIFIED = null;
@@ -74,11 +76,11 @@ exports.install = function(options) {
 
 	// Routes
 	if (OPT.auth === true) {
-		F.route(OPT.url, view_index, ['authorize']);
-		F.websocket(OPT.url, websocket, ['authorize', 'json'], OPT.limit);
+		ROUTE(OPT.url, view_index, ['authorize']);
+		WEBSOCKET(OPT.url, websocket, ['authorize', 'json'], OPT.limit);
 	} else {
-		F.route(OPT.url, view_index);
-		F.websocket(OPT.url, websocket, ['json'], OPT.limit);
+		ROUTE(OPT.url, view_index);
+		WEBSOCKET(OPT.url, websocket, ['json'], OPT.limit);
 	}
 
 	// Merging && Mapping
@@ -88,17 +90,17 @@ exports.install = function(options) {
 	if (!OPT.sharedfiles) {
 		depscss.splice(1, 0, '@flow/dep.min.css');
 		depsjs.splice(1, 0, '@flow/dep.min.js');
-		F.map(OPT.url + 'fonts/', '@flow/fonts/');
+		MAP(OPT.url + 'fonts/', '@flow/fonts/');
 	}
 
-	F.merge.apply(this, depscss);
-	F.merge.apply(this, depsjs);
+	MERGE.apply(this, depscss);
+	MERGE.apply(this, depsjs);
 
-	F.map(OPT.url + 'img/', '@flow/img/');
-	F.map(OPT.url + 'templates/', '@flow/templates/');
+	MAP(OPT.url + 'img/', '@flow/img/');
+	MAP(OPT.url + 'templates/', '@flow/templates/');
 
 	// Localization
-	F.localize(OPT.url + 'templates/*.html', ['compress']);
+	LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
 
 	try {
 		Fs.mkdirSync(F.path.root(PATH));
@@ -111,7 +113,7 @@ exports.install = function(options) {
 	F.helpers.FLOW = FLOW;
 
 	// Service
-	F.on('service', service);
+	ON('service', service);
 
 	// Repository according "index" of cluster instance
 	if (F.isCluster)
@@ -174,16 +176,25 @@ function listingmodification() {
 }
 
 function service(counter) {
-	counter % 5 === 0 && (DDOS = {});
+
+	if (counter % 5 === 0)
+		DDOS = {};
+
+	if (counter % 10 === 0)
+		UPDATES = {};
+
 	FLOW.reset_traffic();
 	FLOW.emit2('service', counter);
+
 	if (COUNTER > 999999000000)
 		COUNTER = 0;
 }
 
 function view_index() {
 	if (OPT.auth instanceof Array) {
+
 		var user = this.baa();
+
 		if (OPT.auth.indexOf(user.user + ':' + user.password) === -1) {
 			if (DDOS[this.ip])
 				DDOS[this.ip]++;
@@ -240,6 +251,14 @@ function websocket() {
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer');
 		}
+
+		MESSAGE_ONLINE.count = self.online;
+		self.send(MESSAGE_ONLINE);
+	});
+
+	self.on('close', function(client) {
+		MESSAGE_ONLINE.count = self.online;
+		self.send(MESSAGE_ONLINE);
 	});
 
 	self.on('message', function(client, message) {
@@ -1464,10 +1483,22 @@ FLOW.npm = function(dependencies, callback) {
 };
 
 FLOW.getVersion = function(url, callback) {
+
+	if (UPDATES[url] != null) {
+		if (UPDATES[url] === 1)
+			setTimeout((url, callback) => FLOW.getVersion(url, callback), 500, url, callback);
+		else
+			callback(UPDATES[url]);
+		return;
+	}
+
+	// Is working ...
+	UPDATES[url] = 1;
 	U.request(url, FLAGSVERSION, function(err, response) {
 
 		var beg = (response || '').indexOf('exports.version');
 		if (beg === -1) {
+			UPDATES[url] = '';
 			callback('');
 			return;
 		}
@@ -1477,12 +1508,18 @@ FLOW.getVersion = function(url, callback) {
 			end = response.indexOf('\n', beg);
 
 		if (end === -1) {
+			UPDATES[url] = '';
 			callback('');
 			return;
 		}
 
 		var version = response.substring(beg + 15, end).match(/[0-9.]+/);
-		callback(version ? version.toString() : '');
+		if (version) {
+			version = version.toString();
+			UPDATES[url] = version;
+		}
+
+		callback(version ? version : '');
 	});
 };
 

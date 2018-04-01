@@ -93,6 +93,7 @@
 			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
+				<div><span data-b="common.onlineusers" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
 				<hr style="margin:10px 0 15px" />
 				<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
 				<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
@@ -1051,6 +1052,11 @@
 
 					component.options = message.options;
 				}
+			}
+
+			if (message.type === 'online') {
+				SET('common.onlineusers', message.count);
+				return;
 			}
 		});
 
