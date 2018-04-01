@@ -28,17 +28,23 @@
 	</div>
 	<div class="padding npb">
 		<div data-jc="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
-		<br />
-		<div data-jc="search__formdatabase.search__selector:.jsearch">
+		<div data-b="formdatabase.updatescount" data-b-visible="value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="formdatabase_update"><i class="fa fa-caret-right mr5"></i>@(Update components)</a></div>
+		<div data-b="formdatabase.progress" data-b-visible="value && value < 99" class="hidden">
+			<br />
+			<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
+			<div class="mt5" data-jc="progress__formdatabase.progress"></div>
+		</div>
+		<div data-jc="search__formdatabase.search__selector:.jsearch" class="mt10">
 			<div class="db-container">
-				<div data-jc="repeater-group__common.components__group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'">
+				<div data-jc="repeater-group__common.components__group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'" class="dbcomponents">
 					<script type="text/html">
-						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ id }}">
+						<div class="jsearch db-item{{ component | componentupdates }}" data-search="{{ name }}" data-id="{{ id }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
-							<span class="exec db-refresh" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>
+							{{ component | componentrefresh }}
 							<div>
 								<div class="name" title="{{ name }}"><i class="fa fa-circle mr5" style="color:{{ color }}"></i>{{ name }}</div>
 								<div class="author">{{ author }}</div>
+								<div class="version">{{ if version }}v{{ version }}{{ else }}&hellip;{{ fi }}<b class="canupdate">@(new update)</b></div>
 							</div>
 						</div>
 					</script>
@@ -60,7 +66,7 @@
 
 	SETTER('websocket', 'send', { 'type': 'templates' });
 
-	var formdatabase = { reload: false };
+	var formdatabase = { reload: false, updates: {}, versions: [], versioncurrent: null, versioncount: 0, versionindex: 0, updatescount: 0 };
 
 	function formdatabase_submit() {
 		setTimeout(function() {
@@ -137,6 +143,46 @@
 		}
 	});
 
+	WATCH('common.templates', function() {
+		common.updates && common.templates && setTimeout2('commontemplates', function() {
+
+			var is = false;
+			formdatabase.versions = [];
+
+			common.templates.forEach(function(group) {
+				group.items.forEach(function(item) {
+					var name = item.substring(item.lastIndexOf('/') + 1, item.length - 3);
+					var com = common.components.findItem('component', name);
+					com && formdatabase.versions.push({ url: item, version: com.version, name: com.component });
+				});
+			});
+
+			formdatabase.versioncount = formdatabase.versions.length;
+			formdatabase_version();
+
+		}, 1000);
+	});
+
+	function formdatabase_version(version) {
+		var container = $('.dbcomponents');
+		var item = formdatabase.versioncurrent;
+		if (item && version) {
+			if (item.version !== version) {
+				container.find('.db-item[data-id="{0}"]'.format(item.name)).aclass('db-item-update');
+				formdatabase.updates[item.name] = version;
+				INC('formdatabase.updatescount');
+			}
+			container.find('.refresh-' + item.name).rclass('hidden');
+		}
+
+		var p = (formdatabase.versionindex * 100) / formdatabase.versioncount;
+		SET('formdatabase.progress', p);
+		formdatabase.versioncurrent = item = formdatabase.versions[formdatabase.versionindex++];
+		item && setTimeout(function() {
+			SETTER('websocket', 'send', { type: 'componentversion', url: item.url });
+		}, version ? 200 : 0);
+	}
+
 	function formdatabase_install(el) {
 		var name = el.attr('data-value');
 		var items = [];
@@ -154,8 +200,48 @@
 		SET('common.form2', 'components');
 	}
 
+	function formdatabase_update() {
+
+		SETTER('confirm', 'show', '@(Are you sure you want to update components?)', ['"refresh" @(Yes)', '@(Cancel)'], function(index) {
+
+			if (index)
+				return;
+
+			var list = [];
+
+			$('.dbcomponents').find('.db-item').each(function() {
+				var el = $(this);
+				var is = el.find('.canupdate').is(':visible');
+				if (is) {
+					var com = formdatabase.versions.findItem('name', el.attrd('id'));
+					com && list.push(com);
+				}
+			});
+
+			SET('formdatabase.versions', 0);
+			SETTER('loading', 'show');
+			list.wait(function(item, next, index) {
+				SET('formdatabase.progress', (index * 100) / list.length);
+				SETTER('websocket', 'send', { type: 'install', filename: item.url });
+				setTimeout(next, 1000);
+			}, function() {
+				SETTER('loading', 'hide');
+			});
+		});
+	}
+
 	function formdatabase_dragdrop(files) {
 		FIND('#formdatabasefile').process(files);
 	}
+
+	Tangular.register('componentupdates', function(name) {
+		var version = formdatabase.updates[name];
+		return version == null ? '' : version !== this.version ? ' db-item-update' : '';
+	});
+
+	Tangular.register('componentrefresh', function(name) {
+		var version = formdatabase.updates[name];
+		return '<span class="exec db-refresh{1} refresh-{0}" data-exec="formdatabase_refresh"><i class="fa fa-refresh"></i></span>'.format(name, version == null ? ' hidden' : '');
+	});
 
 </script>

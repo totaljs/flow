@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@(Flow v4.3:) @{config.name}</title>
+	<title>@{config.name} - Flow v4.3</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
@@ -219,6 +219,7 @@
 			!this.animations && (this.animations = true);
 			this.touches = false;
 			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
+			this.updates = @{repository.updates};
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
@@ -884,6 +885,11 @@
 				return;
 			}
 
+			if (message.type === 'componentversion') {
+				window.formdatabase_version && window.formdatabase_version(message.version);
+				return;
+			}
+
 			if (message.type === 'errors') {
 				$('.node_' + message.id).aclass('node_errors');
 				var instance = flow.components.findItem('id', message.id);
@@ -986,7 +992,9 @@
 				SET('common.components', message.database);
 				UPDATE('flow');
 				SETTER('binder', 'scan');
-				EMIT('designer.refresh');
+				setTimeout(function() {
+					EMIT('designer.refresh');
+				}, common.form === 'database' ? 3000 : 0);
 				OPERATION('errors.refresh')();
 				return;
 			}

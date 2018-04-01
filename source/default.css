@@ -60,7 +60,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .themedark .body > section.tabs a { border-bottom-color: #202020; }
 .themedark .body > section.tabs .selected { border-bottom: 1px solid #202020; }
 
-.tag { position: relative; display: inline-block; padding: 5px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; }
+.tag { position: relative; display: inline-block; padding: 5px 10px; margin: 0 8px 8px 0; background-color: #3BAFDA; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer; line-height: 14px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 .tag:hover { opacity: 0.8; text-decoration: none; }
 .tag-small { padding: 2px 5px; margin: 5px 5px 0 0; font-size: 11px; }
 .tag2 { background-color: #165b7b; }
@@ -198,8 +198,13 @@ svg { cursor: move; }
 .db-item > span .fa-refresh { color: #909090; }
 .db-item > span:hover { opacity: 0.8; }
 .db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-item .canupdate { display: none; color: red; }
+.db-item-update { border-color: #70B348; border-style: dashed; }
+.db-item-update .canupdate { display: inline-block; }
 .db-item .name { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
 .db-item .author { font-size: 11px; color: gray; }
+.db-item .version { font-size: 11px; }
+.db-item .version b { font-size: 10px; text-transform: uppercase; margin-left: 5px; }
 .db-category { font-size: 16px; color: black; margin: 15px 10px 5px; font-weight: bold; border-bottom: 3px solid black; padding: 5px 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 .db-category .fa { margin-right: 8px; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }

@@ -71,6 +71,11 @@ var options = {};
 // default: false
 // IMPORTANT: crash mode can be enabled via command line "node yourapp.js --crashmode"
 
+// +v4.3.0
+// Enables "check new updates" for installed components
+// options.updates = true;
+// default: true
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================

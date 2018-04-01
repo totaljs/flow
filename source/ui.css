@@ -419,6 +419,14 @@ label span { vertical-align: middle; }
 .ui-colorselector-label { font-size: 12px; color: #656D78; }
 .ui-colorselector.ui-disabled li { cursor: not-allowed; opacity: 0.9; }
 
+.ui-progress { background-color: #F0F0F0; border-radius: 3px; box-sizing: border-box; }
+.ui-progress div { background-size: 56px 56px; animation: progress 20s infinite linear forwards; margin-right: 30px; background-image: repeating-linear-gradient(45deg,#4285F4,#4285F4 10px,#4993E7 10px,#4993E7 20px); text-align: right; font-size: 10px; color: white; padding: 2px 5px 0 0; height: 18px; font-weight: bold; border-radius: 3px; min-width: 30px; }
+
+@keyframes progress {
+	from { background-position: 0% 0%; }
+	to { background-position: 100% 0%; }
+}
+
 @media(max-width: 767px) {
 	.ui-colorpicker { width: 90%; margin-left: 5%; }
 	.ui-colorpicker li { width: 10%; }

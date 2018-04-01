@@ -607,14 +607,6 @@ COMPONENT('repeater-group', function(self, config) {
 
 	self.readonly();
 
-	self.released = function(is) {
-		if (is) {
-			html = self.html();
-			self.empty();
-		} else
-			html && self.html(html);
-	};
-
 	self.make = function() {
 		self.find('script').each(function(index) {
 			var element = $(this);
@@ -5405,5 +5397,37 @@ COMPONENT('colorselector', 'colors:#DA4453,#E9573F,#F6BB42,#8CC152,#37BC9B,#3BAF
 			selected = list.eq(index);
 			selected.aclass('selected');
 		}
+	};
+});
+
+COMPONENT('progress', 'animate:true', function(self, config) {
+
+	var container, old = null;
+
+	self.readonly();
+
+	self.make = function() {
+		self.aclass('ui-progress');
+		self.append('<div style="width:10%">0%</div>');
+		container = self.find('div');
+	};
+
+	self.setter = function(value) {
+		!value && (value = 0);
+		if (old === value)
+			return;
+
+		if (value > 100)
+			value = 100;
+		else if (value < 0)
+			value = 0;
+
+		old = value >> 0;
+		if (config.animate)
+			container.stop().animate({ width: old + '%' }, 80).show();
+		else
+			container.css({ width: old + '%' });
+
+		container.html(old + '%');
 	};
 });

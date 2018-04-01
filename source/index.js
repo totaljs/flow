@@ -14,10 +14,12 @@ const MESSAGE_TEMPLATES = { type: 'templates' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
+const MESSAGE_COMPONENTVERSION = { type: 'componentversion' };
 const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
+const FLAGSVERSION = ['get', 'dnscache', '< 1'];
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
 var FILEINMEMORY = '/flow/repository.json';
 
@@ -60,6 +62,9 @@ exports.install = function(options) {
 
 	if (OPT.templates == null)
 		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
+
+	if (OPT.updates == null)
+		OPT.updates = true;
 
 	if (OPT.limit == null)
 		OPT.limit = 150;
@@ -208,6 +213,7 @@ function view_index() {
 	}
 
 	this.theme('');
+	this.repository.updates = !!OPT.updates;
 	this.repository.url = OPT.url;
 	this.repository.dark = OPT.dark;
 	this.repository.sharedfiles = OPT.sharedfiles;
@@ -245,6 +251,14 @@ function websocket() {
 			MESSAGE_STATIC.id = message.id;
 			MESSAGE_STATIC.body = component ? TRANSLATOR(self.language || 'default', component.readme) : '';
 			client.send(MESSAGE_STATIC);
+			return;
+		}
+
+		if (message.type === 'componentversion') {
+			FLOW.getVersion(message.url, function(version) {
+				MESSAGE_COMPONENTVERSION.version = version;
+				FLOW.send(MESSAGE_COMPONENTVERSION);
+			});
 			return;
 		}
 
@@ -656,6 +670,10 @@ Component.prototype.send = function(index, message) {
 			var canclone = true;
 			for (var j = 0, jl = ids.length; j < jl; j++) {
 				instance = FLOW.instances[ids[j].id];
+
+				if (!instance)
+					continue;
+
 				if (instance && !instance.$closed) {
 
 					if (!tmp[instance.id]) {
@@ -705,6 +723,9 @@ Component.prototype.send = function(index, message) {
 		var tmp = {};
 		for (var i = 0, length = arr.length; i < length; i++) {
 			instance = FLOW.instances[arr[i].id];
+
+			if (!instance)
+				continue;
 
 			if (!tmp[instance.id]) {
 				tmp[instance.id] = true;
@@ -1223,7 +1244,7 @@ FLOW.save = function(data, callback) {
 		OPT.crashmode = false;
 };
 
-FLOW.clearerrors = function(noSync) {
+FLOW.clearerrors = function() {
 
 	var arr = Object.keys(FLOW.instances);
 	for (var i = 0, length = arr.length; i < length; i++)
@@ -1234,11 +1255,7 @@ FLOW.clearerrors = function(noSync) {
 			MESSAGE_DESIGNER.components[i].errors = undefined;
 	}
 
-	if (!noSync) {
-		// @TODO: F.cluster.emit('flow.cluster.clearerrors');
-		FLOW.save2(NOOP);
-	}
-
+	FLOW.save2(NOOP);
 	FLOW.send(MESSAGE_CLEARERRORS);
 	return FLOW;
 };
@@ -1247,6 +1264,9 @@ FLOW.clearerrors = function(noSync) {
 FLOW.save2 = function(callback) {
 
 	clearTimeout2('flow.reconfig');
+
+	// Remove useless connections
+	FLOW.cleaner();
 
 	var data = {};
 	data.tabs = MESSAGE_DESIGNER.tabs;
@@ -1443,6 +1463,29 @@ FLOW.npm = function(dependencies, callback) {
 	});
 };
 
+FLOW.getVersion = function(url, callback) {
+	U.request(url, FLAGSVERSION, function(err, response) {
+
+		var beg = (response || '').indexOf('exports.version');
+		if (beg === -1) {
+			callback('');
+			return;
+		}
+
+		var end = response.indexOf(';', beg);
+		if (end === -1)
+			end = response.indexOf('\n', beg);
+
+		if (end === -1) {
+			callback('');
+			return;
+		}
+
+		var version = response.substring(beg + 15, end).match(/[0-9.]+/);
+		callback(version ? version.toString() : '');
+	});
+};
+
 FLOW.install = function(filename, body, callback) {
 
 	if (typeof(body) !== 'string') {
@@ -1464,7 +1507,7 @@ FLOW.install = function(filename, body, callback) {
 			var writer = Fs.createWriteStream(filename);
 			response.pipe(writer);
 			writer.on('finish', function() {
-				FLOW.execute(filename, true);
+				FLOW.execute(filename);
 				callback && callback(null);
 			});
 		});
@@ -1481,7 +1524,7 @@ FLOW.install = function(filename, body, callback) {
 			filename = F.path.root(PATH, U.GUID(10) + '.js');
 
 		Fs.writeFile(filename, body, function() {
-			FLOW.execute(filename, true);
+			FLOW.execute(filename);
 			callback && callback(null);
 		});
 	}
@@ -1489,34 +1532,41 @@ FLOW.install = function(filename, body, callback) {
 	return FLOW;
 };
 
-FLOW.uninstall = function(name, noSync) {
+// Removes removed connections
+FLOW.cleaner = function() {
 
-	var close = [];
-	var connections = [];
 	var keys = Object.keys(FLOW.instances);
 
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
-		if (instance.component === name) {
-			close.push(instance);
-			connections.push(instance.id);
-		}
-	}
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
 		Object.keys(instance.connections).forEach(function(key) {
-			instance.connections[key] = instance.connections[key].remove(n => connections.indexOf(n) !== -1);
+			var con = instance.connections[key];
+			instance.connections[key] = con.remove(n => FLOW.instances[n.id] == null);
 			!instance.connections[key].length && (delete instance.connections[key]);
 		});
 	}
 
 	MESSAGE_DESIGNER.components.forEach(function(item) {
 		Object.keys(item.connections).forEach(function(key) {
-			item.connections[key] = item.connections[key].remove(n => connections.indexOf(n) !== -1);
+			var con = item.connections[key];
+			item.connections[key] = con.remove(function(n) {
+				return FLOW.instances[n.id] == null;
+			});
 			!item.connections[key].length && (delete item.connections[key]);
 		});
 	});
+};
+
+FLOW.uninstall = function(name, noSync) {
+
+	var close = [];
+	var keys = Object.keys(FLOW.instances);
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		if (instance.component === name)
+			close.push(instance);
+	}
 
 	FLOW.reset(close, function() {
 		var com = FLOW.components[name];
@@ -1524,11 +1574,11 @@ FLOW.uninstall = function(name, noSync) {
 		close = [];
 		MESSAGE_DESIGNER.components = MESSAGE_DESIGNER.components.remove('component', name);
 		MESSAGE_DESIGNER.database = MESSAGE_DESIGNER.database.remove('id', name);
+
 		if (!noSync) {
 			Fs.unlink(F.path.root(PATH + com.filename), NOOP);
 			FLOW.send(MESSAGE_DESIGNER);
 			FLOW.save2();
-			// @TODO: F.cluster.emit('flow.cluster.uninstall', name);
 		}
 	});
 
