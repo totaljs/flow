@@ -96,3 +96,252 @@ function success() {
 	}, 1500);
 	SETTER('loading', 'hide', 500);
 }
+
+Number.prototype.filesize = function(decimals, type) {
+
+	if (typeof(decimals) === 'string') {
+		var tmp = type;
+		type = decimals;
+		decimals = tmp;
+	}
+
+	var value;
+
+	// this === bytes
+	switch (type) {
+		case 'bytes':
+			value = this;
+			break;
+		case 'KB':
+			value = this / 1024;
+			break;
+		case 'MB':
+			value = filesizehelper(this, 2);
+			break;
+		case 'GB':
+			value = filesizehelper(this, 3);
+			break;
+		case 'TB':
+			value = filesizehelper(this, 4);
+			break;
+		default:
+
+			type = 'bytes';
+			value = this;
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'KB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'MB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'GB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'TB';
+			}
+
+			break;
+	}
+
+	type = ' ' + type;
+	return (decimals === undefined ? value.format(2).replace('.00', '') : value.format(decimals)) + type;
+};
+
+function filesizehelper(number, count) {
+	while (count--) {
+		number = number / 1024;
+		if (number.toFixed(3) === '0.000')
+			return 0;
+	}
+	return number;
+}
+
+Tangular.register('filesize', function(value, decimals, type) {
+	return value ? value.filesize(decimals, type) : '...';
+});
+
+Tangular.register('counter', function(value) {
+	if (value > 999999)
+		return (value / 1000000).format(2) + ' M';
+	if (value > 9999)
+		return (value / 10000).format(2) + ' K';
+	return value ? value.format(0) : 0;
+});
+
+
+function shownotifications(force) {
+	var el = $('#panel-notification');
+	if (force) {
+		var msg = flownotifications.shift();
+		if (msg) {
+			el.find('div').html(msg);
+			setTimeout(function() {
+				shownotifications(true);
+			}, 3000);
+			if (!flownotified) {
+				el.aclass('panel-notified');
+				flownotified = true;
+			}
+		} else if (flownotified) {
+			el.rclass('panel-notified');
+			flownotified = false;
+		}
+	} else if (!el.hclass('panel-notified'))
+		shownotifications(true);
+}
+
+
+function trafficSort(el) {
+	var name = el.attrd('name');
+	var old = common.trafficsort;
+
+	if (old === name)
+		name = '!' + name;
+	else if (old === ('!' + name))
+		name = '';
+
+	SET('common.trafficsort', name);
+}
+
+function refreshTrafficNodes() {
+	common.trafficnodes = $('.node_traffic').toArray();
+	for (var i = 0; i < common.trafficnodes.length; i++) {
+		common.trafficnodes[i] = $(common.trafficnodes[i]);
+		var el = common.trafficnodes[i];
+		var item = el.get(0);
+		item.$io = el.find('.traffic');
+		item.$duration = el.find('.duration');
+		if (!item.$duration.length)
+			item.$duration = null;
+		item.$pending = el.find('.pending');
+	}
+}
+
+function refreshTraffic() {
+
+	if (!common.traffic || !common.trafficnodes)
+		return;
+
+	var count = common.traffic.count;
+	var key;
+	var animate = [];
+
+	for (var i = 0, length = common.trafficnodes.length; i < length; i++) {
+
+		var el = common.trafficnodes[i];
+		var id = el.attrd('id');
+		var stats = common.traffic[id];
+		var input = 0;
+		var output = 0;
+		var inputc = 0;
+		var outputc = 0;
+		var pending = 0;
+		var duration = 0;
+		var ci = 0;
+		var co = 0;
+
+		if (stats) {
+
+			if (stats.input || stats.output) {
+				input = ((stats.input / count) * 100 >> 0);
+				output = ((stats.output / count) * 100 >> 0);
+				inputc = stats.input;
+				outputc = stats.output;
+			}
+
+			ci = stats.ci;
+			co = stats.co;
+			duration = stats.duration;
+			pending = stats.pending;
+
+			// analyze
+			if (stats.ni && common.animations) {
+				var keys = Object.keys(flow.connections);
+				for (var j = 0, jl = keys.length; j < jl; j++) {
+					key = keys[j];
+					if (key.substring(key.length - id.length) === id) {
+						var subid = key.substring(0, key.indexOf('#', id.length));
+						var tmpout = common.traffic[subid];
+						if (tmpout && tmpout.no)
+							animate.push({ id: 'id' + subid + id, com: id, parent: subid, count: tmpout.no });
+					}
+				}
+			}
+		}
+
+		var key = inputc + 'x' + outputc + 'x' + pending + 'x' + duration;
+		var item = el.get(0);
+
+		if (key === item.$traffic)
+			continue;
+
+		item.$traffic = key;
+		var sum = input > output ? input : output;
+		el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
+		item.$io.html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan>');
+		item.$duration && item.$duration.html('&empty; ' + Thelpers.duration(duration || 0));
+		var pel = item.$pending.tclass('hide', pending ? false : true);
+		pending && pel.html(pending ? ('&#10711; ' + pending) : '');
+	}
+
+	if (common.animations && !common.form) {
+		for (var i = 0; i < animate.length; i++) {
+
+			var item = animate[i];
+			var sleep = 0;
+
+			if (item.parent) {
+				var tmp = item;
+				while (true) {
+					tmp = animate.findItem('com', tmp.parent);
+					if (!tmp)
+						break;
+					sleep += 500;
+				}
+			}
+
+			setTimeout(function(item) {
+				SETTER('designer', 'newdata', item.id, item.count);
+			}, sleep, item);
+		}
+	}
+}
+
+function themechanger() {
+	SETTER('loading', 'show');
+	setTimeout(function() {
+		SET('common.theme', common.theme === 'dark' ? '' : 'dark');
+		SETTER('loading', 'hide', 1000);
+		var color = common.theme === 'dark' ? 'white' : 'black';
+		$('.input,.output').each(function() {
+			var el = $(this);
+			var cur = el.attr('fill');
+			cur !== color && el.attr('fill', el.attrd('index') === '99' ? 'red' : color);
+		});
+		$('.consumption').each(function() {
+			this.setAttribute('fill', common.theme === 'dark' ? '#505050' : '#E0E0E0');
+		});
+		refreshTraffic();
+	}, 1000);
+}
+
+SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
+	if (common.form2) {
+		SET('common.form2', '');
+		e.preventDefault();
+		e.stopPropagation();
+	} else if (common.form) {
+		SET('common.form', '');
+		e.preventDefault();
+		e.stopPropagation();
+	}
+});

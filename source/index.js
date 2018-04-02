@@ -138,13 +138,17 @@ exports.install = function(options) {
 				var keys = Object.keys(FLOW.alltraffic);
 				for (var i = 0, length = keys.length; i < length; i++) {
 					var item = FLOW.alltraffic[keys[i]];
+					if (item.ni)
+						item.input -= item.ni;
+					if (item.no)
+						item.output -= item.no;
 					item.ni = 0;
 					item.no = 0;
 				}
 			}
 
 			if (FLOW.indexer % 10 === 0) {
-				FLOW.reset_traffic();
+				FLOW.trafficreset();
 				FLOW.indexer = 0;
 			}
 
@@ -183,7 +187,7 @@ function service(counter) {
 	if (counter % 10 === 0)
 		UPDATES = {};
 
-	FLOW.reset_traffic();
+	FLOW.trafficreset();
 	FLOW.emit2('service', counter);
 
 	if (COUNTER > 999999000000)
@@ -256,7 +260,7 @@ function websocket() {
 		self.send(MESSAGE_ONLINE);
 	});
 
-	self.on('close', function(client) {
+	self.on('close', function() {
 		MESSAGE_ONLINE.count = self.online;
 		self.send(MESSAGE_ONLINE);
 	});
@@ -1446,7 +1450,7 @@ FLOW.traffic = function(id, type, count) {
 	return FLOW;
 };
 
-FLOW.reset_traffic = function() {
+FLOW.trafficreset = function() {
 	var keys = Object.keys(FLOW.alltraffic);
 	FLOW.alltraffic.count = 0;
 	for (var i = 0, length = keys.length; i < length; i++) {
