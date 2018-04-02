@@ -180,7 +180,7 @@
 		formdatabase.versioncurrent = item = formdatabase.versions[formdatabase.versionindex++];
 		item && setTimeout(function() {
 			SETTER('websocket', 'send', { type: 'componentversion', url: item.url });
-		}, version ? 150 : 0);
+		}, version ? 50 : 0);
 	}
 
 	function formdatabase_install(el) {
