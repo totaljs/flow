@@ -37,7 +37,7 @@
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
 	<div class="panel">
-		<section class="tabs">
+		<section class="tabs tabs-panel">
 			<nav>
 				<button class="exec" data-path="common.panel" data-value="'info'" data-b="common.panel" data-b-class="n => (n === 'info' ? '+' : '-') + 'selected'"><i class="fa fa-info-circle"></i>@(Info)</button>
 				<button class="exec" data-path="common.panel" data-value="'debug'" data-b="common.panel" data-b-class="n => (n === 'debug' ? '+' : '-') + 'selected'">@(Console)</button>
@@ -58,11 +58,14 @@
 			<label><i class="fa fa-bell"></i>@(Flow notification)</label>
 			<div></div>
 		</div>
-		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'errors'">
+
+		<div class="hidden body-errors" data-b="common.panel" data-b-visible="n => n === 'errors'">
+
 			<div class="padding npb npt mt10">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
 				<hr class="mt10 nmb" />
 			</div>
+
 			<div class="scroller">
 				<div data-jc="repeater__common.errors">
 					<script type="text/html">
@@ -81,15 +84,18 @@
 				</div>
 			</div>
 		</div>
-		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'debug'">
+
+		<div class="hidden body-debug" data-b="common.panel" data-b-visible="n => n === 'debug'">
 			<div style="padding:15px 15px 0">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
 				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
 				<hr class="nmb" style="margin-top:15px" />
 			</div>
-			<div id="debugpanel" class="scroller"></div>
+			<div id="body-debug-output" class="scroller"></div>
 		</div>
-		<div class="hidden" data-b="common.panel" data-b-visible="n => n === 'traffic'">
+
+		<div class="hidden body-traffic" data-b="common.panel" data-b-visible="n => n === 'traffic'">
+
 			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
@@ -99,6 +105,7 @@
 				<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
 				<hr class="nmb" style="margin:15px 0 10px" />
 			</div>
+
 			<div class="scroller">
 				<div class="traffic-container b" style="margin-bottom:5px" data-b="common.trafficsort" data-b-template="true">
 					<script type="text/html">
@@ -121,9 +128,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="mainmenu">
+	<div class="mainmenu body-components">
 
-		<section class="tabs">
+		<section class="tabs tabs-controls">
 			<nav>
 				<button class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
 				<button title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
@@ -132,7 +139,7 @@
 			</nav>
 		</section>
 
-		<div class="searchpadding">
+		<div class="components-search-padding">
 			<div data-jc="textbox__common.search__placeholder:@(Search components ...);type:search"></div>
 		</div>
 
@@ -154,16 +161,17 @@
 			</div>
 		</div>
 	</div>
-	<div class="body">
+
+	<div class="body body-designer">
 
 		<a href="javascript:void(0)" class="themechanger exec" data-exec="themechanger" title="@(Change theme)" style="float:right"><i class="fa fa-paint-brush"></i></a>
 
 		<div class="hidetools">
-			<button class="exec onlyicon" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
-			<button class="exec onlyicon nb" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></button>
+			<button class="exec" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
+			<button class="exec" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></button>
 		</div>
 
-		<section class="tabs">
+		<section class="tabs tabs-flow">
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === flow.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
@@ -561,7 +569,7 @@
 			if (!component)
 				return;
 
-			var el = $('#debugpanel');
+			var el = $('#body-debug-output');
 			var logs = el.find('.debugoutput');
 			var tab = flow.tabs.findItem('id', component.tab);
 
@@ -808,7 +816,7 @@
 		});
 
 		OPERATION('debug.clear', function() {
-			$('#debugpanel').empty();
+			$('#body-debug-output').empty();
 		});
 
 		ON('tabs.save', function(form) {
