@@ -122,13 +122,13 @@
 		</div>
 	</div>
 	<div class="mainmenu">
+
 		<section class="tabs">
 			<nav>
 				<button class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
 				<button title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
 				<button title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></button>
 				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
-				<!-- <a href="javascript:void(0)" class="exec onlyicon nb" style="float:right;padding-left:0" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></a> -->
 			</nav>
 		</section>
 
@@ -155,11 +155,14 @@
 		</div>
 	</div>
 	<div class="body">
-		<a href="javascript:void(0)" class="themechanger exec"  style="float:right" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></a>
+
+		<a href="javascript:void(0)" class="themechanger exec" data-exec="themechanger" title="@(Change theme)" style="float:right"><i class="fa fa-paint-brush"></i></a>
+
 		<div class="hidetools">
 			<button class="exec onlyicon" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
 			<button class="exec onlyicon nb" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></button>
 		</div>
+
 		<section class="tabs">
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
@@ -168,6 +171,7 @@
 			</nav>
 			<a href="javascript:void(0)" class="exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
 		</section>
+
 		<div class="designer-container">
 			<div id="designerstate"></div>
 			<nav id="designerbuttons">
@@ -221,6 +225,7 @@
 			this.touches = false;
 			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
 			this.updates = @{repository.updates};
+			this.version = +'@{R.version}';
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
@@ -926,6 +931,7 @@
 			if (message.type === 'designer') {
 
 				flow = {};
+				flow.version = common.version;
 				flow.tabs = message.tabs;
 				flow.components = message.components;
 				flow.designer = [];
@@ -959,7 +965,23 @@
 				UPDATE('flow');
 				SETTER('binder', 'scan');
 				setTimeout(function() {
+
 					EMIT('designer.refresh');
+
+					setTimeout(function() {
+						common.components.forEach(function(item) {
+							var key = 'extension' + item.component;
+							if (item.clientside && !common.statics[key]) {
+								common.statics[key] = 1;
+								try {
+									new Function(item.extension)();
+								} catch (e) {
+									console && console.error(e);
+								}
+							}
+						});
+					}, 500);
+
 				}, common.form === 'database' ? 3000 : 0);
 				OPERATION('errors.refresh')();
 				return;
@@ -1063,9 +1085,7 @@
 				if (type === 'html') {
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
-					var title = target;
-					if (com)
-						title = com.name;
+					var title = com ? com.name : target;
 					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
@@ -1276,7 +1296,12 @@
 			@{fi}
 			@{fi}
 
+			EMIT('settings.open', items);
+
 			FIND('contextmenu').show('left', el, items, function(value) {
+
+				EMIT('settings.select', value);
+
 				switch (value) {
 					case 'database':
 					case 'variables':
@@ -1330,7 +1355,12 @@
 			items.push({ name: '@(Refresh)', value: 10, icon: 'refresh', keywords: 'reload' });
 			items.push({ name: '@(Clear current tab)', value: 2, icon: 'trash-o' });
 
+			EMIT('features.open', items);
+
 			SETTER('features', 'show', items, function(item) {
+
+				EMIT('features.select', item);
+
 				switch (item.value) {
 					case 1:
 						SET('common.form', item.form);

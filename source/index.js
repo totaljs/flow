@@ -34,7 +34,7 @@ var MODIFIED = null;
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
 
-exports.version = 'v4.3.0';
+exports.version = 'v5.0.0';
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -195,6 +195,12 @@ function service(counter) {
 }
 
 function view_index() {
+
+	if (DDOS[this.ip] > 6) {
+		this.throw401();
+		return;
+	}
+
 	if (OPT.auth instanceof Array) {
 
 		var user = this.baa();
@@ -219,19 +225,23 @@ function view_index() {
 		return this.throw401();
 
 	if (OPT.token && OPT.token.indexOf(this.query.token) === -1) {
+
 		if (DDOS[this.ip])
 			DDOS[this.ip]++;
 		else
 			DDOS[this.ip] = 1;
-		DDOS[this.ip] > 4 && this.throw401();
+
+		this.throw401();
 		return;
 	}
 
 	this.theme('');
-	this.repository.updates = !!OPT.updates;
-	this.repository.url = OPT.url;
-	this.repository.dark = OPT.dark;
-	this.repository.sharedfiles = OPT.sharedfiles;
+	var R = this.repository;
+	R.updates = !!OPT.updates;
+	R.url = OPT.url;
+	R.dark = OPT.dark;
+	R.version = +exports.version.replace(/\.|v/g, '');
+	R.sharedfiles = OPT.sharedfiles;
 	this.view('@flow/index');
 }
 

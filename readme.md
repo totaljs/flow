@@ -719,6 +719,34 @@ TRIGGER('name', function(data) {
 TRIGGER('name', 'path.to.bind.response'); // window.path.to.bind.response === [1, 2, 3, 4]
 ```
 
+### Extending of designer
+
+```javascript
+// Context-menu settings will be open
+ON('settings.open', function(items) {
+    // now you can add some item into the items
+});
+
+ON('settings.select', function(item) {
+    // item has been selected
+});
+
+// Features will be open
+ON('features.open', function(items) {
+    // now you can add some item into the items
+});
+
+ON('features.select', function(item) {
+    // item has been selected
+});
+
+// flow;
+// {Object} contains designer meta-data
+
+// common;
+// {Object} contains global meta-data
+```
+
 ## Contribute
 
 This project is stored in private repository on GitHub. Contact me <petersirka@gmail.com> if you want be a contributor.
