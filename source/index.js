@@ -1309,7 +1309,8 @@ FLOW.save2 = function(callback) {
 
 	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
 
-	Fs.writeFile(F.path.root(FILEDESIGNER), json, function() {
+	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
+		err && F.error(err, 'FLOW.save()');
 		callback && callback();
 		EMIT('flow.save');
 	});
@@ -1319,7 +1320,7 @@ FLOW.save2 = function(callback) {
 
 FLOW.save_inmemory = function() {
 	setTimeout2('flowinmemorysave', function() {
-		Fs.writeFile(F.path.root(FILEINMEMORY), JSON.stringify(FLOW.inmemory), NOOP);
+		Fs.writeFile(F.path.root(FILEINMEMORY), JSON.stringify(FLOW.inmemory), F.error());
 	}, 500, 100);
 };
 
@@ -1574,7 +1575,8 @@ FLOW.install = function(filename, body, callback) {
 		else
 			filename = F.path.root(PATH, U.GUID(10) + '.js');
 
-		Fs.writeFile(filename, body, function() {
+		Fs.writeFile(filename, body, function(err) {
+			err && F.error(err, 'FLOW.install("{0}")'.format(filename));
 			FLOW.execute(filename);
 			callback && callback(null);
 		});
