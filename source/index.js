@@ -307,8 +307,10 @@ function websocket() {
 				U.request(item, FLAGS, function(err, response) {
 					if (!err) {
 						var arr = response.trim().parseJSON();
-						for (var i = 0; i < arr.length; i++)
-							templ.push(arr[i]);
+						if (arr instanceof Array) {
+							for (var i = 0; i < arr.length; i++)
+								templ.push(arr[i]);
+						}
 					}
 					next();
 				});
@@ -1367,7 +1369,8 @@ FLOW.load = function(callback) {
 
 					if (data)
 						data = data.toString('utf8').parseJSON(true);
-					else
+
+					if (!data)
 						data = {};
 
 					FLOW.$variables = data.variables || '';
@@ -1393,6 +1396,9 @@ FLOW.load = function(callback) {
 
 					Fs.readFile(F.path.root(FILEINMEMORY), function(err, data) {
 						data && (FLOW.inmemory = data.toString('utf8').parseJSON(true));
+						if (!FLOW.inmemory)
+							FLOW.inmemory = {};
+
 						EMIT('flow');
 						FLOW.init(MESSAGE_DESIGNER.components);
 						FLOW.send(MESSAGE_DESIGNER);
