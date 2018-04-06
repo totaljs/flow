@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@{config.name} - Flow v4.3</title>
+	<title>@{config.name} - Flow @{repository.versiontitle}</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
@@ -47,13 +47,14 @@
 		</section>
 		<div class="padding hidden" data-b="common.panel" data-b-visible="n => n === 'info'">
 			<div class="scroller">
-				<div class="hidden" id="infopanelnotes">
+				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
 					<div class="markdown mt5"></div>
 				</div>
-				<div class="markdown" id="infopanel"></div>
+				<div class="markdown" id="info-panel"></div>
 			</div>
 		</div>
+
 		<div id="panel-notification">
 			<label><i class="fa fa-bell"></i>@(Flow notification)</label>
 			<div></div>
@@ -96,23 +97,23 @@
 
 		<div class="hidden body-traffic" data-b="common.panel" data-b-visible="n => n === 'traffic'">
 
-			<div class="padding npb fs12" style="line-height:18px;padding-left:15px">
+			<div class="body-traffic-heading" style="">
 				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<div><span data-b="common.onlineusers" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
-				<hr style="margin:10px 0 15px" />
-				<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
-				<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
-				<hr class="nmb" style="margin:15px 0 10px" />
+				<div class="checkboxes">
+					<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
+					<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
+				</div>
 			</div>
 
 			<div class="scroller">
 				<div class="traffic-container b" style="margin-bottom:5px" data-b="common.trafficsort" data-b-template="true">
 					<script type="text/html">
-						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="outputs">{{ value | trafficsort('outputs') }}@(Output)</div>
-						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="inputs">{{ value | trafficsort('inputs') }}@(Input)</div>
-						<div class="traffic-value sort exec" data-exec="trafficSort" data-name="duration" title="@(Average processing time)">{{ value | trafficsort('duration') }}@(Time)</div>
-						<div class="traffic-name sort exec" data-exec="trafficSort" data-name="name">{{ value | trafficsort('name') }}@(Component)</div>
+						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="outputs">{{ value | trafficsort('outputs') }}@(Output)</div>
+						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="inputs">{{ value | trafficsort('inputs') }}@(Input)</div>
+						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="duration" title="@(Average processing time)">{{ value | trafficsort('duration') }}@(Time)</div>
+						<div class="traffic-name sort exec" data-exec="trafficsort" data-name="name">{{ value | trafficsort('name') }}@(Component)</div>
 					</script>
 				</div>
 				<div data-jc="repeater__flow.traffic">
@@ -121,7 +122,7 @@
 							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}</div>
 							<div class="traffic-value{{ if input > 59 }} red{{ fi }}">{{ inputc }}</div>
 							<div class="traffic-value">{{ if isduration }}{{ duration | duration }}{{ else }}---{{ fi }}</div>
-							<div class="traffic-name gray">{{ name }}</div>
+							<div class="traffic-name gray exec" data-id="{{ id }}" data-exec="highlightcomponent">{{ name }}</div>
 						</div>
 					</script>
 				</div>
@@ -164,7 +165,9 @@
 
 	<div class="body body-designer">
 
-		<a href="javascript:void(0)" class="themechanger exec" data-exec="themechanger" title="@(Change theme)" style="float:right"><i class="fa fa-paint-brush"></i></a>
+		<div class="tabs-tools">
+			<button class="exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></button>
+		</div>
 
 		<div class="hidetools">
 			<button class="exec" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
@@ -172,27 +175,34 @@
 		</div>
 
 		<section class="tabs tabs-flow">
+
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === flow.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
 				</script>
 			</nav>
+
 			<a href="javascript:void(0)" class="exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
+
 		</section>
 
 		<div class="designer-container">
+
 			<div id="designerstate"></div>
+
 			<nav id="designerbuttons">
 				<button class="exec disabled" title="@(Copy component)" data-exec="#designer.copy"><i class="fa fa-file-text-o"></i></button>
 				<button class="exec disabled" name="paste" title="@(Paste component)" data-exec="#designer.paste"><i class="fa fa-paste"></i></button>
 				<button class="exec disabled" name="duplicate" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-files-o"></i></button>
 				<button class="exec disabled designerbuttons-remove" name="remove" title="@(Remove selection)" data-exec="#designer.remove"><i class="fa fa-times-circle"></i></button>
 			</nav>
+
 			<div id="designerzoom">
 				<button class="exec" title="@(Zoom in)" data-exec="#designer.zoomin"><i class="fa fa-search-plus"></i></button>
 				<button class="exec" title="@(Reset zoom)" data-exec="#designer.zoomreset"><i class="fa fa-unsorted"></i></button>
 				<button class="exec" title="@(Zoom out)" data-exec="#designer.zoomout"><i class="fa fa-search-minus"></i></button>
 			</div>
+
 			<div class="designer-scrollbar">
 				<div class="designer-shadow-top"></div>
 				<div class="designer-shadow-right"></div>
@@ -548,9 +558,9 @@
 			var key = value + (notes || '').toString();
 			if (common.bkreadme !== key) {
 				common.bkreadme = key;
-				var el = $('#infopanel');
+				var el = $('#info-panel');
 				el.html(markdown(value, el));
-				el = $('#infopanelnotes').tclass('hidden', !notes);
+				el = $('#info-panel-notes').tclass('hidden', !notes);
 				notes && el.find('.markdown').html(markdown(notes, el));
 			}
 		});
@@ -917,7 +927,7 @@
 						if (common.traffictab && common.tab && component.tab !== common.tab.id)
 							continue;
 						var stats = message.body[component.id] || empty;
-						arr.push({ name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input ? (stats.input + 'x') : '---', outputc: stats.output ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
+						arr.push({ id: component.id, name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input ? (stats.input + 'x') : '---', outputc: stats.output ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
 					}
 				}
 
@@ -1423,28 +1433,7 @@
 						OPERATION('tabs.add')();
 						break;
 					case 17:
-						location.hash = item.tab.linker;
-						SETTER('loading', 'show');
-						var com;
-						var el = $('.designer-scrollbar');
-						setTimeout(function() {
-							SETTER('loading', 'hide');
-							com = $('.node_' + item.item.id);
-							com.aclass('highlight');
-
-							var sx = item.item.x - (el.width() / 2);
-							if (sx < 0)
-								sx = 0;
-
-							var sy = item.item.y - (el.height() / 2);
-							if (sy < 0)
-								sy = 0;
-
-							el.animate({ scrollTop: sy, scrollLeft: sx });
-						}, 1500);
-						setTimeout(function() {
-							com.rclass('highlight');
-						}, 8000);
+						highlightcomponent(item.item.id);
 						break;
 				}
 			});

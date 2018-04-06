@@ -32,9 +32,11 @@ var FILENAME;
 var READY = false;
 var MODIFIED = null;
 
-global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT };
-
 exports.version = 'v5.0.0';
+
+global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
+global.FLOW.version = +exports.version.replace(/[v.]/g, '');
+
 exports.install = function(options) {
 
 	// options.restrictions = ['127.0.0.1'];
@@ -63,7 +65,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (OPT.templates == null)
-		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates4.json';
+		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates5.json';
 
 	if (OPT.updates == null)
 		OPT.updates = true;
@@ -241,6 +243,7 @@ function view_index() {
 	R.url = OPT.url;
 	R.dark = OPT.dark;
 	R.version = +exports.version.replace(/\.|v/g, '');
+	R.versiontitle = exports.version;
 	R.sharedfiles = OPT.sharedfiles;
 	this.view('@flow/index');
 }
@@ -636,6 +639,80 @@ Component.prototype.signal = function(index, data) {
 	}
 
 	return self;
+};
+
+Component.prototype.inputs = function() {
+	var self = this;
+	var keys = Object.keys(FLOW.inputs[self.id]);
+	var arr = [];
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var id = keys[i];
+		var com = FLOW.instances[id];
+		com && arr.push(com);
+	}
+
+	return arr;
+};
+
+Component.prototype.outputs = function() {
+	var self = this;
+	var keys = Object.keys(FLOW.outputs[self.id]);
+	var arr = [];
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var id = keys[i];
+		var com = FLOW.instances[id];
+		com && arr.push(com);
+	}
+
+	return arr;
+};
+
+Component.prototype.prev = function(name) {
+	var self = this;
+	var keys = Object.keys(FLOW.inputs[self.id]);
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var id = keys[i];
+		var com = FLOW.instances[id];
+
+		if (com) {
+			if (name) {
+				if (com.component === name) {
+					return com;
+				} else {
+					var sub = com.prev(name);
+					if (sub)
+						return sub;
+				}
+			} else
+				return com;
+		}
+	}
+};
+
+Component.prototype.next = function(name) {
+	var self = this;
+	var keys = Object.keys(FLOW.outputs[self.id]);
+
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var id = keys[i];
+		var com = FLOW.instances[id];
+
+		if (com) {
+			if (name) {
+				if (com.component === name) {
+					return com;
+				} else {
+					var sub = com.next(name);
+					if (sub)
+						return sub;
+				}
+			} else
+				return com;
+		}
+	}
 };
 
 Component.prototype.variable = function(name) {
@@ -1105,6 +1182,7 @@ FLOW.reset = function(components, callback) {
 
 		instance.status = instance.debug = instance.click = instance.emit = instance.on = instance.signal = instance.send = NOOP;
 		delete FLOW.instances[item.id];
+
 	}, function() {
 		if (count) {
 			FLOW.alltraffic = {};
@@ -1210,6 +1288,7 @@ FLOW.refresh_variables = function(data) {
 // Init the only one component
 FLOW.init_component = function(component) {
 	MESSAGE_DESIGNER.components.wait(function(com, next) {
+
 		if (com.component !== component.id)
 			return next();
 
@@ -1279,6 +1358,43 @@ FLOW.save = function(data, callback) {
 		OPT.crashmode = false;
 };
 
+FLOW.refresh_connections = function() {
+	var arr = MESSAGE_DESIGNER.components;
+	FLOW.outputs = {};
+	FLOW.inputs = {};
+	for (var i = 0, length = arr.length; i < length; i++) {
+		var com = arr[i];
+
+		if (!FLOW.outputs[com.id])
+			FLOW.outputs[com.id] = {};
+
+		if (!FLOW.inputs[com.id])
+			FLOW.inputs[com.id] = {};
+
+		var con = Object.keys(com.connections);
+		for (var j = 0; j < con.length; j++) {
+			if (con[j] == '99')
+				continue;
+			var tmp = com.connections[con[j]];
+			for (var b = 0; b < tmp.length; b++) {
+				var id = tmp[b].id;
+				FLOW.outputs[com.id][id] = 1;
+
+				if (!FLOW.inputs[id])
+					FLOW.inputs[id] = {};
+
+				if (!FLOW.inputs[com.id])
+					FLOW.inputs[com.id] = {};
+
+				if (!FLOW.outputs[id])
+					FLOW.outputs[id] = {};
+
+				FLOW.inputs[id][com.id] = 1;
+			}
+		}
+	}
+};
+
 FLOW.clearerrors = function() {
 
 	var arr = Object.keys(FLOW.instances);
@@ -1317,6 +1433,7 @@ FLOW.save2 = function(callback) {
 		EMIT('flow.save');
 	});
 
+	FLOW.refresh_connections();
 	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
 };
 
@@ -1393,6 +1510,8 @@ FLOW.load = function(callback) {
 							});
 						}
 					});
+
+					FLOW.refresh_connections();
 
 					Fs.readFile(F.path.root(FILEINMEMORY), function(err, data) {
 						data && (FLOW.inmemory = data.toString('utf8').parseJSON(true));

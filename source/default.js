@@ -5,6 +5,48 @@ function diagonal(x1, y1, x2, y2) {
 	return 'M' + x1 + ',' + y1 + 'C' + ((x1 + x2 ) / 1.9) + ',' + y1 + ' ' + ((x1 + x2) / 2.1) + ',' + y2 + ' ' + x2 + ',' + y2;
 }
 
+function highlightcomponent(id) {
+
+	if (id instanceof jQuery)
+		id = id.attrd('id');
+
+	var item = flow.components.findItem('id', id);
+	if (!item)
+		return false;
+
+	var tab = flow.tabs.findItem('id', item.tab);
+	if (!tab)
+		return false;
+
+	SETTER('loading', 'show');
+
+	var com;
+	var el = $('.designer-scrollbar');
+	setTimeout(function() {
+		SETTER('loading', 'hide');
+		com = $('.node_' + item.id);
+		com.aclass('highlight');
+
+		var sx = item.x - (el.width() / 2);
+		if (sx < 0)
+			sx = 0;
+
+		var sy = item.y - (el.height() / 2);
+		if (sy < 0)
+			sy = 0;
+
+		el.animate({ scrollTop: sy, scrollLeft: sx });
+	}, location.hash.substring(1) === tab.linker ? 100 : 1500);
+
+	location.hash = tab.linker;
+
+	setTimeout(function() {
+		com.rclass('highlight');
+	}, 8000);
+
+	return true;
+}
+
 function markdown(value, el) {
 	setTimeout(function(el) {
 		$(el || document.body).find('pre code').each(function(i, block) {
@@ -200,7 +242,7 @@ function shownotifications(force) {
 }
 
 
-function trafficSort(el) {
+function trafficsort(el) {
 	var name = el.attrd('name');
 	var old = common.trafficsort;
 

@@ -1394,7 +1394,7 @@ COMPONENT('designer', function() {
 									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
 								instance.connections[oindex] = [{ index: iindex, id: id }];
-							!is && self.connect(+iindex, oindex, output, input);
+							!is && self.connect(+iindex, oindex, output, input, true);
 						}
 					}
 					break;
@@ -1416,7 +1416,7 @@ COMPONENT('designer', function() {
 									instance.connections[oindex].push({ index: iindex, id: id });
 							} else
 								instance.connections[oindex] = [{ index: iindex, id: id }];
-							!is && self.connect(+iindex, oindex, output, input);
+							!is && self.connect(+iindex, oindex, output, input, true);
 						}
 					}
 			}
@@ -1929,7 +1929,7 @@ COMPONENT('designer', function() {
 		}
 	};
 
-	self.connect = function(iindex, oindex, output, input) {
+	self.connect = function(iindex, oindex, output, input, isnew) {
 
 		var a = output.find('.output[data-index="{0}"]'.format(oindex));
 		var b = input.find('.input[data-index="{0}"]'.format(iindex));
@@ -1960,6 +1960,8 @@ COMPONENT('designer', function() {
 		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
 		attr['id'] = 'id' + aid + '' + bid;
 		lines.asvg('path').attr(attr);
+
+		isnew && EMIT('designer.add.connection', aid, bid);
 	};
 
 	self.setter = function(value) {

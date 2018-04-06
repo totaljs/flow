@@ -2,7 +2,7 @@
 
 [![Professional Support](https://www.totaljs.com/img/badge-support.svg)](https://www.totaljs.com/support/) [![Chat with contributors](https://www.totaljs.com/img/badge-chat.svg)](https://messenger.totaljs.com)
 
-__Total.js Flow 4.3.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 5.0.0__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 - [__Documentation__](https://wiki.totaljs.com/?q=flow)
 - [Website](https://www.totaljs.com/flow/)
@@ -65,13 +65,13 @@ var options = {};
 // options.debug = true;
 // default: false
 
-// +v4.3.0
+// +v5.0.0
 // Enables crash mode (the flow won't be applied after start)
 // options.crashmode = true;
 // default: false
 // IMPORTANT: crash mode can be enabled via command line "node yourapp.js --crashmode"
 
-// +v4.3.0
+// +v5.0.0
 // Enables "check new updates" for installed components
 // options.updates = true;
 // default: true
@@ -229,11 +229,14 @@ ON('flow.variables', function(variables) {
 
 ## Component
 
-- __IMPORTANT__: `exports.id` can contain `a-z` `0-9` chars only.
+- __IMPORTANT__: `exports.id` can contain `a-z` `0-9` chars only and lower-case.
 
 ```javascript
 // {String}, IMPORTANT (lower case without diacritics)
 exports.id = 'component';
+
+// {String}, IMPORTANT a component version
+exports.version = '1.0.0';
 
 // {String}, optional (default: "component name")
 exports.title = 'A component name (for human)';
@@ -298,6 +301,11 @@ exports.dateupdated = '2017-17-10';
 // +v4.1.1
 // Flow executes "options" event if global "variables" are changed
 exports.variables = false;
+
+// +v5.0.0
+// Flow evaluates "extension" as a raw JavaScript on the client-side when the user opens Flow designer
+// {String}, optional (default: null)
+exports.extension = 'alert("OK")';
 
 exports.install = function(component) {
 
@@ -504,8 +512,30 @@ exports.install = function(component) {
     // component.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
 
     component.throw(data);
-    // +v4.3.0
+    // +v5.0.0
     // Sends data through the error output
+
+    component.next([name]);
+    // @name {String} optional, name of component (lower-case), e.g. "trigger"
+    // returns {Component} or "undefined"
+    // Returns a component instance (if exists) in the outputs
+    // +v5.0.0
+
+    component.prev([name]);
+    // @name {String} optional, name of component (lower-case), e.g. "trigger"
+    // returns {Component} or "undefined"
+    // Returns a component instance (if exists) in the inputs
+    // +v5.0.0
+
+    component.outputs();
+    // returns {Array Component}
+    // Returns all components in the outputs
+    // +v5.0.0
+
+    component.inputs();
+    // returns {Array Component}
+    // Returns all components in the inputs
+    // +v5.0.0
 
     // =====================
     // PROPERTIES
@@ -513,15 +543,15 @@ exports.install = function(component) {
 
     component.duration;
     // {Number} - time of data processing between input and output in milliseconds
-    // +v4.3.0
+    // +v5.0.0
 
     component.countinput;
     // {Number} - count of message on input
-    // +v4.3.0
+    // +v5.0.0
 
     component.countoutput;
     // {Number} - count of message on output
-    // +v4.3.0
+    // +v5.0.0
 
     component.custom;
     // {Object} - empty object for custom variables and methods
