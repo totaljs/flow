@@ -374,7 +374,7 @@ function websocket() {
 		}
 
 		if (message.type === 'variables') {
-			FLOW.refresh_variables(message.body);
+			FLOW.refresh_variables(message.body, client);
 			return;
 		}
 
@@ -1272,16 +1272,29 @@ FLOW.variable = function(name) {
 	return FLOW.variables[name];
 };
 
-FLOW.refresh_variables = function(data) {
-	FLOW.$variables = data;
-	FLOW.variables = data ? data.parseConfig() : EMPTYOBJECT;
-	var keys = Object.keys(FLOW.instances);
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
-		instance.$events.variables && instance.emit('variables', FLOW.variables);
+FLOW.refresh_variables = function(data, client) {
+
+	try {
+
+		var tmp = data ? data.parseConfig() : EMPTYOBJECT;
+		FLOW.$variables = data;
+		FLOW.variables = tmp;
+
+		var keys = Object.keys(FLOW.instances);
+
+		for (var i = 0, length = keys.length; i < length; i++) {
+			var instance = FLOW.instances[keys[i]];
+			instance.$events.variables && instance.emit('variables', FLOW.variables);
+		}
+
+		EMIT('flow.variables', FLOW.variables);
+		FLOW.save2(NOOP);
+		client.send({ type: 'variables-saved' });
+
+	} catch (err) {
+		client && client.send({ type: 'variables-error', body: err.toString() });
 	}
-	EMIT('flow.variables', FLOW.variables);
-	FLOW.save2(NOOP);
+
 	return FLOW;
 };
 

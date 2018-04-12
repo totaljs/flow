@@ -894,21 +894,6 @@
 				return;
 			}
 
-			if (message.type === 'variables') {
-				SET('formvariables.body', message.body, true);
-				return;
-			}
-
-			if (message.type === 'clearerrors') {
-				$('.node_errors').rclass('node_errors');
-				$('.path_error').rclass('path_error').attr('title', '');
-				flow.components.forEach(function(instance) {
-					instance.errors = {};
-				});
-				SET('common.errors', EMPTYARRAY);
-				return;
-			}
-
 			if (message.type === 'traffic') {
 
 				if (document.hidden)
@@ -1057,6 +1042,40 @@
 
 					component.options = message.options;
 				}
+			}
+
+			if (message.type === 'error') {
+				flownotifications.push(message.body);
+				shownotifications();
+				return;
+			}
+
+			if (message.type === 'variables-error') {
+				SETTER('confirm', 'show', '<b class="red">@(Variables parsing error:)</b><br />' + message.body, ['"wrench"@(Fix the problem)', '@(Cancel)'], function(index) {
+					index === 1 && SET('common.form', '');
+				});
+				return;
+			}
+
+			if (message.type === 'variables-saved') {
+				SETTER('snackbar', 'success', '@(Variables have been saved successfully.)');
+				SET('common.form', '');
+				return;
+			}
+
+			if (message.type === 'variables') {
+				SET('formvariables.body', message.body, true);
+				return;
+			}
+
+			if (message.type === 'clearerrors') {
+				$('.node_errors').rclass('node_errors');
+				$('.path_error').rclass('path_error').attr('title', '');
+				flow.components.forEach(function(instance) {
+					instance.errors = {};
+				});
+				SET('common.errors', EMPTYARRAY);
+				return;
 			}
 
 			if (message.type === 'online') {
