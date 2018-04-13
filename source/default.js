@@ -2,7 +2,7 @@ var MESSAGE_TRIGGER = { type: 'trigger' };
 var flowtriggers = {};
 
 function diagonal(x1, y1, x2, y2) {
-	return 'M' + x1 + ',' + y1 + 'C' + ((x1 + x2 ) / 1.9) + ',' + y1 + ' ' + ((x1 + x2) / 2.1) + ',' + y2 + ' ' + x2 + ',' + y2;
+	return 'M' + x1 + ',' + y1 + 'C' + (x1 + x2 ) + ',' + y1 + ' ' + (x1 + x2) + ',' + y2 + ' ' + x2 + ',' + y2;
 }
 
 function highlightcomponent(id) {
