@@ -382,8 +382,20 @@ SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
 		e.preventDefault();
 		e.stopPropagation();
 	} else if (common.form) {
-		SET('common.form', '');
+
 		e.preventDefault();
 		e.stopPropagation();
+
+		if (common.form.substring(0, 8) === 'settings') {
+			var path = common.form.split('-')[1];
+			if (!DISABLED('settings.' + path)) {
+				SETTER('confirm', 'show', 'Are you sure you want to close this form without saving?', ['Yes', 'Cancel'], function(index) {
+					!index && SET('common.form', '');
+				});
+				return;
+			}
+		}
+
+		SET('common.form', '');
 	}
 });
