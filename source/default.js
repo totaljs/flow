@@ -399,3 +399,65 @@ SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
 		SET('common.form', '');
 	}
 });
+
+CodeMirror.defineMode('totaljsresources', function() {
+
+	var REG_KEY = /^[a-z0-9_\-.#]+/i;
+	return {
+
+		startState: function() {
+			return { type: 0, keyword: 0 };
+		},
+
+		token: function(stream, state) {
+
+			var m;
+
+			if (stream.sol()) {
+
+				var line = stream.string;
+				if (line.substring(0, 2) === '//') {
+					stream.skipToEnd();
+					return 'comment';
+				}
+
+				state.type = 0;
+			}
+
+			m = stream.match(REG_KEY, true);
+			if (m)
+				return 'tag';
+
+			if (!stream.string) {
+				stream.next();
+				return '';
+			}
+
+			var count = 0;
+
+			while (true) {
+
+				count++;
+				if (count > 5000)
+					break;
+
+				var c = stream.peek();
+				if (c === ':') {
+					stream.skipToEnd();
+					return 'def';
+				}
+
+				if (c === '(') {
+					if (stream.skipTo(')')) {
+						stream.eat(')');
+						return 'variable-L';
+					}
+				}
+
+			}
+
+			stream.next();
+			return '';
+		}
+	};
+});
