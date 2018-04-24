@@ -134,7 +134,7 @@
 		<section class="tabs tabs-controls">
 			<nav>
 				<button class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
-				<button title="@(Database)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
+				<button title="@(Components)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
 				<button title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></button>
 				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
 			</nav>
@@ -1317,7 +1317,7 @@
 		function settings_menu(el) {
 			var items = [];
 
-			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+			items.push({ name: '@(Components)', icon: 'fa-database', value: 'database' });
 			items.push({ name: '@(Variables)', icon: 'fa-sliders', value: 'variables' });
 			items.push({ name: '@(Export designer)', icon: 'fa-copy', value: 'export' });
 			items.push({ name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' });
