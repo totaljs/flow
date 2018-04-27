@@ -230,7 +230,7 @@
 		M.environment('flow.jc');
 
 		var MESSAGES = {};
-		MESSAGES.apply = '<i class="fa fa-info-circle blue mr5"></i>@(You have to click the &quot;<b>APPLY</b>&quot; button to apply all changes.)';
+		MESSAGES.apply = '<i class="fa fa-info-circle blue mr5"></i>@(You have to click the &quot;<b>APPLY</b>&quot; button to apply all the changes.)';
 
 		marked.setOptions({ gfm: true, breaks: true, sanitize: true, tables: true });
 
@@ -392,6 +392,7 @@
 			obj.connections = {};
 			obj.id = Date.now().toString();
 			obj.isnew = true;
+			obj.disabledio = { input: [], output: [] };
 
 			if (typeof(component.status) === 'object')
 				obj.state = { text: component.status.text, color: component.status.color };
@@ -635,8 +636,9 @@
 			}, 100);
 		});
 
-		ON('designer.component.io', function(comid, type, io_index, enable) {			
+		ON('designer.component.io', function(comid, type, io_index, enable) {
 			SETTER('websocket', 'send', { target: comid, type: 'io', io: type, index: io_index, enable: enable });
+			setState(MESSAGES.apply);		
 		});
 
 		$(window).on('hashchange', function() {

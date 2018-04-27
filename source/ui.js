@@ -1368,6 +1368,7 @@ COMPONENT('designer', function() {
 				case 5:
 					// Current node
 					self.moveselected(offsetX + move.offsetX, offsetY + move.offsetY, e);
+					setState(MESSAGES.apply);
 					return;
 			}
 		};
@@ -1604,44 +1605,37 @@ COMPONENT('designer', function() {
 			EMIT('designer.select', el.attrd('id'));
 		};
 
-		function add_cross(el, id, type, index, tx, ty) {
-			var g = el.asvg('g');
-			g.attr('transform', 'translate({0},{1})'.format(tx, ty));
-
-			var p = g.asvg('polygon');
-			p.attr('transform', 'scale(0.025)');
-			p.attr('style', 'fill:#ff0000;stroke:black;stroke-width:75;');
-			p.attr('points', '490,386.812 348.187,244.999 490,103.187 386.813,0 245,141.812 103.188,0 0,103.188 141.813,245 0,386.812 103.187,489.999 245,348.187 386.813,490');
-			p.attrd('id', id);
-			p.attrd('index', index);
-			p.attrd('io', type);
-		};
-
 		self.event('click', 'circle.input, circle.output, polygon', function(e) {
 
 			var el = $(this);
 			var com_el = el.closest('.node');
 			var id = com_el.attrd('id');
-			var io_index = el.attrd('index');
+			var io_index = +el.attrd('index');
 			var com = flow.components.findItem('id', id);
 			if (!com)
 				return;
 
 			setTimeout2(id + io_index, function(){
 				if (el.hclass('input')) {
-					EMIT('designer.component.io', id, 'input', io_index, false);
 					el.aclass('hidden');
-					add_cross(el.parent(), id, 'input', io_index, +el.attr('cx') - 6, +el.attr('cy') - 7);
+					self.add_cross(el.parent(), id, 'input', io_index, +el.attr('cx') - 6, +el.attr('cy') - 6);
+					if (com.disabledio.input.indexOf(io_index) < 0)
+						com.disabledio.input.push(io_index);
+					!com.isnew && EMIT('designer.component.io', id, 'input', io_index, false);
 				} else if (el.hclass('output')) {
 					el.aclass('hidden');
-					add_cross(el.parent(), id, 'output', io_index, +el.attr('cx') - 6, +el.attr('cy') - 7);
-					EMIT('designer.component.io', id, 'output', io_index, false);
+					self.add_cross(el.parent(), id, 'output', io_index, +el.attr('cx') - 6, +el.attr('cy') - 6);
+					if (com.disabledio.output.indexOf(io_index) < 0)
+						com.disabledio.output.push(io_index);
+					!com.isnew && EMIT('designer.component.io', id, 'output', io_index, false);
 				} else {
 					var io = el.attrd('io');
-					EMIT('designer.component.io', id, io, io_index, true);
-					console.log('.' + io + '[data-index=' + io_index + ']', el.parent().parent().find('.' + io + '[data-index=' + io_index + ']'));
 					el.parent().parent().find('.' + io + '[data-index=' + io_index + ']').rclass('hidden');
 					el.parent().remove();
+					var i = com.disabledio[io].indexOf(io_index);
+					if (i > -1)
+						com.disabledio[io].splice(i, 1);
+					!com.isnew && EMIT('designer.component.io', id, io, io_index, true);
 				}
 			}, 300);
 		});
@@ -1769,12 +1763,17 @@ COMPONENT('designer', function() {
 		var top = ((height / 2) - ((item.$component.input * padding) / 2)) + 10;
 
 		top = ((height / 2) - ((input * padding) / 2)) + 10;
+
 		for (var i = 0; i < input; i++) {
 			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * padding).attr('r', radius);
 			if (inputcolors)
 				o.attr('fill', inputcolors[i]);
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+			if (item.disabledio && item.disabledio.input.indexOf(i) > -1) {
+				o.aclass('hidden');
+				self.add_cross(points, item.id, 'input', i, -6, -6 + top + i * padding)
+			}
 		}
 
 		top = ((height / 2) - ((output * padding) / 2)) + 10;
@@ -1793,6 +1792,11 @@ COMPONENT('designer', function() {
 				o.attr('fill', outputcolors[i]);
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+
+			if (item.disabledio && item.disabledio.output.indexOf(i) > -1) {
+				o.aclass('hidden');
+				self.add_cross(points, item.id, 'output', i, width - 6, top + i * padding)
+			}
 		}
 
 		if ((item.$component.input || item.$component.output) && item.$component.traffic) {
@@ -1815,6 +1819,19 @@ COMPONENT('designer', function() {
 		}
 
 		data[item.id] = item;
+	};
+
+	self.add_cross = function (el, id, type, index, tx, ty) {
+		var g = el.asvg('g');
+		g.attr('transform', 'translate({0},{1})'.format(tx, ty));
+
+		var p = g.asvg('polygon');
+		p.attr('transform', 'scale(0.025)');
+		p.attr('style', 'fill:#ff0000;stroke:black;stroke-width:75;');
+		p.attr('points', '490,386.812 348.187,244.999 490,103.187 386.813,0 245,141.812 103.188,0 0,103.188 141.813,245 0,386.812 103.187,489.999 245,348.187 386.813,490');
+		p.attrd('id', id);
+		p.attrd('index', index);
+		p.attrd('io', type);
 	};
 
 	self.moveselected = function(x, y, e) {

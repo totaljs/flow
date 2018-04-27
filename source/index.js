@@ -386,12 +386,12 @@ function websocket() {
 			if (message.type === 'io') {
 
 				var index = +message.index;
-				var io = instance.$disabledio[message.io];
+				var io = instance.disabledio[message.io];
 
 				if (message.enable) {
 					var index = io.indexOf(index);
 					if (index > -1)
-						instance.$disabledio[message.io].splice(index, 1);
+						instance.disabledio[message.io].splice(index, 1);
 				} else {
 					if (io.indexOf(index) < 0)
 						io.push(index);
@@ -516,7 +516,6 @@ function Component(options) {
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
-	this.$disabledio = { input: [], output: [] };
 }
 
 Component.prototype.beg = function() {
@@ -785,7 +784,7 @@ Component.prototype.send = function(index, message) {
 		if (self.$closed)
 			return;
 
-		if (self.$disabledio.output.indexOf(0) > -1)
+		if (self.disabledio.output.indexOf(0) > -1)
 			return;
 
 		FLOW.traffic(self.id, 'output');
@@ -807,7 +806,7 @@ Component.prototype.send = function(index, message) {
 
 				if (instance && !instance.$closed) {
 
-					var skip = instance.$disabledio.input.indexOf(+ids[i].index) > -1;
+					var skip = instance.disabledio.input.indexOf(+ids[i].index) > -1;
 
 					if (!tmp[instance.id]) {
 						tmp[instance.id] = true;
@@ -854,7 +853,7 @@ Component.prototype.send = function(index, message) {
 		if (self.$closed)
 			return;
 
-		if (self.$disabledio.output.indexOf(index) > -1)
+		if (self.disabledio.output.indexOf(index) > -1)
 			return;
 
 		FLOW.traffic(self.id, 'output');
@@ -866,7 +865,7 @@ Component.prototype.send = function(index, message) {
 			if (!instance)
 				continue;
 
-			var skip = instance.$disabledio.input.indexOf(+arr[i].index) > -1;
+			var skip = instance.disabledio.input.indexOf(+arr[i].index) > -1;
 
 			if (!tmp[instance.id]) {
 				tmp[instance.id] = true;
@@ -1280,6 +1279,7 @@ FLOW.init = function(components) {
 			instance.name = com.name || declaration.name;
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
+			instance.disabledio = com.disabledio || { input: [], output: [] };
 			declaration.fn.call(instance, instance, declaration);
 			instance.$refresh();
 
