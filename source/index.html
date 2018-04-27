@@ -635,6 +635,10 @@
 			}, 100);
 		});
 
+		ON('designer.component.io', function(comid, type, io_index, enable) {			
+			SETTER('websocket', 'send', { target: comid, type: 'io', io: type, index: io_index, enable: enable });
+		});
+
 		$(window).on('hashchange', function() {
 			EMIT('designer.selectable', null);
 			EMIT('designer.refresh');

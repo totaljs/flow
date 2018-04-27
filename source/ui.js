@@ -1604,6 +1604,48 @@ COMPONENT('designer', function() {
 			EMIT('designer.select', el.attrd('id'));
 		};
 
+		function add_cross(el, id, type, index, tx, ty) {
+			var g = el.asvg('g');
+			g.attr('transform', 'translate({0},{1})'.format(tx, ty));
+
+			var p = g.asvg('polygon');
+			p.attr('transform', 'scale(0.025)');
+			p.attr('style', 'fill:#ff0000;stroke:black;stroke-width:75;');
+			p.attr('points', '490,386.812 348.187,244.999 490,103.187 386.813,0 245,141.812 103.188,0 0,103.188 141.813,245 0,386.812 103.187,489.999 245,348.187 386.813,490');
+			p.attrd('id', id);
+			p.attrd('index', index);
+			p.attrd('io', type);
+		};
+
+		self.event('click', 'circle.input, circle.output, polygon', function(e) {
+
+			var el = $(this);
+			var com_el = el.closest('.node');
+			var id = com_el.attrd('id');
+			var io_index = el.attrd('index');
+			var com = flow.components.findItem('id', id);
+			if (!com)
+				return;
+
+			setTimeout2(id + io_index, function(){
+				if (el.hclass('input')) {
+					EMIT('designer.component.io', id, 'input', io_index, false);
+					el.aclass('hidden');
+					add_cross(el.parent(), id, 'input', io_index, +el.attr('cx') - 6, +el.attr('cy') - 7);
+				} else if (el.hclass('output')) {
+					el.aclass('hidden');
+					add_cross(el.parent(), id, 'output', io_index, +el.attr('cx') - 6, +el.attr('cy') - 7);
+					EMIT('designer.component.io', id, 'output', io_index, false);
+				} else {
+					var io = el.attrd('io');
+					EMIT('designer.component.io', id, io, io_index, true);
+					console.log('.' + io + '[data-index=' + io_index + ']', el.parent().parent().find('.' + io + '[data-index=' + io_index + ']'));
+					el.parent().parent().find('.' + io + '[data-index=' + io_index + ']').rclass('hidden');
+					el.parent().remove();
+				}
+			}, 300);
+		});
+
 		self.event('dragover dragenter drag drop', 'svg', function(e) {
 
 			if (common.touches)

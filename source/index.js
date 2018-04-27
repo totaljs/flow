@@ -383,6 +383,21 @@ function websocket() {
 			if (!instance)
 				return;
 
+			if (message.type === 'io') {
+
+				var index = +message.index;
+				var io = instance.$disabledio[message.io];
+
+				if (message.enable) {
+					var index = io.indexOf(index);
+					if (index > -1)
+						instance.$disabledio[message.io].splice(index, 1);
+				} else {
+					if (io.indexOf(index) < 0)
+						io.push(index);
+				}
+			}
+
 			if (message.type === 'options') {
 
 				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
@@ -501,6 +516,7 @@ function Component(options) {
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
+	this.$disabledio = { input: [], output: [] };
 }
 
 Component.prototype.beg = function() {
@@ -766,10 +782,13 @@ Component.prototype.send = function(index, message) {
 
 	if (index === undefined) {
 
-		FLOW.traffic(self.id, 'output');
-
 		if (self.$closed)
 			return;
+
+		if (self.$disabledio.output.indexOf(0) > -1)
+			return;
+
+		FLOW.traffic(self.id, 'output');
 
 		var tmp = {};
 
@@ -788,10 +807,15 @@ Component.prototype.send = function(index, message) {
 
 				if (instance && !instance.$closed) {
 
+					var skip = instance.$disabledio.input.indexOf(+ids[i].index) > -1;
+
 					if (!tmp[instance.id]) {
 						tmp[instance.id] = true;
-						FLOW.traffic(instance.id, 'input');
+						FLOW.traffic(instance.id, 'input', !skip);
 					}
+
+					if (skip)
+						continue;
 
 					try {
 						var data = canclone && (instance.cloning || instance.cloning === undefined) ? message.clone() : message;
@@ -817,7 +841,7 @@ Component.prototype.send = function(index, message) {
 			}
 		}
 
-	} else {
+	} else {		
 
 		arr = connections[index.toString()];
 
@@ -830,6 +854,9 @@ Component.prototype.send = function(index, message) {
 		if (self.$closed)
 			return;
 
+		if (self.$disabledio.output.indexOf(index) > -1)
+			return;
+
 		FLOW.traffic(self.id, 'output');
 
 		var tmp = {};
@@ -839,10 +866,15 @@ Component.prototype.send = function(index, message) {
 			if (!instance)
 				continue;
 
+			var skip = instance.$disabledio.input.indexOf(+arr[i].index) > -1;
+
 			if (!tmp[instance.id]) {
 				tmp[instance.id] = true;
-				FLOW.traffic(instance.id, 'input');
+				FLOW.traffic(instance.id, 'input', skip);
 			}
+
+			if (skip)
+				continue;
 
 			if (instance && !instance.$closed) {
 				try {
@@ -1588,7 +1620,7 @@ FLOW.traffic = function(id, type, count) {
 			FLOW.alltraffic.count++;
 			break;
 		case 'input':
-			FLOW.alltraffic[id][type]++;
+			if (count !== true) FLOW.alltraffic[id][type]++;
 			FLOW.alltraffic[id].ni++;
 			break;
 		default:

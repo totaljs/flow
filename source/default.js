@@ -320,6 +320,8 @@ function refreshTraffic() {
 			}
 		}
 
+		inputc < 0 && (inputc = 0);
+
 		var key = inputc + 'x' + outputc + 'x' + pending + 'x' + duration;
 		var item = el.get(0);
 
