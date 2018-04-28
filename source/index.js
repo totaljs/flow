@@ -1279,7 +1279,7 @@ FLOW.init = function(components) {
 			instance.name = com.name || declaration.name;
 			instance.color = com.color || declaration.color;
 			instance.notes = com.notes || '';
-			instance.disabledio = com.disabledio || { input: [], output: [] };
+			instance.disabledio = com.disabledio = com.disabledio || { input: [], output: [] };
 			declaration.fn.call(instance, instance, declaration);
 			instance.$refresh();
 
