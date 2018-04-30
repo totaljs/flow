@@ -191,6 +191,7 @@
 			<div id="designerstate"></div>
 
 			<nav id="designerbuttons">
+				<button class="exec disabled" title="@(Settings)" data-exec="settings_component"><i class="fa fa-cog"></i></button>
 				<button class="exec disabled" title="@(Copy component)" data-exec="#designer.copy"><i class="fa fa-file-text-o"></i></button>
 				<button class="exec disabled" name="paste" title="@(Paste component)" data-exec="#designer.paste"><i class="fa fa-paste"></i></button>
 				<button class="exec disabled" name="duplicate" title="@(Duplicate component)" data-exec="#designer.duplicate"><i class="fa fa-files-o"></i></button>
@@ -638,7 +639,7 @@
 
 		ON('designer.component.io', function(comid, type, io_index, enable) {
 			SETTER('websocket', 'send', { target: comid, type: 'io', io: type, index: io_index, enable: enable });
-			setState(MESSAGES.apply);		
+			//setState(MESSAGES.apply);
 		});
 
 		$(window).on('hashchange', function() {
@@ -682,6 +683,11 @@
 				SET('common.form', 'tab');
 			}
 		});
+
+		function settings_component() {
+			id = flow.selected[0].attrd('id');
+			EMIT('designer.settings', id);
+		}
 
 		OPERATION('flow.clear', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
@@ -1129,7 +1135,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					COMPILE($('#flowsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);

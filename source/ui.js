@@ -303,8 +303,10 @@ COMPONENT('confirm', function(self) {
 				return;
 			var index = e.which === 13 ? 0 : e.which === 27 ? 1 : null;
 			if (index != null) {
+				visible = false;
 				self.find('button[data-index="{0}"]'.format(index)).trigger('click');
 				e.preventDefault();
+				e.stopPropagation();
 			}
 		});
 	};
@@ -365,7 +367,7 @@ COMPONENT('form', function(self, config) {
 			SET($(this).attrd('path'), '');
 		});
 
-		$(window).on('resize', function() {
+		$(W).on('resize', function() {
 			SETTER('form', 'resize');
 		});
 
@@ -419,7 +421,7 @@ COMPONENT('form', function(self, config) {
 		else
 			icon = '<i></i>';
 
-		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div class="ui-form-title"><button class="ui-form-button-close" data-path="{2}"><i class="fa fa-times"></i></button>{4}<span>{3}</span></div></div></div>'.format(self._id, config.width || 800, self.path, config.title, icon));
+		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div class="ui-form-title"><button class="ui-form-button-close{5}" data-path="{2}"><i class="fa fa-times"></i></button>{4}<span>{3}</span></div></div></div>'.format(self._id, config.width || 800, self.path, config.title, icon, config.closebutton == false ? ' hidden' : ''));
 
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
@@ -446,7 +448,7 @@ COMPONENT('form', function(self, config) {
 
 		config.enter && self.event('keydown', 'input', function(e) {
 			e.which === 13 && !self.find('button[name="submit"]').get(0).disabled && setTimeout(function() {
-				self.submit(self.hide);
+				self.submit(self);
 			}, 800);
 		});
 	};
@@ -465,13 +467,16 @@ COMPONENT('form', function(self, config) {
 			case 'width':
 				value !== prev && self.find('.ui-form').css('max-width', value + 'px');
 				break;
+			case 'closebutton':
+				self.find('.ui-form-button-close').tclass(value !== true);
+				break;
 		}
 	};
 
 	self.setter = function(value) {
 
-		setTimeout2('noscroll', function() {
-			$('html').tclass('noscroll', !!$('.ui-form-container').not('.hidden').length);
+		setTimeout2('ui-form-noscroll', function() {
+			$('html').tclass('ui-form-noscroll', !!$('.ui-form-container').not('.hidden').length);
 		}, 50);
 
 		var isHidden = value !== config.if;
@@ -519,7 +524,7 @@ COMPONENT('form', function(self, config) {
 		// Fixes a problem with freezing of scrolling in Chrome
 		setTimeout2(self.id, function() {
 			self.css('z-index', (W.$$form_level * 10) + 1);
-		}, 1000);
+		}, 500);
 	};
 });
 
@@ -822,9 +827,9 @@ COMPONENT('textbox', function(self, config) {
 			var html = builder.join('');
 			builder = [];
 			builder.push('<div class="ui-textbox-label{0}">'.format(config.required ? ' ui-textbox-label-required' : ''));
-			icon && builder.push('<span class="fa fa-{0}"></span> '.format(icon));
-			builder.push(content);
-			builder.push(':</div><div class="ui-textbox">{0}</div>'.format(html));
+			icon && builder.push('<i class="fa fa-{0}"></i> '.format(icon));
+			builder.push('<span>' + content + (content.endsWith('?') ? '' : ':') + '</span>');
+			builder.push('</div><div class="ui-textbox">{0}</div>'.format(html));
 			config.error && builder.push('<div class="ui-textbox-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
 			self.html(builder.join(''));
 			self.aclass('ui-textbox-container');
@@ -870,8 +875,11 @@ COMPONENT('textbox', function(self, config) {
 				input.prop('name', value ? self.path.replace(/\./g, '_') : '');
 				break;
 			case 'label':
+				if (content && value)
+					self.find('.ui-textbox-label span').html(value);
+				else
+					redraw = true;
 				content = value;
-				redraw = true;
 				break;
 			case 'type':
 				self.type = value;
@@ -879,7 +887,7 @@ COMPONENT('textbox', function(self, config) {
 					value = 'password';
 				else
 					self.type = 'text';
-				redraw = true;
+				self.find('input').prop('type', self.type);
 				break;
 			case 'align':
 				input.rclass(input.attr('class')).aclass('ui-' + value || 'left');
@@ -888,6 +896,12 @@ COMPONENT('textbox', function(self, config) {
 				input.focus();
 				break;
 			case 'icon':
+				var tmp = self.find('.ui-textbox-label .fa');
+				if (tmp.length)
+					tmp.rclass2('fa-').aclass('fa-' + value);
+				else
+					redraw = true;
+				break;
 			case 'icon2':
 			case 'increment':
 				redraw = true;
@@ -915,7 +929,6 @@ COMPONENT('textbox', function(self, config) {
 		config.error && self.find('.ui-textbox-helper').tclass('ui-textbox-helper-show', invalid);
 	};
 });
-
 
 COMPONENT('importer', function(self, config) {
 
@@ -1115,6 +1128,7 @@ COMPONENT('designer', function() {
 	var animcache = {};
 	var animrunning = {};
 	var animtoken = 0;
+	var icons = getIcons();
 
 	function findPoint(selector, x, y) {
 		var arr = svg.find(selector);
@@ -1245,7 +1259,7 @@ COMPONENT('designer', function() {
 			url += '/';
 		scroller = self.element.parent();
 		self.aclass('ui-designer');
-		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="{0}img/theme{1}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(url, common.theme || 'white'));
+		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><filter id="svgshadow" x="0" y="0" width="180%" height="180%"><feGaussianBlur in="SourceAlpha" stdDeviation="5"/><feOffset dx="2" dy="2" result="offsetblur"/><feComponentTransfer><feFuncA type="linear" slope="0.20"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="{0}img/theme{1}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(url, common.theme || 'white'));
 		var tmp = self.find('svg');
 		svg = $(tmp.get(0));
 		main = svg.asvg('g');
@@ -1605,7 +1619,7 @@ COMPONENT('designer', function() {
 			EMIT('designer.select', el.attrd('id'));
 		};
 
-		self.event('click', 'circle.input, circle.output, polygon', function(e) {
+		self.event('click', 'circle.input, circle.output, polygon', function() {
 
 			var el = $(this);
 			var com_el = el.closest('.node');
@@ -1712,9 +1726,17 @@ COMPONENT('designer', function() {
 		var rect = g.asvg('rect');
 		g.asvg('text').attr('class', 'node_status node_status_' + item.id).attr('transform', 'translate(2,-8)').text((item.state ? item.state.text : '') || '').attr('fill', (item.state ? item.state.color : '') || 'gray');
 
+		var icon = null;
+
+		if (item.$component && item.$component.icon) {
+			icon = item.$component.icon;
+			if (icon)
+				icon = icons[icon];
+		}
+
 		var body = g.asvg('g');
-		var label = (item.name || item.reference) ? body.asvg('text').html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
-		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate(0, {0})'.format(label ? 14 : 5));
+		var label = (item.name || item.reference) ? body.asvg('text').attr('transform', 'translate({0}, 0)'.format(icon ? 35 : 0)).html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
+		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate({1}, {0})'.format(label ? 14 : 5, icon ? 35 : 0));
 
 		var inputcolors = null;
 		var input = 0;
@@ -1753,8 +1775,17 @@ COMPONENT('designer', function() {
 		var height = (label ? (count > 1 ? 0 : 20) : (count > 1 ? 0 : 4)) + 6 + count * padding;
 		var width = (Math.max(label ? label.get(0).getComputedTextLength() : 0, text.get(0).getComputedTextLength()) + (output || input ? 30 : 20)) >> 0;
 
+		if (icon)
+			width += 34;
+
+		if (icon) {
+			g.asvg('text').attr('class', 'icon').text(icon).attr('transform', 'translate(13,{0})'.format(((height / 2) >> 0) + 6));
+			g.asvg('line').attr('x1', 40).attr('x2', 40).attr('y1', 0).attr('y2', height).attr('class', 'iconline');
+		}
+
 		body.attr('transform', 'translate({0}, {1})'.format(output || input ? 15 : 10, (height / 2) - 2));
 		rect.attr('width', width).attr('height', height).attr('rx', 3).attr('ry', 3).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
+		rect.attr('filter', 'url(#svgshadow)');
 
 		g.attrd('width', width);
 		g.attrd('height', height);
@@ -1770,9 +1801,10 @@ COMPONENT('designer', function() {
 				o.attr('fill', inputcolors[i]);
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+
 			if (item.disabledio && item.disabledio.input.indexOf(i) > -1) {
 				o.aclass('hidden');
-				self.add_cross(points, item.id, 'input', i, -6, -6 + top + i * padding)
+				self.add_cross(points, item.id, 'input', i, -6, -6 + top + i * padding);
 			}
 		}
 
@@ -1795,7 +1827,7 @@ COMPONENT('designer', function() {
 
 			if (item.disabledio && item.disabledio.output.indexOf(i) > -1) {
 				o.aclass('hidden');
-				self.add_cross(points, item.id, 'output', i, width - 6, top + i * padding)
+				self.add_cross(points, item.id, 'output', i, width - 6, top + i * padding);
 			}
 		}
 
@@ -4503,6 +4535,7 @@ COMPONENT('nosqlcounter', 'count:0;height:80', function(self, config) {
 			value = [];
 
 		var dt = new Date();
+		dt.setDate(1);
 		var current = dt.format('yyyyMM');
 		var stats = null;
 

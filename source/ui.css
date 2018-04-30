@@ -39,7 +39,10 @@
 .ui-designer .path_new { animation: 1s blinknew infinite alternate; stroke: #A0D468; stroke-dasharray: 10, 8; }
 .ui-designer .path_err { stroke: red !important; stroke-width: 1.9; }
 .ui-designer .highlight .rect { animation: highlight 0.5s alternate infinite; }
+.ui-designer .icon { font:normal normal normal 18px FontAwesome; fill: white; }
+.ui-designer .iconline { stroke: rgba(255,255,255,0.2); stroke-width: 1px; }
 
+.ui-form-noscroll, .ui-form-noscroll body { overflow: hidden; }
 .ui-form-container { width: 100%; position: fixed; left: 0; top: 0; bottom: 0; right: 0; background-color: rgba(230,233,237,0.8); z-index: 5; overflow-y: scroll; transform-style: preserve-3d; overflow-scrolling: touch; }
 .ui-form-container-padding { padding: 0 30px;}
 .ui-form { background-color: white; margin: 0 auto 30px; border-radius: 4px; box-shadow: 0 0 20px #D0D0D0; transform: translate(0, -500px); transition: all 0.2s; opacity: 0; }

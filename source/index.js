@@ -32,7 +32,7 @@ var FILENAME;
 var READY = false;
 var MODIFIED = null;
 
-exports.version = 'v5.0.0';
+exports.version = 'v5.1.0';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -396,6 +396,10 @@ function websocket() {
 					if (io.indexOf(index) < 0)
 						io.push(index);
 				}
+
+				var item = MESSAGE_DESIGNER.components.findItem('id', message.target);
+				item.disabledio = instance.disabledio;
+				FLOW.save3();
 			}
 
 			if (message.type === 'options') {
@@ -840,7 +844,7 @@ Component.prototype.send = function(index, message) {
 			}
 		}
 
-	} else {		
+	} else {
 
 		arr = connections[index.toString()];
 
@@ -962,7 +966,7 @@ Component.prototype.save = function() {
 	var tmp = MESSAGE_DESIGNER.components.findItem('id', this.id);
 	if (tmp) {
 		tmp.options = this.options;
-		FLOW.save2();
+		FLOW.save3();
 	}
 
 	return this;
@@ -1320,7 +1324,7 @@ FLOW.refresh_variables = function(data, client) {
 		}
 
 		EMIT('flow.variables', FLOW.variables);
-		FLOW.save2(NOOP);
+		FLOW.save3();
 		client.send({ type: 'variables-saved' });
 
 	} catch (err) {
@@ -1451,9 +1455,15 @@ FLOW.clearerrors = function() {
 			MESSAGE_DESIGNER.components[i].errors = undefined;
 	}
 
-	FLOW.save2(NOOP);
+	FLOW.save3();
 	FLOW.send(MESSAGE_CLEARERRORS);
 	return FLOW;
+};
+
+FLOW.save3 = function() {
+	setTimeout2('flow.save3', function() {
+		FLOW.save2();
+	}, 5000);
 };
 
 // Saves current state
