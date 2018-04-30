@@ -1779,7 +1779,7 @@ COMPONENT('designer', function() {
 			width += 34;
 
 		if (icon) {
-			g.asvg('text').attr('class', 'icon').text(icon).attr('transform', 'translate(13,{0})'.format(((height / 2) >> 0) + 6));
+			g.asvg('text').attr('class', 'icon').attr('text-anchor', 'middle').text(icon).attr('transform', 'translate(20,{0})'.format(((height / 2) >> 0) + 6));
 			g.asvg('line').attr('x1', 40).attr('x2', 40).attr('y1', 0).attr('y2', height).attr('class', 'iconline');
 		}
 
