@@ -606,7 +606,8 @@ Component.prototype.rem = function(key) {
 };
 
 Component.prototype.log = function(a, b, c, d, e, f) {
-	F.logger(this.component, a, b, c, d, e, f);
+	[].splice.call(arguments, 0, 0, this.component);
+	F.logger.apply(F, arguments);
 	return this;
 };
 
