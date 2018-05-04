@@ -148,7 +148,7 @@ COMPONENT('binder', function(self) {
 				item.disable && element.prop('disabled', item.disable(value));
 				item.src && element.attr('src', item.src(value));
 				item.href && element.attr('href', item.href(value));
-				item.exec && EXEC(item.exec, element);
+				item.exec && EXEC(item.exec, element, value, item.path);
 			}
 		}
 	};

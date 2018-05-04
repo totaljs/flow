@@ -133,9 +133,8 @@
 
 		<section class="tabs tabs-controls">
 			<nav>
-				<button class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
-				<button title="@(Components)" class="exec onlyicon" data-path="common.form" data-value="'database'"><i class="fa fa-database"></i></button>
-				<button title="@(Variables)" class="exec onlyicon" data-path="common.form" data-value="'variables'"><i class="fa fa-sliders"></i></button>
+				<button title="@(Apply the current Flow)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
+				<button title="@(Pause / Play)" class="exec onlyicon" data-exec="flowpause" data-b="flow.paused" data-b-exec="flowpausestyle"><i class="fa"></i></button>
 				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
 			</nav>
 		</section>
@@ -977,6 +976,8 @@
 
 				message.database.quicksort('name');
 				SET('common.components', message.database);
+				SET('flow.paused', message.paused === true);
+
 				UPDATE('flow');
 				SETTER('binder', 'scan');
 				setTimeout(function() {
@@ -1028,6 +1029,7 @@
 					else
 						SET(trigger, message.body);
 				}
+				return;
 			}
 
 			if (message.type === 'callback') {
@@ -1036,6 +1038,12 @@
 					fn(message.body);
 					delete common.callbacks[message.id];
 				}
+				return;
+			}
+
+			if (message.type === 'paused') {
+				SET('flow.paused', message.is);
+				return;
 			}
 
 			if (message.type === 'componentoptions') {
@@ -1469,6 +1477,35 @@
 				}
 			});
 		}, true);
+
+		function flowpause() {
+			if (flow.paused) {
+				SETTER('confirm', 'show', '@(Are you sure you want to <b>play</b> the entire Flow?)', ['"play"@(Play now)', '@(Cancel)'], function(index) {
+					!index && SETTER('websocket', 'send', { type: 'pause' });
+				});
+			} else {
+				SETTER('confirm', 'show', '@(Are you sure you want to <b>pause</b> the entire Flow?)', ['"pause"@(Pause now)', '@(Cancel)'], function(index) {
+					!index && SETTER('websocket', 'send', { type: 'pause' });
+				});
+			}
+		}
+
+		function flowpausestyle(el, value) {
+
+			if (typeof(value) !== 'boolean' || common.ispaused === value)
+				return;
+
+			common.ispaused = value;
+
+			if (value) {
+				flownotifications.push('@(<b>Flow is paused</b> and it doesn\'t process any data.)');
+				shownotifications(true);
+			}
+
+			el.tclass('red', value != true);
+			el.tclass('green', value == true);
+			el.find('.fa').tclass('fa-pause', value != true).tclass('fa-play', value === true);
+		}
 
 	</script>
 

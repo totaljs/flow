@@ -11,6 +11,7 @@ const MESSAGE_TRAFFIC = { type: 'traffic' };
 const MESSAGE_STATIC = { type: 'callback' };
 const MESSAGE_VARIABLES = { type: 'variables' };
 const MESSAGE_TEMPLATES = { type: 'templates' };
+const MESSAGE_PAUSED = { type: 'paused' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
@@ -22,6 +23,8 @@ const FILEDESIGNER = '/flow/designer.json';
 const FLAGS = ['get', 'dnscache'];
 const FLAGSVERSION = ['get', 'dnscache', '< 1'];
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
+const PAUSEDEVENTS = { 'data': 1, '0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1, '99': 1 };
+
 var FILEINMEMORY = '/flow/repository.json';
 
 var COUNTER = 0;
@@ -350,35 +353,27 @@ function websocket() {
 			MESSAGE_STATIC.body = U.minifyHTML(component ? TRANSLATOR(self.language || 'default', component.html) : '');
 			client.send(MESSAGE_STATIC);
 			return;
-		}
-
-		if (message.type === 'clearerrors') {
+		} else if (message.type === 'clearerrors') {
 			FLOW.clearerrors();
 			return;
-		}
-
-		if (message.type === 'install') {
+		} else if (message.type === 'install') {
 			FLOW.install(message.filename, message.body);
 			return;
-		}
-
-		if (message.type === 'uninstall') {
+		} else if (message.type === 'uninstall') {
 			FLOW.uninstall(message.target);
 			return;
-		}
-
-		if (message.type === 'getvariables') {
+		} else if (message.type === 'getvariables') {
 			MESSAGE_VARIABLES.body = FLOW.$variables;
 			client.send(MESSAGE_VARIABLES);
 			return;
-		}
-
-		if (message.type === 'variables') {
+		} else if (message.type === 'variables') {
 			FLOW.refresh_variables(message.body, client);
 			return;
-		}
-
-		if (message.target) {
+		} else if (message.type === 'pause') {
+			MESSAGE_PAUSED.is = MESSAGE_DESIGNER.paused = !MESSAGE_DESIGNER.paused;
+			client.send(MESSAGE_PAUSED);
+			FLOW.save3();
+		} else if (message.target) {
 			var instance = FLOW.instances[message.target];
 			if (!instance)
 				return;
@@ -522,6 +517,12 @@ function Component(options) {
 	this.$pending = 0;
 }
 
+Component.prototype = {
+	get paused() {
+		return MESSAGE_DESIGNER.paused;
+	}
+};
+
 Component.prototype.beg = function() {
 	var self = this;
 	self.$pending++;
@@ -538,6 +539,10 @@ Component.prototype.end = function() {
 };
 
 Component.prototype.emit = function(name, a, b, c, d, e, f, g) {
+
+	if (MESSAGE_DESIGNER.paused && PAUSEDEVENTS[name])
+		return this;
+
 	var evt = this.$events[name];
 	if (evt) {
 		var clean = false;
@@ -605,7 +610,7 @@ Component.prototype.rem = function(key) {
 	return FLOW.rem('$' + this.id + key);
 };
 
-Component.prototype.log = function(a, b, c, d, e, f) {
+Component.prototype.log = function() {
 	[].splice.call(arguments, 0, 0, this.component);
 	F.logger.apply(F, arguments);
 	return this;
@@ -759,7 +764,7 @@ Component.prototype.send = function(index, message) {
 
 	message.parent = self;
 
-	if (!connections || OPT.crashmode) {
+	if (!connections || OPT.crashmode || MESSAGE_DESIGNER.paused) {
 		message.completed = true;
 		return message;
 	}
@@ -1065,7 +1070,7 @@ FLOW.on = function(name, fn) {
 
 FLOW.emit = function(name, a, b, c, d, e, f, g) {
 
-	if (OPT.crashmode)
+	if (OPT.crashmode || MESSAGE_DESIGNER.paused)
 		return F;
 
 	var evt = FLOW.$events[name];

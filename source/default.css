@@ -47,12 +47,14 @@ nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 nav button.highlight .fa { color: white; }
 nav button.highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
+.tabs-controls .highlight { width: 120px; }
+.tabs-controls button { width: 48px; padding: 0; }
 
 .tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; }
-.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; border-bottom-color: #D9D9D9; }
+.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; }
 .tabs a:first-child { border-left: 0; }
 .tabs a:hover { text-decoration: none; color: black; }
-.tabs button { float: left; padding: 0 14px 0; font-size: 14px; color: gray; height: 50px; border: 0; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; transition: all 0.5s; text-align: center; border-bottom-color: #D9D9D9; outline: 0; background-color: transparent; cursor: pointer; }
+.tabs button { float: left; padding: 0 14px 0; font-size: 14px; color: gray; height: 50px; border: 0; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; outline: 0; background-color: transparent; cursor: pointer; }
 .tabs button:first-child { border-left: 0; }
 .tabs button:hover { text-decoration: none; color: black; }
 .tabs .fa { margin-right: 5px; }
@@ -108,8 +110,8 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 svg { cursor: move; }
 
 .link .fa { margin-right: 5px; }
-.red { color: #E33733; }
-.green { color: #8CC152; }
+.red { color: #E33733 !important; }
+.green { color: #8CC152 !important; }
 .blue { color: #3BAFDA; }
 .black { color: black; }
 .gray { color: gray; }
