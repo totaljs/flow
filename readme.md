@@ -321,7 +321,6 @@ exports.install = function(component) {
         // alternatively use component.on('close',...
     };
 
-
     // =====================
     // EVENTS
     // =====================
@@ -415,6 +414,12 @@ exports.install = function(component) {
     component.on('service', function(counter) {
         // optional
         // Service called each 1 minute
+    });
+
+    component.on('pause', function(is) {
+        // +v5.1.0
+        // optional
+        // Is Flow paused?
     });
 
     // =====================
@@ -540,6 +545,10 @@ exports.install = function(component) {
     // =====================
     // PROPERTIES
     // =====================
+
+    component.paused;
+    // {Boolean} - determines whether the Flow is paused
+    // +v5.1.0
 
     component.duration;
     // {Number} - time of data processing between input and output in milliseconds
