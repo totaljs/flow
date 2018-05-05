@@ -372,6 +372,8 @@ function websocket() {
 		} else if (message.type === 'pause') {
 			MESSAGE_PAUSED.is = MESSAGE_DESIGNER.paused = !MESSAGE_DESIGNER.paused;
 			client.send(MESSAGE_PAUSED);
+			FLOW.emit('pause', MESSAGE_PAUSED.is);
+			FLOW.emit2('pause', MESSAGE_PAUSED.is);
 			FLOW.save3();
 		} else if (message.target) {
 			var instance = FLOW.instances[message.target];
