@@ -1480,7 +1480,7 @@
 
 		function flowpause() {
 			if (flow.paused) {
-				SETTER('confirm', 'show', '@(Are you sure you want to <b>play</b> the entire Flow?)', ['"play"@(Play now)', '@(Cancel)'], function(index) {
+				SETTER('confirm', 'show', '@(Are you sure you want to <b>start</b> the entire Flow?)', ['"play"@(Start now)', '@(Cancel)'], function(index) {
 					!index && SETTER('websocket', 'send', { type: 'pause' });
 				});
 			} else {
