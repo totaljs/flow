@@ -9,7 +9,7 @@
 				<div data-jc="filereader__formdatabase.file__placeholder:@(Browse device);accept:text/javascript;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .js component)</div>
 			</div>
 		</div>
-		<div data-b="common.templates" data-b-visible="value && value.length > 0" class="hidden">
+		<div data-bind="common.templates__visible:value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
 			<div class="row">
 				<div class="col-md-3 col-sm-4">
@@ -28,15 +28,15 @@
 	</div>
 	<div class="padding npb">
 		<div data-jc="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
-		<div data-b="formdatabase.updatescount" data-b-visible="value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="formdatabase_update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
-		<div data-b="formdatabase.progress" data-b-visible="value && value < 99" class="hidden">
+		<div data-bind="formdatabase.updatescount__visible:value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="formdatabase_update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
+		<div data-bind="formdatabase.progress__visible:value && value < 99" class="hidden">
 			<br />
 			<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
 			<div class="mt5" data-jc="progress__formdatabase.progress"></div>
 		</div>
 		<div data-jc="search__formdatabase.search__selector:.jsearch" class="mt10">
 			<div class="db-container">
-				<div data-jc="repeater-group__common.components__group:group" data-b="common.templates" data-b-class="n => (n && n.length ? '-' : '+') + 'db-norefresh'" class="dbcomponents">
+				<div data-jc="repeater-group__common.components__group:group" data-bind="common.templates__.db-norefresh:!(value && value.length)" class="dbcomponents">
 					<script type="text/html">
 						<div class="jsearch db-item{{ component | componentupdates }}" data-search="{{ name }}" data-id="{{ id }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>

@@ -578,7 +578,7 @@ COMPONENT('repeater', function(self) {
 		var html = element.html();
 		element.remove();
 		self.template = Tangular.compile(html);
-		recompile = html.indexOf('data-jc="') !== -1;
+		recompile = (/data-jc="|data-bind="/).test(html);
 	};
 
 	self.setter = function(value) {
@@ -606,7 +606,7 @@ COMPONENT('repeater', function(self) {
 
 COMPONENT('repeater-group', function(self, config) {
 
-	var html, template_group = null;
+	var template_group = null;
 	var reg = /\$(index|path)/g;
 	var force = false;
 

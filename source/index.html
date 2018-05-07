@@ -39,13 +39,13 @@
 	<div class="panel">
 		<section class="tabs tabs-panel">
 			<nav>
-				<button class="exec" data-path="common.panel" data-value="'info'" data-b="common.panel" data-b-class="n => (n === 'info' ? '+' : '-') + 'selected'"><i class="fa fa-info-circle"></i>@(Info)</button>
-				<button class="exec" data-path="common.panel" data-value="'debug'" data-b="common.panel" data-b-class="n => (n === 'debug' ? '+' : '-') + 'selected'">@(Console)</button>
-				<button class="exec" data-path="common.panel" data-value="'errors'" data-b="common.panel" data-b-class="n => (n === 'errors' ? '+' : '-') + 'selected'"><i class="fa fa-bug" data-b="common.errors" data-b-class="n => (n && n.length ? '+' : '-') + 'red'"></i>@(Errors)</button>
-				<button class="exec" data-path="common.panel" data-value="'traffic'" data-b="common.panel" data-b-class="n => (n === 'traffic' ? '+' : '-') + 'selected'"><i class="fa fa-tasks"></i>@(Traffic)</button>
+				<button class="exec" data-path="common.panel" data-value="'info'" data-bind="common.panel__.selected:value=='info'"><i class="fa fa-info-circle"></i>@(Info)</button>
+				<button class="exec" data-path="common.panel" data-value="'debug'" data-bind="common.panel__.selected:value=='debug'">@(Console)</button>
+				<button class="exec" data-path="common.panel" data-value="'errors'" data-bind="common.panel__.selected:value=='errors'"><i class="fa fa-bug" data-bind="common.errors__.red:value && value.length"></i>@(Errors)</button>
+				<button class="exec" data-path="common.panel" data-value="'traffic'" data-bind="common.panel__.selected:value=='traffic'"><i class="fa fa-tasks"></i>@(Traffic)</button>
 			</nav>
 		</section>
-		<div class="padding hidden" data-b="common.panel" data-b-visible="n => n === 'info'">
+		<div class="padding hidden" data-bind="common.panel__visible:value=='info'">
 			<div class="scroller">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
@@ -60,7 +60,7 @@
 			<div></div>
 		</div>
 
-		<div class="hidden body-errors" data-b="common.panel" data-b-visible="n => n === 'errors'">
+		<div class="hidden body-errors" data-bind="common.panel__visible:value=='errors'">
 
 			<div class="padding npb npt mt10">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 
-		<div class="hidden body-debug" data-b="common.panel" data-b-visible="n => n === 'debug'">
+		<div class="hidden body-debug" data-bind="common.panel__visible:value=='debug'">
 			<div style="padding:15px 15px 0">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
 				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
@@ -95,12 +95,12 @@
 			<div id="body-debug-output" class="scroller"></div>
 		</div>
 
-		<div class="hidden body-traffic" data-b="common.panel" data-b-visible="n => n === 'traffic'">
+		<div class="hidden body-traffic" data-bind="common.panel__visible:value=='traffic'">
 
 			<div class="body-traffic-heading" style="">
-				<div><span data-b="flow.traffic.memory" data-b-html="value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
-				<div><span data-b="flow.traffic.counter" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
-				<div><span data-b="common.onlineusers" data-b-html="(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
+				<div><span data-bind="flow.traffic.memory__html:value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
+				<div><span data-bind="flow.traffic.counter__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
+				<div><span data-bind="common.onlineusers__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
 				<div class="checkboxes">
 					<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
 					<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
@@ -108,7 +108,7 @@
 			</div>
 
 			<div class="scroller">
-				<div class="traffic-container b" style="margin-bottom:5px" data-b="common.trafficsort" data-b-template="true">
+				<div class="traffic-container b" style="margin-bottom:5px" data-bind="common.trafficsort__template:true">
 					<script type="text/html">
 						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="outputs">{{ value | trafficsort('outputs') }}@(Output)</div>
 						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="inputs">{{ value | trafficsort('inputs') }}@(Input)</div>
@@ -134,7 +134,7 @@
 		<section class="tabs tabs-controls">
 			<nav>
 				<button title="@(Apply the current Flow)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
-				<button title="@(Pause / Play)" class="exec onlyicon" data-exec="flowpause" data-b="flow.paused" data-b-exec="flowpausestyle"><i class="fa"></i></button>
+				<button title="@(Pause / Play)" class="exec onlyicon" data-exec="flowpause" data-bind="flow.paused__change:flowpausestyle"><i class="fa"></i></button>
 				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
 			</nav>
 		</section>
@@ -170,15 +170,15 @@
 		</div>
 
 		<div class="hidetools">
-			<button class="exec" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-b="common.minimized" data-b-class="n => n ? '-fa-chevron-right +fa-chevron-left' : '+fa-chevron-right -fa-chevron-left'"></i></button>
-			<button class="exec" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-b="common.minimizedmainmenu" data-b-class="n => n ? '-fa-chevron-left +fa-chevron-right' : '+fa-chevron-left -fa-chevron-right'"></i></button>
+			<button class="exec" data-path="common.minimized" data-value="!common.minimized"><i class="fa fa-chevron-right" data-bind="common.minimized__.fa-chevron-left:value__.fa-chevron-right:!value"></i></button>
+			<button class="exec" data-path="common.minimizedmainmenu" data-value="!common.minimizedmainmenu"><i class="fa fa-chevron-left" data-bind="common.minimizedmainmenu__.fa-chevron-left:!value__.fa-chevron-right:value"></i></button>
 		</div>
 
 		<section class="tabs tabs-flow">
 
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
-					<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === flow.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
+					<a href="#{{ linker }}" class="tab" data-id="{{ id }}" data-bind="common.tab__.selected:value.id==flow.tabs[{{ index }}].id">{{ name }}</a>
 				</script>
 			</nav>
 
@@ -1491,7 +1491,9 @@
 			}
 		}
 
-		function flowpausestyle(el, value) {
+		function flowpausestyle(value) {
+
+			var el = this;
 
 			if (typeof(value) !== 'boolean' || common.ispaused === value)
 				return;

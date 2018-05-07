@@ -1,16 +1,16 @@
 <div data-jc="form__common.form__if:import;width:500;submit:formimport_submit;title:Import flow" data-jc-init="formimport_init" class="hidden">
-	<div class="padding" data-b="formimportanalysis.is" data-b-class="n => n ? '+bg-smoke' : '-bg-smoke'">
+	<div class="padding" data-bind="formimportanalysis.is__.bg-smoke:value">
 		<div data-jc="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
 		<div data-jc="checkbox__formimport.replace">@(Clear current design)</div>
 	</div>
-	<div class="hidden" data-b="formimportanalysis.is" data-b-visible="n => n === true">
+	<div class="hidden" data-bind="formimportanalysis.is__visible:value==true">
 		<hr class="nmt" />
 		<div class="padding npt">
-			<div data-b="formimportanalysis.tabs" data-b-visible="n => n && n.length > 0" class="m">
+			<div data-bind="formimportanalysis.tabs__visible:value && value.length > 0" class="m">
 				<div data-jc="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
 			</div>
 			<div data-jc="checkbox__formimport.components">@(Install missing components from templates)</div>
-			<div data-b="formimportanalysis.variables" data-b-visible="n => n" class="m">
+			<div data-bind="formimportanalysis.variables__visible:value" class="m">
 				<div data-jc="checkbox__formimport.variables">@(Import and replace variables)</div>
 			</div>
 			<div data-jc="error__formimportanalysis.errors"></div>
