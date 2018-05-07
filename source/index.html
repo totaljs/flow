@@ -1392,6 +1392,11 @@
 			items.push({ name: '@(Clear errors)', value: 13, icon: 'trash-o' });
 			items.push({ name: '@(Clear console)', value: 14, icon: 'trash-o' });
 
+			if (flow.paused)
+				items.push({ name: '@(Play Flow)', value: 18, icon: 'play' });
+			else
+				items.push({ name: '@(Pause Flow)', value: 18, icon: 'pause' });
+
 			@{if helpers.DASHBOARD}
 			items.push({ name: '@(Dashboard)', icon: 'dashboard', value: 9, url: '@{helpers.DASHBOARD.url}' });
 			@{fi}
@@ -1474,6 +1479,9 @@
 						break;
 					case 17:
 						highlightcomponent(item.item.id);
+						break;
+					case 18:
+						flowpause();
 						break;
 				}
 			});
