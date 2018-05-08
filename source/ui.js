@@ -355,7 +355,6 @@ COMPONENT('confirm', function(self) {
 COMPONENT('form', function(self, config) {
 
 	var W = window;
-	var header = null;
 	var csspos = {};
 
 	if (!W.$$form) {
@@ -401,6 +400,11 @@ COMPONENT('form', function(self, config) {
 		self.set('');
 	};
 
+	self.icon = function(value) {
+		var el = this.rclass2('fa');
+		value.icon && el.aclass('fa fa-' + value.icon);
+	};
+
 	self.resize = function() {
 		if (!config.center || self.hclass('hidden'))
 			return;
@@ -414,21 +418,11 @@ COMPONENT('form', function(self, config) {
 
 	self.make = function() {
 
-		var icon;
-
-		if (config.icon)
-			icon = '<i class="fa fa-{0}"></i>'.format(config.icon);
-		else
-			icon = '<i></i>';
-
-		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div class="ui-form-title"><button class="ui-form-button-close{5}" data-path="{2}"><i class="fa fa-times"></i></button>{4}<span>{3}</span></div></div></div>'.format(self._id, config.width || 800, self.path, config.title, icon, config.closebutton == false ? ' hidden' : ''));
-
-		var el = $('#' + self._id);
-		el.find('.ui-form').get(0).appendChild(self.element.get(0));
+		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div data-bind="@config__html span:value.title__change .ui-form-icon:@icon" class="ui-form-title"><button class="ui-form-button-close{3}" data-path="{2}"><i class="fa fa-times"></i></button><i class="ui-form-icon"></i><span></span></div></div></div>'.format(self.ID, config.width || 800, self.path, config.closebutton == false ? ' hidden' : ''));
+		var el = $('#' + self.ID);
+		el.find('.ui-form')[0].appendChild(self.dom);
 		self.rclass('hidden');
 		self.replace(el);
-
-		header = self.virtualize({ title: '.ui-form-title > span', icon: '.ui-form-title > i' });
 
 		self.event('scroll', function() {
 			EMIT('scroll', self.name);
@@ -447,7 +441,7 @@ COMPONENT('form', function(self, config) {
 		});
 
 		config.enter && self.event('keydown', 'input', function(e) {
-			e.which === 13 && !self.find('button[name="submit"]').get(0).disabled && setTimeout(function() {
+			e.which === 13 && !self.find('button[name="submit"]')[0].disabled && setTimeout(function() {
 				self.submit(self);
 			}, 800);
 		});
@@ -457,13 +451,6 @@ COMPONENT('form', function(self, config) {
 		if (init)
 			return;
 		switch (key) {
-			case 'icon':
-				header.icon.rclass(header.icon.attr('class'));
-				value && header.icon.aclass('fa fa-' + value);
-				break;
-			case 'title':
-				header.title.html(value);
-				break;
 			case 'width':
 				value !== prev && self.find('.ui-form').css('max-width', value + 'px');
 				break;
@@ -513,7 +500,7 @@ COMPONENT('form', function(self, config) {
 
 		if (!isMOBILE && config.autofocus) {
 			var el = self.find(config.autofocus === true ? 'input[type="text"],select,textarea' : config.autofocus);
-			el.length && el.eq(0).focus();
+			el.length && el[0].focus();
 		}
 
 		setTimeout(function() {
@@ -522,7 +509,7 @@ COMPONENT('form', function(self, config) {
 		}, 300);
 
 		// Fixes a problem with freezing of scrolling in Chrome
-		setTimeout2(self.id, function() {
+		setTimeout2(self.ID, function() {
 			self.css('z-index', (W.$$form_level * 10) + 1);
 		}, 500);
 	};
@@ -1020,7 +1007,7 @@ COMPONENT('validation', 'delay:100;flags:visible', function(self, config) {
 
 	self.state = function() {
 		setTimeout2(self.id, function() {
-			var disabled = MAIN.disabled(path, flags);
+			var disabled = DISABLED(path, flags);
 			if (!disabled && config.if)
 				disabled = !EVALUATE(self.path, config.if);
 			elements.prop('disabled', disabled);
@@ -4332,7 +4319,7 @@ COMPONENT('disable', function(self, config) {
 			com && com.reconfigure('disabled:' + is);
 		});
 
-		validate && validate.forEach(FN('n => MAIN.reset({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
+		validate && validate.forEach(FN('n => RESET({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
 	};
 
 	self.state = function() {
@@ -5357,9 +5344,8 @@ COMPONENT('shortcuts', function(self) {
 	};
 });
 
-COMPONENT('snackbar', 'timeout:5000;button:Dismiss', function(self, config) {
+COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 
-	var virtual = null;
 	var show = true;
 	var callback;
 
@@ -5368,7 +5354,6 @@ COMPONENT('snackbar', 'timeout:5000;button:Dismiss', function(self, config) {
 	self.make = function() {
 		self.aclass('ui-snackbar hidden');
 		self.append('<div><a href="javasc' + 'ript:void(0)" class="ui-snackbar-dismiss"></a><div class="ui-snackbar-body"></div></div>');
-		virtual = self.virtualize({ body: '.ui-snackbar-body', button: '.ui-snackbar-dismiss' });
 		self.event('click', '.ui-snackbar-dismiss', function() {
 			self.hide();
 			callback && callback();
@@ -5399,8 +5384,9 @@ COMPONENT('snackbar', 'timeout:5000;button:Dismiss', function(self, config) {
 		}
 
 		callback = close;
-		virtual.body.html(message);
-		virtual.button.html(button || config.button);
+
+		self.find('.ui-snackbar-body').html(message);
+		self.find('.ui-snackbar-dismiss').html(button || config.button);
 
 		if (show) {
 			self.rclass('hidden');
@@ -5409,7 +5395,7 @@ COMPONENT('snackbar', 'timeout:5000;button:Dismiss', function(self, config) {
 			}, 50);
 		}
 
-		setTimeout2(self.id, self.hide, config.timeout + 50);
+		setTimeout2(self.ID, self.hide, config.timeout + 50);
 		show = false;
 	};
 });
