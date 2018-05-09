@@ -3989,7 +3989,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 		switch (key) {
 			case 'disabled':
 				self.tclass('ui-disabled', value);
-				editor.readOnly = value;
+				editor.setOption('readOnly', value);
 				editor.refresh();
 				break;
 			case 'required':
@@ -4033,7 +4033,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 
 		if (config.disabled) {
 			self.aclass('ui-disabled');
-			editor.readOnly = true;
+			editor.setOption('readOnly', true);
 			editor.refresh();
 		}
 
