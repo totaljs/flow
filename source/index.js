@@ -1696,6 +1696,7 @@ FLOW.npm = function(dependencies, callback) {
 					return next();
 				OPT.logging && FLOW.log('npm', item);
 				Exec('npm install ' + item, { cwd: path }, function(err) {
+					OPT.logging && FLOW.log('npm', item + ' - ' + err.toString());
 					err && console.error('NPM INSTALL: ' + item, err);
 					next();
 				});
