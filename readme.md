@@ -76,6 +76,11 @@ var options = {};
 // options.updates = true;
 // default: true
 
+// +v5.1.0
+// Enables "logging" to plain text file
+// options.logging = true;
+// default: false
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================

@@ -272,11 +272,13 @@ function websocket() {
 			FLOW.emit('designer');
 		}
 
+		OPT.logging && FLOW.log('connect', null, client);
 		MESSAGE_ONLINE.count = self.online;
 		self.send(MESSAGE_ONLINE);
 	});
 
-	self.on('close', function() {
+	self.on('close', function(client) {
+		OPT.logging && FLOW.log('disconnect', null, client);
 		MESSAGE_ONLINE.count = self.online;
 		self.send(MESSAGE_ONLINE);
 	});
@@ -354,12 +356,15 @@ function websocket() {
 			client.send(MESSAGE_STATIC);
 			return;
 		} else if (message.type === 'clearerrors') {
+			OPT.logging && FLOW.log('clearerrors', null, client);
 			FLOW.clearerrors();
 			return;
 		} else if (message.type === 'install') {
+			OPT.logging && FLOW.log('install', message.filename, client);
 			FLOW.install(message.filename, message.body);
 			return;
 		} else if (message.type === 'uninstall') {
+			OPT.logging && FLOW.log('uninstall', message.target, client);
 			FLOW.uninstall(message.target);
 			return;
 		} else if (message.type === 'getvariables') {
@@ -367,6 +372,7 @@ function websocket() {
 			client.send(MESSAGE_VARIABLES);
 			return;
 		} else if (message.type === 'variables') {
+			OPT.logging && FLOW.log('variables', null, client);
 			FLOW.refresh_variables(message.body, client);
 			return;
 		} else if (message.type === 'pause') {
@@ -375,7 +381,9 @@ function websocket() {
 			FLOW.emit('pause', MESSAGE_PAUSED.is);
 			FLOW.emit2('pause', MESSAGE_PAUSED.is);
 			FLOW.save3();
+			OPT.logging && FLOW.log('pause', MESSAGE_PAUSED.is ? 'paused' : 'running', client);
 		} else if (message.target) {
+
 			var instance = FLOW.instances[message.target];
 			if (!instance)
 				return;
@@ -473,16 +481,21 @@ function websocket() {
 				tmp.color = instance.color;
 				tmp.notes = instance.notes;
 
+				OPT.logging && FLOW.log('options', instance, client);
 				FLOW.save2();
 
-			} else
+			} else {
+				OPT.logging && FLOW.log(message.event, instance, client);
 				instance.$events[message.event] && instance.emit(message.event, message.body);
+			}
+
 			return;
 		}
 
 		if (message.type === 'trigger') {
 			var trigger = FLOW.triggers[message.name];
 			if (trigger) {
+				OPT.logging && FLOW.log('trigger', message.name);
 				trigger(function(data) {
 					MESSAGE_TRIGGER.body = data;
 					MESSAGE_TRIGGER.id = message.id;
@@ -495,7 +508,10 @@ function websocket() {
 			}
 		}
 
-		message.type === 'apply' && FLOW.save(message.body);
+		if (message.type === 'apply') {
+			FLOW.save(message.body);
+			OPT.logging && FLOW.log('apply', null, client);
+		}
 	});
 
 	FLOW.ws = self;
@@ -649,6 +665,7 @@ Component.prototype.signal = function(index, data) {
 		return self;
 
 	var arr = self.$connections;
+
 	if (!arr.length)
 		return self;
 
@@ -955,6 +972,7 @@ Component.prototype.status = function(text, color) {
 		com.state = this.state;
 		FLOW.send(MESSAGE_STATUS);
 	}
+
 	return this;
 };
 
@@ -1676,6 +1694,7 @@ FLOW.npm = function(dependencies, callback) {
 			F.path.exists(filename, function(e) {
 				if (e)
 					return next();
+				OPT.logging && FLOW.log('npm', item);
 				Exec('npm install ' + item, { cwd: path }, function(err) {
 					err && console.error('NPM INSTALL: ' + item, err);
 					next();
@@ -1889,6 +1908,21 @@ FLOW.prototypes = function(fn) {
 	proto.FlowData = FlowData.prototype;
 	proto.Component = Component.prototype;
 	fn.call(proto, proto);
+	return FLOW;
+};
+
+FLOW.log = function(msg, data, client) {
+
+	if (data instanceof Component) {
+		var tmp = data;
+		data = '[' + tmp.id + ': ' + (tmp.name || tmp.component) + (tmp.reference ? ' (' + tmp.reference + ')' : '') + ']';
+	}
+
+	if (data)
+		F.logger('flow', msg, 'user: ' + (client ? client.ip : 'system'), data);
+	else
+		F.logger('flow', msg, 'user: ' + (client ? client.ip : 'system'));
+
 	return FLOW;
 };
 

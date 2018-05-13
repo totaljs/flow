@@ -342,12 +342,13 @@ function refreshTraffic() {
 
 			var item = animate[i];
 			var sleep = 0;
+			count = 0;
 
 			if (item.parent) {
 				var tmp = item;
 				while (true) {
 					tmp = animate.findItem('com', tmp.parent);
-					if (!tmp)
+					if (!tmp || count++ >= 10)
 						break;
 					sleep += 500;
 				}
