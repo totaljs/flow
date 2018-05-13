@@ -248,6 +248,8 @@
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
+			var params = READPARAMS();
+			this.logging = params.debug === '1' || params.debug === 'true' || params.debug === 'on';
 		});
 
 		var flownotifications = [];
@@ -876,10 +878,13 @@
 		});
 
 		ON('online', function(online) {
+			common.logging && console.log(online ? 'online' : 'offline');
 			SETTER('loading', online ? 'hide' : 'show');
 		});
 
 		ON('message', function(message) {
+
+			common.logging && console.log('--->', message);
 
 			if (message.type === 'templates') {
 				SET('common.templates', message.body);
