@@ -1367,6 +1367,8 @@
 
 				switch (value) {
 					case 'database':
+						showcomponents();
+						break;
 					case 'variables':
 					case 'import':
 					case 'export':
@@ -1382,7 +1384,7 @@
 		SETTER(true, 'shortcuts', 'register', 'F1', function(e) {
 
 			var items = [];
-			items.push({ name: '@(Components)', value: 1, icon: 'database', keywords: 'database', form: 'database' });
+			items.push({ name: '@(Components)', value: 19, icon: 'database', keywords: 'database', form: 'database' });
 			items.push({ name: '@(Variables)', value: 1, icon: 'sliders', form: 'variables' });
 			items.push({ name: '@(Console)', value: 3, icon: 'history', keywords: 'debug' });
 			items.push({ name: '@(Errors)', value: 4, icon: 'bug', keywords: 'bugs' });
@@ -1488,6 +1490,9 @@
 					case 18:
 						flowpause();
 						break;
+					case 19:
+						showcomponents();
+						break;
 				}
 			});
 		}, true);
@@ -1521,6 +1526,16 @@
 			el.tclass('red', value != true);
 			el.tclass('green', value == true);
 			el.find('.fa').tclass('fa-pause', value != true).tclass('fa-play', value === true);
+		}
+
+		function showcomponents() {
+			var is = flow.components.findItem('isnew', true) != null;
+			if (is) {
+				SETTER('confirm', 'show', '@(Installing of new components can remove uninitialized components. Are you sure you want to continue?)', ['@(Yes, continue)', '@(Cancel)'], function(index) {
+					!index && SET('common.form', 'database');
+				});
+			} else
+				SET('common.form', 'database');
 		}
 
 	</script>
