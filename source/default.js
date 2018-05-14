@@ -481,3 +481,8 @@ function getIcons() {
 	}
 	return icons;
 }
+
+function changedTab() {
+	$('.tabs-flow').find('.tab[data-id="{0}"]'.format(common.tab.id)).aclass('changed');
+	common.tab.changed = true;
+}

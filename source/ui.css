@@ -269,7 +269,7 @@ label span { vertical-align: middle; }
 
 .ui-message { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 1010; width: 100%; display: table; height: 100%; transition: 0.3s all; opacity: 0; }
 .ui-message > div { display: table-cell; vertical-align: middle; text-align: center; color: black; padding: 15px; }
-.ui-message-body { padding: 30px 25px 20px; position: relative; display: inline-block; border-radius: 4px; max-width: 600px; text-align: left; transform: scale(1.5); transition: 0.2s all; box-shadow: 0 5px 20px rgba(0,0,0,0.1); background-color: white; border-width: 3px; border-style: solid; }
+.ui-message-body { padding: 30px 25px 20px; position: relative; display: inline-block; border-radius: 4px; max-width: 450px; text-align: left; transform: scale(1.5); transition: 0.2s all; box-shadow: 0 5px 20px rgba(0,0,0,0.1); background-color: white; border-width: 3px; border-style: solid; line-height: 16px; }
 .ui-message-warning { border-color: #DA4453; min-width: 300px; }
 .ui-message-success { border-color: #8CC152; min-width: 300px; }
 .ui-message-info { border-color: #E0E0E0; min-width: 300px; }

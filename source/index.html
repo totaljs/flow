@@ -178,7 +178,7 @@
 
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
-					<a href="#{{ linker }}" class="tab" data-id="{{ id }}" data-bind="common.tab__.selected:value.id==flow.tabs[{{ index }}].id">{{ name }}</a>
+					<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__.selected:value.id==flow.tabs[{{ index }}].id">{{ name }}<i class="icon-changed fa fa-circle"></i></a>
 				</script>
 			</nav>
 
@@ -436,6 +436,7 @@
 			ids && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected components?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
+
 				ids.waitFor(function(id, next){
 					var instance = flow.components.findItem('id', id);
 					EMIT('rem.' + instance.component, instance);
@@ -805,12 +806,21 @@
 					});
 				});
 
+				flow.tabs.forEach(function(item) {
+					item.changed = undefined;
+				});
+
+				body.tabs.forEach(function(item) {
+					item.changed = undefined;
+				});
+
 				body.components.forEach(function(item) {
 					item.$component = undefined;
 				});
 
 				EMIT('apply');
 				SETTER('designer', 'animclear');
+				$('.tabs-flow').find('.changed').rclass('changed');
 
 				var message = {};
 				message.type = 'apply';
@@ -849,6 +859,7 @@
 			o.name = form.name;
 			o.icon = form.icon;
 			o.linker = o.name.slug();
+			o.changed = true;
 
 			if (!o.linker)
 				o.linker = GUID(8);
@@ -1129,6 +1140,7 @@
 		}, true);
 
 		function setState(value) {
+			value && changedTab();
 			$('#designerstate').html(value);
 			$('.mainmenu').find('.highlight').tclass('blink', value ? true : false);
 		}

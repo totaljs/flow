@@ -1068,9 +1068,14 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		return self;
 	};
 
-	function onClose() {
+	function onClose(e) {
+		var r = e.reason;
 		self.close(true);
 		setTimeout(self.connect, config.reconnect);
+		if (r) {
+			r = decodeURIComponent(r);
+			r.indexOf('request length') !== -1 && SETTER('message', 'warning', '<i class="fa fa-warning mr5"></i><b>UNEXPECTED ERROR</b><div class="mt10">Flow wasn\'t saved due to the exceed designer size. You need to increase the limit.</div>');
+		}
 	}
 
 	function onMessage(e) {
