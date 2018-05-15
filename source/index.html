@@ -3,24 +3,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>@{config.name} - Flow @{repository.versiontitle}</title>
+	<title>@{config.name} - Flow @{R.versiontitle}</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
 	<meta name="robots" content="all,follow" />
-	<link rel="apple-touch-icon" href="@{repository.url}img/icon.png" type="image/png" />
-	<link rel="icon" href="@{repository.url}img/icon.png" type="image/png" />
-	@{if repository.sharedfiles}
+	<link rel="apple-touch-icon" href="@{R.url}img/icon.png" type="image/png" />
+	<link rel="icon" href="@{R.url}img/icon.png" type="image/png" />
+	@{if R.sharedfiles}
 	<link href="/css/dep.min.css" rel="stylesheet" type="text/css" />
 	@{fi}
-	<link href="@{repository.url}default.css" rel="stylesheet" type="text/css" />
-	@{if repository.sharedfiles}
+	<link href="@{R.url}default.css" rel="stylesheet" type="text/css" />
+	@{if R.sharedfiles}
 	<script src="/js/dep.min.js"></script>
 	@{fi}
-	<script src="@{repository.url}default.js"></script>
+	<script src="@{R.url}default.js"></script>
 </head>
-<body data-jc="exec,binder"@{if repository.dark} class="themedark"@{fi}>
+<body data-jc="exec,binder"@{if R.dark} class="themedark"@{fi}>
 
 	<div data-jc="autocomplete"></div>
 	<div data-jc="calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
@@ -30,7 +30,7 @@
 	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data-jc="message__null__button:@(Close)"></div>
 	<div data-jc="snackbar__null__button:@(Dismiss)"></div>
-	<div data-jc="websocket__null__url:@{repository.url}?designer=1&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="websocket__null__url:@{R.url}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 	<div data-jc="features__null__placeholder:@(Search feature ...)"></div>
 	<div data-jc="shortcuts"></div>
 
@@ -214,13 +214,13 @@
 		</div>
 	</div>
 
-	<div data-jc="importer__common.form__if:tab;url:@{repository.url}templates/form-tab.html"></div>
-	<div data-jc="importer__common.form__if:settings;url:@{repository.url}templates/form-settings.html"></div>
-	<div data-jc="importer__common.form__if:export;url:@{repository.url}templates/form-export.html;reload:formexport_reload"></div>
-	<div data-jc="importer__common.form__if:import;url:@{repository.url}templates/form-import.html;reload:formimport_reload"></div>
-	<div data-jc="importer__common.form__if:database;url:@{repository.url}templates/form-database.html;reload:formdatabase_reload"></div>
-	<div data-jc="importer__common.form__if:variables;url:@{repository.url}templates/form-variables.html;reload:formvariables_reload"></div>
-	<div data-jc="importer__common.form2__if:components;url:@{repository.url}templates/form-components.html"></div>
+	<div data-jc="importer__common.form__if:tab;url:@{R.url}templates/form-tab.html"></div>
+	<div data-jc="importer__common.form__if:settings;url:@{R.url}templates/form-settings.html"></div>
+	<div data-jc="importer__common.form__if:export;url:@{R.url}templates/form-export.html;reload:formexport_reload"></div>
+	<div data-jc="importer__common.form__if:import;url:@{R.url}templates/form-import.html;reload:formimport_reload"></div>
+	<div data-jc="importer__common.form__if:database;url:@{R.url}templates/form-database.html;reload:formdatabase_reload"></div>
+	<div data-jc="importer__common.form__if:variables;url:@{R.url}templates/form-variables.html;reload:formvariables_reload"></div>
+	<div data-jc="importer__common.form2__if:components;url:@{R.url}templates/form-components.html"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -242,8 +242,8 @@
 			!this.tabscroll && (this.tabscroll = {});
 			!this.animations && (this.animations = true);
 			this.touches = false;
-			this.theme === undefined && (this.theme = '@{if repository.dark}dark@{fi}');
-			this.updates = @{repository.updates};
+			this.theme === undefined && (this.theme = '@{if R.dark}dark@{fi}');
+			this.updates = @{R.updates};
 			this.version = +'@{R.version}';
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
