@@ -133,7 +133,10 @@
 
 					formimport.tabs.forEach(function(item) {
 						var tab = formimportanalysis.tabs.findItem('id', item);
-						tab && tabs.push(tab);
+						if (tab) {
+							tab.changed = true;
+							tabs.push(tab);
+						}
 					});
 
 					tabs.forEach(function(item) {
@@ -155,6 +158,7 @@
 
 					tabs.forEach(function(item) {
 						if (!flow.tabs.findItem('id', item.id)) {
+							item.changed = true;
 							flow.tabs.push(item);
 							var e = flow.tabs.findItem('linker', item.linker);
 							if (e)
@@ -188,7 +192,7 @@
 					});
 				});
 
-				setState(MESSAGES.apply);
+				setState(MESSAGES.apply, true);
 				UPDATE('flow');
 				SETTER('binder', 'scan');
 				form.hide();

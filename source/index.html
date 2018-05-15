@@ -682,7 +682,6 @@
 
 		ON('designer.component.io', function(comid, type, io_index, enable) {
 			SETTER('websocket', 'send', { target: comid, type: 'io', io: type, index: io_index, enable: enable });
-			//setState(MESSAGES.apply);
 		});
 
 		$(window).on('hashchange', function() {
@@ -915,7 +914,7 @@
 			if (common.tab.id === id)
 				location.hash = flow.tabs[0].linker;
 			OPERATION('designer.unselect')();
-			setState(MESSAGES.apply);
+			setState(MESSAGES.apply, true);
 			EMIT('changed', 'tabs');
 		});
 
@@ -1054,8 +1053,9 @@
 				});
 
 				flow.crashmode = message.crashmode;
+
 				if (flow.crashmode) {
-					setState(MESSAGES.apply);
+					setState(MESSAGES.apply, true);
 					SETTER('confirm', 'confirm', '@(<h3 class="nmb red">Crash mode</h3>Flow is in <b>crash mode</b> and data processing is paused. You need to press <b>APPLY</b> for re-init Flow again.)', ['"chevron-right"@(Continue in editing)'], NOOP);
 				}
 
@@ -1207,8 +1207,8 @@
 			$(document.body).tclass('panel-minized', value);
 		}, true);
 
-		function setState(value) {
-			value && changedTab();
+		function setState(value, noChange) {
+			!noChange && value && changedTab();
 			$('#designerstate').html(value);
 			$('.mainmenu').find('.highlight').tclass('blink', value ? true : false);
 		}
