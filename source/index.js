@@ -268,6 +268,7 @@ function websocket() {
 
 		if (client.query.designer === '1' && READY) {
 			MESSAGE_DESIGNER.crashmode = OPT.crashmode;
+			MESSAGE_DESIGNER.components = FLOW.clearInstances();
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer');
 		}
@@ -402,14 +403,14 @@ function websocket() {
 						io.push(index);
 				}
 
-				var item = MESSAGE_DESIGNER.components.findItem('id', message.target);
+				var item = FLOW.instances[message.target];
 				item.disabledio = instance.disabledio;
 				FLOW.save3();
 			}
 
 			if (message.type === 'options') {
 
-				var tmp = MESSAGE_DESIGNER.components.findItem('id', message.target);
+				var tmp = FLOW.instances[message.target];
 
 				// Component doesn't exist
 				if (!tmp)
@@ -463,7 +464,7 @@ function websocket() {
 					});
 
 					if (can) {
-						var tmp = MESSAGE_DESIGNER.components.findItem('id', item.id);
+						var tmp = FLOW.instances[item.id];
 						tmp.connections = item.connections;
 					}
 				});
@@ -511,6 +512,11 @@ function websocket() {
 		if (message.type === 'apply') {
 			FLOW.save(message.body);
 			OPT.logging && FLOW.log('apply', null, client);
+		}
+
+		if (message.type === 'changes') {
+			FLOW.changes(message.body);
+			OPT.logging && FLOW.log('changes', null, client);
 		}
 	});
 
@@ -942,11 +948,9 @@ Component.prototype.error = function(e, parent) {
 	MESSAGE_ERRORS.id = self.id;
 	MESSAGE_ERRORS.body = self.errors;
 	setTimeout2('flow.' + self.id, function() {
-		if (MESSAGE_DESIGNER.components) {
-			var tmp = MESSAGE_DESIGNER.components.findItem('id', self.id);
-			if (tmp)
-				tmp.errors = self.errors;
-		}
+		var tmp = FLOW.instances[self.id];
+		if (tmp)
+			tmp.errors = self.errors;
 		FLOW.send(MESSAGE_ERRORS);
 	}, 100);
 	self.throw(e);
@@ -967,7 +971,7 @@ Component.prototype.status = function(text, color) {
 	MESSAGE_STATUS.target = this.id;
 	MESSAGE_STATUS.body = this.state;
 
-	var com = MESSAGE_DESIGNER.components.findItem('id', this.id);
+	var com = FLOW.instances[this.id];
 	if (com) {
 		com.state = this.state;
 		FLOW.send(MESSAGE_STATUS);
@@ -989,7 +993,7 @@ Component.prototype.debug = function(data, style, group) {
 
 Component.prototype.save = function() {
 
-	var tmp = MESSAGE_DESIGNER.components.findItem('id', this.id);
+	var tmp = FLOW.instances[this.id];
 	if (tmp) {
 		tmp.options = this.options;
 		FLOW.save3();
@@ -1006,7 +1010,7 @@ Component.prototype.reconfig = function() {
 	MESSAGE_COMPONENTOPTIONS.color = this.color;
 	MESSAGE_COMPONENTOPTIONS.name = this.name;
 
-	var db = MESSAGE_DESIGNER.components.findItem('id', this.id);
+	var db = FLOW.instances[this.id];
 	if (db) {
 		db.options = this.options;
 		db.notes = this.notes;
@@ -1184,7 +1188,7 @@ FLOW.register = function(name, options, fn) {
 		EMIT('flow.register', FLOW.components[name]);
 		if (FLOW.loaded) {
 			FLOW.init_component(FLOW.components[name]);
-			FLOW.send(MESSAGE_DESIGNER);
+			FLOW.designer();
 		}
 	};
 
@@ -1211,6 +1215,95 @@ FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
 		instance.$events[name] && instance.emit.call(instance, name, a, b, c, d, e, f, g);
 	}
 	return FLOW;
+};
+
+FLOW.clearInstances = function(){
+	return Object.keys(FLOW.instances).map(function(key){ 
+		var instance = FLOW.instances[key]; 
+		return { 
+			id: instance.id, 
+			component: instance.component, 
+			tab: instance.tab,
+			name: instance.name,
+			x: instance.x, 
+			y: instance.y, 
+			connections: instance.connections,
+			disabledio: instance.disabledio,
+			state: instance.state,
+			options: instance.options,
+			color: instance.color,
+			notes: instance.notes,
+			icon: instance.icon,
+			author: instance.author,
+			input: instance.input,
+			output: instance.output,
+			click: instance.click,
+			cloning: instance.cloning,
+			dashboard: instance.dashboard,
+			flowboard: instance.flowboard,
+			traffic: instance.traffic,
+			variables: instance.variables,
+			dateupdated: instance.dateupdated,
+			version: instance.version,
+			group: instance.group,
+		}; 
+	});
+};
+
+FLOW.changes = function(arr) {
+	var add = [];
+	var rem = [];
+	var needinit = false;
+	var refreshconn = false;
+
+	console.log('changes', arr);
+	console.log('current instances', FLOW.clearInstances().map(function(ins){ return { id: ins.id, conn: ins.connections, com: ins.component }; }));
+
+	arr.forEach(function(c){
+		if (c.type === 'add') {
+			add.push(c.com);
+			needinit = true;
+		} else if (c.type === 'rem') {
+			rem.push(c.id);
+			needinit = true;
+		} else if (c.type === 'mov') {
+			change_move(c.com);
+		} else if( c.type === 'conn') {
+			change_connections(c.id, c.conn);
+			refreshconn = true;
+		} else if( c.type === 'tabs') {
+			MESSAGE_DESIGNER.tabs = c.tabs;
+		}
+	});
+
+	if (needinit)
+		FLOW.reset(rem, function(){
+			FLOW.init(add, function(){
+				FLOW.save3();	
+				needinit = false;	
+				FLOW.designer();
+			});
+		});
+	else
+		FLOW.save3();
+
+	refreshconn && FLOW.refresh_connections();
+};
+
+function change_move(c){
+	var instance = FLOW.instances[c.id];
+	if (!instance)
+		return;
+	instance.x = c.x;
+	instance.y = c.y;
+};
+
+function change_connections(id, conn){
+	var instance = FLOW.instances[id];
+	if (!instance)
+		return;
+	instance.connections = conn;
+	instance.$refresh();
 };
 
 FLOW.reset = function(components, callback) {
@@ -1263,7 +1356,7 @@ FLOW.hasInstance = function(id) {
 };
 
 // Init multiple components
-FLOW.init = function(components) {
+FLOW.init = function(components, callback) {
 
 	var close = [];
 
@@ -1278,6 +1371,7 @@ FLOW.init = function(components) {
 
 		if (!components || !components.length) {
 			EMIT('flow.init', 0);
+			callback && callback();
 			return;
 		}
 
@@ -1325,6 +1419,8 @@ FLOW.init = function(components) {
 		}
 
 		EMIT('flow.init', count);
+
+		callback && callback();
 	});
 
 	return FLOW;
@@ -1360,52 +1456,54 @@ FLOW.refresh_variables = function(data, client) {
 	return FLOW;
 };
 
-// Init the only one component
-FLOW.init_component = function(component) {
-	MESSAGE_DESIGNER.components.wait(function(com, next) {
+// Init a single component
+FLOW.init_component = function(com) {
 
-		if (com.component !== component.id)
-			return next();
+	var declaration = FLOW.components[com.component];
+	if (!declaration)
+		return ;
 
-		var declaration = FLOW.components[com.component];
-		if (!declaration)
-			return next();
+	var close = [];
+	var instance = FLOW.instances[com.id];
 
-		var close = [];
-		var instance = FLOW.instances[com.id];
+	instance && close.push(instance);
 
-		instance && close.push(instance);
+	FLOW.reset(close, function() {
+		instance = new Component(com);
+		instance.custom = {};
+		FLOW.instances[com.id] = instance;
+		instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
+		instance.name = com.name || declaration.name;
+		instance.color = com.color || declaration.color;
+		instance.notes = com.notes || '';
+		instance.cloning = declaration.cloning;
+		instance.$refresh();
+		declaration.fn.call(instance, instance, declaration);
 
-		FLOW.reset(close, function() {
-			instance = new Component(com);
-			instance.custom = {};
-			FLOW.instances[com.id] = instance;
-			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
-			instance.name = com.name || declaration.name;
-			instance.color = com.color || declaration.color;
-			instance.notes = com.notes || '';
-			instance.cloning = declaration.cloning;
-			instance.$refresh();
-			declaration.fn.call(instance, instance, declaration);
+		if (com.state !== instance.state)
+			com.state = instance.state;
 
-			if (com.state !== instance.state)
-				com.state = instance.state;
-
-			declaration.variables && instance.on('variables', function() {
-				this.emit('options', this.options, this.options);
-			});
-
-			EMIT('flow.open', instance);
-			FLOW.send(MESSAGE_DESIGNER);
-			next();
+		declaration.variables && instance.on('variables', function() {
+			this.emit('options', this.options, this.options);
 		});
+
+		EMIT('flow.open', instance);
+		FLOW.designer();
+		next();
 	});
+
 
 	return FLOW;
 };
 
 FLOW.send = function(message) {
 	FLOW.ws && FLOW.ws.send(message);
+	return FLOW;
+};
+
+FLOW.designer = function() {
+	MESSAGE_DESIGNER.components = FLOW.clearInstances();	
+	FLOW.ws && FLOW.ws.send(MESSAGE_DESIGNER);
 	return FLOW;
 };
 
@@ -1433,12 +1531,44 @@ FLOW.save = function(data, callback) {
 		OPT.crashmode = false;
 };
 
+// Saves current state
+FLOW.save2 = function(callback) {
+
+	clearTimeout2('flow.reconfig');
+
+	// Remove useless connections
+	FLOW.cleaner();
+
+	var data = {};
+	data.tabs = MESSAGE_DESIGNER.tabs;
+	data.components = FLOW.clearInstances();
+	data.version = +exports.version.replace(/(v|\.)/g, '');
+	data.variables = FLOW.$variables;
+
+	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
+
+	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
+		err && F.error(err, 'FLOW.save()');
+		callback && callback();
+		EMIT('flow.save');
+	});
+
+console.log('SAVED');
+
+	FLOW.refresh_connections();
+	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
+};
+
+FLOW.save3 = function() {
+	setTimeout2('flow.save3', FLOW.save2, 5000);
+};
+
 FLOW.refresh_connections = function() {
-	var arr = MESSAGE_DESIGNER.components;
+	var keys = Object.keys(FLOW.instances);
 	FLOW.outputs = {};
 	FLOW.inputs = {};
-	for (var i = 0, length = arr.length; i < length; i++) {
-		var com = arr[i];
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var com = FLOW.instances[keys[i]];
 
 		if (!FLOW.outputs[com.id])
 			FLOW.outputs[com.id] = {};
@@ -1476,46 +1606,9 @@ FLOW.clearerrors = function() {
 	for (var i = 0, length = arr.length; i < length; i++)
 		FLOW.instances[arr[i]].errors = undefined;
 
-	if (MESSAGE_DESIGNER && MESSAGE_DESIGNER.components) {
-		for (var i = 0, length = MESSAGE_DESIGNER.components.length; i < length; i++)
-			MESSAGE_DESIGNER.components[i].errors = undefined;
-	}
-
 	FLOW.save3();
 	FLOW.send(MESSAGE_CLEARERRORS);
 	return FLOW;
-};
-
-FLOW.save3 = function() {
-	setTimeout2('flow.save3', function() {
-		FLOW.save2();
-	}, 5000);
-};
-
-// Saves current state
-FLOW.save2 = function(callback) {
-
-	clearTimeout2('flow.reconfig');
-
-	// Remove useless connections
-	FLOW.cleaner();
-
-	var data = {};
-	data.tabs = MESSAGE_DESIGNER.tabs;
-	data.components = MESSAGE_DESIGNER.components;
-	data.version = +exports.version.replace(/(v|\.)/g, '');
-	data.variables = FLOW.$variables;
-
-	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
-
-	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
-		err && F.error(err, 'FLOW.save()');
-		callback && callback();
-		EMIT('flow.save');
-	});
-
-	FLOW.refresh_connections();
-	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
 };
 
 FLOW.save_inmemory = function() {
@@ -1575,8 +1668,8 @@ FLOW.load = function(callback) {
 					FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
 
 					MESSAGE_DESIGNER.tabs = data.tabs;
-					MESSAGE_DESIGNER.components = data.components || [];
-					MESSAGE_DESIGNER.components.forEach(function(item) {
+
+					data.components.forEach(function(item) {
 						var declaration = FLOW.components[item.component];
 						if (declaration && declaration.options)
 							item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
@@ -1594,16 +1687,17 @@ FLOW.load = function(callback) {
 
 					FLOW.refresh_connections();
 
-					Fs.readFile(F.path.root(FILEINMEMORY), function(err, data) {
-						data && (FLOW.inmemory = data.toString('utf8').parseJSON(true));
+					Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
+						indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
 						if (!FLOW.inmemory)
 							FLOW.inmemory = {};
 
 						EMIT('flow');
-						FLOW.init(MESSAGE_DESIGNER.components);
-						FLOW.send(MESSAGE_DESIGNER);
-						READY = true;
-						callback && callback();
+						FLOW.init(data.components, function(){
+							FLOW.designer();
+							READY = true;
+							callback && callback();
+						});
 					});
 				});
 			});
@@ -1806,16 +1900,6 @@ FLOW.cleaner = function() {
 			!instance.connections[key].length && (delete instance.connections[key]);
 		});
 	}
-
-	MESSAGE_DESIGNER.components.forEach(function(item) {
-		Object.keys(item.connections).forEach(function(key) {
-			var con = item.connections[key];
-			item.connections[key] = con.remove(function(n) {
-				return FLOW.instances[n.id] == null;
-			});
-			!item.connections[key].length && (delete item.connections[key]);
-		});
-	});
 };
 
 FLOW.uninstall = function(name, noSync) {
@@ -1833,12 +1917,11 @@ FLOW.uninstall = function(name, noSync) {
 		var com = FLOW.components[name];
 		com.uninstall && com.uninstall();
 		close = [];
-		MESSAGE_DESIGNER.components = MESSAGE_DESIGNER.components.remove('component', name);
 		MESSAGE_DESIGNER.database = MESSAGE_DESIGNER.database.remove('id', name);
 
 		if (!noSync) {
 			Fs.unlink(F.path.root(PATH + com.filename), NOOP);
-			FLOW.send(MESSAGE_DESIGNER);
+			FLOW.designer;
 			FLOW.save2();
 		}
 	});

@@ -1375,6 +1375,7 @@ COMPONENT('designer', function() {
 					// Current node
 					self.moveselected(offsetX + move.offsetX, offsetY + move.offsetY, e);
 					setState(MESSAGES.apply);
+					EMIT('changed', 'mov', move.node.attrd('id'));
 					return;
 			}
 		};

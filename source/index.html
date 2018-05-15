@@ -384,6 +384,40 @@
 			}
 		});
 
+		common.changes = {};
+		common.changedtabs = false;
+
+		ON('changed', function(action, id){
+			id && (common.changes[id] = common.changes[id] || []);
+			var changes = common.changes;
+			switch (action) {
+				case 'add':
+					changes[id].push(action);
+					break;
+				case 'mov':
+					if (!~changes[id].indexOf('add')) // don't care if it's new component
+						changes[id].push(action);
+					break;
+				case 'rem':
+					if (~changes[id].indexOf('add'))
+						changes[id] = undefined; // remove if not on server yet
+					else
+						changes[id].push(action);
+					break;
+				case 'add.connection':
+				case 'rem.connection':
+					if (!~changes[id].indexOf('add')) // don't care if it's new component, it's taken care of above
+						changes[id].push('conn');
+					break;
+				case 'tabs':
+					common.changedtabs = true;
+					break;
+				case 'flow.clear':
+					common.changedtabs = true;
+					break;
+			};
+		});
+
 		ON('designer.add', function(component, x, y, is, cf, ct, toindex, duplicate, fromindex) {
 			var obj = {};
 			obj.component = component.id;
@@ -430,6 +464,8 @@
 			!is && SETTER('designer', 'add', obj);
 			EMIT('add.' + obj.component);
 			setState(MESSAGES.apply);
+
+			EMIT('changed', 'add', obj.id);
 		});
 
 		ON('designer.rem', function(ids) {
@@ -451,6 +487,8 @@
 					});
 
 					var el = $('.node_' + id);
+
+					EMIT('changed', 'rem', id);
 
 					$('.node_connection').each(function() {
 						var el = $(this);
@@ -528,6 +566,7 @@
 
 		ON('designer.add.connection', function(a, b) {
 			setState(MESSAGES.apply);
+			EMIT('changed', 'add.connection', a, b);
 		});
 
 		ON('designer.rem.connection', function(selected) {
@@ -540,12 +579,13 @@
 				var component = flow.components.findItem('id', sel.attrd('from'));
 				if (!component)
 					return;
-				var connections = component.connections[sel.attrd('toindex')];
+				var connections = component.connections[sel.attrd('fromindex')];
 				if (!connections)
 					return;
 				connections = connections.remove(function(item) {
-					return item.index === sel.attrd('fromindex') && item.id === sel.attrd('to');
+					return item.index === sel.attrd('toindex') && item.id === sel.attrd('to');
 				});
+				EMIT('changed', 'rem.connection', component.id);
 				component.connections[sel.attrd('toindex')] = connections;
 				!connections.length && (delete component.connections[sel.attrd('toindex')]);
 
@@ -658,34 +698,6 @@
 			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && OPERATION('flow.apply')();
 		});
 
-		// Tabs operations
-		OPERATION('tabs.add', function() {
-
-			formtabpositions = [];
-			for (var i = 0; i < flow.tabs.length + 1; i++)
-				formtabpositions.push({ id: i + 1, name: i + 1 });
-
-			UPDATE('formtabpositions');
-			SET('formtab', { position: flow.tabs.length + 1 }, true);
-			SET('common.form', 'tab');
-		});
-
-		OPERATION('tabs.upd', function(id) {
-
-			formtabpositions = [];
-			for (var i = 0; i < flow.tabs.length; i++)
-				formtabpositions.push({ id: i + 1, name: i + 1 });
-
-			UPDATE('formtabpositions');
-
-			var index = flow.tabs.findIndex('id', id);
-			if (index !== -1) {
-				var data = CLONE(flow.tabs[index]);
-				data.position = index + 1;
-				SET('formtab', data, true);
-				SET('common.form', 'tab');
-			}
-		});
 
 		function settings_component() {
 			id = flow.selected[0].attrd('id');
@@ -702,6 +714,7 @@
 				EMIT('designer.refresh');
 				setState(MESSAGES.apply);
 				OPERATION('designer.unselect')();
+				EMIT('changed', 'flow.clear', common.tab.id);
 			});
 		});
 
@@ -779,6 +792,16 @@
 			SET('common.form', '');
 		});
 
+		function cleanComponent(id, mov) {
+			var comp = CLONE(flow.components.findItem('id', id));
+			if (mov)
+				return { id: id, x: comp.x, y: comp.y };
+			comp.$component = undefined;
+			comp.changed = undefined;
+			comp.isnew = undefined;
+			return comp;
+		};
+
 		OPERATION('flow.apply', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
 				if (index)
@@ -788,12 +811,7 @@
 
 				$('.node_new').rclass('node_new');
 				$('.path_new').rclass('path_new');
-				var body = CLONE(flow);
-				body.loaded = undefined;
-				body.designer = undefined;
-				body.traffic = undefined;
-				body.selected = undefined;
-				body.connections = undefined;
+
 				flow.connections = {};
 
 				flow.components.forEach(function(item) {
@@ -810,24 +828,36 @@
 					item.changed = undefined;
 				});
 
-				body.tabs.forEach(function(item) {
-					item.changed = undefined;
-				});
-
-				body.components.forEach(function(item) {
-					item.$component = undefined;
-				});
-
 				EMIT('apply');
 				SETTER('designer', 'animclear');
 				$('.tabs-flow').find('.changed').rclass('changed');
 
-				var message = {};
-				message.type = 'apply';
-				message.body = body;
+				var temp = [];
+				var changes = common.changes;
+
+				// changes === { id: [ 'add', 'rem' ]}
+				Object.keys(changes).forEach(function(id){
+					if (!changes[id])
+						return;
+					if (~changes[id].indexOf('add'))
+						temp.push({ type: 'add', com: cleanComponent(id) });
+					else if (~changes[id].indexOf('rem'))
+						temp.push({ type: 'rem', id: id });
+					else {
+						if (~changes[id].indexOf('mov'))
+							temp.push({ type: 'mov', com: cleanComponent(id, true) });
+						if (~changes[id].indexOf('conn'))
+							temp.push({ type: 'conn', id: id, conn: flow.components.findItem('id', id).connections });
+					}
+				});
+
+				if (common.changedtabs)
+					temp.push({ type: 'tabs', tabs: flow.tabs });
+
+				common.changes = {};
 
 				setState('');
-				SETTER('websocket', 'send', message);
+				SETTER('websocket', 'send', { type: 'changes', body: temp });
 				setTimeout(success, 1000);
 				refreshTrafficNodes();
 			});
@@ -839,18 +869,54 @@
 			});
 		});
 
+		OPERATION('debug.clear', function() {
+			$('#body-debug-output').empty();
+		});
+
+		// Tabs operations
+		OPERATION('tabs.add', function() {
+
+			formtabpositions = [];
+			for (var i = 0; i < flow.tabs.length + 1; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+			SET('formtab', { position: flow.tabs.length + 1 }, true);
+			SET('common.form', 'tab');
+		});
+
+		OPERATION('tabs.upd', function(id) {
+
+			formtabpositions = [];
+			for (var i = 0; i < flow.tabs.length; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+
+			var index = flow.tabs.findIndex('id', id);
+			if (index !== -1) {
+				var data = CLONE(flow.tabs[index]);
+				data.position = index + 1;
+				SET('formtab', data, true);
+				SET('common.form', 'tab');
+			}
+		});
+
 		OPERATION('tabs.rem', function(id) {
-			flow.components = flow.components.remove('tab', id);
+			flow.components = flow.components.remove(function(comp){
+				if (comp.tab === id)
+					EMIT('changed', 'rem', comp.id);
+				return comp.tab === id;
+			});
+
+			console.log(flow.components);
 			SET('flow.tabs', flow.tabs.remove('id', id));
 			SETTER('binder', 'scan');
 			if (common.tab.id === id)
 				location.hash = flow.tabs[0].linker;
 			OPERATION('designer.unselect')();
 			setState(MESSAGES.apply);
-		});
-
-		OPERATION('debug.clear', function() {
-			$('#body-debug-output').empty();
+			EMIT('changed', 'tabs');
 		});
 
 		ON('tabs.save', function(form) {
@@ -886,6 +952,8 @@
 			UPDATE('flow.tabs');
 			SETTER('binder', 'scan');
 			location.hash = o.linker;
+
+			EMIT('changed', 'tabs');
 		});
 
 		ON('online', function(online) {
