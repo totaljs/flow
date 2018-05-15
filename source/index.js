@@ -1218,15 +1218,15 @@ FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
 };
 
 FLOW.clearInstances = function(){
-	return Object.keys(FLOW.instances).map(function(key){ 
-		var instance = FLOW.instances[key]; 
-		return { 
-			id: instance.id, 
-			component: instance.component, 
+	return Object.keys(FLOW.instances).map(function(key){
+		var instance = FLOW.instances[key];
+		return {
+			id: instance.id,
+			component: instance.component,
 			tab: instance.tab,
 			name: instance.name,
-			x: instance.x, 
-			y: instance.y, 
+			x: instance.x,
+			y: instance.y,
 			connections: instance.connections,
 			disabledio: instance.disabledio,
 			state: instance.state,
@@ -1246,7 +1246,7 @@ FLOW.clearInstances = function(){
 			dateupdated: instance.dateupdated,
 			version: instance.version,
 			group: instance.group,
-		}; 
+		};
 	});
 };
 
@@ -1279,8 +1279,8 @@ FLOW.changes = function(arr) {
 	if (needinit)
 		FLOW.reset(rem, function(){
 			FLOW.init(add, function(){
-				FLOW.save3();	
-				needinit = false;	
+				FLOW.save3();
+				needinit = false;
 				FLOW.designer();
 			});
 		});
@@ -1296,7 +1296,7 @@ function change_move(c){
 		return;
 	instance.x = c.x;
 	instance.y = c.y;
-};
+}
 
 function change_connections(id, conn){
 	var instance = FLOW.instances[id];
@@ -1304,7 +1304,7 @@ function change_connections(id, conn){
 		return;
 	instance.connections = conn;
 	instance.$refresh();
-};
+}
 
 FLOW.reset = function(components, callback) {
 
@@ -1489,7 +1489,6 @@ FLOW.init_component = function(com) {
 
 		EMIT('flow.open', instance);
 		FLOW.designer();
-		next();
 	});
 
 
@@ -1502,7 +1501,7 @@ FLOW.send = function(message) {
 };
 
 FLOW.designer = function() {
-	MESSAGE_DESIGNER.components = FLOW.clearInstances();	
+	MESSAGE_DESIGNER.components = FLOW.clearInstances();
 	FLOW.ws && FLOW.ws.send(MESSAGE_DESIGNER);
 	return FLOW;
 };
@@ -1552,8 +1551,6 @@ FLOW.save2 = function(callback) {
 		callback && callback();
 		EMIT('flow.save');
 	});
-
-console.log('SAVED');
 
 	FLOW.refresh_connections();
 	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
@@ -1790,7 +1787,7 @@ FLOW.npm = function(dependencies, callback) {
 					return next();
 				OPT.logging && FLOW.log('npm', item);
 				Exec('npm install ' + item, { cwd: path }, function(err) {
-					OPT.logging && FLOW.log('npm', item + ' - ' + err.toString());
+					OPT.logging && FLOW.log('npm', item + (err ? (' - ' + err.toString()) : ''));
 					err && console.error('NPM INSTALL: ' + item, err);
 					next();
 				});
