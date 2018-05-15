@@ -707,13 +707,16 @@
 			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
-				flow.components = flow.components.remove('tab', common.tab.id);
+				flow.components = flow.components.remove(function(comp){
+					if (comp.tab === common.tab.id)
+						EMIT('changed', 'rem', comp.id);
+					return comp.tab === common.tab.id;
+				});
 				UPDATE('flow');
 				SETTER('binder', 'scan');
 				EMIT('designer.refresh');
 				setState(MESSAGES.apply);
 				OPERATION('designer.unselect')();
-				EMIT('changed', 'flow.clear', common.tab.id);
 			});
 		});
 
@@ -856,7 +859,7 @@
 				common.changes = {};
 
 				setState('');
-				SETTER('websocket', 'send', { type: 'changes', body: temp });
+				SETTER('websocket', 'send', { type: 'apply', body: temp });
 				setTimeout(success, 1000);
 				refreshTrafficNodes();
 			});
@@ -908,7 +911,6 @@
 				return comp.tab === id;
 			});
 
-			console.log(flow.components);
 			SET('flow.tabs', flow.tabs.remove('id', id));
 			SETTER('binder', 'scan');
 			if (common.tab.id === id)
@@ -1309,6 +1311,7 @@
 					flow.components.push(obj);
 					flow.designer.push(obj);
 					EMIT('add.' + obj.component);
+					EMIT('changed', 'add', obj.id);
 
 					var items = [];
 
@@ -1384,6 +1387,7 @@
 						flow.components.push(item);
 						flow.designer.push(item);
 						EMIT('add.' + item.component);
+						EMIT('changed', 'add', item.id);
 					});
 
 					flow.clipboard = null;

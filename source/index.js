@@ -219,7 +219,7 @@ function view_index() {
 			if (DDOS[this.ip] > 4)
 				this.throw401();
 			else
-				this.baa('Secured area, please add sign-in');
+				this.baa('Secured area, please sign in');
 			return;
 		}
 
@@ -510,13 +510,8 @@ function websocket() {
 		}
 
 		if (message.type === 'apply') {
-			FLOW.save(message.body);
-			OPT.logging && FLOW.log('apply', null, client);
-		}
-
-		if (message.type === 'changes') {
 			FLOW.changes(message.body);
-			OPT.logging && FLOW.log('changes', null, client);
+			OPT.logging && FLOW.log('apply', null, client);
 		}
 	});
 
@@ -1256,15 +1251,12 @@ FLOW.changes = function(arr) {
 	var needinit = false;
 	var refreshconn = false;
 
-	console.log('changes', arr);
-	console.log('current instances', FLOW.clearInstances().map(function(ins){ return { id: ins.id, conn: ins.connections, com: ins.component }; }));
-
 	arr.forEach(function(c){
 		if (c.type === 'add') {
 			add.push(c.com);
 			needinit = true;
 		} else if (c.type === 'rem') {
-			rem.push(c.id);
+			rem.push({ id: c.id });
 			needinit = true;
 		} else if (c.type === 'mov') {
 			change_move(c.com);
@@ -1280,7 +1272,6 @@ FLOW.changes = function(arr) {
 		FLOW.reset(rem, function(){
 			FLOW.init(add, function(){
 				FLOW.save3();
-				needinit = false;
 				FLOW.designer();
 			});
 		});
@@ -1358,70 +1349,60 @@ FLOW.hasInstance = function(id) {
 // Init multiple components
 FLOW.init = function(components, callback) {
 
-	var close = [];
+	FLOW.loaded = true;
 
-	Object.keys(FLOW.instances).forEach(function(key) {
-		var instance = FLOW.instances[key];
-		components.findIndex('id', instance.id) === -1 && close.push(instance);
-	});
-
-	FLOW.reset(close, function() {
-
-		FLOW.loaded = true;
-
-		if (!components || !components.length) {
-			EMIT('flow.init', 0);
-			callback && callback();
-			return;
-		}
-
-		var count = 0;
-
-		for (var i = 0, length = components.length; i < length; i++) {
-
-			var com = components[i];
-			var declaration = FLOW.components[com.component];
-			if (!declaration) {
-				// console.error('FLOW.init: component "{0}" does\'t exist.'.format(com.component));
-				continue;
-			}
-
-			var instance = FLOW.instances[com.id];
-			if (instance) {
-				instance.name = com.name || declaration.name;
-				instance.connections = com.connections;
-				instance.$refresh();
-				instance.$events.$reinit && instance.emit('reinit');
-				continue;
-			}
-
-			instance = new Component(com);
-			instance.custom = {};
-			FLOW.instances[com.id] = instance;
-			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
-			instance.cloning = declaration.cloning;
-			instance.name = com.name || declaration.name;
-			instance.color = com.color || declaration.color;
-			instance.notes = com.notes || '';
-			instance.disabledio = com.disabledio = com.disabledio || { input: [], output: [] };
-			declaration.fn.call(instance, instance, declaration);
-			instance.$refresh();
-
-			if (com.state !== instance.state)
-				com.state = instance.state;
-
-			declaration.variables && instance.on('variables', function() {
-				this.emit('options', this.options, this.options);
-			});
-
-			count++;
-			EMIT('flow.open', instance);
-		}
-
-		EMIT('flow.init', count);
-
+	if (!components || !components.length) {
+		EMIT('flow.init', 0);
 		callback && callback();
-	});
+		return;
+	}
+
+	var count = 0;
+
+	for (var i = 0, length = components.length; i < length; i++) {
+
+		var com = components[i];
+		var declaration = FLOW.components[com.component];
+		if (!declaration) {
+			// console.error('FLOW.init: component "{0}" does\'t exist.'.format(com.component));
+			continue;
+		}
+
+		var instance = FLOW.instances[com.id];
+		if (instance) {
+			instance.name = com.name || declaration.name;
+			instance.connections = com.connections;
+			instance.$refresh();
+			instance.$events.$reinit && instance.emit('reinit');
+			continue;
+		}
+
+		instance = new Component(com);
+		instance.custom = {};
+		FLOW.instances[com.id] = instance;
+		instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
+		instance.cloning = declaration.cloning;
+		instance.name = com.name || declaration.name;
+		instance.color = com.color || declaration.color;
+		instance.notes = com.notes || '';
+		instance.disabledio = com.disabledio = com.disabledio || { input: [], output: [] };
+		declaration.fn.call(instance, instance, declaration);
+		instance.$refresh();
+
+		if (com.state !== instance.state)
+			com.state = instance.state;
+
+		declaration.variables && instance.on('variables', function() {
+			this.emit('options', this.options, this.options);
+		});
+
+		count++;
+		EMIT('flow.open', instance);
+	}
+
+	EMIT('flow.init', count);
+
+	callback && callback();
 
 	return FLOW;
 };
@@ -1521,8 +1502,6 @@ FLOW.save = function(data, callback) {
 		data.components[i].isnew && (data.components[i].isnew = undefined);
 
 	MESSAGE_DESIGNER.tabs = data.tabs;
-	MESSAGE_DESIGNER.components = data.components;
-	MESSAGE_DESIGNER.components && FLOW.init(MESSAGE_DESIGNER.components);
 	FLOW.save2(callback);
 
 	// Disables crash mode
