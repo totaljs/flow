@@ -37,9 +37,9 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .panel .tabs button { width: 25%; font-size: 12px; }
 
 section > label .fa { margin-right: 5px; }
-section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 4px 4px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
-section > div { background-color: white; border-radius: 0 0 4px 4px; line-height: 18px; border: 1px solid #E0E0E0; }
-section > div:first-child { border-radius: 4px; }
+section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 3px 3px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
+section > div { background-color: white; border-radius: 0 0 3px 3px; line-height: 18px; border: 1px solid #E0E0E0; }
+section > div:first-child { border-radius: 3px; }
 
 nav > .onlyicon { min-width: 30px; }
 nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 3px; }
@@ -119,7 +119,7 @@ svg { cursor: move; }
 .gray { color: gray; }
 .mr5 { margin-right: 5px; }
 
-#success { height: 40px; top: 58px; left: 194px; width: 40px; background-color: #8CC152; font-size: 25px; line-height: 0; position: fixed; z-index: 20; color: white; text-align: center; padding: 8px 0 0 1px; display: none; transition: all 0.4s; z-index: 1000; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+#success { height: 40px; top: 58px; left: 194px; width: 40px; background-color: #8CC152; font-size: 25px; line-height: 0; position: fixed; z-index: 20; color: white; text-align: center; padding: 8px 0 0 1px; display: none; transition: all 0.4s; z-index: 1000; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 .success-animation { transform: scale(2) translate(0, 50px); }
 .success { background-color: #8CC152; text-align: center; padding: 8px 10px; font-size: 12px; color: white; }
 .success .fa { margin-right: 5px; }
@@ -142,7 +142,7 @@ svg { cursor: move; }
 .mt5 { margin-top: 5px; }
 .mt10 { margin-top: 10px; }
 .help { margin-top: 5px; font-size: 11px; color: #A0A0A0; }
-.help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 4px; }
+.help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 3px; }
 .help .fa { margin-right: 5px; }
 
 .scroller { width: 110%; height: 100%; overflow-x: hidden; padding-right: 10%; overflow-scrolling: touch; }
@@ -154,9 +154,9 @@ svg { cursor: move; }
 .markdown h1:first-child { margin-top: 0; }
 .markdown h2:first-child { margin-top: 0; }
 .markdown h3:first-child { margin-top: 0; }
-.markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #E0E0E0; padding: 0 5px 1px; border-radius: 4px; font-size: 12px; line-height: 15px; }
+.markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #E0E0E0; padding: 0 5px 1px; border-radius: 3px; font-size: 12px; line-height: 15px; }
 .markdown p { margin: 0 0 10px; line-height:  }
-.markdown pre { padding: 0; border-radius: 4px; margin: 10px 0; width: 100%; }
+.markdown pre { padding: 0; border-radius: 3px; margin: 10px 0; width: 100%; }
 .markdown pre code { padding: 15px; font-size: 12px; line-height: 16px; }
 .markdown ul { margin: 0 0 10px 0; padding: 0 0 0 2em; }
 .markdown th { background-color: #F8F8F8; }
@@ -171,18 +171,18 @@ svg { cursor: move; }
 
 #designerstate { position: absolute; font-size: 11px; color: gray; margin: 0 0 0 20px; bottom: 18px; }
 
-#designerzoom { position: absolute; bottom: 15px; right: 15px; background-color: white; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+#designerzoom { position: absolute; bottom: 15px; right: 15px; background-color: white; border-radius: 3px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 #designerzoom button { font-size: 16px; border: 0; border-left: 1px solid #F0F0F0; padding: 2px 0; margin: 0; width: 30px; float:left; text-align: center; color: black; transition: all 0.4s; outline: 0; background-color: transparent; }
 #designerzoom button:hover { color: black; }
 #designerzoom button:first-child { border-left: 0; }
 .themedark #designerzoom button:hover { color: white; }
 
-#designerbuttons { position: absolute; bottom: 15px; right: 130px; background-color: white; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+#designerbuttons { position: absolute; bottom: 15px; right: 130px; background-color: white; border-radius: 3px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 #designerbuttons button { font-size: 16px; border: 0; border-left: 1px solid #F0F0F0; padding: 2px 0; margin: 0; width: 30px; float:left; text-align: center; color: black; transition: all 0.4s; outline: 0; background-color: transparent; }
 #designerbuttons .animate { transform: scale(1.3) rotate(90deg); color: #E33733; }
 #designerbuttons button:hover { color: black; }
-#designerbuttons button:first-child { border-left: 0; border-bottom-left-radius: 4px; border-top-left-radius: 4px; }
-#designerbuttons button:last-child { border-bottom-right-radius: 4px; border-top-right-radius: 4px; background-color: #E33733; color: white; }
+#designerbuttons button:first-child { border-left: 0; border-bottom-left-radius: 3px; border-top-left-radius: 3px; }
+#designerbuttons button:last-child { border-bottom-right-radius: 3px; border-top-right-radius: 3px; background-color: #E33733; color: white; }
 #designerbuttons .disabled { color: silver !important; cursor: not-allowed; background-color: white !important; }
 .themedark #designerbuttons button:hover { color: white !important; }
 
@@ -195,7 +195,7 @@ svg { cursor: move; }
 .traffic-name:hover { text-decoration: underline; }
 .traffic-value { float: right; width: 60px; text-align: right; padding: 5px 0 0; }
 
-.button { text-decoration: none; position: relative; display: inline-block; margin: 0; font-size: 11px; border: 1px solid #D0D0D0; border-radius: 4px; background-color: white; background: linear-gradient(white,#F0F0F0); padding: 10px 13px; font: normal normal 11px Arial; vertical-align: middle; color: gray; cursor: pointer; outline: 0; }
+.button { text-decoration: none; position: relative; display: inline-block; margin: 0; font-size: 11px; border: 1px solid #D0D0D0; border-radius: 3px; background-color: white; background: linear-gradient(white,#F0F0F0); padding: 10px 13px; font: normal normal 11px Arial; vertical-align: middle; color: gray; cursor: pointer; outline: 0; }
 .button:hover { border: 1px solid silver; text-decoration: none; }
 .button:active { box-shadow: inset 0 0 5px silver; color: #A4A4A4; }
 .button:disabled { color: silver; border: 1px solid #E0E0E0; cursor: not-allowed; }
@@ -291,7 +291,7 @@ svg { cursor: move; }
 .mainmenu-hidden .mainmenu { margin-left: -216px; }
 .mainmenu-hidden .body { margin-left: 0; }
 
-.variablesexample { font-size: 12px; font-family: monospace; color: black; line-height: 16px; background-color: #F0F0F0; border-radius: 4px; padding: 15px; }
+.variablesexample { font-size: 12px; font-family: monospace; color: black; line-height: 16px; background-color: #F0F0F0; border-radius: 3px; padding: 15px; }
 .variablesexample span { color: #2B653F; }
 .variablesexample i { color: gray; }
 
