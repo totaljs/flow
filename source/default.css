@@ -51,14 +51,14 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .tabs-controls button { width: 48px; padding: 0; }
 
 .tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; }
-.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; }
+.tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; position: relative; }
 .tabs a:first-child { border-left: 0; }
 .tabs a:hover { text-decoration: none; color: black; }
 .tabs button { float: left; padding: 0 14px 0; font-size: 14px; color: gray; height: 50px; border: 0; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; outline: 0; background-color: transparent; cursor: pointer; }
 .tabs button:first-child { border-left: 0; }
 .tabs button:hover { text-decoration: none; color: black; }
 .tabs .changed { padding-right: 30px; }
-.tabs .changed:after { position: absolute; content: '\f111'; font-family: FontAwesome; font-size: 8px; color: red; margin: 5px 0 0 10px; }
+.tabs .changed:after { position: absolute; content: '\f111'; font-family: FontAwesome; font-size: 8px; color: red; margin: 5px 0 0 0; right: 10px; }
 .tabs .fa { margin-right: 5px; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
 .tabs .br { border-right: 1px solid #D9D9D9; }
