@@ -57,8 +57,8 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .tabs button { float: left; padding: 0 14px 0; font-size: 14px; color: gray; height: 50px; border: 0; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; outline: 0; background-color: transparent; cursor: pointer; }
 .tabs button:first-child { border-left: 0; }
 .tabs button:hover { text-decoration: none; color: black; }
-.tabs .icon-changed { font-size: 8px; color: red; margin: 0 0 0 10px !important; vertical-align: middle; display: none; }
-.tabs .changed .icon-changed { display: inline-block; }
+.tabs .changed { padding-right: 30px; }
+.tabs .changed:after { position: absolute; content: '\f111'; font-family: FontAwesome; font-size: 8px; color: red; margin: 5px 0 0 10px; }
 .tabs .fa { margin-right: 5px; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
 .tabs .br { border-right: 1px solid #D9D9D9; }
