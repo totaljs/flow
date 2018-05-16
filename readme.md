@@ -277,9 +277,9 @@ exports.author = 'Peter Širka';
 exports.icon = 'home';
 
 // {String or Object}, optional (default: undefined)
-exports.status = 'DEFAULT STATUS TEXT';
+exports.state = 'DEFAULT STATUS TEXT';
 // or
-exports.status = { text: 'DEFAULT STATUS TEXT', color: 'red' };
+exports.state = { text: 'DEFAULT STATUS TEXT', color: 'red' };
 
 // {String Array}
 // optional (default: undefined), NPM dependencies
