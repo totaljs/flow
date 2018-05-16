@@ -1037,8 +1037,10 @@
 				flow.designer = [];
 				flow.loaded = true;
 
-				if (!flow.tabs)
+				if (!flow.tabs) {
 					flow.tabs = [{ id: Date.now().toString(), name: '@(Main)', icon: 'fa-object-ungroup', linker: 'main' }];
+					 EMIT('changed', 'tabs');
+				}
 
 				if (!flow.components)
 					flow.components = [];

@@ -1650,7 +1650,7 @@ FLOW.load = function(callback) {
 						data = data.toString('utf8').parseJSON(true);
 
 					if (!data)
-						data = {};
+						data = { components: [] };
 
 					FLOW.$variables = data.variables || '';
 					FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
