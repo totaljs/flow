@@ -531,7 +531,6 @@ function Component(options) {
 	this.duration = 0;
 	this.countinput = 0;
 	this.countoutput = 0;
-	this.connections = {};
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
@@ -1383,6 +1382,7 @@ FLOW.init = function(components, callback) {
 
 		instance = new Component(com);
 		instance.custom = {};
+		instance.connections = com.connections || {};
 		FLOW.instances[com.id] = instance;
 		instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
 		instance.cloning = declaration.cloning;
