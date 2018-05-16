@@ -531,6 +531,7 @@ function Component(options) {
 	this.duration = 0;
 	this.countinput = 0;
 	this.countoutput = 0;
+	this.connections = {};
 	this.state = { text: '', color: 'gray' };
 	this.$events = {};
 	this.$pending = 0;
@@ -1053,7 +1054,7 @@ Component.prototype.throw = function(data) {
 
 Component.prototype.$refresh = function() {
 	var self = this;
-	self.$connections = Object.keys(self.connections);
+	self.$connections = Object.keys(self.connections || {});
 	self.$connections = self.$connections.remove('99');
 	self.hasConnections = self.$connections.length > 0;
 };
@@ -1158,7 +1159,7 @@ FLOW.register = function(name, options, fn) {
 	obj.group = options.group || 'Common';
 	obj.options = options.options;
 	obj.uninstall = options.uninstall;
-	obj.status = options.status;
+	obj.state = options.state;
 	obj.cloning = options.cloning;
 	obj.dashboard = options.dashboard ? true : false;
 	obj.flowboard = options.flowboard ? true : false;
@@ -1293,7 +1294,7 @@ function change_connections(id, conn){
 	var instance = FLOW.instances[id];
 	if (!instance)
 		return;
-	instance.connections = conn;
+	instance.connections = conn || {};
 	instance.$refresh();
 }
 
@@ -1304,7 +1305,9 @@ FLOW.reset = function(components, callback) {
 
 	EMIT('flow.reset', components.length);
 	var count = 0;
+	var resetinstances = [];
 	components.wait(function(item, next) {
+
 
 		var instance = FLOW.instances[item.id];
 		if (!instance)
@@ -1326,6 +1329,7 @@ FLOW.reset = function(components, callback) {
 		}
 
 		instance.status = instance.debug = instance.click = instance.emit = instance.on = instance.signal = instance.send = NOOP;
+		resetinstances.push(instance);
 		delete FLOW.instances[item.id];
 
 	}, function() {
@@ -1333,7 +1337,7 @@ FLOW.reset = function(components, callback) {
 			FLOW.alltraffic = {};
 			FLOW.alltraffic.count = 0;
 		}
-		callback && callback();
+		callback && callback(resetinstances);
 	});
 	return FLOW;
 };
@@ -1392,7 +1396,7 @@ FLOW.init = function(components, callback) {
 		if (com.state !== instance.state)
 			com.state = instance.state;
 
-		declaration.variables && instance.on('variables', function() {
+		declaration.variables && instance.on('variables', function() {			
 			this.emit('options', this.options, this.options);
 		});
 
@@ -1438,37 +1442,45 @@ FLOW.refresh_variables = function(data, client) {
 };
 
 // Init a single component
-FLOW.init_component = function(com) {
+FLOW.init_component = function(c) {
 
-	var declaration = FLOW.components[com.component];
+	var declaration = FLOW.components[c.component];
 	if (!declaration)
 		return ;
 
 	var close = [];
-	var instance = FLOW.instances[com.id];
 
-	instance && close.push(instance);
+	Object.keys(FLOW.instances).forEach(function(key){
+		var instance = FLOW.instances[key];
+		if (instance.component === c.component)
+			close.push(instance)
+	});
 
-	FLOW.reset(close, function() {
-		instance = new Component(com);
-		instance.custom = {};
-		FLOW.instances[com.id] = instance;
-		instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
-		instance.name = com.name || declaration.name;
-		instance.color = com.color || declaration.color;
-		instance.notes = com.notes || '';
-		instance.cloning = declaration.cloning;
-		instance.$refresh();
-		declaration.fn.call(instance, instance, declaration);
+	FLOW.reset(close, function(resetinstances) {
 
-		if (com.state !== instance.state)
-			com.state = instance.state;
+		resetinstances.forEach(function(com){
 
-		declaration.variables && instance.on('variables', function() {
-			this.emit('options', this.options, this.options);
+			var instance = new Component(com);
+			instance.custom = {};
+			FLOW.instances[com.id] = instance;
+			instance.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), com.options || EMPTYOBJECT, true);
+			instance.name = com.name || declaration.name;
+			instance.color = com.color || declaration.color;
+			instance.notes = com.notes || '';
+			instance.cloning = declaration.cloning;
+			instance.$refresh();
+			declaration.fn.call(instance, instance, declaration);
+
+			if (com.state !== instance.state)
+				com.state = instance.state;
+
+			declaration.variables && instance.on('variables', function() {				
+				this.emit('options', this.options, this.options);
+			});
+
+			EMIT('flow.open', instance);		
 		});
 
-		EMIT('flow.open', instance);
 		FLOW.designer();
 	});
 
@@ -1866,7 +1878,7 @@ FLOW.install = function(filename, body, callback) {
 // Removes removed connections
 FLOW.cleaner = function() {
 
-	var keys = Object.keys(FLOW.instances);
+	var keys = Object.keys(FLOW.instances || {});
 
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
