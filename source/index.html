@@ -587,8 +587,8 @@
 					return item.index === sel.attrd('toindex') && item.id === sel.attrd('to');
 				});
 				EMIT('changed', 'rem.connection', component.id);
-				component.connections[sel.attrd('toindex')] = connections;
-				!connections.length && (delete component.connections[sel.attrd('toindex')]);
+				component.connections[sel.attrd('fromindex')] = connections;
+				!connections.length && (delete component.connections[sel.attrd('fromindex')]);
 
 				next();
 
