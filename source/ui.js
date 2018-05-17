@@ -2037,10 +2037,10 @@ COMPONENT('designer', function() {
 		attr['d'] = diagonal(ax, ay, bx, by);
 		attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
 		attr['stroke-width'] = 3;
-		attr['data-fromindex'] = iindex;
+		attr['data-fromindex'] = oindex;
 		attr['data-from'] = aid;
 		attr['data-to'] = bid;
-		attr['data-toindex'] = oindex;
+		attr['data-toindex'] = iindex;
 		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
 		attr['id'] = 'id' + aid + '' + bid;
 		lines.asvg('path').attr(attr);
