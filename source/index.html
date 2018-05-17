@@ -396,7 +396,7 @@
 					break;
 				case 'mov':
 				 	// don't care if it's new component or already moved
-					if (!~changes[id].indexOf('add') || !~changes[id].indexOf('mov'))
+					if (!~changes[id].indexOf('add') && !~changes[id].indexOf('mov'))
 						changes[id].push(action);
 					break;
 				case 'rem':
