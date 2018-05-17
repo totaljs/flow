@@ -276,6 +276,7 @@ function refreshTraffic() {
 	var count = common.traffic.count;
 	var key;
 	var animate = [];
+	var was = {};
 
 	for (var i = 0, length = common.trafficnodes.length; i < length; i++) {
 
@@ -313,8 +314,18 @@ function refreshTraffic() {
 					if (key.substring(key.length - id.length) === id) {
 						var subid = key.substring(0, key.indexOf('#', id.length));
 						var tmpout = common.traffic[subid];
-						if (tmpout && tmpout.no)
-							animate.push({ id: 'id' + subid + id, com: id, parent: subid, count: tmpout.no });
+						if (tmpout && tmpout.no) {
+
+							if (was[subid]) {
+								for (var a = 0; a < animate.length; a++) {
+									if (animate[a].parent === subid)
+										animate[a].count--;
+								}
+							}
+
+							animate.push({ id: 'id' + subid + id, com: id, parent: subid, count: tmpout.no - (was[subid] || 0) });
+							was[subid] = (was[subid] || 0) + 1;
+						}
 					}
 				}
 			}
