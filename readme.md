@@ -791,6 +791,15 @@ ON('features.select', function(item) {
 // {Object} contains global meta-data
 ```
 
-## Contribute
+## Contributors
 
-This project is stored in private repository on GitHub. Contact me <petersirka@gmail.com> if you want be a contributor.
+| Contributor | Type | E-mail |
+|-------------|------|--------|
+| [Peter Širka](https://github.com/petersirka) | author + support | <petersirka@gmail.com> |
+| [Martin Smola](https://github.com/molda) | contributor + support | <smola.martin@gmail.com> |
+
+## Contact
+
+- (c) 2017-2018 by Peter Širka - <petersirka@gmail.com>
+- contact form <https://www.totaljs.com/contact/>
+- <info@totaljs.com>
