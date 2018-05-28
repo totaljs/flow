@@ -90,7 +90,7 @@ exports.install = function(options) {
 
 	// Merging && Mapping
 	var depscss = [OPT.url + 'default.css', '@flow/default.css', '@flow/ui.css'];
-	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js'];
+	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js', '@flow/FileSaver.js'];
 
 	if (!OPT.sharedfiles) {
 		depscss.splice(1, 0, '@flow/dep.min.css');

@@ -1,5 +1,9 @@
 <div data-jc="form__common.form__if:import;width:500;submit:formimport_submit;title:Import flow" data-jc-init="formimport_init" class="hidden">
 	<div class="padding" data-bind="formimportanalysis.is__.bg-smoke:value">
+		<div class="ui-form-buttons center">
+			<input type="file" id="input">
+			<button name="load" onclick="loadfile()">@(LOAD)</button>
+		</div>
 		<div data-jc="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
 		<div data-jc="checkbox__formimport.replace">@(Clear current design)</div>
 	</div>
@@ -39,9 +43,13 @@
 	function formimport_analyze() {
 		var data = null;
 
-		try {
-			data = PARSE(decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))));
-		} catch (e) {}
+		if(IsJsonString(formimport.body)) {
+			data = PARSE(formimport.body);
+		} else {
+			try {
+				data = PARSE(decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))));
+			} catch (e) {}
+		}
 
 		if (!data) {
 			SET('formimport.is', false);
@@ -212,6 +220,24 @@
 				SETTER('loading', 'hide', 1000);
 			}
 		});
+	}
+
+	function loadfile() {
+		var selectedFile = document.getElementById('input').files[0];
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			SET('formimport.body', e.target.result)
+		};
+		reader.readAsText(selectedFile);
+	}
+
+	function IsJsonString(str) {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
 	}
 
 </script>
