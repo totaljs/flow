@@ -1,14 +1,13 @@
-<div data-jc="form" data-jc-path="common.form" data-jc-config="if:export;width:500;submit:formexport_submit;title:@(Export flow)" data-jc-init="formexport_init" class="hidden">
+<div data-jc="form" data-jc-path="common.form" data-jc-config="if:export;width:500;submit:formexport_submit;title:@(Export Flow)" data-jc-init="formexport_init" class="hidden">
 	<div class="padding bg-smoke">
 		<div data-jc="dropdowncheckbox" data-jc-path="formexport.tabs" data-jc-config="datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
-		<div data-jc="checkbox" data-jc-path="formexport.variables" onclick="formexport_rebuild()">@(Export variables)</div>
-		<div data-jc="checkbox" data-exec="formexport_json" data-jc-path="formexport.json" onclick="formexport_rebuild()">@(JSON)</div>
+		<div data-jc="checkbox" data-jc-path="formexport.variables">@(Export variables)</div>
 	</div>
 	<div class="padding npb">
 		<div data-jc="textarea" data-jc-path="formexport.body" class="m" data-jc-config="height:200;icon:clipboard">@(Copy data to clipboard)</div>
 	</div>
 	<div class="ui-form-buttons">
-		<button name="submit">@(Save)</button>
+		<button name="submit"><i class="fa fa-floppy-o mr5"></i>@(Save to File)</button>
 		<button name="cancel">@(Close)</button>
 	</div>
 </div>
@@ -52,25 +51,13 @@
 				delete o.$component;
 			});
 
-			if(formexport.json) {
-                        	SET('formexport.body', STRINGIFY(obj));
-			} else {
-                        	SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
-			}
+			SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
 		}, 500);
 	}
 
 	function formexport_submit(form) {
-		var blob;
-		var extension = ".flow";
-		if(formexport.json) {
-			blob = new Blob([formexport.body], {type: "application/json;charset=utf-8"});
-			extension = ".json";
-		} else {
-			blob = new Blob([formexport.body], {type: "application/octet-stream;charset=utf-8"});
-			var extension = ".flow";
-		}
-		saveAs(blob, "export"+extension);
+		var blob = new Blob([formexport.body], { type: 'text/plain; charset=utf-8' });
+		saveAs(blob, 'flow_{0}.txt'.format(NOW.format('yyyyMMdd-HHmm')));
 	}
 
 	function formexport_init(component) {

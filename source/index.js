@@ -90,7 +90,7 @@ exports.install = function(options) {
 
 	// Merging && Mapping
 	var depscss = [OPT.url + 'default.css', '@flow/default.css', '@flow/ui.css'];
-	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js', '@flow/FileSaver.js'];
+	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js'];
 
 	if (!OPT.sharedfiles) {
 		depscss.splice(1, 0, '@flow/dep.min.css');
@@ -1396,7 +1396,7 @@ FLOW.init = function(components, callback) {
 		if (com.state !== instance.state)
 			com.state = instance.state;
 
-		declaration.variables && instance.on('variables', function() {			
+		declaration.variables && instance.on('variables', function() {
 			this.emit('options', this.options, this.options);
 		});
 
@@ -1474,11 +1474,11 @@ FLOW.init_component = function(c) {
 			if (com.state !== instance.state)
 				com.state = instance.state;
 
-			declaration.variables && instance.on('variables', function() {				
+			declaration.variables && instance.on('variables', function() {
 				this.emit('options', this.options, this.options);
 			});
 
-			EMIT('flow.open', instance);		
+			EMIT('flow.open', instance);
 		});
 
 		FLOW.designer();

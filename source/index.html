@@ -178,7 +178,7 @@
 
 			<nav data-jc="repeater__flow.tabs">
 				<script type="text/html">
-					<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__.selected:value.id=='{{ id }}'">{{ name }}</a>
+					<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__!.selected:value.id=='{{ id }}'">{{ name }}</a>
 				</script>
 			</nav>
 
