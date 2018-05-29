@@ -797,6 +797,7 @@ ON('features.select', function(item) {
 |-------------|------|--------|
 | [Peter Širka](https://github.com/petersirka) | author + support | <petersirka@gmail.com> |
 | [Martin Smola](https://github.com/molda) | contributor + support | <smola.martin@gmail.com> |
+| [John Graves](https://github.com/gravesjohnr) | contributor | <john.graves@oracle.com> |
 
 ## Contact
 
