@@ -1315,12 +1315,12 @@ function change_connections(id, conn){
 
 FLOW.reset = function(components, callback) {
 
+	var resetinstances = [];
 	if (!components.length)
-		return callback && callback();
+		return callback && callback(resetinstances);
 
 	EMIT('flow.reset', components.length);
 	var count = 0;
-	var resetinstances = [];
 	components.wait(function(item, next) {
 
 
