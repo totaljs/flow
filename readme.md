@@ -547,6 +547,14 @@ exports.install = function(component) {
     // Returns all components in the inputs
     // +v5.0.0
 
+    component.isDisabled([io], [index]);
+    // @io {String} optional, "input" or "output"
+    // @index {Number} optional, input/output index
+    // returns {Boolean} if io and index passed in
+    // returns {Array of inputs or outputs} if only io passed in
+    // returns {Object} e.g. { inputs: [disabled inputs], outputs: [disabled outputs] } if nothing passed in
+    // +v5.0.0
+
     // =====================
     // PROPERTIES
     // =====================

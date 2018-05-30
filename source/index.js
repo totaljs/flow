@@ -714,6 +714,22 @@ Component.prototype.outputs = function() {
 	return arr;
 };
 
+Component.prototype.isDisabled = function(io, index) {
+	var self = this;
+	var disabledio = self.disabledio;
+	
+	if (!io)
+		return disabledio;
+
+	if (index === undefined)
+		return disabledio[io];
+
+	if (disabledio[io] && disabledio[io].indexOf(index) > -1)
+		return true;
+
+	return false;
+};
+
 Component.prototype.prev = function(name) {
 	var self = this;
 	var keys = Object.keys(FLOW.inputs[self.id]);
