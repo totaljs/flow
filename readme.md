@@ -807,6 +807,12 @@ ON('features.select', function(item) {
 | [Martin Smola](https://github.com/molda) | contributor + support | <smola.martin@gmail.com> |
 | [John Graves](https://github.com/gravesjohnr) | contributor | <john.graves@oracle.com> |
 
+## Components contributors
+
+| Contributor | Type | E-mail |
+|-------------|------|--------|
+| Torlone Gianfranco | contributor | <torloneg@gmail.com> |
+
 ## Contact
 
 - (c) 2017-2018 by Peter Širka - <petersirka@gmail.com>
