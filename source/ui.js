@@ -1834,7 +1834,8 @@ COMPONENT('designer', function() {
 
 			if (outputcolors)
 				if(outputcolors[i].indexOf("|") > -1) {
-					o.attr('fill', outputcolors[i].split("|")[0]);
+					if(outputcolors[i].split("|")[0] === "") o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+					else o.attr('fill', outputcolors[i].split("|")[0]);
 					o.attr('data-title', outputcolors[i].split("|")[1]);
 				} else {
 					o.attr('fill', outputcolors[i]);
