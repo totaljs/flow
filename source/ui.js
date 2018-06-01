@@ -1612,6 +1612,17 @@ COMPONENT('designer', function() {
 			EMIT('designer.select', el.attrd('id'));
 		};
 
+		self.event('mouseenter mouseleave', 'circle.input, circle.output', function(e) {
+			if (e.type === 'mouseenter') {
+				var el = $(this);
+				if(el.attr('data-title') !== undefined) {
+					SETTER('tooltip', 'show', el, el.attr('data-title'), 140, 5, 20);
+				}
+			} else {
+				SETTER('tooltip', 'hide');
+			}
+		});
+
 		self.event('click', 'circle.input, circle.output, polygon', function() {
 
 			var el = $(this);
@@ -1790,8 +1801,15 @@ COMPONENT('designer', function() {
 
 		for (var i = 0; i < input; i++) {
 			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * padding).attr('r', radius);
-			if (inputcolors)
-				o.attr('fill', inputcolors[i]);
+			if (inputcolors) {
+				if(inputcolors[i].indexOf("|") > -1) {
+					if(inputcolors[i].split("|")[0] === "") o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+					else o.attr('fill', inputcolors[i].split("|")[0]);
+					o.attr('data-title', inputcolors[i].split("|")[1]);
+				} else {
+					o.attr('fill', inputcolors[i]);
+				}
+			}
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 
@@ -1810,11 +1828,17 @@ COMPONENT('designer', function() {
 
 			if (err) {
 				o.attr('fill', 'red');
+				o.attr('data-title', 'Error path.');
 				continue;
 			}
 
 			if (outputcolors)
-				o.attr('fill', outputcolors[i]);
+				if(outputcolors[i].indexOf("|") > -1) {
+					o.attr('fill', outputcolors[i].split("|")[0]);
+					o.attr('data-title', outputcolors[i].split("|")[1]);
+				} else {
+					o.attr('fill', outputcolors[i]);
+				}
 			else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 

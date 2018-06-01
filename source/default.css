@@ -14,6 +14,10 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .hidetools button:first-child { right: 0; border-radius: 0 0 0 3px; }
 .hidetools button:last-child { left: 0; border-radius: 0 0 3px 0; }
 
+.ui-tooltip { position: absolute; z-index: 80; }
+.ui-tooltip-body { padding: 12px 15px; font-size: 11px; background: white linear-gradient(#FFFF55,yellow); color: black; border-width: 3px; border-style: solid; border-color: green; border-radius: 4px; }
+.ui-tooltip-arrow { font-size: 30px; color: green; line-color: yellow; line-height: 0; text-align: center; height: 20px; }
+
 .tabs-tools { float: right; }
 .themedark .hidetools button { background-color: #404040; }
 .components-search-padding { padding: 15px; }
