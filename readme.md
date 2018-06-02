@@ -260,11 +260,21 @@ exports.input = 0;
 // +v3.0.0
 exports.input = ['red', 'blue'];
 
+// or {Array of Colors}, input will have 2 inputs with tooltips (red and blue)
+// +v5.1.0
+exports.input = ['red | ToolTip Red', 'blue | ToolTip Blue'];
+exports.input = ['ToolTip Input 1', 'ToolTip Input 2'];
+
 // {Number}, optional (default: 0)
 exports.output = 1;
 
 // or {Array of Colors}, output will have 2 outputs (red and blue)
 exports.output = ['red', 'blue'];
+
+// or {Array of Colors}, input will have 2 inputs with tooltips (red and blue)
+// +v5.1.0
+exports.output = ['red | ToolTip Red', 'blue | ToolTip Blue'];
+exports.output = ['ToolTip Output 1', 'ToolTip Output 2'];
 
 // {String}, optional (default: "Common")
 exports.group = 'Common';

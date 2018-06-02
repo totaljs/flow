@@ -1612,17 +1612,6 @@ COMPONENT('designer', function() {
 			EMIT('designer.select', el.attrd('id'));
 		};
 
-		self.event('mouseenter mouseleave', 'circle.input, circle.output', function(e) {
-			if (e.type === 'mouseenter') {
-				var el = $(this);
-				if(el.attr('data-title') !== undefined) {
-					SETTER('tooltip', 'show', el, el.attr('data-title'), 140, 5, 20);
-				}
-			} else {
-				SETTER('tooltip', 'hide');
-			}
-		});
-
 		self.event('click', 'circle.input, circle.output, polygon', function() {
 
 			var el = $(this);
@@ -1802,15 +1791,22 @@ COMPONENT('designer', function() {
 		for (var i = 0; i < input; i++) {
 			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * padding).attr('r', radius);
 			if (inputcolors) {
-				if(inputcolors[i].indexOf("|") > -1) {
-					if(inputcolors[i].split("|")[0] === "") o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
-					else o.attr('fill', inputcolors[i].split("|")[0]);
-					o.attr('data-title', inputcolors[i].split("|")[1]);
+				var t = inputcolors[i] || '';
+				if (t.indexOf('|') !== -1) {
+					t = t.split('|');
+					var tcolor = (t[0] || '').trim();
+					var ttitle = (t[1] || '').trim();
+					o.attr('fill', tcolor ? tcolor : common.theme === 'dark' ? 'white' : 'black');
+					ttitle && o.asvg('title').text(ttitle);
 				} else {
-					o.attr('fill', inputcolors[i]);
+					if ((/^[a-z]|^#/).test(t))
+						o.attr('fill', t);
+					else {
+						o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+						o.asvg('title').text(t);
+					}
 				}
-			}
-			else
+			} else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 
 			if (item.disabledio && item.disabledio.input.indexOf(i) > -1) {
@@ -1828,19 +1824,27 @@ COMPONENT('designer', function() {
 
 			if (err) {
 				o.attr('fill', 'red');
-				o.attr('data-title', 'Error path.');
+				o.asvg('title').text('Error path');
 				continue;
 			}
 
-			if (outputcolors)
-				if(outputcolors[i].indexOf("|") > -1) {
-					if(outputcolors[i].split("|")[0] === "") o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
-					else o.attr('fill', outputcolors[i].split("|")[0]);
-					o.attr('data-title', outputcolors[i].split("|")[1]);
+			if (outputcolors) {
+				var t = outputcolors[i] || '';
+				if (t.indexOf('|') !== -1) {
+					t = t.split('|');
+					var tcolor = (t[0] || '').trim();
+					var ttitle = (t[1] || '').trim();
+					o.attr('fill', tcolor ? tcolor : common.theme === 'dark' ? 'white' : 'black');
+					ttitle && o.asvg('title').text(ttitle);
 				} else {
-					o.attr('fill', outputcolors[i]);
+					if ((/^[a-z]|^#/).test(t))
+						o.attr('fill', t);
+					else {
+						o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
+						o.asvg('title').text(t);
+					}
 				}
-			else
+			} else
 				o.attr('fill', common.theme === 'dark' ? 'white' : 'black');
 
 			if (item.disabledio && item.disabledio.output.indexOf(i) > -1) {
