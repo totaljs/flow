@@ -4751,7 +4751,7 @@ COMPONENT('multioptions', function(self) {
 
 			if (type === 'date') {
 				el = el.parent().parent().find('input');
-				FIND('calendar').show(el, el.val().parseDate(), function(date) {
+				SETTER('calendar', 'show', el, el.val().parseDate(), function(date) {
 					el.val(date.format('yyyy-MM-dd'));
 					self.$save();
 				});
@@ -4816,7 +4816,7 @@ COMPONENT('multioptions', function(self) {
 
 		self.event('focus', '.ui-moi-date', function() {
 			var el = $(this);
-			FIND('calendar').toggle(el, el.val().parseDate(), function(date) {
+			SETTER('calendar', 'toggle', el, el.val().parseDate(), function(date) {
 				el.val(date.format('yyyy-MM-dd'));
 				self.$save();
 			});
