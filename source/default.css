@@ -42,7 +42,7 @@ section > div { background-color: white; border-radius: 0 0 3px 3px; line-height
 section > div:first-child { border-radius: 3px; }
 
 nav > .onlyicon { min-width: 30px; }
-nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 3px; }
+nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 0; }
 nav .highlight .fa { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 nav button.highlight .fa { color: white; }
