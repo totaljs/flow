@@ -852,7 +852,7 @@ Component.prototype.send = function(index, message) {
 
 				if (instance && !instance.$closed) {
 
-					var skip = instance.disabledio.input.indexOf(+ids[i].index) > -1;
+					var skip = instance.disabledio.input.indexOf(+ids[j].index) > -1;
 
 					if (!tmp[instance.id]) {
 						tmp[instance.id] = true;
