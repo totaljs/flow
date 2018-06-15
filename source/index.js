@@ -1632,6 +1632,8 @@ FLOW.execute = function(filename) {
 	FILENAME = U.getName(filename);
 	var m = require(filename);
 	var id = m.id;
+	if (!id)
+		return console.log(FILENAME + ': Missing ID property, skipping.');
 	var install = m.install;
 	delete m.id;
 	delete m.install;
