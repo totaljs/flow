@@ -722,7 +722,8 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.type === 'date') {
 				e.preventDefault();
-				window.$calendar && window.$calendar.toggle(self.element, self.get(), function(date) {
+				SETTER('calendar', 'toggle', self.element, self.get(), function(date) {
+					self.change(true);
 					self.set(date);
 				});
 			}
@@ -780,6 +781,7 @@ COMPONENT('textbox', function(self, config) {
 		config.keypress != null && attrs.attr('data-jc-keypress', config.keypress);
 		config.delay && attrs.attr('data-jc-keypress-delay', config.delay);
 		config.disabled && attrs.attr('disabled');
+		config.readonly && attrs.attr('readonly');
 		config.error && attrs.attr('error');
 		attrs.attr('data-jc-bind', '');
 
@@ -839,6 +841,9 @@ COMPONENT('textbox', function(self, config) {
 		var redraw = false;
 
 		switch (key) {
+			case 'readonly':
+				self.find('input').prop('readonly', value);
+				break;
 			case 'disabled':
 				self.tclass('ui-disabled', value);
 				self.find('input').prop('disabled', value);
@@ -905,6 +910,10 @@ COMPONENT('textbox', function(self, config) {
 		return config.type === 'date' ? (value ? value.format(config.format || 'yyyy-MM-dd') : value) : value;
 	});
 
+	self.parser(function(path, value) {
+		return value ? config.spaces === false ? value.replace(/\s/g, '') : value : value;
+	});
+
 	self.state = function(type) {
 		if (!type)
 			return;
@@ -919,29 +928,41 @@ COMPONENT('textbox', function(self, config) {
 
 COMPONENT('importer', function(self, config) {
 
-	var imported = false;
+	var init = false;
+	var clid = null;
 
 	self.readonly();
 	self.setter = function(value) {
 
-		if (config.if !== value)
-			return;
-
-		if (imported) {
-			if (config.reload)
-				EXEC(config.reload);
-			else
-				self.setter = null;
+		if (config.if !== value) {
+			if (config.cleaner && init && !clid)
+				clid = setTimeout(self.clean, config.cleaner * 60000);
 			return;
 		}
 
-		imported = true;
-		IMPORT(config.url, function() {
-			if (config.reload)
-				EXEC(config.reload);
-			else
-				self.remove();
+		if (clid) {
+			clearTimeout(clid);
+			clid = null;
+		}
+
+		if (init) {
+			config.reload && EXEC(config.reload);
+			return;
+		}
+
+		init = true;
+		self.import(config.url, function() {
+			config.reload && EXEC(config.reload);
 		});
+	};
+
+	self.clean = function() {
+		config.clean && EXEC(config.clean);
+		setTimeout(function() {
+			self.empty();
+			init = false;
+			clid = null;
+		}, 1000);
 	};
 });
 
@@ -3537,7 +3558,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 
 	self.calculate = function(year, month, selected) {
 
-		var d = new Date(year, month, 1);
+		var d = new Date(year, month, 1, 12, 0);
 		var output = { header: [], days: [], month: month, year: year };
 		var firstDay = config.firstday;
 		var firstCount = 0;
@@ -3564,7 +3585,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 		var index = 0;
 		var indexEmpty = 0;
 		var count = 0;
-		var prev = getMonthDays(new Date(year, month - 1, 1)) - frm;
+		var prev = getMonthDays(new Date(year, month - 1, 1, 12, 0)) - frm;
 		var cur;
 
 		for (var i = 0; i < days + frm; i++) {
@@ -3576,7 +3597,6 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 				obj.isSelected = sy === year && sm === month && sd === index;
 				obj.isToday = ty === year && tm === month && td === index;
 				obj.isFuture = ty < year;
-
 				if (!obj.isFuture && year === ty) {
 					if (tm < month)
 						obj.isFuture = true;
@@ -3594,8 +3614,8 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 			if (!obj.isEmpty)
 				cur = d.add(i + ' days');
 
-			obj.month = cur.getMonth();
-			obj.year = cur.getFullYear();
+			obj.month = i >= frm && obj.number <= days ? d.getMonth() : cur.getMonth();
+			obj.year = i >= frm && obj.number <= days ? d.getFullYear() : cur.getFullYear();
 			obj.date = cur;
 			output.days.push(obj);
 		}
@@ -3615,23 +3635,22 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 	};
 
 	self.hide = function() {
-		self.aclass('hidden');
-		self.rclass('ui-calendar-visible');
-		visible = false;
+		if (visible) {
+			self.older = null;
+			self.aclass('hidden');
+			self.rclass('ui-calendar-visible');
+			visible = false;
+		}
 		return self;
 	};
 
 	self.toggle = function(el, value, callback, offset) {
-
-		if (self.older === el.get(0)) {
-			if (!self.hclass('hidden')) {
-				self.hide();
-				return;
-			}
+		if (self.older === el[0]) {
+			!self.hclass('hidden') && self.hide();
+		} else {
+			self.older = el[0];
+			self.show(el, value, callback, offset);
 		}
-
-		self.older = el.get(0);
-		self.show(el, value, callback, offset);
 		return self;
 	};
 
@@ -3646,8 +3665,16 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 
 		var off = el.offset();
 		var h = el.innerHeight();
+		var l = off.left + (offset || 0);
+		var t = off.top + h + 12;
+		var s = 250;
 
-		self.css({ left: off.left + (offset || 0), top: off.top + h + 12 });
+		if (l + s > WW) {
+			var w = el.innerWidth();
+			l = (l + w) - s;
+		}
+
+		self.css({ left: l, top: t });
 		self.rclass('hidden');
 		self.click = callback;
 		self.date(value);
@@ -3674,17 +3701,29 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 		self.event('click', '.ui-calendar-today-a', function() {
 			var dt = new Date();
 			self.hide();
-			self.click && self.click(dt);
+			if (self.click) {
+				if (typeof(self.click) === 'string') {
+					SET(self.click, dt);
+					CHANGE(self.click, true);
+				} else
+					self.click(dt);
+			}
 		});
 
 		self.event('click', '.ui-calendar-day', function() {
 			var arr = this.getAttribute('data-date').split('-');
-			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]));
+			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]), 12, 0);
 			self.find('.ui-calendar-selected').rclass('ui-calendar-selected');
 			var el = $(this).aclass('ui-calendar-selected');
 			skip = !el.hclass('ui-calendar-disabled');
 			self.hide();
-			self.click && self.click(dt);
+			if (self.click) {
+				if (typeof(self.click) === 'string') {
+					SET(self.click, dt);
+					CHANGE(self.click, true);
+				} else
+					self.click(dt);
+			}
 		});
 
 		self.event('click', '.ui-calendar-header', function(e) {
@@ -3698,7 +3737,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 			e.stopPropagation();
 
 			var arr = this.getAttribute('data-date').split('-');
-			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1);
+			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1, 12, 0);
 			dt.setFullYear(this.value);
 			skipDay = true;
 			self.date(dt);
@@ -3711,7 +3750,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 			e.stopPropagation();
 
 			var arr = this.getAttribute('data-date').split('-');
-			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1);
+			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1, 12, 0);
 			dt.setMonth(this.value);
 			skipDay = true;
 			self.date(dt);
@@ -3723,7 +3762,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 			e.stopPropagation();
 
 			var arr = this.getAttribute('data-date').split('-');
-			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1);
+			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), 1, 12, 0);
 			switch (this.name) {
 				case 'prev':
 					dt.setMonth(dt.getMonth() - 1);
@@ -3763,7 +3802,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 
 		if (!value || isNaN(value.getTime())) {
 			self.find('.' + clssel).rclass(clssel);
-			value = DATETIME;
+			value = NOW;
 		}
 
 		var empty = !value;
@@ -3779,7 +3818,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 		}
 
 		if (!value)
-			value = DATETIME = new Date();
+			value = NOW = new Date();
 
 		var output = self.calculate(value.getFullYear(), value.getMonth(), value);
 		var builder = [];
@@ -4383,9 +4422,12 @@ COMPONENT('textarea', function(self, config) {
 		var redraw = false;
 
 		switch (key) {
+			case 'readonly':
+				self.find('textarea').prop('readonly', value);
+				break;
 			case 'disabled':
 				self.tclass('ui-disabled', value);
-				self.find('input').prop('disabled', value);
+				self.find('textarea').prop('disabled', value);
 				break;
 			case 'required':
 				self.noValid(!value);
@@ -4437,6 +4479,7 @@ COMPONENT('textarea', function(self, config) {
 		config.height && attrs.attr('style', 'height:{0}px'.format(config.height));
 		config.autofocus === 'true' && attrs.attr('autofocus');
 		config.disabled && attrs.attr('disabled');
+		config.readonly && attrs.attr('readonly');
 		builder.push('<textarea {0}></textarea>'.format(attrs.join(' ')));
 
 		var label = config.label || content;
@@ -4484,6 +4527,7 @@ COMPONENT('textarea', function(self, config) {
 		config.error && self.find('.ui-textarea-helper').tclass('ui-textarea-helper-show', invalid);
 	};
 });
+
 
 COMPONENT('filereader', function(self, config) {
 	self.readonly();

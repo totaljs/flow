@@ -22,17 +22,17 @@
 </head>
 <body data-jc="exec,binder"@{if R.dark} class="themedark"@{fi}>
 
-	<div data-jc="autocomplete"></div>
+	<div data-jc="LAZY autocomplete"></div>
 	<div data-jc="LAZY calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data-jc="LAZY confirm"></div>
-	<div data-jc="LAZY contextmenu"></div>
-	<div data-jc="colorpicker"></div>
-	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
+	<div data-jc="LAZY features__null__placeholder:@(Search feature ...)"></div>
 	<div data-jc="LAZY message__null__button:@(Close)"></div>
 	<div data-jc="LAZY snackbar__null__button:@(Dismiss)"></div>
-	<div data-jc="websocket__null__url:@{R.url}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
-	<div data-jc="LAZY features__null__placeholder:@(Search feature ...)"></div>
+	<div data-jc="contextmenu"></div>
+	<div data-jc="colorpicker"></div>
+	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data-jc="shortcuts"></div>
+	<div data-jc="websocket__null__url:@{R.url}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -214,13 +214,12 @@
 		</div>
 	</div>
 
-	<div data-jc="importer__common.form__if:tab;url:@{R.url}templates/form-tab.html"></div>
-	<div data-jc="importer__common.form__if:settings;url:@{R.url}templates/form-settings.html"></div>
-	<div data-jc="importer__common.form__if:export;url:@{R.url}templates/form-export.html;reload:formexport_reload"></div>
-	<div data-jc="importer__common.form__if:import;url:@{R.url}templates/form-import.html;reload:formimport_reload"></div>
-	<div data-jc="importer__common.form__if:database;url:@{R.url}templates/form-database.html;reload:formdatabase_reload"></div>
-	<div data-jc="importer__common.form__if:variables;url:@{R.url}templates/form-variables.html;reload:formvariables_reload"></div>
-	<div data-jc="importer__common.form2__if:components;url:@{R.url}templates/form-components.html"></div>
+	<div data-jc="importer__common.form__if:tab;url:@{R.url}forms/form-tab.html;cleaner:5"></div>
+	<div data-jc="importer__common.form__if:export;url:@{R.url}forms/form-export.html;reload:export/reload;cleaner:5"></div>
+	<div data-jc="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload;cleaner:5"></div>
+	<div data-jc="importer__common.form__if:database;url:@{R.url}forms/form-database.html;cleaner:5"></div>
+	<div data-jc="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
+	<div data-jc="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -500,7 +499,7 @@
 					next();
 				}, function done(){
 					setState(MESSAGES.apply);
-					OPERATION('designer.unselect')();
+					EMIT('designer.unselect');
 				});
 			});
 		});
@@ -595,7 +594,7 @@
 			}, function(){
 				setState(MESSAGES.apply);
 				setTimeout(function() {
-					OPERATION('designer.unselect')();
+					EMIT('designer.unselect');
 				}, 1000);
 			});
 		});
@@ -691,20 +690,19 @@
 		}).trigger('hashchange');
 
 		$(document).on('dblclick', '.tab', function() {
-			OPERATION('tabs.upd')(this.getAttribute('data-id'));
+			EMIT('tabs.upd', this.getAttribute('data-id'));
 		});
 
 		$(window).on('keydown', function(e) {
-			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && OPERATION('flow.apply')();
+			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
 		});
-
 
 		function settings_component() {
 			id = flow.selected[0].attrd('id');
 			EMIT('designer.settings', id);
 		}
 
-		OPERATION('flow.clear', function() {
+		ON('flow.clear', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
@@ -717,11 +715,11 @@
 				SETTER('binder', 'scan');
 				EMIT('designer.refresh');
 				setState(MESSAGES.apply);
-				OPERATION('designer.unselect')();
+				EMIT('designer.unselect');
 			});
 		});
 
-		OPERATION('flow.settings', function() {
+		ON('flow.settings', function() {
 			var component = flow.components.findItem('id', settings.$id);
 			component.options = settings[component.component];
 
@@ -805,7 +803,7 @@
 			return comp;
 		};
 
-		OPERATION('flow.apply', function() {
+		ON('flow.apply', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
 				if (index)
 					return;
@@ -866,18 +864,18 @@
 			});
 		});
 
-		OPERATION('flow.restore', function() {
+		ON('flow.restore', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to refresh this page?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				!index && location.reload(true);
 			});
 		});
 
-		OPERATION('debug.clear', function() {
+		ON('debug.clear', function() {
 			$('#body-debug-output').empty();
 		});
 
 		// Tabs operations
-		OPERATION('tabs.add', function() {
+		ON('tabs.add', function() {
 
 			formtabpositions = [];
 			for (var i = 0; i < flow.tabs.length + 1; i++)
@@ -888,7 +886,7 @@
 			SET('common.form', 'tab');
 		});
 
-		OPERATION('tabs.upd', function(id) {
+		ON('tabs.upd', function(id) {
 
 			formtabpositions = [];
 			for (var i = 0; i < flow.tabs.length; i++)
@@ -905,7 +903,7 @@
 			}
 		});
 
-		OPERATION('tabs.rem', function(id) {
+		ON('tabs.rem', function(id) {
 			flow.components = flow.components.remove(function(comp){
 				if (comp.tab === id)
 					EMIT('changed', 'rem', comp.id);
@@ -916,7 +914,7 @@
 			SETTER('binder', 'scan');
 			if (common.tab.id === id)
 				location.hash = flow.tabs[0].linker;
-			OPERATION('designer.unselect')();
+			EMIT('designer.unselect');
 			setState(MESSAGES.apply, true);
 			EMIT('changed', 'tabs');
 		});
@@ -973,7 +971,7 @@
 			}
 
 			if (message.type === 'componentversion') {
-				window.formdatabase_version && window.formdatabase_version(message.version);
+				EXEC('database/version', message.version);
 				return;
 			}
 
@@ -988,7 +986,7 @@
 					});
 				});
 
-				OPERATION('errors.refresh')();
+				EMIT('errors.refresh');
 				return;
 			}
 
@@ -1089,7 +1087,7 @@
 					}, 500);
 
 				}, common.form === 'database' ? 3000 : 0);
-				OPERATION('errors.refresh')();
+				EMIT('errors.refresh');
 				return;
 			}
 
@@ -1243,33 +1241,33 @@
 			SETTER('websocket', 'send', { id: id, target: target, type: type });
 		}
 
-		OPERATION('designer.zoomin', function() {
+		ON('designer.zoomin', function() {
 			SETTER('designer', 'zoom', 1);
 		});
 
-		OPERATION('designer.zoomout', function() {
+		ON('designer.zoomout', function() {
 			SETTER('designer', 'zoom', -1);
 		});
 
-		OPERATION('designer.zoomreset', function() {
+		ON('designer.zoomreset', function() {
 			SETTER('designer', 'zoom', 0);
 		});
 
-		OPERATION('designer.remove', function(el) {
+		ON('designer.remove', function(el) {
 			!el.hclass('disabled') && SETTER('designer', 'remove');
 		});
 
-		OPERATION('designer.unselect', function() {
+		ON('designer.unselect', function() {
 			SETTER('designer', 'select', null);
 		});
 
-		OPERATION('designer.duplicate', function(el) {
+		ON('designer.duplicate', function(el) {
 			//!el.hclass('disabled') && SETTER('designer', 'duplicate');
-			OPERATION('designer.copy')();
-			OPERATION('designer.paste')();
+			EMIT('designer.copy');
+			EMIT('designer.paste');
 		});
 
-		OPERATION('designer.copy', function(el) {
+		ON('designer.copy', function(el) {
 
 			if (el && el.hclass('disabled'))
 				return;
@@ -1287,7 +1285,7 @@
 			EMIT('designer.selectable', flow.selected);
 		});
 
-		OPERATION('designer.paste', function(el) {
+		ON('designer.paste', function(el) {
 
 			if (el && el.hclass('disabled'))
 				return;
@@ -1404,7 +1402,7 @@
 			}
 		});
 
-		OPERATION('errors.refresh', function() {
+		ON('errors.refresh', function() {
 			var errors = [];
 			flow.components.forEach(function(instance) {
 
@@ -1421,7 +1419,7 @@
 			SET('common.errors', errors);
 		});
 
-		OPERATION('errors.clear', function() {
+		ON('errors.clear', function() {
 			SETTER('loading', 'show');
 			common.errors && common.errors.length && SETTER('websocket', 'send', { type: 'clearerrors' });
 			SETTER('loading', 'hide', 1000);
@@ -1462,7 +1460,7 @@
 						SET('common.form', value);
 						return;
 					case 'clear':
-						OPERATION('flow.clear')();
+						EMIT('flow.clear');
 						return;
 				}
 			}, 5);
@@ -1523,7 +1521,7 @@
 						SET('common.form', item.form);
 						break;
 					case 2:
-						OPERATION('#flow.clear')();
+						EMIT('flow.clear');
 						break;
 					case 3:
 						SET('common.panel', 'debug');
@@ -1560,16 +1558,16 @@
 						location.hash = item.tab.linker;
 						break;
 					case 13:
-						OPERATION('errors.clear')();
+						EMIT('errors.clear');
 						break;
 					case 14:
-						OPERATION('debug.clear')();
+						EMIT('debug.clear');
 						break;
 					case 15:
-						OPERATION('flow.apply')();
+						EMIT('flow.apply');
 						break;
 					case 16:
-						OPERATION('tabs.add')();
+						EMIT('tabs.add');
 						break;
 					case 17:
 						highlightcomponent(item.item.id);

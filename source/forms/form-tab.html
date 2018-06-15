@@ -1,0 +1,95 @@
+<div data-jc="form__common.form__if:tab;width:400;enter:true;title:@(Edit tab);submit:tab/submit;autofocus:true" class="hidden">
+	<div class="padding npb">
+		<div data-jc="textbox__formtab.name__maxlength:30;required:true;placeholder:@(Type a tab name)" class="m">@(Name)</div>
+
+		<div class="row">
+			<div class="col-md-3 m">
+				<div data-jc="dropdown__formtab.position__required:true;type:number;datasource:formtabpositions">@(Position)</div>
+			</div>
+		</div>
+
+		<div data-bind="formtab.id__visible:value" class="hidden m fs12">
+			<div class="mt5"><a href="javascript:void(0)" class="link exec" data-exec="tab/duplicate"><i class="fa fa-copy"></i>@(Duplicate tab with all components)</a></div>
+			<div data-bind="formtab.id__visible:value && flow.tabs.length > 1">
+				<hr style="margin:10px 0" />
+				<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
+				<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="tab/remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="ui-form-buttons">
+		<div data-jc="validation__formtab">
+			<button name="submit" disabled="disabled">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(Close)</button>
+	</div>
+</div>
+
+<script>
+
+	PLUGIN('tab', function(exports) {
+
+		exports.submit = function(com) {
+			EMIT('tabs.save', formtab);
+			com.hide();
+		};
+
+		exports.remove = function() {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to remove this tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
+				if (!index) {
+					SET('common.form', '');
+					EMIT('tabs.rem', formtab.id);
+				}
+			});
+		};
+
+		exports.duplicate = function() {
+
+			SETTER('loading', 'show');
+
+			var components = [];
+			var connections = [];
+			var newtab = {};
+
+			newtab.name = formtab.name;
+			newtab.id = Date.now().toString();
+			newtab.changed = true;
+
+			flow.components.forEach(function(item) {
+				if (item.tab === formtab.id) {
+					var d = CLONE(item);
+					d.$component = item.$component;
+					d.tab = newtab.id;
+					components.push(d);
+					Object.keys(d.connections).forEach(function(index) {
+						d.connections[index].forEach(function(item) {
+							connections.push(item);
+						});
+					});
+				}
+			});
+
+			var db = {};
+
+			components.waitFor(function(item, next) {
+				var id = Date.now().toString();
+				db[item.id] = id;
+				item.id = id;
+				flow.components.push(item);
+				setTimeout(next, 50);
+			}, function() {
+
+				connections.forEach(function(item) {
+					item.id = db[item.id];
+				});
+
+				flow.tabs.push(newtab);
+				EMIT('tabs.save', newtab);
+				SETTER('loading', 'hide', 1000);
+				SET('common.form', '');
+			});
+		};
+
+	});
+
+</script>

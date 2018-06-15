@@ -102,10 +102,10 @@ exports.install = function(options) {
 	MERGE.apply(this, depsjs);
 
 	MAP(OPT.url + 'img/', '@flow/img/');
-	MAP(OPT.url + 'templates/', '@flow/templates/');
+	MAP(OPT.url + 'forms/', '@flow/forms/');
 
 	// Localization
-	LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
+	LOCALIZE(OPT.url + 'forms/*.html', ['compress']);
 
 	try {
 		Fs.mkdirSync(F.path.root(PATH));
@@ -717,7 +717,7 @@ Component.prototype.outputs = function() {
 Component.prototype.isDisabled = function(io, index) {
 	var self = this;
 	var disabledio = self.disabledio;
-	
+
 	if (!io)
 		return disabledio;
 

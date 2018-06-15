@@ -1,4 +1,4 @@
-<div data-jc="form__common.form__if:variables;width:960;submit:formvariables_submit;title:@(Global Variables)" class="hidden">
+<div data-jc="form__common.form__if:variables;width:960;submit:variables/submit;title:@(Global Variables)" class="hidden">
 	<div class="padding">
 		<div data-jc="codemirror__formvariables.body__type:totaljsresources;height:250">@(Variables)</div>
 		<div class="black mt10">
@@ -28,17 +28,21 @@ binds-config-value        <span>(config)</span>    : <b>name</b></code></pre>
 
 <script>
 
-	function formvariables_reload() {
-		SETTER('websocket', 'send', { type: 'getvariables' });
-	}
+	PLUGIN('variables', function(exports) {
 
-	function formvariables_submit(form) {
-		SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['"check-circle" @(Yes)', '@(Cancel)'], function(index) {
-			if (index)
-				return;
-			SETTER('loading', 'hide', 1000);
-			SETTER('websocket', 'send', { type: 'variables', body: formvariables.body });
-			RESET('formvariables.*', true);
-		});
-	}
+		exports.reload = function() {
+			SETTER('websocket', 'send', { type: 'getvariables' });
+		};
+
+		exports.submit = function(com) {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['"check-circle" @(Yes)', '@(Cancel)'], function(index) {
+				if (!index) {
+					SETTER('loading', 'hide', 1000);
+					SETTER('websocket', 'send', { type: 'variables', body: formvariables.body });
+					RESET('formvariables.*', true);
+				}
+			});
+		};
+
+	});
 </script>
