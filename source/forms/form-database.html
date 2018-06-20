@@ -189,8 +189,8 @@
 		WATCH('formdatabase.file', function(path, value) {
 			if (value && value.body) {
 
-				if (value.size / 1024 > 50) {
-					SETTER('snackbar', 'warning', '@(The file is too big large. The maximum limit of file size is <b>50 kB</b>.)');
+				if (value.size / 1024 > common.limit) {
+					SETTER('snackbar', 'warning', '@(The file is too big large. The maximum limit of file size is <b>{0} kB</b>.)'.format(common.limit));
 					return;
 				}
 

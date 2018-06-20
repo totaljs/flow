@@ -247,6 +247,7 @@
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
 			this.statics = {}; // cache for static content
+			this.limit = @{R.limit};
 			var params = READPARAMS();
 			this.logging = params.debug === '1' || params.debug === 'true' || params.debug === 'on';
 		});

@@ -248,6 +248,7 @@ function view_index() {
 	R.version = +exports.version.replace(/\.|v/g, '');
 	R.versiontitle = exports.version;
 	R.sharedfiles = OPT.sharedfiles;
+	R.limit = OPT.limit;
 	this.view('@flow/index');
 }
 
