@@ -817,7 +817,7 @@ COMPONENT('textbox', function(self, config) {
 			builder = [];
 			builder.push('<div class="ui-textbox-label{0}">'.format(config.required ? ' ui-textbox-label-required' : ''));
 			icon && builder.push('<i class="fa fa-{0}"></i> '.format(icon));
-			builder.push('<span>' + content + (content.endsWith('?') ? '' : ':') + '</span>');
+			builder.push('<span>' + content + (content.substring(content.length - 1) === '?' ? '' : ':') + '</span>');
 			builder.push('</div><div class="ui-textbox">{0}</div>'.format(html));
 			config.error && builder.push('<div class="ui-textbox-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
 			self.html(builder.join(''));
