@@ -1009,7 +1009,7 @@
 						if (common.traffictab && common.tab && component.tab !== common.tab.id)
 							continue;
 						var stats = message.body[component.id] || empty;
-						arr.push({ id: component.id, name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input ? (stats.input + 'x') : '---', outputc: stats.output ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
+						arr.push({ id: component.id, name: component.name || component.$component.name, inputs: stats.input, outputs: stats.output, inputc: stats.input > 0 ? (stats.input + 'x') : '---', outputc: stats.output > 0 ? (stats.output + 'x') : '---', input: ((stats.input / count) * 100 >> 0), output: ((stats.output / count) * 100 >> 0), order: stats.input + stats.output, isduration: !!(component.$component.input && component.$component.output), duration: stats.duration || 0 });
 					}
 				}
 
