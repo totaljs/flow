@@ -439,12 +439,14 @@
 
 			if (is) {
 				obj.connections[0] = [ct];
-				var a = flow.components.findItem('id', cf);
-				var target = a.connections[toindex].findItem('id', ct);
-				if (target) {
+				var comfrom = flow.components.findItem('id', cf);
+				var comto = comfrom.connections[toindex].findItem('id', ct);
+				if (comto) {
 					if (obj.$component.output)
-						obj.connections[0] = [CLONE(target)];
-					target.id = obj.id;
+						obj.connections[0] = [CLONE(comto)];
+					comto.id = obj.id;
+					EMIT('changed', 'add.connection', obj.id, ct);
+					EMIT('changed', 'add.connection', cf, obj.id);
 					setTimeout(function() {
 						EMIT('designer.refresh');
 					}, 50);
@@ -571,11 +573,7 @@
 		});
 
 		ON('designer.rem.connection', function(selected) {
-
 			selected.waitFor(function(sel, next){
-
-				// sel.attrd('from'), sel.attrd('to'), sel.attrd('fromindex'), sel.attrd('toindex')
-
 				// a, b, ti, fi
 				var component = flow.components.findItem('id', sel.attrd('from'));
 				if (!component)
@@ -586,6 +584,7 @@
 				connections = connections.remove(function(item) {
 					return item.index === sel.attrd('toindex') && item.id === sel.attrd('to');
 				});
+
 				EMIT('changed', 'rem.connection', component.id);
 				component.connections[sel.attrd('fromindex')] = connections;
 				!connections.length && (delete component.connections[sel.attrd('fromindex')]);
@@ -806,6 +805,7 @@
 
 		ON('flow.apply', function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
+
 				if (index)
 					return;
 
