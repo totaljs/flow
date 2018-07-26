@@ -2039,7 +2039,7 @@ FlowData.prototype.free = function() {
 
 FlowData.prototype.clone = function() {
 	var type = typeof(this.data);
-	var noclone = !this.data || type === 'string' || type === 'number' || type === 'boolean' || this.data instanceof Date;
+	var noclone = !this.data || type === 'string' || type === 'number' || type === 'boolean' || this.data instanceof Date || this.data instanceof ErrorBuilder || this.data instanceof Controller;
 	return new FlowData(noclone ? this.data : clone(this.data), this);
 };
 

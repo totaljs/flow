@@ -236,16 +236,21 @@ label span { vertical-align: middle; }
 .ui-calendar-header select { background-color: white; border: 1px solid #E0E0E0; height: 23px; outline: 0; cursor: pointer; appearance: none; padding: 0 10px; border-radius: 3px; }
 .ui-calendar-today a:first-child { float: right; color: #B7292E; font-weight: bold; }
 
-.ui-keyvalue-label { margin-bottom: 10px; font-size: 12px; }
+.ui-keyvalue-label { margin-bottom: 5px; font-size: 12px; }
 .ui-keyvalue-label .fa { margin-right: 5px; }
-.ui-keyvalue-item { height: 30px; background-color: #F8F8F8; margin-bottom: 1px; border-radius: 3px; }
-.ui-keyvalue-item-remove { float: right; width: 25px; text-align: center; color: #DA4453; font-size: 14px; margin: 4px 0 0; }
-.ui-keyvalue-item-key { padding: 4px 0 4px 0; float: left; width: 200px; border-right: 1px solid #E0E0E0; font-weight: bold; }
-.ui-keyvalue-item-value { padding: 4px 0 0 0; margin: 0 25px 0 202px; }
-.ui-keyvalue-item .fa { cursor: pointer; position: relative; display: inline-block; }
+.ui-keyvalue-items > div:first-child { border-radius: 2px 2px 0 0; }
+.ui-keyvalue-item { height: 32px; background-color: white; border-radius: 2px; border: 1px solid #E0E0E0; border-bottom: 0; }
+.ui-keyvalue-item-remove { float: right; width: 32px; height: 32px; border-left: 1px solid #E0E0E0; text-align: center; color: #DA4453; font-size: 14px; }
+.ui-keyvalue-item-key { height: 31px; padding: 3px 0 4px 0; float: left; width: 200px; border-right: 1px solid #E0E0E0; font-weight: bold; }
+.ui-keyvalue-item-value { padding: 3px 0 0 0; margin: 0 32px 0 202px; }
+.ui-keyvalue-item .fa { cursor: pointer; display: block; padding: 8px 0 0 0; }
 .ui-keyvalue-item .fa:active { margin-top: 1px; }
-.ui-keyvalue-item input { width: 100%; background-color: transparent; border: 0; padding: 3px 10px 0; border-radius: 4px; outline: 0; font-size: 12px; color: black; }
-.ui-keyvalue-base .fa { display: none; }
+.ui-keyvalue-item input { width: 100%; background-color: transparent; border: 0; padding: 2px 10px 0; outline: 0; font-size: 14px; color: black; }
+.ui-keyvalue-base .ui-keyvalue-item-remove { display: none; }
+.ui-keyvalue-base { border-radius: 0 0 2px 2px; border-bottom: 1px solid #E0E0E0; }
+.ui-keyvalue.ui-disabled input { color: gray; cursor: not-allowed; }
+.ui-keyvalue.ui-disabled .fa { display: none; }
+.empty .ui-keyvalue-base { border-radius: 2px; }
 
 .ui-codemirror-label { margin-bottom: 5px; font-size: 12px; text-align: left; }
 .ui-codemirror-label .fa { width: 14px; }

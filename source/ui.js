@@ -3874,6 +3874,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 
 	var container, content = null;
+	var cempty = 'empty';
 	var skip = false;
 	var empty = {};
 
@@ -3960,9 +3961,10 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			var inputs = parent.find('input');
 			var obj = self.get();
 			!obj && (obj = {});
-			var key = inputs.get(0).value;
+			var key = inputs[0].value;
 			parent.remove();
 			delete obj[key];
+
 			self.set(self.path, obj, 2);
 			self.change(true);
 		});
@@ -3974,7 +3976,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 
 			var el = $(this);
 			var inputs = el.closest('.ui-keyvalue-item').find('input');
-			var key = self.binder('key', inputs.get(0).value);
+			var key = self.binder('key', inputs[0].value);
 			var value = self.binder('value', inputs.get(1).value);
 
 			if (!key || !value)
@@ -4022,6 +4024,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 
 		if (!value) {
 			container.empty();
+			self.aclass(cempty);
 			return;
 		}
 
@@ -4033,6 +4036,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			builder.push(self.template(empty));
 		});
 
+		self.tclass(cempty, builder.length === 0);
 		container.empty().append(builder.join(''));
 	};
 });
