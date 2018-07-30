@@ -312,7 +312,7 @@ label span { vertical-align: middle; }
 .ui-nosqlcounter .current div { background-color: #E74024; }
 .ui-nosqlcounter-table { height: 100%; width: 100%; border: 0; display: table; background-color: #F8F8F8; border-radius: 3px; border: 1px solid #E5E5E5; }
 .ui-nosqlcounter-cell { height: 100%; width: 100%; border: 0; display: table-cell; vertical-align: bottom; }
-.ui-nosqlcounter-cell > div div { background-color: #3BAFDA; width: 100%; position: absolute; bottom: 0; }
+.ui-nosqlcounter-cell > div div { background-color: #5186ED; width: 100%; position: absolute; bottom: 0; }
 .ui-nosqlcounter-cell > div { position: relative; display: inline-block; vertical-align: bottom; border-left: 1px solid white; text-align: center; font-size: 8px; width: 8.333%; cursor: default; overflow: hidden; color: white; border-left: 1px solid #E0E0E0; height: 100%; }
 .ui-nosqlcounter-cell > div:first-child { border-left: 0; }
 .ui-nosqlcounter-cell > div:first-child div { border-radius: 3px 0 0 3px; }
