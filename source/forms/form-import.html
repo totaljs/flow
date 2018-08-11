@@ -148,6 +148,9 @@
 						tabs = formimportanalysis.tabs;
 						components = formimportanalysis.components;
 					}
+					
+					EMIT('changed', 'tabs');
+					components.forEach(c => EMIT('changed', 'add', c.id));
 
 					if (formimport.replace) {
 						flow.tabs = tabs;
