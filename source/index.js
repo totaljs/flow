@@ -421,6 +421,7 @@ function websocket() {
 				instance.options = message.body;
 
 				var options = instance.options;
+
 				instance.name = options.comname || '';
 				instance.reference = options.comreference;
 				instance.output = options.comoutput;
@@ -1237,6 +1238,7 @@ FLOW.clearInstances = function(){
 			component: instance.component,
 			tab: instance.tab,
 			name: instance.name,
+			reference: instance.reference,
 			x: instance.x,
 			y: instance.y,
 			connections: instance.connections,
