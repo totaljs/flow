@@ -29,7 +29,7 @@ __Terminology__:
 
 ## Installation
 
-- Total.js `+v2.9.2`
+- Total.js `+v3.0.0`
 - download and copy `flow.package` into the `/packages/` directory __or create a definition file with:__
 
 ```javascript

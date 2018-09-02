@@ -35,7 +35,7 @@ var FILENAME;
 var READY = false;
 var MODIFIED = null;
 
-exports.version = 'v5.1.0';
+exports.version = 'v5.1.1';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -424,8 +424,6 @@ function websocket() {
 
 				instance.name = options.comname || '';
 				instance.reference = options.comreference;
-				instance.output = options.comoutput;
-				instance.input = options.cominput;
 
 				if (options.comcolor != undefined)
 					instance.color = options.comcolor;
@@ -435,41 +433,58 @@ function websocket() {
 
 				options.comname = undefined;
 				options.comreference = undefined;
-				options.comoutput = undefined;
-				options.cominput = undefined;
 				options.comcolor = undefined;
 				options.comnotes = undefined;
 
-				var count = instance.output instanceof Array ? instance.output.length : instance.output;
-				io_count(tmp.output) !== count && Object.keys(instance.connections).forEach(function(key) {
-					var index = +key;
-					index >= count && (delete instance.connections[key]);
-				});
+				var count;
+				var tmpcount;
+				var refreshconn = false;
 
-				count = instance.input instanceof Array ? instance.input.length : instance.input;
-				io_count(tmp.input) !== count && Object.keys(FLOW.instances).forEach(function(id) {
-
-					if (id === instance.id)
-						return;
-
-					var item = FLOW.instances[id];
-					var can = false;
-
-					Object.keys(item.connections).forEach(function(key) {
-						var l = item.connections[key].length;
-						item.connections[key] = item.connections[key].remove(function(item) {
-							return item.id === instance.id && (+item.index) >= count;
-						});
-						if (l !== item.connections[key].length)
-							can = true;
-						!item.connections[key].length && (delete instance.connections[key]);
+				if (options.comoutput != null) {
+					count = instance.output instanceof Array ? instance.output.length : instance.output;;
+					tmpcount = io_count(options.comoutput);
+					tmpcount !== count && Object.keys(instance.connections).forEach(function(key) {
+						var index = +key;
+						if (index >= tmpcount) {
+							delete instance.connections[key];
+							refreshconn = true;
+						}
 					});
+					instance.output = options.comoutput;
+				}
 
-					if (can) {
-						var tmp = FLOW.instances[item.id];
-						tmp.connections = item.connections;
-					}
-				});
+				if (options.cominput != null) {
+					count = instance.input instanceof Array ? instance.input.length : instance.input;
+					tmpcount = io_count(options.cominput);
+					tmpcount !== count && Object.keys(FLOW.instances).forEach(function(id) {
+
+						if (id === instance.id)
+							return;
+
+						var item = FLOW.instances[id];
+						var can = false;
+
+						Object.keys(item.connections).forEach(function(key) {
+							var l = item.connections[key].length;
+							item.connections[key] = item.connections[key].remove(function(item) {
+								return item.id === instance.id && (+item.index) >= tmpcount;
+							});
+							if (l !== item.connections[key].length)
+								can = true;
+							!item.connections[key].length && (delete instance.connections[key]);
+						});
+
+						if (can) {
+							var tmp = FLOW.instances[item.id];
+							tmp.connections = item.connections;
+							refreshconn = true;
+						}
+					});
+					instance.input = options.cominput;
+				}
+
+				options.comoutput = undefined;
+				options.cominput = undefined;
 
 				instance.$refresh();
 				instance.$events.options && instance.emit('options', instance.options, old_options);
@@ -484,6 +499,7 @@ function websocket() {
 				tmp.color = instance.color;
 				tmp.notes = instance.notes;
 
+				refreshconn && FLOW.refresh_connections();
 				OPT.logging && FLOW.log('options', instance, client);
 				FLOW.save2();
 
@@ -846,6 +862,7 @@ Component.prototype.send = function(index, message) {
 
 			var ids = connections[arr[i]];
 			var canclone = true;
+
 			for (var j = 0, jl = ids.length; j < jl; j++) {
 				instance = FLOW.instances[ids[j].id];
 
@@ -1270,7 +1287,7 @@ FLOW.changes = function(arr) {
 	var needinit = false;
 	var refreshconn = false;
 
-	arr.forEach(function(c){
+	arr.forEach(function(c) {
 		if (c.type === 'add') {
 			add.push(c.com);
 			needinit = true;
