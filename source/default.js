@@ -341,11 +341,19 @@ function refreshTraffic() {
 
 		item.$traffic = key;
 		var sum = input > output ? input : output;
+
 		el.tclass('m1', sum < 25).tclass('m2', sum > 24 && sum < 50).tclass('m3', sum > 49 && sum < 70).tclass('m4', sum > 69);
-		item.$io.html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan>');
-		item.$duration && item.$duration.html('&empty; ' + Thelpers.duration(duration || 0));
-		var pel = item.$pending.tclass('hide', pending ? false : true);
-		pending && pel.html(pending ? ('&#10711; ' + pending) : '');
+
+		if (!!window.MSInputMethodContext && !!document.documentMode) {
+			// IE
+			item.$io.text('IO: ' + inputc + ' / ' + outputc);
+			item.$duration && item.$duration.text(Thelpers.duration(duration || 0));
+		} else {
+			item.$io.html('<title>' + (ci.format(0)) + ' / ' + (co.format(0)) + '</title>IO: <tspan>' + inputc + '</tspan> &#8644; <tspan>' + outputc + '</tspan>');
+			item.$duration && item.$duration.html('&empty; ' + Thelpers.duration(duration || 0));
+			var pel = item.$pending.tclass('hide', pending ? false : true);
+			pending && pel.html(pending ? ('&#10711; ' + pending) : '');
+		}
 	}
 
 	if (common.animations && !common.form) {

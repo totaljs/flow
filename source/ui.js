@@ -1772,7 +1772,15 @@ COMPONENT('designer', function() {
 		}
 
 		var body = g.asvg('g');
-		var label = (item.name || item.reference) ? body.asvg('text').attr('transform', 'translate({0}, 0)'.format(icon ? 35 : 0)).html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || '')).attr('class', 'node_label') : null;
+		var label = (item.name || item.reference) ? body.asvg('text').attr('transform', 'translate({0}, 0)'.format(icon ? 35 : 0)).attr('class', 'node_label') : null;
+
+		if (label) {
+			if (!!window.MSInputMethodContext && !!document.documentMode)
+				label.text((item.reference ? ' | | ' : '') + Tangular.helpers.encode(item.name || ''));
+			else
+				label.html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || ''));
+		}
+
 		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate({1}, {0})'.format(label ? 14 : 5, icon ? 35 : 0));
 
 		var inputcolors = null;
