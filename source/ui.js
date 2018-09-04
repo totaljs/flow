@@ -677,7 +677,7 @@ COMPONENT('repeater-group', function(self, config) {
 
 COMPONENT('textbox', function(self, config) {
 
-	var input, container, content = null;
+	var input, content = null;
 
 	self.validate = function(value) {
 
@@ -700,6 +700,8 @@ COMPONENT('textbox', function(self, config) {
 		switch (self.type) {
 			case 'email':
 				return value.isEmail();
+			case 'phone':
+				return value.isPhone();
 			case 'url':
 				return value.isURL();
 			case 'currency':
@@ -718,9 +720,7 @@ COMPONENT('textbox', function(self, config) {
 		self.format = config.format;
 
 		self.event('click', '.fa-calendar', function(e) {
-			if (config.disabled)
-				return;
-			if (config.type === 'date') {
+			if (!config.disabled && !config.readonly && config.type === 'date') {
 				e.preventDefault();
 				SETTER('calendar', 'toggle', self.element, self.get(), function(date) {
 					self.change(true);
@@ -730,9 +730,7 @@ COMPONENT('textbox', function(self, config) {
 		});
 
 		self.event('click', '.fa-caret-up,.fa-caret-down', function() {
-			if (config.disabled)
-				return;
-			if (config.increment) {
+			if (!config.disabled && !config.readonly && config.increment) {
 				var el = $(this);
 				var inc = el.hclass('fa-caret-up') ? 1 : -1;
 				self.change(true);
@@ -741,7 +739,7 @@ COMPONENT('textbox', function(self, config) {
 		});
 
 		self.event('click', '.ui-textbox-control-icon', function() {
-			if (config.disabled)
+			if (config.disabled || config.readonly)
 				return;
 			if (self.type === 'search') {
 				self.$stateremoved = false;
@@ -752,7 +750,8 @@ COMPONENT('textbox', function(self, config) {
 		});
 
 		self.event('focus', 'input', function() {
-			config.autocomplete && EXEC(config.autocomplete, self);
+			if (!config.disabled && !config.readonly && config.autocomplete)
+				EXEC(config.autocomplete, self);
 		});
 
 		self.redraw();
@@ -769,11 +768,13 @@ COMPONENT('textbox', function(self, config) {
 				tmp = config.type;
 				break;
 			case 'number':
+			case 'phone':
 				isMOBILE && (tmp = 'tel');
 				break;
 		}
 
 		self.tclass('ui-disabled', config.disabled === true);
+		self.tclass('ui-textbox-required', config.required === true);
 		self.type = config.type;
 		attrs.attr('type', tmp);
 		config.placeholder && attrs.attr('placeholder', config.placeholder);
@@ -815,7 +816,7 @@ COMPONENT('textbox', function(self, config) {
 		if (content.length) {
 			var html = builder.join('');
 			builder = [];
-			builder.push('<div class="ui-textbox-label{0}">'.format(config.required ? ' ui-textbox-label-required' : ''));
+			builder.push('<div class="ui-textbox-label">');
 			icon && builder.push('<i class="fa fa-{0}"></i> '.format(icon));
 			builder.push('<span>' + content + (content.substring(content.length - 1) === '?' ? '' : ':') + '</span>');
 			builder.push('</div><div class="ui-textbox">{0}</div>'.format(html));
@@ -823,13 +824,11 @@ COMPONENT('textbox', function(self, config) {
 			self.html(builder.join(''));
 			self.aclass('ui-textbox-container');
 			input = self.find('input');
-			container = self.find('.ui-textbox');
 		} else {
 			config.error && builder.push('<div class="ui-textbox-helper"><i class="fa fa-warning" aria-hidden="true"></i> {0}</div>'.format(config.error));
 			self.aclass('ui-textbox ui-textbox-container');
 			self.html(builder.join(''));
 			input = self.find('input');
-			container = self.element;
 		}
 	};
 
@@ -855,7 +854,7 @@ COMPONENT('textbox', function(self, config) {
 			case 'required':
 				self.noValid(!value);
 				!value && self.state(1, 1);
-				self.find('.ui-textbox-label').tclass('ui-textbox-label-required', value);
+				self.tclass('ui-textbox-required', value === true);
 				break;
 			case 'placeholder':
 				input.prop('placeholder', value || '');
@@ -921,7 +920,7 @@ COMPONENT('textbox', function(self, config) {
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-textbox-invalid', invalid);
+		self.tclass('ui-textbox-invalid', invalid);
 		config.error && self.find('.ui-textbox-helper').tclass('ui-textbox-helper-show', invalid);
 	};
 });
@@ -930,8 +929,20 @@ COMPONENT('importer', function(self, config) {
 
 	var init = false;
 	var clid = null;
+	var content = '';
 
 	self.readonly();
+
+	self.make = function() {
+		var scr = self.find('script');
+		content = scr.length ? scr.html() : '';
+	};
+
+	self.reload = function(recompile) {
+		config.reload && EXEC(config.reload);
+		recompile && COMPILE();
+	};
+
 	self.setter = function(value) {
 
 		if (config.if !== value) {
@@ -946,14 +957,17 @@ COMPONENT('importer', function(self, config) {
 		}
 
 		if (init) {
-			config.reload && EXEC(config.reload);
+			self.reload();
 			return;
 		}
 
 		init = true;
-		self.import(config.url, function() {
-			config.reload && EXEC(config.reload);
-		});
+
+		if (content) {
+			self.html(content);
+			setTimeout(self.reload, 50, true);
+		} else
+			self.import(config.url, self.reload);
 	};
 
 	self.clean = function() {
@@ -1092,11 +1106,20 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	function onClose(e) {
 		var r = e.reason;
 		self.close(true);
-		setTimeout(self.connect, config.reconnect);
 		if (r) {
 			r = decodeURIComponent(r);
-			r.indexOf('request length') !== -1 && SETTER('message', 'warning', '<i class="fa fa-warning mr5"></i><b>UNEXPECTED ERROR</b><div class="mt10">Flow wasn\'t saved due to the exceed designer size. You need to increase the limit.</div>');
+
+			if (r.indexOf('request length') !== -1)
+				SETTER('message', 'warning', '<i class="fa fa-warning mr5"></i><b>UNEXPECTED ERROR</b><div class="mt10">Flow wasn\'t saved due to the exceed designer size. You need to increase the limit.</div>');
+
+			if (r.indexOf('401') !== -1) {
+				setTimeout(function() {
+					location.reload(true);
+				}, 2000);
+			}
 		}
+
+		setTimeout(self.connect, config.reconnect);
 	}
 
 	function onMessage(e) {
@@ -2245,10 +2268,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 				break;
 
 			case 'datasource':
-				var was = datasource;
-				was && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				was && self.refresh();
+				self.datasource(value, self.bind);
+				datasource && self.refresh();
 				datasource = value;
 				break;
 
@@ -2258,7 +2279,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 				break;
 
 			case 'required':
-				self.find('.ui-checkboxlist-label').tclass('ui-checkboxlist-required', value);
+				self.tclass('ui-checkboxlist-required', value);
 				self.state(1, 1);
 				break;
 
@@ -2316,8 +2337,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 				return;
 
 			var el = $(this);
-			var is = !el.hclass('ui-checkboxlist-checked');
-			var index = +el.attrd('index');
+			var is = !el.hasClass('ui-checkboxlist-checked');
+			var index = +el.attr('data-index');
 			var value = data[index];
 
 			if (value == null)
@@ -2344,7 +2365,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 
 	self.redraw = function() {
 		var label = config.label || content;
-		self.html((label ? '<div class="ui-checkboxlist-label{1}">{2}{0}</div>'.format(label, config.required ? ' ui-checkboxlist-required' : '', config.icon ? '<i class="fa fa-{0}"></i>'.format(config.icon) : '') : '') + '<div class="ui-checkboxlist-container"></div>');
+		self.tclass('ui-checkboxlist-required', config.required);
+		self.html((label ? '<div class="ui-checkboxlist-label">{1}{0}</div>'.format(label, config.icon ? '<i class="fa fa-{0}"></i>'.format(config.icon) : '') : '') + '<div class="ui-checkboxlist-container"></div>');
 		container = self.find('.ui-checkboxlist-container');
 	};
 
@@ -2366,7 +2388,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 
 		inputs.each(function() {
 			var el = $(this);
-			arr.push(self.parser(data[+el.attrd('index')].value));
+			arr.push(self.parser(data[+el.attr('data-index')].value));
 		});
 
 		self.set(arr);
@@ -2395,12 +2417,16 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 			container.html(render);
 		else
 			container.html(config.empty);
+
+		path && setTimeout(function() {
+			self.refresh();
+		}, 200);
 	};
 
 	self.setter = function(value) {
 		container.find('.ui-checkboxlist-item').each(function() {
 			var el = $(this);
-			var index = +el.attrd('index');
+			var index = +el.attr('data-index');
 			var checked = false;
 			if (!value || !value.length)
 				checked = false;
@@ -2450,7 +2476,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 				break;
 
 			case 'required':
-				self.find('.ui-dropdowncheckbox-label').tclass('ui-dropdowncheckbox-required', config.required);
+				self.tclass('ui-dropdowncheckbox-required', config.required);
 				break;
 
 			case 'label':
@@ -2502,9 +2528,9 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 
 	self.redraw = function() {
 
-		var html = '<div class="ui-dropdowncheckbox"><span class="fa fa-sort"></span><div class="ui-dropdowncheckbox-selected"></div></div><div class="ui-dropdowncheckbox-values hidden">{0}</div>'.format(render);
+		var html = '<div class="ui-dropdowncheckbox"><span class="fa fa-caret-down"></span><div class="ui-dropdowncheckbox-selected"></div></div><div class="ui-dropdowncheckbox-values hidden">{0}</div>'.format(render);
 		if (content.length)
-			self.html('<div class="ui-dropdowncheckbox-label{0}">{1}{2}:</div>'.format(config.required ? ' ui-dropdowncheckbox-required' : '', config.icon ? ('<i class="fa fa-' + config.icon + '"></i>') : '', content) + html);
+			self.html('<div class="ui-dropdowncheckbox-label">{0}{1}:</div>'.format(config.icon ? ('<i class="fa fa-' + config.icon + '"></i>') : '', content) + html);
 		else
 			self.html(html);
 
@@ -2512,6 +2538,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 		values = self.find('.ui-dropdowncheckbox-selected');
 		prepared && self.refresh();
 		self.tclass('ui-disabled', config.disabled === true);
+		self.tclass('ui-dropdowncheckbox-required', config.required === true);
 	};
 
 	self.make = function() {
@@ -2701,7 +2728,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		self.find('.ui-dropdowncheckbox').tclass('ui-dropdowncheckbox-invalid', invalid);
+		self.tclass('ui-dropdowncheckbox-invalid', invalid);
 	};
 
 	if (W.$dropdowncheckboxevent)
@@ -2718,7 +2745,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 
 COMPONENT('dropdown', function(self, config) {
 
-	var select, container, condition, content = null;
+	var select, condition, content = null;
 	var render = '';
 
 	self.validate = function(value) {
@@ -2775,7 +2802,7 @@ COMPONENT('dropdown', function(self, config) {
 				condition = value ? FN(value) : null;
 				break;
 			case 'required':
-				self.find('.ui-dropdown-label').tclass('ui-dropdown-label-required', value);
+				self.tclass('ui-dropdown-required', value === true);
 				self.state(1, 1);
 				break;
 			case 'datasource':
@@ -2810,11 +2837,14 @@ COMPONENT('dropdown', function(self, config) {
 
 		config.empty !== undefined && builder.push('<option value="">{0}</option>'.format(config.empty));
 
+		var type = typeof(arr[0]);
+		var notObj = type === 'string' || type === 'number';
+
 		for (var i = 0, length = arr.length; i < length; i++) {
 			var item = arr[i];
 			if (condition && !condition(item))
 				continue;
-			if (item.length)
+			if (notObj)
 				builder.push(template.format(item, value === item ? ' selected="selected"' : '', item));
 			else
 				builder.push(template.format(item[propValue], value === item[propValue] ? ' selected="selected"' : '', item[propText]));
@@ -2829,15 +2859,15 @@ COMPONENT('dropdown', function(self, config) {
 		var builder = [];
 		var label = content || config.label;
 		if (label) {
-			builder.push('<div class="ui-dropdown-label{0}">{1}{2}:</div>'.format(config.required ? ' ui-dropdown-label-required' : '', config.icon ? '<span class="fa fa-{0}"></span> '.format(config.icon) : '', label));
+			builder.push('<div class="ui-dropdown-label">{0}{1}:</div>'.format(config.icon ? '<span class="fa fa-{0}"></span> '.format(config.icon) : '', label));
 			builder.push('<div class="ui-dropdown-values">{0}</div>'.format(html));
 			self.html(builder.join(''));
 		} else
 			self.html(html).aclass('ui-dropdown-values');
 		select = self.find('select');
-		container = self.find('.ui-dropdown');
 		render && self.refresh();
 		config.disabled && self.reconfigure('disabled:true');
+		self.tclass('ui-dropdown-required', config.required === true);
 	};
 
 	self.make = function() {
@@ -2857,7 +2887,7 @@ COMPONENT('dropdown', function(self, config) {
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-dropdown-invalid', invalid);
+		self.tclass('ui-dropdown-invalid', invalid);
 	};
 });
 
@@ -3269,6 +3299,8 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 	var container, old, onSearch, searchtimeout, searchvalue, blurtimeout, onCallback, datasource, offsetter, scroller;
 	var is = false;
 	var margin = {};
+	var prev;
+	var skipmouse = false;
 
 	self.template = Tangular.compile('<li{{ if index === 0 }} class="selected"{{ fi }} data-index="{{ index }}"><span>{{ name }}</span><span>{{ type }}</span></li>');
 	self.readonly();
@@ -3295,7 +3327,10 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		});
 
 		self.event('mouseenter mouseleave', 'li', function(e) {
-			$(this).tclass('selected', e.type === 'mouseenter');
+			if (!skipmouse) {
+				prev && prev.rclass('selected');
+				prev = $(this).tclass('selected', e.type === 'mouseenter');
+			}
 		});
 
 		$(document).on('click', function() {
@@ -3305,6 +3340,10 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		$(window).on('resize', function() {
 			self.resize();
 		});
+	};
+
+	self.prerender = function(value) {
+		self.render(value);
 	};
 
 	self.configure = function(name, value) {
@@ -3331,7 +3370,7 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 					return;
 				searchvalue = val;
 				self.resize();
-				onSearch(val, function(value) { self.render(value); });
+				onSearch(val, self.prerender);
 			}, 200);
 			return;
 		}
@@ -3339,19 +3378,22 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		if (!datasource || !datasource.length)
 			return;
 
-		var current = self.find('.selected');
+		var current = container.find('.selected');
 		if (c === 13) {
-			self.visible(false);
-			if (current.length) {
-				if (onCallback) {
-					var val = datasource[+current.attrd('index')];
-					if (typeof(onCallback) === 'string')
-						SET(onCallback, val.value === undefined ? val.name : val.value);
-					else
-						onCallback(val, old);
+			if (prev) {
+				prev = null;
+				self.visible(false);
+				if (current.length) {
+					if (onCallback) {
+						var val = datasource[+current.attrd('index')];
+						if (typeof(onCallback) === 'string')
+							SET(onCallback, val.value === undefined ? val.name : val.value);
+						else
+							onCallback(val, old);
+					}
+					e.preventDefault();
+					e.stopPropagation();
 				}
-				e.preventDefault();
-				e.stopPropagation();
 			}
 			return;
 		}
@@ -3364,12 +3406,17 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 			current = c === 40 ? current.next() : current.prev();
 		}
 
+		skipmouse = true;
 		!current.length && (current = self.find('li:{0}-child'.format(c === 40 ? 'first' : 'last')));
-		current.aclass('selected');
+		prev && prev.rclass('selected');
+		prev = current.aclass('selected');
 		var index = +current.attrd('index');
 		var h = current.innerHeight();
 		var offset = ((index + 1) * h) + (h * 2);
 		scroller.prop('scrollTop', offset > config.height ? offset - config.height : 0);
+		setTimeout2(self.ID + 'skipmouse', function() {
+			skipmouse = false;
+		}, 100);
 	}
 
 	function blur() {
@@ -3404,11 +3451,11 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		self.css(offset);
 	};
 
-	self.attach = function(input, search, callback, top, left, width) {
-		self.attachelement(input, input, search, callback, top, left, width);
+	self.attach = function(input, search, callback, left, top, width) {
+		self.attachelement(input, input, search, callback, left, top, width);
 	};
 
-	self.attachelement = function(element, input, search, callback, top, left, width) {
+	self.attachelement = function(element, input, search, callback, left, top, width) {
 
 		if (typeof(callback) === 'number') {
 			width = left;
@@ -3424,7 +3471,7 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		else
 			input = $(input);
 
-		if (input.get(0).tagName !== 'INPUT') {
+		if (input[0].tagName !== 'INPUT') {
 			input = input.find('input');
 		}
 
@@ -3477,6 +3524,14 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		}
 
 		container.empty().append(builder.join(''));
+		skipmouse = true;
+
+		setTimeout(function() {
+			scroller.prop('scrollTop', 0);
+			skipmouse = false;
+		}, 100);
+
+		prev = container.find('.selected');
 		self.visible(true);
 	};
 });
@@ -4408,10 +4463,10 @@ COMPONENT('disable', function(self, config) {
 
 COMPONENT('textarea', function(self, config) {
 
-	var input, container, content = null;
+	var input, content = null;
 
 	self.validate = function(value) {
-		if (config.disabled || !config.required)
+		if (config.disabled || !config.required || config.readonly)
 			return true;
 		if (value == null)
 			value = '';
@@ -4437,7 +4492,7 @@ COMPONENT('textarea', function(self, config) {
 			case 'required':
 				self.noValid(!value);
 				!value && self.state(1, 1);
-				self.find('.ui-textarea-label').tclass('ui-textarea-label-required', value);
+				self.tclass('ui-textarea-required', value);
 				break;
 			case 'placeholder':
 				input.prop('placeholder', value || '');
@@ -4461,6 +4516,9 @@ COMPONENT('textarea', function(self, config) {
 				self.format = value;
 				self.refresh();
 				break;
+			case 'height':
+				self.find('textarea').css('height', (value > 0 ? value + 'px' : value));
+				break;
 		}
 
 		redraw && setTimeout2('redraw' + self.id, function() {
@@ -4476,6 +4534,7 @@ COMPONENT('textarea', function(self, config) {
 
 		self.tclass('ui-disabled', config.disabled === true);
 		self.tclass('ui-textarea-monospace', config.monospace === true);
+		self.tclass('ui-textarea-required', config.required === true);
 
 		config.placeholder && attrs.attr('placeholder', config.placeholder);
 		config.maxlength && attrs.attr('maxlength', config.maxlength);
@@ -4494,14 +4553,13 @@ COMPONENT('textarea', function(self, config) {
 			self.aclass('ui-textarea ui-textarea-container');
 			self.html(builder.join(''));
 			input = self.find('textarea');
-			container = self.element;
 			return;
 		}
 
 		var html = builder.join('');
 
 		builder = [];
-		builder.push('<div class="ui-textarea-label{0}">'.format(config.required ? ' ui-textarea-label-required' : ''));
+		builder.push('<div class="ui-textarea-label">');
 		config.icon && builder.push('<i class="fa fa-{0}"></i>'.format(config.icon));
 		builder.push(label);
 		builder.push(':</div><div class="ui-textarea">{0}</div>'.format(html));
@@ -4511,7 +4569,6 @@ COMPONENT('textarea', function(self, config) {
 		self.rclass('ui-textarea');
 		self.aclass('ui-textarea-container');
 		input = self.find('textarea');
-		container = self.find('.ui-textarea');
 	};
 
 	self.make = function() {
@@ -4528,11 +4585,10 @@ COMPONENT('textarea', function(self, config) {
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
-		container.tclass('ui-textarea-invalid', invalid);
+		self.tclass('ui-textarea-invalid', invalid);
 		config.error && self.find('.ui-textarea-helper').tclass('ui-textarea-helper-show', invalid);
 	};
 });
-
 
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
@@ -5364,6 +5420,9 @@ COMPONENT('shortcuts', function(self) {
 					case 'cmd':
 						builder.push('e.metaKey');
 						return;
+					case 'ins':
+						builder.push('e.keyCode===45');
+						return;
 					case 'space':
 						builder.push('e.keyCode===32');
 						return;
@@ -5417,8 +5476,7 @@ COMPONENT('shortcuts', function(self) {
 				if (num)
 					builder.push('e.which===' + num);
 				else
-					builder.push('e.key===\'{0}\''.format(item));
-
+					builder.push('e.keyCode==={0}'.format(item.toUpperCase().charCodeAt(0)));
 			});
 
 			items.push({ shortcut: alias.join('+'), fn: new Function('e', 'return ' + builder.join('&&')), callback: callback, prevent: prevent });

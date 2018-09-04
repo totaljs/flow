@@ -226,7 +226,10 @@
 
 	<script>
 
-		UPTODATE('1 day');
+		UPTODATE('1 day', function() {
+			return !document.hasFocus();
+		});
+
 		M.environment('flow.jc');
 
 		var MESSAGES = {};
@@ -582,13 +585,15 @@
 				if (!connections)
 					return;
 				connections = connections.remove(function(item) {
-					return item.index === sel.attrd('toindex') && item.id === sel.attrd('to');
+					var is = item.index === sel.attrd('toindex') && item.id === sel.attrd('to');
+					if (is)
+						delete flow.connections[component.id + '#' + sel.attrd('fromindex') + '#' + item.index + '#' + item.id];
+					return is;
 				});
 
 				EMIT('changed', 'rem.connection', component.id);
 				component.connections[sel.attrd('fromindex')] = connections;
 				!connections.length && (delete component.connections[sel.attrd('fromindex')]);
-
 				next();
 
 			}, function(){
