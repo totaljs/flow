@@ -2367,7 +2367,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 			}
 
 			self.reset(true);
-			self.set(arr, undefined, 2);
+			self.set(arr, 2);
 		});
 	};
 
@@ -3185,7 +3185,7 @@ COMPONENT('textboxlist', 'maxlength:100;required:false;error:You reach the maxim
 			self.tclass(cempty, arr.length === 0);
 
 			skip = true;
-			self.set(self.path, arr, 2);
+			self.set(arr, 2);
 			self.change(true);
 		});
 
@@ -3233,7 +3233,7 @@ COMPONENT('textboxlist', 'maxlength:100;required:false;error:You reach the maxim
 			});
 
 			skip = true;
-			self.set(self.path, arr, 2);
+			self.set(arr, 2);
 			self.change(true);
 		});
 	};
@@ -4028,7 +4028,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			parent.remove();
 			delete obj[key];
 
-			self.set(self.path, obj, 2);
+			self.set(obj, 2);
 			self.change(true);
 		});
 
@@ -4073,7 +4073,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			});
 
 			skip = true;
-			self.set(self.path, keyvalue, 2);
+			self.set(keyvalue, 2);
 			self.change(true);
 		});
 	};
