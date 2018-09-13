@@ -77,7 +77,7 @@ COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(sel
 			var hide = [];
 			var show = [];
 
-			elements.toArray().waitFor(function(item, next) {
+			elements.toArray().wait(function(item, next) {
 				var el = $(item);
 				var val = (el.attr(config.attribute) || '').toSearch();
 				if (val.indexOf(search) === -1)
