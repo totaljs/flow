@@ -71,7 +71,7 @@
 
 			var db = {};
 
-			components.waitFor(function(item, next) {
+			components.wait(function(item, next) {
 				var id = Date.now().toString();
 				db[item.id] = id;
 				item.id = id;

@@ -479,7 +479,7 @@
 				if (index)
 					return;
 
-				ids.waitFor(function(id, next){
+				ids.wait(function(id, next){
 					var instance = flow.components.findItem('id', id);
 					EMIT('rem.' + instance.component, instance);
 					flow.components = flow.components.remove('id', id);
@@ -576,7 +576,7 @@
 		});
 
 		ON('designer.rem.connection', function(selected) {
-			selected.waitFor(function(sel, next){
+			selected.wait(function(sel, next){
 				// a, b, ti, fi
 				var component = flow.components.findItem('id', sel.attrd('from'));
 				if (!component)
@@ -1329,7 +1329,7 @@
 					});
 
 					setTimeout(function() {
-						items.waitFor(function(item, next) {
+						items.wait(function(item, next) {
 
 							var old = flow.components.findItem('id', item.id);
 
@@ -1359,7 +1359,7 @@
 
 				var ids = {};
 				var new_comps = [];
-				flow.clipboard.waitFor(function(component, next, index){
+				flow.clipboard.wait(function(component, next, index){
 
 					var obj = CLONE(component);
 					var org = component.$component;

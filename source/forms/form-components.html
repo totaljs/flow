@@ -22,7 +22,7 @@
 		exports.submit = function() {
 			SET('common.form2', '');
 			SETTER('loading', 'show');
-			formcomponents.components.waitFor(function(item, next) {
+			formcomponents.components.wait(function(item, next) {
 				SETTER('websocket', 'send', { type: 'install', filename: item });
 				setTimeout(next, 500);
 			}, function() {
