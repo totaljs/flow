@@ -239,6 +239,7 @@
 		marked.setOptions({ gfm: true, breaks: true, sanitize: true, tables: true });
 
 		MAKE('common', function() {
+			this.id = 'flow';
 			!this.panel && (this.panel = 'info');
 			!this.minimized && (this.minimized = false);
 			!this.minimizedmainmenu && (this.minimizedmainmenu = false);
