@@ -1104,6 +1104,12 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	};
 
 	function onClose(e) {
+
+		if (e.code === 4001) {
+			location.reload(true);
+			return;
+		}
+
 		var r = e.reason;
 		self.close(true);
 		if (r) {
