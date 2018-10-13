@@ -3227,7 +3227,7 @@ COMPONENT('textboxlist', 'maxlength:100;required:false;error:You reach the maxim
 			if (len) {
 
 				if (!raw || raw.indexOf(value) === -1)
-					self.push(self.path, value, 2);
+					self.push(value, 2);
 
 				this.value = '';
 				self.change(true);
