@@ -68,7 +68,7 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 
 	if (OPT.templates == null)
-		OPT.templates = 'https://rawgit.com/totaljs/flowcomponents/master/templates5.json';
+		OPT.templates = 'https://cdn.totaljs.com/flow/templates.json';
 
 	if (OPT.updates == null)
 		OPT.updates = true;

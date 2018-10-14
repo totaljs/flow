@@ -45,11 +45,11 @@ var options = {};
 // options.limit = 150;
 
 // Predefined set of components (default value):
-// options.templates = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
+// options.templates = 'https://cdn.totaljs.com/flow/templates.json';
 
 // +v4.0.2 Second user-defined set of components (default value is !!! EMPTY !!!):
 // It must have same structure as "options.template", example:
-// options.templates2 = 'https://raw.githubusercontent.com/totaljs/flowcomponents/v4.0.0/templates.json';
+// options.templates2 = 'https://cdn.totaljs.com/flow/templates.json';
 
 // +v4.0.0
 // Default light theme
