@@ -1295,14 +1295,18 @@ COMPONENT('designer', function() {
 	};
 
 	self.readonly();
+
 	self.make = function() {
 		var url = location.pathname;
 		if (url.substring(url.length - 1) !== '/')
 			url += '/';
+
 		scroller = self.element.parent();
 		self.aclass('ui-designer');
 		self.append('<div class="ui-designer-grid"><svg width="6000" height="6000"><defs><filter id="svgshadow" x="0" y="0" width="180%" height="180%"><feGaussianBlur in="SourceAlpha" stdDeviation="5"/><feOffset dx="2" dy="2" result="offsetblur"/><feComponentTransfer><feFuncA type="linear" slope="0.20"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><pattern patternUnits="userSpaceOnUse" id="svggrid" x="0" y="0" width="150" height="150"><image width="150" height="150" xlink:href="{0}img/theme{1}.png" /></pattern></defs><g class="svggrid"><rect id="svggridbg" width="15000" height="15000" fill="url(#svggrid)" /></g></svg></div>'.format(url, common.theme || 'white'));
+
 		var tmp = self.find('svg');
+
 		svg = $(tmp.get(0));
 		main = svg.asvg('g');
 		connection = main.asvg('path').attr('class', 'connection');
@@ -1422,10 +1426,9 @@ COMPONENT('designer', function() {
 					move.ty = ty;
 					break;
 				case 5:
+					move.moved = true;
 					// Current node
 					self.moveselected(offsetX + move.offsetX, offsetY + move.offsetY, e);
-					setState(MESSAGES.apply);
-					EMIT('changed', 'mov', move.node.attrd('id'));
 					return;
 			}
 		};
@@ -1477,6 +1480,13 @@ COMPONENT('designer', function() {
 							!is && self.connect(+iindex, oindex, output, input, true);
 						}
 					}
+					break;
+				case 5:
+					if (move.moved) {
+						setState(MESSAGES.apply);
+						EMIT('changed', 'mov', move.node.attrd('id'));
+					}
+					break;
 			}
 			move.type === 1 && savescrollposition();
 			move.type = 0;
@@ -1487,7 +1497,9 @@ COMPONENT('designer', function() {
 
 			var el = $(e.target);
 			var tmp;
+
 			move.drag = true;
+			move.moved = false;
 
 			if (e.target.tagName === 'svg' || e.target.id === 'svggridbg') {
 				move.x = x + scroller.prop('scrollLeft');
@@ -2007,19 +2019,24 @@ COMPONENT('designer', function() {
 				selected.forEach(function(sel){
 
 					var find = function(com) {
-						if (!com)
-							return;
-						self.allowed[com.id] = true;
-						Object.keys(com.connections).forEach(function(index) {
-							com.connections[index].forEach(function(item) {
-								self.allowed[item.id] = true;
-								find(flow.components.findItem('id', item.id));
+						if (com) {
+							self.allowed[com.id] = true;
+							Object.keys(com.connections).forEach(function(index) {
+								com.connections[index].forEach(function(item) {
+									self.allowed[item.id] = true;
+									find(flow.components.findItem('id', item.id));
+								});
 							});
-						});
+						}
 					};
-					find(flow.components.findItem('id', sel.attrd('id')));
-					self.allowedselected.push(sel.attrd('id'));
+
+					var id = sel.attrd('id');
+					find(flow.components.findItem('id', id));
+					self.allowedselected.push(id);
+					EMIT('changed', 'mov', id);
 				});
+
+				setState(MESSAGES.apply);
 			}
 
 		} else
@@ -2060,6 +2077,8 @@ COMPONENT('designer', function() {
 			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
+		var is = false;
+
 		self.find('.node').each(function() {
 			var el = $(this);
 			if (self.allowed && !self.allowed[el.attrd('id')])
@@ -2073,8 +2092,12 @@ COMPONENT('designer', function() {
 			if (instance) {
 				instance.x = px;
 				instance.y = py;
+				EMIT('changed', 'mov', instance.id);
+				is = true;
 			}
 		});
+
+		is && setState(MESSAGES.apply);
 	};
 
 	self.autoconnect = function(reset) {

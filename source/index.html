@@ -392,7 +392,7 @@
 		common.changes = {};
 		common.changedtabs = false;
 
-		ON('changed', function(action, id){
+		ON('changed', function(action, id) {
 			id && (common.changes[id] = common.changes[id] || []);
 			var changes = common.changes;
 			switch (action) {
