@@ -846,6 +846,7 @@ COMPONENT('textbox', function(self, config) {
 			case 'disabled':
 				self.tclass('ui-disabled', value);
 				self.find('input').prop('disabled', value);
+				self.reset();
 				break;
 			case 'format':
 				self.format = value;
@@ -2523,6 +2524,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 
 			case 'disabled':
 				self.tclass('ui-disabled', value);
+				self.reset();
 				break;
 
 			case 'checkicon':
@@ -4525,6 +4527,7 @@ COMPONENT('textarea', function(self, config) {
 			case 'disabled':
 				self.tclass('ui-disabled', value);
 				self.find('textarea').prop('disabled', value);
+				self.reset();
 				break;
 			case 'required':
 				self.noValid(!value);
