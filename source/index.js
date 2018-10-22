@@ -1010,9 +1010,24 @@ Component.prototype.status = function(text, color) {
 	return this;
 };
 
+const ERR_MESSAGE = {};
+
 Component.prototype.debug = function(data, style, group) {
+
 	MESSAGE_DEBUG.group = group;
-	MESSAGE_DEBUG.body = data instanceof Error ? data.toString() : data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
+
+	if (data instanceof FlowData) {
+		if (data.data instanceof Error) {
+			ERR_MESSAGE.error = data.data.message;
+			ERR_MESSAGE.stack = data.data.stack;
+			MESSAGE_DEBUG.body = ERR_MESSAGE;
+		} else if (data.data instanceof Buffer)
+			MESSAGE_DEBUG.body = print_buffer(data.data);
+		else
+			MESSAGE_DEBUG.body = data.data;
+	} else
+		MESSAGE_DEBUG.body = data instanceof Buffer ? print_buffer(data) : data;
+
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.time = data instanceof FlowData ? ((new Date() - data.begin) / 1000).floor(2) : null;
 	MESSAGE_DEBUG.style = style || 'info';
