@@ -1012,7 +1012,7 @@ Component.prototype.status = function(text, color) {
 
 Component.prototype.debug = function(data, style, group) {
 	MESSAGE_DEBUG.group = group;
-	MESSAGE_DEBUG.body = data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
+	MESSAGE_DEBUG.body = data instanceof Error ? data.toString() : data instanceof FlowData ? data.data instanceof Buffer ? print_buffer(data.data) : data.data : data instanceof Buffer ? print_buffer(data) : data;
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.time = data instanceof FlowData ? ((new Date() - data.begin) / 1000).floor(2) : null;
 	MESSAGE_DEBUG.style = style || 'info';
