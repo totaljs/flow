@@ -1139,8 +1139,8 @@ FLOW.on = function(name, fn) {
 
 FLOW.emit = function(name, a, b, c, d, e, f, g) {
 
-	if (OPT.crashmode || MESSAGE_DESIGNER.paused)
-		return F;
+	if (OPT.crashmode || (MESSAGE_DESIGNER.paused && name !== 'pause'))
+		return FLOW;
 
 	var evt = FLOW.$events[name];
 	if (evt) {
@@ -1158,7 +1158,7 @@ FLOW.emit = function(name, a, b, c, d, e, f, g) {
 				FLOW.$events[name] = undefined;
 		}
 	}
-	return F;
+	return FLOW;
 };
 
 FLOW.once = function(name, fn) {
@@ -1175,7 +1175,7 @@ FLOW.removeListener = function(name, fn) {
 		else
 			FLOW.$events[name] = undefined;
 	}
-	return F;
+	return FLOW;
 };
 
 FLOW.removeAllListeners = function(name) {
@@ -1183,7 +1183,7 @@ FLOW.removeAllListeners = function(name) {
 		FLOW.$events[name] = undefined;
 	else
 		FLOW.$events = {};
-	return F;
+	return FLOW;
 };
 
 FLOW.register = function(name, options, fn) {
