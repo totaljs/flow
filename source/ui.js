@@ -37,6 +37,7 @@ COMPONENT('exec', function(self, config) {
 COMPONENT('error', function(self, config) {
 
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-error hidden');
@@ -278,6 +279,7 @@ COMPONENT('confirm', function(self) {
 
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 
@@ -520,6 +522,7 @@ COMPONENT('loading', function(self) {
 
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-loading');
@@ -678,6 +681,8 @@ COMPONENT('repeater-group', function(self, config) {
 COMPONENT('textbox', function(self, config) {
 
 	var input, content = null;
+
+	self.nocompile();
 
 	self.validate = function(value) {
 
@@ -1059,6 +1064,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 	self.online = false;
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		url = config.url || '';
@@ -1172,6 +1178,8 @@ COMPONENT('designer', function() {
 	var animrunning = {};
 	var animtoken = 0;
 	var icons = getIcons();
+
+	self.nocompile();
 
 	function findPoint(selector, x, y) {
 		var arr = svg.find(selector);
@@ -1795,9 +1803,9 @@ COMPONENT('designer', function() {
 
 		if (label) {
 			if (!!window.MSInputMethodContext && !!document.documentMode)
-				label.text((item.reference ? ' | | ' : '') + Tangular.helpers.encode(item.name || ''));
+				label.text((item.reference ? ' | | ' : '') + Thelpers.encode(item.name || ''));
 			else
-				label.html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Tangular.helpers.encode(item.name || ''));
+				label.html((item.reference ? '<tspan>{0}</tspan> | '.format(item.reference) : '') + Thelpers.encode(item.name || ''));
 		}
 
 		var text = body.asvg('text').text(item.$component.name).attr('class', 'node_name').attr('transform', 'translate({1}, {0})'.format(label ? 14 : 5, icon ? 35 : 0));
@@ -2232,6 +2240,8 @@ function offsetter(evt) {
 
 COMPONENT('checkbox', function(self, config) {
 
+	self.nocompile();
+
 	self.validate = function(value) {
 		return (config.disabled || !config.required) ? true : (value === true || value === 'true' || value === 'on');
 	};
@@ -2279,6 +2289,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 
 	var template = W.$checkboxlist;
 	var container, data, datasource, content, dataold, render = null;
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : value && value.length > 0;
@@ -2492,6 +2504,8 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 	var container, values, content, datasource = null;
 	var prepared = false;
 	var W = window;
+
+	self.nocompile();
 
 	!W.$dropdowncheckboxtemplate && (W.$dropdowncheckboxtemplate = Tangular.compile('<div class="ui-dropdowncheckbox-item" data-index="{{ index }}"><div><i class="fa fa-{{ $.checkicon }}"></i></div><span>{{ text }}</span></div>'));
 	var template = W.$dropdowncheckboxtemplate;
@@ -2787,6 +2801,8 @@ COMPONENT('dropdown', function(self, config) {
 	var select, condition, content = null;
 	var render = '';
 
+	self.nocompile();
+
 	self.validate = function(value) {
 
 		if (!config.required || config.disabled)
@@ -2936,6 +2952,8 @@ COMPONENT('selectbox', function(self, config) {
 
 	self.datasource = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : value && value.length > 0;
@@ -3123,6 +3141,7 @@ COMPONENT('textboxlist', 'maxlength:100;required:false;error:You reach the maxim
 	var cempty = 'empty';
 	var helper = null;
 
+	self.nocompile();
 	self.setter = null;
 	self.getter = null;
 
@@ -3344,6 +3363,7 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 	self.template = Tangular.compile('<li{{ if index === 0 }} class="selected"{{ fi }} data-index="{{ index }}"><span>{{ name }}</span><span>{{ type }}</span></li>');
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-autocomplete-container hidden');
@@ -3586,6 +3606,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 	self.months_short = EMPTYARRAY;
 	self.years_from;
 	self.years_to;
+	self.nocompile();
 
 	self.configure = function(key, value) {
 		switch (key) {
@@ -3973,6 +3994,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	var empty = {};
 
 	self.template = Tangular.compile('<div class="ui-keyvalue-item"><div class="ui-keyvalue-item-remove"><i class="fa fa-times"></i></div><div class="ui-keyvalue-item-key"><input type="text" name="key" maxlength="{{ max }}"{{ if disabled }} disabled="disabled"{{ fi }} placeholder="{{ placeholder_key }}" value="{{ key }}" /></div><div class="ui-keyvalue-item-value"><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder_value }}" value="{{ value }}" /></div></div>');
+	self.nocompile();
 
 	self.binder = function(type, value) {
 		return value;
@@ -4141,6 +4163,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 
 	self.getter = null;
 	self.bindvisible();
+	self.nocompile();
 
 	self.reload = function() {
 		editor.refresh();
@@ -4278,6 +4301,7 @@ COMPONENT('contextmenu', function() {
 	self.template = Tangular.compile('<div class="item{{ if selected }} selected{{ fi }}" data-value="{{ value }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
+	self.nocompile();
 	self.callback = null;
 
 	self.make = function() {
@@ -4411,6 +4435,7 @@ COMPONENT('message', function(self, config) {
 
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-message hidden');
@@ -4503,6 +4528,8 @@ COMPONENT('disable', function(self, config) {
 COMPONENT('textarea', function(self, config) {
 
 	var input, content = null;
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		if (config.disabled || !config.required || config.readonly)
@@ -4632,6 +4659,7 @@ COMPONENT('textarea', function(self, config) {
 
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
+	self.nocompile();
 	self.make = function() {
 
 		var element = self.element;
@@ -4676,6 +4704,7 @@ COMPONENT('nosqlcounter', 'count:0;height:80', function(self, config) {
 
 	self.bindvisible();
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-nosqlcounter');
@@ -4785,6 +4814,7 @@ COMPONENT('colorpicker', function(self) {
 	self.singleton();
 	self.readonly();
 	self.blind();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-colorpicker hidden');
@@ -4868,6 +4898,7 @@ COMPONENT('multioptions', function(self) {
 
 	self.getter = null;
 	self.novalidate();
+	self.nocompile();
 
 	self.init = function() {
 		window.Tmultioptionscolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'].map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
@@ -5186,6 +5217,7 @@ COMPONENT('features', 'height:37', function(self, config) {
 	self.callback = null;
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.configure = function(key, value, init) {
 		if (init)
@@ -5417,6 +5449,7 @@ COMPONENT('shortcuts', function(self) {
 	self.singleton();
 	self.readonly();
 	self.blind();
+	self.nocompile();
 
 	self.make = function() {
 		$(window).on('keydown', function(e) {
@@ -5533,6 +5566,8 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 
 	self.readonly();
 	self.blind();
+	self.nocompile();
+
 	self.make = function() {
 		self.aclass('ui-snackbar hidden');
 		self.append('<div><a href="javasc' + 'ript:void(0)" class="ui-snackbar-dismiss"></a><div class="ui-snackbar-body"></div></div>');
@@ -5585,6 +5620,8 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 COMPONENT('colorselector', 'colors:#DA4453,#E9573F,#F6BB42,#8CC152,#37BC9B,#3BAFDA,#4A89DC,#967ADC,#D770AD,#656D7D;empty:true', function(self, config) {
 
 	var selected, list, content, colors = null;
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : colors.indexOf(value) === -1;
@@ -5662,6 +5699,7 @@ COMPONENT('progress', 'animate:true', function(self, config) {
 	var container, old = null;
 
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-progress');

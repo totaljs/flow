@@ -237,14 +237,14 @@
 
 	});
 
-	Tangular.register('componentupdates', function(name) {
+	Thelpers.componentupdates = function(name) {
 		var version = formdatabase.updates[name];
 		return version == null ? '' : version !== this.version ? ' db-item-update' : '';
-	});
+	};
 
-	Tangular.register('componentrefresh', function(name) {
+	Thelpers.componentrefresh = function(name) {
 		var version = formdatabase.updates[name];
 		return '<span class="exec db-refresh{1} refresh-{0}" title="@(Update from repository)" data-exec="database/refresh"><i class="fa fa-refresh"></i></span>'.format(name, version == null ? ' hidden' : '');
-	});
+	};
 
 </script>

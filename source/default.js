@@ -69,18 +69,18 @@ function savescrollposition() {
 	}
 }
 
-Tangular.register('duration', function(ms) {
+Thelpers.duration = function(ms) {
 	return ms > 999 ? ((ms / 1000).format(1) + ' s') : (ms + ' ms');
-});
+};
 
-Tangular.register('trafficsort', function(value, name) {
+Thelpers.trafficsort = function(value, name) {
 	var str = '<i class="fa fa-caret-{0}"></i>';
 	if (value === name)
 		return str.format('up');
 	if (value === ('!' + name))
 		return str.format('down');
 	return '';
-});
+};
 
 ON('ready', function() {
 
@@ -207,18 +207,17 @@ function filesizehelper(number, count) {
 	return number;
 }
 
-Tangular.register('filesize', function(value, decimals, type) {
+Thelpers.filesize = function(value, decimals, type) {
 	return value ? value.filesize(decimals, type) : '...';
-});
+};
 
-Tangular.register('counter', function(value) {
+Thelpers.counter = function(value) {
 	if (value > 999999)
 		return (value / 1000000).format(2) + ' M';
 	if (value > 9999)
 		return (value / 10000).format(2) + ' K';
 	return value ? value.format(0) : 0;
-});
-
+};
 
 function shownotifications(force) {
 	var el = $('#panel-notification');
