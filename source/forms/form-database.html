@@ -9,7 +9,7 @@
 				<div data-jc="filereader__formdatabase.file__placeholder:@(Browse device);accept:text/javascript;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .js component)</div>
 			</div>
 		</div>
-		<div data-bind="common.templates__visible:value && value.length > 0" class="hidden">
+		<div data-bind="common.templates__show:value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
 			<div class="row">
 				<div class="col-md-3 col-sm-4">
@@ -28,8 +28,8 @@
 	</div>
 	<div class="padding npb">
 		<div data-jc="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
-		<div data-bind="formdatabase.updatescount__visible:value" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="database/update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
-		<div data-bind="formdatabase.progress__visible:value && value < 99" class="hidden">
+		<div data-bind="formdatabase.updatescount__show" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="database/update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
+		<div data-bind="formdatabase.progress__show:value && value < 99" class="hidden">
 			<br />
 			<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
 			<div class="mt5" data-jc="progress__formdatabase.progress"></div>

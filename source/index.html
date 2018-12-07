@@ -46,7 +46,7 @@
 				<button class="exec" data-path="common.panel" data-value="'traffic'" data-bind="common.panel__.selected:value=='traffic'"><i class="fa fa-tasks"></i>@(Traffic)</button>
 			</nav>
 		</section>
-		<div class="padding hidden" data-bind="common.panel__visible:value=='info'">
+		<div class="padding hidden" data-bind="common.panel__show:value=='info'">
 			<div class="scroller">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
@@ -61,7 +61,7 @@
 			<div></div>
 		</div>
 
-		<div class="hidden body-errors" data-bind="common.panel__visible:value=='errors'">
+		<div class="hidden body-errors" data-bind="common.panel__show:value=='errors'">
 
 			<div class="padding npb npt mt10">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
@@ -87,7 +87,7 @@
 			</div>
 		</div>
 
-		<div class="hidden body-debug" data-bind="common.panel__visible:value=='debug'">
+		<div class="hidden body-debug" data-bind="common.panel__show:value=='debug'">
 			<div style="padding:15px 15px 0">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
 				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
@@ -96,7 +96,7 @@
 			<div id="body-debug-output" class="scroller"></div>
 		</div>
 
-		<div class="hidden body-traffic" data-bind="common.panel__visible:value=='traffic'">
+		<div class="hidden body-traffic" data-bind="common.panel__show:value=='traffic'">
 
 			<div class="body-traffic-heading" style="">
 				<div><span data-bind="flow.traffic.memory__html:value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
