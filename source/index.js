@@ -988,26 +988,47 @@ Component.prototype.error = function(e, parent) {
 	return self;
 };
 
-Component.prototype.status = function(text, color) {
+Component.prototype.status = function(text, color, istemp) {
+	var self = this;
+
+	if (color === true) {
+		istemp = color;
+		color = 'gray';
+	}
 
 	var comparetext = text || '';
 	var comparecolor = color || 'gray';
 
-	if (this.state.text === comparetext && this.state.color === comparecolor)
-		return this;
+	if (self.state.text === comparetext && self.state.color === comparecolor)
+		return self;
 
-	this.state.text = comparetext;
-	this.state.color = comparecolor;
-	MESSAGE_STATUS.target = this.id;
-	MESSAGE_STATUS.body = this.state;
+	if (self.statustimeout)
+		clearTimeout(self.statustimeout);
 
-	var com = FLOW.instances[this.id];
+	if (istemp) {
+		if (self._state.text === '') {
+			self._state.text = self.state.text;
+			self._state.color = self.state.color;
+		}
+		self.statustimeout = setTimeout(function(){
+			self.status(self._state.text, self._state.color);
+			self._state.text = '';
+			self._state.color = '';
+		}, 5000);
+	}
+
+	self.state.text = comparetext;
+	self.state.color = comparecolor;
+	MESSAGE_STATUS.target = self.id;
+	MESSAGE_STATUS.body = self.state;
+
+	var com = FLOW.instances[self.id];
 	if (com) {
-		com.state = this.state;
+		com.state = self.state;
 		FLOW.send(MESSAGE_STATUS);
 	}
 
-	return this;
+	return self;
 };
 
 const ERR_MESSAGE = {};
