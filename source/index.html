@@ -715,7 +715,7 @@
 				// ctrl+c
 				if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
 					e.preventDefault();
-					EMIT('designer.copy', e.shiftKey ? 1 : 0);
+					EMIT('designer.copy', e.shiftKey);
 					return;
 				}
 			}
@@ -1301,9 +1301,11 @@
 
 		ON('designer.copy', function(el) {
 
-			if (el === 1) {
+			flow.pasteconnected = false;
+
+			if (el === true) {
+				flow.pasteconnected = el;
 				el = null;
-				flow.pasteone = true;
 			}
 
 			if (el && el.hclass('disabled'))
@@ -1355,7 +1357,7 @@
 
 			SETTER('loading', 'show');
 
-			if (flow.clipboard.length === 1 && !flow.pasteone) {
+			if (flow.clipboard.length === 1 && flow.pasteconnected) {
 
 				var com = flow.clipboard[0];
 
@@ -1384,10 +1386,12 @@
 				obj.$component = component.$component;
 				obj.id = Date.now().toString();
 
-				if (flow.pasteone && component.tab === common.tab.id)
-					obj.y += 100;
-				else
+				if (!flow.pasteconnected && component.tab === common.tab.id) {
+					obj.y += 50;
+					obj.x += 10;
+				} else {
 					obj.y = obj.y - offset + bottom;
+				}
 				
 				obj.tab = common.tab.id;
 
@@ -1402,7 +1406,7 @@
 
 			}, function(){
 
-				flow.pasteone = false;
+				flow.pasteconnected = false;
 
 				new_comps.forEach(function(item) {
 					Object.keys(item.connections).forEach(function(index) {
@@ -1430,7 +1434,11 @@
 					EMIT('designer.refresh');
 					SETTER('loading', 'hide', 500);
 					var st = first.y - 100;
-					$('.designer-scrollbar').animate({ scrollTop: st < 20 ? 0 : st + 20 }, 300);
+					new_comps.forEach(function(c){ $('.node_' + c.id).aclass('highlight'); });
+					highlightcomponent(new_comps[0].id);
+					setTimeout(function(){
+						new_comps.forEach(function(c){ $('.node_' + c.id).rclass('highlight'); });
+					}, 8000);
 				}, 50);
 			});
 		});

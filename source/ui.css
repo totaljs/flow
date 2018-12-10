@@ -38,7 +38,7 @@
 .ui-designer .node_new > rect:first-child { animation: 1s blinknew infinite alternate; stroke: #A0D468; stroke-width: 2; stroke-dasharray: 10, 8; }
 .ui-designer .path_new { animation: 1s blinknew infinite alternate; stroke: #A0D468; stroke-dasharray: 10, 8; }
 .ui-designer .path_err { stroke: red !important; stroke-width: 1.9; }
-.ui-designer .highlight .rect { animation: highlight 0.5s alternate infinite; }
+.ui-designer .highlight .rect { animation: highlight 0.5s alternate infinite; clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
 .ui-designer .icon { font:normal normal normal 18px FontAwesome; fill: white; }
 .ui-designer .iconline { stroke: rgba(255,255,255,0.2); stroke-width: 1px; }
 
@@ -455,7 +455,7 @@ label span { vertical-align: middle; }
 
 @keyframes highlight {
 	from { stroke: transparent; stroke-width: 3; transform: scale(1); }
-	to { stroke: #F9D549; stroke-width: 15; }
+	to { stroke: #F9D549; stroke-width: 8; }
 }
 
 @keyframes blink {
