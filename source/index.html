@@ -167,6 +167,7 @@
 	<div class="body body-designer">
 
 		<div class="tabs-tools">
+			<button class="exec" data-exec="showhelp" title="@(Help)"><i class="fa fa-question-circle"></i></button>
 			<button class="exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></button>
 		</div>
 
@@ -220,6 +221,7 @@
 	<div data-jc="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload;cleaner:5"></div>
 	<div data-jc="importer__common.form__if:database;url:@{R.url}forms/form-database.html;cleaner:5"></div>
 	<div data-jc="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
+	<div data-jc="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
 	<div data-jc="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
 
 	<div id="flowsettings"></div>
@@ -708,7 +710,7 @@
 				// ctrl+d
 				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
 					e.preventDefault();
-					EMIT('designer.duplicate');
+					EMIT('designer.duplicate', e.shiftKey);
 					return;
 				}
 
@@ -1293,9 +1295,9 @@
 			SETTER('designer', 'select', null);
 		});
 
-		ON('designer.duplicate', function(el) {
+		ON('designer.duplicate', function(shiftKey) {
 			//!el.hclass('disabled') && SETTER('designer', 'duplicate');
-			EMIT('designer.copy');
+			EMIT('designer.copy', shiftKey === true ? shiftKey : false);
 			EMIT('designer.paste');
 		});
 

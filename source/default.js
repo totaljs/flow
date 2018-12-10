@@ -397,6 +397,10 @@ function themechanger() {
 	}, 1000);
 }
 
+function showhelp() {
+	SET('common.form', 'help');
+}
+
 SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
 	if (common.form2) {
 		SET('common.form2', '');
