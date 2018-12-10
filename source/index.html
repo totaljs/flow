@@ -701,7 +701,31 @@
 		});
 
 		$(window).on('keydown', function(e) {
+
 			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
+
+			if (flow.selected && flow.selected.length) {
+				// ctrl+d
+				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
+					e.preventDefault();
+					EMIT('designer.duplicate');
+					return;
+				}
+
+				// ctrl+c
+				if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+					e.preventDefault();
+					EMIT('designer.copy', e.shiftKey ? 1 : 0);
+					return;
+				}
+			}
+
+			// ctrl+v
+			if (flow.clipboard && e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
+				e.preventDefault();
+				EMIT('designer.paste');
+				return;
+			}
 		});
 
 		function settings_component() {
@@ -1277,7 +1301,15 @@
 
 		ON('designer.copy', function(el) {
 
+			if (el === 1) {
+				el = null;
+				flow.pasteone = true;
+			}
+
 			if (el && el.hclass('disabled'))
+				return;
+
+			if (!flow.selected.length)
 				return;
 
 			var ids = flow.selected.map(function(sel){ return sel.attrd('id'); });
@@ -1293,121 +1325,114 @@
 			EMIT('designer.selectable', flow.selected);
 		});
 
+		function findBottom() {
+			var tab = common.tab.id;
+			var bottom = 0;
+			if (!flow.components.length)
+				return bottom;
+			flow.components.forEach(function(c){
+				if (common.tab.id === c.tab && c.y > bottom)
+					bottom = c.y;
+			});
+			return !bottom ? 20 : bottom + 100;
+		};
+
+		function findOffset() {
+			var offset = 0;
+			flow.clipboard.forEach(function(c){
+				if (!offset)
+					return offset = c.y;
+				if (c.y < offset)
+					offset = c.y;
+			});
+			return offset;
+		};
+
 		ON('designer.paste', function(el) {
 
-			if (el && el.hclass('disabled'))
+			if (!flow.clipboard || !flow.clipboard.length || (el && el.hclass('disabled')))
 				return;
 
 			SETTER('loading', 'show');
 
-			if (flow.clipboard.length === 1) {
+			if (flow.clipboard.length === 1 && !flow.pasteone) {
 
-				var clone = function(component, callback) {
+				var com = flow.clipboard[0];
 
-					var obj = CLONE(component);
-					var org = component.$component;
-					obj.$component = component.$component;
-					obj.tab = common.tab.id;
-					obj.id = Date.now().toString();
-					obj.x += 50;
-					obj.y += 50;
-
-					if (typeof(org.status) === 'object')
-						obj.state = { text: org.status.text, color: org.status.color };
-					else
-						obj.state = { text: org.status || '', color: '' };
-
-					flow.components.push(obj);
-					flow.designer.push(obj);
-					EMIT('add.' + obj.component);
-					EMIT('changed', 'add', obj.id);
-
-					var items = [];
-
-					Object.keys(obj.connections).forEach(function(index) {
-						obj.connections[index].forEach(function(item) {
-							items.push(item);
+				function addToClipboard(com) {
+					Object.keys(com.connections).forEach(function(index) {
+						com.connections[index].forEach(function(item) {
+							var c = flow.components.findItem('id', item.id);
+							flow.clipboard.push(c);
+							addToClipboard(c);
 						});
-					});
-
-					setTimeout(function() {
-						items.wait(function(item, next) {
-
-							var old = flow.components.findItem('id', item.id);
-
-							clone(old, function(id) {
-								item.id = id;
-								next();
-							});
-
-						}, function() {
-							callback(obj.id);
-						});
-
-					}, 50);
+					});					
 				};
 
-				clone(flow.clipboard[0], function(id) {
-					flow.clipboard = null;
-					EMIT('designer.selectable', flow.selected);
-					setState(MESSAGES.apply);
-					setTimeout(function() {
-						EMIT('designer.refresh');
-						SETTER('loading', 'hide', 1000);
-					}, 50);
-				});
+				addToClipboard(com);
+			};
 
-			} else {
+			var bottom = findBottom();
+			var offset = findOffset();
 
-				var ids = {};
-				var new_comps = [];
-				flow.clipboard.wait(function(component, next, index){
+			var ids = {};
+			var new_comps = [];
+			flow.clipboard.wait(function(component, next, index){
 
-					var obj = CLONE(component);
-					var org = component.$component;
-					obj.$component = component.$component;
-					obj.tab = common.tab.id;
-					obj.id = Date.now().toString();
-					obj.x += 50;
-					obj.y += 50;
+				var obj = CLONE(component);
+				var org = component.$component;
+				obj.$component = component.$component;
+				obj.id = Date.now().toString();
 
-					if (typeof(org.status) === 'object')
-						obj.state = { text: org.status.text, color: org.status.color };
-					else
-						obj.state = { text: org.status || '', color: '' };
+				if (flow.pasteone && component.tab === common.tab.id)
+					obj.y += 100;
+				else
+					obj.y = obj.y - offset + bottom;
+				
+				obj.tab = common.tab.id;
 
-					new_comps.push(obj);
-					ids[component.id] = obj.id;
-					setTimeout(next, 5);
+				if (typeof(org.status) === 'object')
+					obj.state = { text: org.status.text, color: org.status.color };
+				else
+					obj.state = { text: org.status || '', color: '' };
 
-				}, function(){
+				new_comps.push(obj);
+				ids[component.id] = obj.id;
+				setTimeout(next, 5);
 
-					new_comps.forEach(function(item) {
-						Object.keys(item.connections).forEach(function(index) {
-							item.connections[index] = item.connections[index].filter(function(conn, i) {
-								if (ids[conn.id]) {
-									conn.id = ids[conn.id];
-									return conn;
-								}
-							});
+			}, function(){
+
+				flow.pasteone = false;
+
+				new_comps.forEach(function(item) {
+					Object.keys(item.connections).forEach(function(index) {
+						item.connections[index] = item.connections[index].filter(function(conn, i) {
+							if (ids[conn.id]) {
+								conn.id = ids[conn.id];
+								return conn;
+							}
 						});
-
-						item.connections.length && 	item.connections.trim();
-						flow.components.push(item);
-						flow.designer.push(item);
-						EMIT('add.' + item.component);
-						EMIT('changed', 'add', item.id);
 					});
 
-					flow.clipboard = null;
-					EMIT('designer.selectable', flow.selected);
-					setState(MESSAGES.apply);
-					setTimeout(function() {
-						EMIT('designer.refresh');
-						SETTER('loading', 'hide', 500);
-					}, 50);
+					item.connections.length && 	item.connections.trim();
+					flow.components.push(item);
+					flow.designer.push(item);
+					EMIT('add.' + item.component);
+					EMIT('changed', 'add', item.id);
 				});
-			}
+
+				var first = new_comps[0];
+
+				flow.clipboard = null;
+				EMIT('designer.selectable', flow.selected);
+				setState(MESSAGES.apply);
+				setTimeout(function() {
+					EMIT('designer.refresh');
+					SETTER('loading', 'hide', 500);
+					var st = first.y - 100;
+					$('.designer-scrollbar').animate({ scrollTop: st < 20 ? 0 : st + 20 }, 300);
+				}, 50);
+			});
 		});
 
 		ON('errors.refresh', function() {

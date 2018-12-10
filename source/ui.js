@@ -1389,6 +1389,7 @@ COMPONENT('designer', function() {
 
 		$(window).on('keydown', function(e) {
 
+			// ctrl+d
 			if (e.keyCode === 68 && (e.ctrlKey || e.metaKey) && selected) {
 				e.preventDefault();
 				self.duplicate();
@@ -1617,9 +1618,9 @@ COMPONENT('designer', function() {
 					color: component.color,
 					notes: component.notes,
 					output: component.output,
-					tab: component.tab
+					tab: common.tab.id
 				};
-				EMIT('designer.add', component.$component, component.x + 50, component.y + 50, false, null, null, null, duplicate);
+				EMIT('designer.add', component.$component, component.x + 50, component.y, false, null, null, null, duplicate);
 			});
 
 		};
