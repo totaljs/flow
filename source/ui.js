@@ -1080,6 +1080,13 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		return self;
 	};
 
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		if (key === 'url')
+			url = value;
+	};
+
 	self.process = function(callback) {
 
 		if (!ws || sending || !queue.length || ws.readyState !== 1) {

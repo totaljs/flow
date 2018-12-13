@@ -33,7 +33,7 @@
 	<div data-jc="colorpicker"></div>
 	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data-jc="shortcuts"></div>
-	<div data-jc="websocket__null__url:@{R.url}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
+	<div data-jc="websocket__null__url:@{R.socket}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -1368,7 +1368,7 @@
 							flow.clipboard.push(c);
 							addToClipboard(c);
 						});
-					});					
+					});
 				};
 
 				addToClipboard(com);
@@ -1392,7 +1392,7 @@
 				} else {
 					obj.y = obj.y - offset + bottom;
 				}
-				
+
 				obj.tab = common.tab.id;
 
 				if (typeof(org.status) === 'object')

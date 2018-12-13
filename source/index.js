@@ -31,11 +31,13 @@ var COUNTER = 0;
 var OPT;
 var DDOS = {};
 var UPDATES = {};
+var FN = {};
 var FILENAME;
 var READY = false;
 var MODIFIED = null;
+var TYPE;
 
-exports.version = 'v5.1.1';
+exports.version = 'v5.2.0';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -66,6 +68,7 @@ exports.install = function(options) {
 		OPT.crashmode = process.argv.findIndex(n => n.indexOf('crashmode') !== -1) !== -1;
 
 	OPT.url = U.path(OPT.url || '/$flow/');
+	OPT.socket = OPT.url;
 
 	if (OPT.templates == null)
 		OPT.templates = 'https://cdn.totaljs.com/flow/templates.json';
@@ -79,33 +82,57 @@ exports.install = function(options) {
 	if (OPT.dark == null)
 		OPT.dark = true;
 
+	if (!OPT.type || OPT.type === 'bundle')
+		TYPE = 1;
+	else if (OPT.type === 'client')
+		TYPE = 2;
+	else if (OPT.type === 'server')
+		TYPE = 3;
+
+	if (TYPE === 2)
+		OPT.socket = OPT.external;
+
 	// Routes
 	if (OPT.auth === true) {
-		ROUTE(OPT.url, view_index, ['authorize']);
-		WEBSOCKET(OPT.url, websocket, ['authorize', 'json'], OPT.limit);
+
+		if (TYPE !== 3)
+			ROUTE(OPT.url, FN.view_index, ['authorize']);
+
+		if (TYPE !== 2)
+			WEBSOCKET(OPT.url, FN.websocket, ['authorize', 'json'], OPT.limit);
+
 	} else {
-		ROUTE(OPT.url, view_index);
-		WEBSOCKET(OPT.url, websocket, ['json'], OPT.limit);
+
+		if (TYPE !== 3)
+			ROUTE(OPT.url, FN.view_index);
+
+		if (TYPE !== 2)
+			WEBSOCKET(OPT.url, FN.websocket, ['json'], OPT.limit);
 	}
 
 	// Merging && Mapping
-	var depscss = [OPT.url + 'default.css', '@flow/default.css', '@flow/ui.css'];
-	var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js'];
 
-	if (!OPT.sharedfiles) {
-		depscss.splice(1, 0, '@flow/dep.min.css');
-		depsjs.splice(1, 0, '@flow/dep.min.js');
-		MAP(OPT.url + 'fonts/', '@flow/fonts/');
+	if (TYPE !== 3) {
+
+		var depscss = [OPT.url + 'default.css', '@flow/default.css', '@flow/ui.css'];
+		var depsjs = [OPT.url + 'default.js', '@flow/default.js', '@flow/ui.js'];
+
+		if (!OPT.sharedfiles) {
+			depscss.splice(1, 0, '@flow/dep.min.css');
+			depsjs.splice(1, 0, '@flow/dep.min.js');
+			MAP(OPT.url + 'fonts/', '@flow/fonts/');
+		}
+
+		MERGE.apply(this, depscss);
+		MERGE.apply(this, depsjs);
+
+		MAP(OPT.url + 'img/', '@flow/img/');
+		MAP(OPT.url + 'forms/', '@flow/forms/');
+
+		// Localization
+		LOCALIZE(OPT.url + 'forms/*.html', ['compress']);
+
 	}
-
-	MERGE.apply(this, depscss);
-	MERGE.apply(this, depsjs);
-
-	MAP(OPT.url + 'img/', '@flow/img/');
-	MAP(OPT.url + 'forms/', '@flow/forms/');
-
-	// Localization
-	LOCALIZE(OPT.url + 'forms/*.html', ['compress']);
 
 	try {
 		Fs.mkdirSync(F.path.root(PATH));
@@ -115,58 +142,72 @@ exports.install = function(options) {
 	FLOW.url = OPT.url;
 
 	// ViewEngine helper
-	F.helpers.FLOW = FLOW;
+	if (TYPE !== 2)
+		F.helpers.FLOW = FLOW;
 
 	// Service
-	ON('service', service);
+	ON('service', FN.service);
 
 	// Repository according "index" of cluster instance
 	if (F.isCluster)
 		FILEINMEMORY = FILEINMEMORY.replace('.json', F.id + '.json');
 
 	// Load flow's data
-	setTimeout(function() {
-		FLOW.load();
-		setInterval(function() {
+	if (TYPE !== 2) {
+		setTimeout(function() {
+			FLOW.load();
+			setInterval(function() {
 
-			FLOW.indexer++;
+				FLOW.indexer++;
 
-			if (FLOW.ws) {
-				MESSAGE_TRAFFIC.body = FLOW.alltraffic;
+				if (FLOW.ws) {
+					MESSAGE_TRAFFIC.body = FLOW.alltraffic;
 
-				if (FLOW.indexer % 2 === 0)
-					MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
+					if (FLOW.indexer % 2 === 0)
+						MESSAGE_TRAFFIC.memory = process.memoryUsage().heapUsed.filesize();
 
-				MESSAGE_TRAFFIC.counter = COUNTER;
-				FLOW.ws.send(MESSAGE_TRAFFIC);
+					MESSAGE_TRAFFIC.counter = COUNTER;
+					FLOW.ws.send(MESSAGE_TRAFFIC);
 
-				var keys = Object.keys(FLOW.alltraffic);
-				for (var i = 0, length = keys.length; i < length; i++) {
-					var item = FLOW.alltraffic[keys[i]];
-					if (item.ni)
-						item.input -= item.ni;
-					if (item.no)
-						item.output -= item.no;
-					item.ni = 0;
-					item.no = 0;
+					var keys = Object.keys(FLOW.alltraffic);
+					for (var i = 0, length = keys.length; i < length; i++) {
+						var item = FLOW.alltraffic[keys[i]];
+						if (item.ni)
+							item.input -= item.ni;
+						if (item.no)
+							item.output -= item.no;
+						item.ni = 0;
+						item.no = 0;
+					}
 				}
-			}
 
-			if (FLOW.indexer % 10 === 0) {
-				FLOW.trafficreset();
-				FLOW.indexer = 0;
-			}
+				if (FLOW.indexer % 10 === 0) {
+					FLOW.trafficreset();
+					FLOW.indexer = 0;
+				}
 
-			OPT.debug && FLOW.indexer % 2 === 0 && listingmodification();
+				OPT.debug && FLOW.indexer % 2 === 0 && FN.listingmodification();
 
+			}, 2000);
 		}, 2000);
-	}, 2000);
 
-	if (OPT.debug)
-		MODIFIED = {};
+		if (OPT.debug)
+			MODIFIED = {};
+	}
+
+	switch (TYPE) {
+		case 2:
+			delete FN.websocket;
+			delete FN.listingmodification;
+			delete global.FLOW;
+			break;
+		case 3:
+			delete FN.view_index;
+			break;
+	}
 };
 
-function listingmodification() {
+FN.listingmodification = function() {
 	U.ls2(F.path.root(PATH), function(files) {
 		for (var i = 0, length = files.length; i < length; i++) {
 			var file = files[i];
@@ -182,24 +223,27 @@ function listingmodification() {
 				MODIFIED[id] = time;
 		}
 	}, n => (/\.js$/).test(n));
-}
+};
 
-function service(counter) {
+FN.service = function(counter) {
 
 	if (counter % 5 === 0)
 		DDOS = {};
 
-	if (counter % 10 === 0)
-		UPDATES = {};
+	if (TYPE !== 2) {
 
-	FLOW.trafficreset();
-	FLOW.emit2('service', counter);
+		if (counter % 10 === 0)
+			UPDATES = {};
 
-	if (COUNTER > 999999000000)
-		COUNTER = 0;
-}
+		FLOW.trafficreset();
+		FLOW.emit2('service', counter);
 
-function view_index() {
+		if (COUNTER > 999999000000)
+			COUNTER = 0;
+	}
+};
+
+FN.view_index = function() {
 
 	if (DDOS[this.ip] > 6) {
 		this.throw401();
@@ -207,9 +251,7 @@ function view_index() {
 	}
 
 	if (OPT.auth instanceof Array) {
-
 		var user = this.baa();
-
 		if (OPT.auth.indexOf(user.user + ':' + user.password) === -1) {
 			if (DDOS[this.ip])
 				DDOS[this.ip]++;
@@ -222,7 +264,6 @@ function view_index() {
 				this.baa('Secured area, please sign in');
 			return;
 		}
-
 		this.repository.baa = (user.user + ':' + user.password).hash();
 	}
 
@@ -249,10 +290,11 @@ function view_index() {
 	R.versiontitle = exports.version;
 	R.sharedfiles = OPT.sharedfiles;
 	R.limit = OPT.limit;
+	R.socket = OPT.socket;
 	this.view('@flow/index');
-}
+};
 
-function websocket() {
+FN.websocket = function() {
 	var self = this;
 
 	self.autodestroy(function() {
@@ -441,7 +483,7 @@ function websocket() {
 				var refreshconn = false;
 
 				if (options.comoutput != null) {
-					count = instance.output instanceof Array ? instance.output.length : instance.output;;
+					count = instance.output instanceof Array ? instance.output.length : instance.output;
 					tmpcount = io_count(options.comoutput);
 					tmpcount !== count && Object.keys(instance.connections).forEach(function(key) {
 						var index = +key;
@@ -534,7 +576,7 @@ function websocket() {
 	});
 
 	FLOW.ws = self;
-}
+};
 
 function io_count(o) {
 	return o instanceof Array ? o.length : (o || 0);
@@ -1504,7 +1546,7 @@ FLOW.init_component = function(c) {
 	Object.keys(FLOW.instances).forEach(function(key){
 		var instance = FLOW.instances[key];
 		if (instance.component === c.component)
-			close.push(instance)
+			close.push(instance);
 	});
 
 	FLOW.reset(close, function(resetinstances) {
