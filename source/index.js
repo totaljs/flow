@@ -1068,7 +1068,7 @@ Component.prototype.debug = function(data, style, group) {
 		else
 			MESSAGE_DEBUG.body = data.data;
 	} else
-		MESSAGE_DEBUG.body = data instanceof Buffer ? print_buffer(data) : data;
+		MESSAGE_DEBUG.body = data instanceof Buffer ? print_buffer(data) : data instanceof Error ? data.toString() : data;
 
 	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
 	MESSAGE_DEBUG.time = data instanceof FlowData ? ((new Date() - data.begin) / 1000).floor(2) : null;

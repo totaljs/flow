@@ -1396,14 +1396,15 @@ COMPONENT('designer', function() {
 
 		$(window).on('keydown', function(e) {
 
-			// ctrl+d
-			if (e.keyCode === 68 && (e.ctrlKey || e.metaKey) && selected) {
-				e.preventDefault();
-				self.duplicate();
-				return;
-			}
-
 			if (e.target.tagName === 'BODY') {
+
+				// ctrl/cmd+d
+				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey) && selected && !common.form) {
+					e.preventDefault();
+					self.duplicate();
+					return;
+				}
+
 				var step = e.shiftKey ? 100 : 0;
 				if (e.keyCode === 38) {
 					self.move(0, -20 - step, e);
