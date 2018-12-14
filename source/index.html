@@ -701,30 +701,30 @@
 		});
 
 		$(window).on('keydown', function(e) {
+			if (e.target.tagName === 'BODY' && !common.form) {
+				e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
+				if (flow.selected && flow.selected.length) {
 
-			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
+					// ctrl+d
+					if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
+						e.preventDefault();
+						EMIT('designer.duplicate');
+						return;
+					}
 
-			if (flow.selected && flow.selected.length) {
-				// ctrl+d
-				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
-					e.preventDefault();
-					EMIT('designer.duplicate');
-					return;
+					// ctrl+c
+					if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+						e.preventDefault();
+						EMIT('designer.copy', e.shiftKey);
+						return;
+					}
 				}
 
-				// ctrl+c
-				if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+				// ctrl+v
+				if (flow.clipboard && e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
 					e.preventDefault();
-					EMIT('designer.copy', e.shiftKey);
-					return;
+					EMIT('designer.paste');
 				}
-			}
-
-			// ctrl+v
-			if (flow.clipboard && e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
-				e.preventDefault();
-				EMIT('designer.paste');
-				return;
 			}
 		});
 

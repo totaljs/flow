@@ -1419,6 +1419,7 @@ COMPONENT('designer', function() {
 
 			if ((e.keyCode !== 8 && e.keyCode !== 46) || !selected || self.disabled || e.target.tagName !== 'BODY')
 				return;
+
 			self.remove();
 			e.preventDefault();
 		});
