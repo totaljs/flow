@@ -80,6 +80,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .components-container { width: 240px; overflow: hidden; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
 .components .component { padding: 2px 15px; cursor: move; font-size: 12px; line-height: 14px; }
+.components .component:hover { background-color: #2b2b2b; box-shadow: 0 0 16px 0px rgba(0, 0, 0, 0.1); }
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; }
 .components .group:first-child { margin-top: 0; }
@@ -246,6 +247,7 @@ svg { cursor: move; }
 .themedark .mainmenu { background-color: #202020; color: gray; }
 .themedark .components .group { color: white; border-top-color: #303030; }
 .themedark .components .component { border-color: #303030; }
+.themedark .components .component:hover { background-color: #2b2b2b; box-shadow: 0 0 16px 0px rgba(0, 0, 0, 0.1); }
 .themedark .tabs { background-color: #101010; box-shadow: inset 0 -2px 10px rgba(255,255,255,0.04); }
 .themedark .tabs .selected { background-color: #202020; color: white; }
 .themedark .tabs .br { border-right-color: #303030; }

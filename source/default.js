@@ -64,7 +64,7 @@ function savescrollposition() {
 		var el = $('.designer-scrollbar');
 		var tmp = common.tabscroll['tab' + common.tab.id];
 		var pos = { x: el.prop('scrollLeft'), y: el.prop('scrollTop') };
-		if (!tmp || (tmp.x !== pos.x && tmp.y !== pos.y))
+		if (!tmp || tmp.x !== pos.x || tmp.y !== pos.y)
 			SET('common.tabscroll.tab' + common.tab.id, pos);
 	}
 }

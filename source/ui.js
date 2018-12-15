@@ -1080,6 +1080,13 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		return self;
 	};
 
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		if (key === 'url')
+			url = value;
+	};
+
 	self.process = function(callback) {
 
 		if (!ws || sending || !queue.length || ws.readyState !== 1) {
@@ -1389,14 +1396,15 @@ COMPONENT('designer', function() {
 
 		$(window).on('keydown', function(e) {
 
-			// ctrl+d
-			if (e.keyCode === 68 && (e.ctrlKey || e.metaKey) && selected) {
-				e.preventDefault();
-				self.duplicate();
-				return;
-			}
-
 			if (e.target.tagName === 'BODY') {
+
+				// ctrl/cmd+d
+				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey) && selected && !common.form) {
+					e.preventDefault();
+					self.duplicate();
+					return;
+				}
+
 				var step = e.shiftKey ? 100 : 0;
 				if (e.keyCode === 38) {
 					self.move(0, -20 - step, e);
@@ -1411,6 +1419,7 @@ COMPONENT('designer', function() {
 
 			if ((e.keyCode !== 8 && e.keyCode !== 46) || !selected || self.disabled || e.target.tagName !== 'BODY')
 				return;
+
 			self.remove();
 			e.preventDefault();
 		});

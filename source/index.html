@@ -33,7 +33,7 @@
 	<div data-jc="colorpicker"></div>
 	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data-jc="shortcuts"></div>
-	<div data-jc="websocket__null__url:@{R.url}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
+	<div data-jc="websocket__null__url:@{R.socket}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -703,30 +703,27 @@
 		});
 
 		$(window).on('keydown', function(e) {
-
-			e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
-
-			if (flow.selected && flow.selected.length) {
-				// ctrl+d
-				if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
-					e.preventDefault();
-					EMIT('designer.duplicate', e.shiftKey);
-					return;
+			if (e.target.tagName === 'BODY' && !common.form) {
+				e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
+				if (flow.selected && flow.selected.length) {
+					// ctrl+d
+					if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
+						e.preventDefault();
+						EMIT('designer.duplicate');
+						return;
+					}
+					// ctrl+c
+					if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+						e.preventDefault();
+						EMIT('designer.copy', e.shiftKey);
+						return;
+					}
 				}
-
-				// ctrl+c
-				if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
+				// ctrl+v
+				if (flow.clipboard && e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
 					e.preventDefault();
-					EMIT('designer.copy', e.shiftKey);
-					return;
+					EMIT('designer.paste');
 				}
-			}
-
-			// ctrl+v
-			if (flow.clipboard && e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
-				e.preventDefault();
-				EMIT('designer.paste');
-				return;
 			}
 		});
 
@@ -1370,7 +1367,7 @@
 							flow.clipboard.push(c);
 							addToClipboard(c);
 						});
-					});					
+					});
 				};
 
 				addToClipboard(com);
@@ -1394,7 +1391,7 @@
 				} else {
 					obj.y = obj.y - offset + bottom;
 				}
-				
+
 				obj.tab = common.tab.id;
 
 				if (typeof(org.status) === 'object')

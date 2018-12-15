@@ -2,7 +2,7 @@
 
 [![Professional Support](https://www.totaljs.com/img/badge-support.svg)](https://www.totaljs.com/support/) [![Chat with contributors](https://www.totaljs.com/img/badge-chat.svg)](https://messenger.totaljs.com)
 
-__Total.js Flow 5.1__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
+__Total.js Flow 5.2__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
 
 - [__Documentation__](https://wiki.totaljs.com/?q=flow)
 - [Website](https://www.totaljs.com/flow/)
@@ -81,6 +81,16 @@ var options = {};
 // options.logging = true;
 // default: false
 
+// +v5.2.0
+// options.type = 'bundle'; // 'bundle', 'server', 'client'
+// "bundle" -> loads server and client together
+// "server" -> loads server only
+// "client" -> loads client only but it needs external URL (look to "options.external")
+
+// +v5.2.0
+// options.external = 'ws://yourserver.com/$dashboard/';
+// Can contain an external URL for WebSocket
+
 // ====================================
 // Security (OPTIONAL)
 // ====================================
@@ -142,7 +152,7 @@ FLOW.rem(key);
 // Removes value from the key-value store (data are stored on HDD)
 
 FLOW.find(function(instance, definition){
-    // return true if this instance satisfies your search criteria
+	// return true if this instance satisfies your search criteria
 });
 // Finds instances
 // returns {Array of Components}
@@ -196,39 +206,39 @@ __Events__:
 
 ```javascript
 ON('flow.register', function(declaration) {
-    // New component has been registered
+	// New component has been registered
 });
 
 ON('flow.init', function(count) {
-    // Init FLOW system
-    // "count" a count of all new instances
+	// Init FLOW system
+	// "count" a count of all new instances
 });
 
 ON('flow.reset', function(count) {
-    // Components have been reset
+	// Components have been reset
 });
 
 ON('flow.open', function(instance) {
-    // New instance of a component has been created
+	// New instance of a component has been created
 });
 
 ON('flow.save', function(instance) {
-    // Flow is saved/applied
-    // +v1.2.0
+	// Flow is saved/applied
+	// +v1.2.0
 });
 
 ON('flow.close', function(instance) {
-    // A component instance will be closed
+	// A component instance will be closed
 });
 
 ON('flow.options', function(instance) {
-    // A component instance has changed options
-    // +v3.0.0
+	// A component instance has changed options
+	// +v3.0.0
 });
 
 ON('flow.variables', function(variables) {
-    // Changed flow variables
-    // +v3.0.0
+	// Changed flow variables
+	// +v3.0.0
 });
 ```
 
@@ -324,288 +334,288 @@ exports.extension = 'alert("OK")';
 
 exports.install = function(component) {
 
-    // =====================
-    // DELEGATES
-    // =====================
+	// =====================
+	// DELEGATES
+	// =====================
 
-    // A close delegate (optional)
-    // - "callback" argument must be executed!
-    component.close = function(callback) {
-        // This instance will be killed.
-        // use this if some asyncronous work needs to be done
-        // alternatively use component.on('close',...
-    };
+	// A close delegate (optional)
+	// - "callback" argument must be executed!
+	component.close = function(callback) {
+		// This instance will be killed.
+		// use this if some asyncronous work needs to be done
+		// alternatively use component.on('close',...
+	};
 
-    // =====================
-    // EVENTS
-    // =====================
+	// =====================
+	// EVENTS
+	// =====================
 
-    component.on('click', function() {
-        // optional
-        // the component was clicked on in the designer
-        // usefull for enabling/disabling some behavior or triggering some actions
-    });
+	component.on('click', function() {
+		// optional
+		// the component was clicked on in the designer
+		// usefull for enabling/disabling some behavior or triggering some actions
+	});
 
-    component.on('data', function(message) {
+	component.on('data', function(message) {
 
-        // RAW DATA
-        // returns {Object}
-        message.data;
+		// RAW DATA
+		// returns {Object}
+		message.data;
 
-        // Write value to data repository
-        // returns {Message}
-        message.set('key', 'value');
+		// Write value to data repository
+		// returns {Message}
+		message.set('key', 'value');
 
-        // Read value from data repository
-        // returns {Object}
-        message.get('key');
+		// Read value from data repository
+		// returns {Object}
+		message.get('key');
 
-        // Remove value from data repository
-        // returns {Message}
-        message.rem('key');
+		// Remove value from data repository
+		// returns {Message}
+		message.rem('key');
 
-        // {Object} Parent component (first component which started the flow)
-        message.parent;
+		// {Object} Parent component (first component which started the flow)
+		message.parent;
 
-        // {Boolean} Is completed?
-        message.completed;
+		// {Boolean} Is completed?
+		message.completed;
 
-        // {DateTime}
-        message.begin;
+		// {DateTime}
+		message.begin;
 
-        // How can I modify data?
-        message.data = { newdata: true };
+		// How can I modify data?
+		message.data = { newdata: true };
 
-        // +v4.0.2
-        // Replaces {KEY1} {KEY2} {KEY..N} according to the message repository
-        // returns {String}
-        message.arg('Dynamic arguments {name} according to {message} repository.');
+		// +v4.0.2
+		// Replaces {KEY1} {KEY2} {KEY..N} according to the message repository
+		// returns {String}
+		message.arg('Dynamic arguments {name} according to {message} repository.');
 
-        // +v4.1.1
-        // This method can bind global data repository to the current object
-        // message.arg({ name: '{repository-key}', secret: '{repository-secret}' }) returns {Object} (new instance)
+		// +v4.1.1
+		// This method can bind global data repository to the current object
+		// message.arg({ name: '{repository-key}', secret: '{repository-secret}' }) returns {Object} (new instance)
 
-        // send this message :-)
-        component.send(message);
+		// send this message :-)
+		component.send(message);
 
-    });
+	});
 
-    component.on('<input-number>', function(message) {
-        // message as specified above in 'data' event
-        // input 0 to event '0' and so on
-    });
+	component.on('<input-number>', function(message) {
+		// message as specified above in 'data' event
+		// input 0 to event '0' and so on
+	});
 
-    component.on('options', function(new_options, old_options) {
-        // optional
-        // options have changed in the designer
-        // instance.options holds the new_options already
-    });
+	component.on('options', function(new_options, old_options) {
+		// optional
+		// options have changed in the designer
+		// instance.options holds the new_options already
+	});
 
-    component.on('variables', function(variables) {
-        // +v3.0.0
-        // optional
-        // global variables have been changed
-        // instance.variable(key)
-    });
+	component.on('variables', function(variables) {
+		// +v3.0.0
+		// optional
+		// global variables have been changed
+		// instance.variable(key)
+	});
 
-    component.on('close', function() {
-        // optional
-        // This instance will be killed
-    });
+	component.on('close', function() {
+		// optional
+		// This instance will be killed
+	});
 
-    component.on('reinit', function() {
-        // optional
-        // Designer has been updated, but this instance still persists
-        // This instance can have new connections.
-    });
+	component.on('reinit', function() {
+		// optional
+		// Designer has been updated, but this instance still persists
+		// This instance can have new connections.
+	});
 
-    component.on('signal', function(data, parent) {
-        // optional
-        // Captured signal
-        // @data {Object} - optional, can be "null", or "undefined"
-        // @parent {Component} - a component which created this signal
-    });
+	component.on('signal', function(data, parent) {
+		// optional
+		// Captured signal
+		// @data {Object} - optional, can be "null", or "undefined"
+		// @parent {Component} - a component which created this signal
+	});
 
-    component.on('service', function(counter) {
-        // optional
-        // Service called each 1 minute
-    });
+	component.on('service', function(counter) {
+		// optional
+		// Service called each 1 minute
+	});
 
-    component.on('pause', function(is) {
-        // +v5.1.0
-        // optional
-        // Is Flow paused?
-    });
+	component.on('pause', function(is) {
+		// +v5.1.0
+		// optional
+		// Is Flow paused?
+	});
 
-    // =====================
-    // METHODS
-    // =====================
+	// =====================
+	// METHODS
+	// =====================
 
-    component.status(message, [color]);
-    // Sends a status to designer
-    // @message: {String/Object} - string will be formatted as markdown and object as JSON
-    // color: {String} - "black" (default: "gray")
+	component.status(message, [color]);
+	// Sends a status to designer
+	// @message: {String/Object} - string will be formatted as markdown and object as JSON
+	// color: {String} - "black" (default: "gray")
 
-    component.debug(message, [style]);
-    // Sends a debug message
-    // @message: {String/Object} - string will be formatted as markdown and object as JSON
-    // style: {String} - "info", "warning", "error" (default: "info")
+	component.debug(message, [style]);
+	// Sends a debug message
+	// @message: {String/Object} - string will be formatted as markdown and object as JSON
+	// style: {String} - "info", "warning", "error" (default: "info")
 
-    component.hasConnection(index);
-    // Calculates connections
-    // @index: {Number}
-    // returns {Number}
+	component.hasConnection(index);
+	// Calculates connections
+	// @index: {Number}
+	// returns {Number}
 
-    var message = component.send([index], data);
-    message.set('repositorykey', 'value');
-    console.log(message.get('repositorykey'));
-    // Sends data
-    // @index: {Number} - optional, the output index (otherwise all outputs)
-    // @data: {String/Object}
-    // returns Message;
+	var message = component.send([index], data);
+	message.set('repositorykey', 'value');
+	console.log(message.get('repositorykey'));
+	// Sends data
+	// @index: {Number} - optional, the output index (otherwise all outputs)
+	// @data: {String/Object}
+	// returns Message;
 
-    var message = component.send2([index], data);
-    if (message) {
-        // message will be sent
-    } else {
-        // no connections
-    }
-    // +v3.0.0
-    // Alias for component.send() but with a check of connections
+	var message = component.send2([index], data);
+	if (message) {
+		// message will be sent
+	} else {
+		// no connections
+	}
+	// +v3.0.0
+	// Alias for component.send() but with a check of connections
 
-    component.set(key, value);
-    // Writes a value to a private key-value store (data are stored on HDD)
-    // @key {String}
-    // @value {Object}
-    // returns {Component}
+	component.set(key, value);
+	// Writes a value to a private key-value store (data are stored on HDD)
+	// @key {String}
+	// @value {Object}
+	// returns {Component}
 
-    component.get(key);
-    // Reads a value from a private key-value store (data are stored on HDD)
-    // @key {String}
-    // returns {Object}
+	component.get(key);
+	// Reads a value from a private key-value store (data are stored on HDD)
+	// @key {String}
+	// returns {Object}
 
-    component.make(data);
-    // Creates a new FlowData/Message instance.
-    // @data {Object}
-    // returns {Message}
+	component.make(data);
+	// Creates a new FlowData/Message instance.
+	// @data {Object}
+	// returns {Message}
 
-    component.rem(key);
-    // Removes a value from a private key-value store (data are stored on HDD)
-    // @key {String}
-    // returns {Component}
+	component.rem(key);
+	// Removes a value from a private key-value store (data are stored on HDD)
+	// @key {String}
+	// returns {Component}
 
-    component.variable(key);
-    // +v3.0.0
-    // Reads a value from global variables
-    // @key {String}
-    // returns {Object}
+	component.variable(key);
+	// +v3.0.0
+	// Reads a value from global variables
+	// @key {String}
+	// returns {Object}
 
-    component.signal([index], [data]);
-    // Sends a signal to first connection (it emits "signal" event in target connection)
-    // @index {Number} - optional, an output index (default: "undefined" --> all connections)
-    // @data {Object} - optional, an additional data
-    // returns {Component}
+	component.signal([index], [data]);
+	// Sends a signal to first connection (it emits "signal" event in target connection)
+	// @index {Number} - optional, an output index (default: "undefined" --> all connections)
+	// @data {Object} - optional, an additional data
+	// returns {Component}
 
-    component.click();
-    // Performs click event.
-    // returns {Component}
+	component.click();
+	// Performs click event.
+	// returns {Component}
 
-    component.log([a], [b], [c], [d]);
-    // Writes some info into the log file
-    // returns {Component}
+	component.log([a], [b], [c], [d]);
+	// Writes some info into the log file
+	// returns {Component}
 
-    component.error(err, [parent|response|component]);
-    // Creates error
-    // returns {Component}
+	component.error(err, [parent|response|component]);
+	// Creates error
+	// returns {Component}
 
-    component.save();
-    // Saves current options, useful when options are changed internally. Options from settings form are saved automatically
-    // returns {Component}
+	component.save();
+	// Saves current options, useful when options are changed internally. Options from settings form are saved automatically
+	// returns {Component}
 
-    component.reconfig();
-    // If the component options changes on the server (not by recieving new options from designer) then use this to update options in designer
+	component.reconfig();
+	// If the component options changes on the server (not by recieving new options from designer) then use this to update options in designer
 
-    component.arg(str);
-    component.arg(obj);
-    // This method can bind global Flow variables to the current object or string.
-    // component.arg('This pharse {variable-key} will be replaced.') returns {String}
-    // component.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
+	component.arg(str);
+	component.arg(obj);
+	// This method can bind global Flow variables to the current object or string.
+	// component.arg('This pharse {variable-key} will be replaced.') returns {String}
+	// component.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
 
-    component.throw(data);
-    // +v5.0.0
-    // Sends data through the error output
+	component.throw(data);
+	// +v5.0.0
+	// Sends data through the error output
 
-    component.next([name]);
-    // @name {String} optional, name of component (lower-case), e.g. "trigger"
-    // returns {Component} or "undefined"
-    // Returns a component instance (if exists) in the outputs
-    // +v5.0.0
+	component.next([name]);
+	// @name {String} optional, name of component (lower-case), e.g. "trigger"
+	// returns {Component} or "undefined"
+	// Returns a component instance (if exists) in the outputs
+	// +v5.0.0
 
-    component.prev([name]);
-    // @name {String} optional, name of component (lower-case), e.g. "trigger"
-    // returns {Component} or "undefined"
-    // Returns a component instance (if exists) in the inputs
-    // +v5.0.0
+	component.prev([name]);
+	// @name {String} optional, name of component (lower-case), e.g. "trigger"
+	// returns {Component} or "undefined"
+	// Returns a component instance (if exists) in the inputs
+	// +v5.0.0
 
-    component.outputs();
-    // returns {Array Component}
-    // Returns all components in the outputs
-    // +v5.0.0
+	component.outputs();
+	// returns {Array Component}
+	// Returns all components in the outputs
+	// +v5.0.0
 
-    component.inputs();
-    // returns {Array Component}
-    // Returns all components in the inputs
-    // +v5.0.0
+	component.inputs();
+	// returns {Array Component}
+	// Returns all components in the inputs
+	// +v5.0.0
 
-    component.isDisabled([io], [index]);
-    // @io {String} optional, "input" or "output"
-    // @index {Number} optional, input/output index
-    // returns {Boolean} if io and index passed in
-    // returns {Array of inputs or outputs} if only io passed in
-    // returns {Object} e.g. { inputs: [disabled inputs], outputs: [disabled outputs] } if nothing passed in
-    // +v5.0.0
+	component.isDisabled([io], [index]);
+	// @io {String} optional, "input" or "output"
+	// @index {Number} optional, input/output index
+	// returns {Boolean} if io and index passed in
+	// returns {Array of inputs or outputs} if only io passed in
+	// returns {Object} e.g. { inputs: [disabled inputs], outputs: [disabled outputs] } if nothing passed in
+	// +v5.0.0
 
-    // =====================
-    // PROPERTIES
-    // =====================
+	// =====================
+	// PROPERTIES
+	// =====================
 
-    component.paused;
-    // {Boolean} - determines whether the Flow is paused
-    // +v5.1.0
+	component.paused;
+	// {Boolean} - determines whether the Flow is paused
+	// +v5.1.0
 
-    component.duration;
-    // {Number} - time of data processing between input and output in milliseconds
-    // +v5.0.0
+	component.duration;
+	// {Number} - time of data processing between input and output in milliseconds
+	// +v5.0.0
 
-    component.countinput;
-    // {Number} - count of message on input
-    // +v5.0.0
+	component.countinput;
+	// {Number} - count of message on input
+	// +v5.0.0
 
-    component.countoutput;
-    // {Number} - count of message on output
-    // +v5.0.0
+	component.countoutput;
+	// {Number} - count of message on output
+	// +v5.0.0
 
-    component.custom;
-    // {Object} - empty object for custom variables and methods
+	component.custom;
+	// {Object} - empty object for custom variables and methods
 
-    component.name;
-    // {String} - readonly, a component name (USER-DEFINED)
+	component.name;
+	// {String} - readonly, a component name (USER-DEFINED)
 
-    component.reference;
-    // {String} - readonly, a component reference (USER-DEFINED)
+	component.reference;
+	// {String} - readonly, a component reference (USER-DEFINED)
 
-    component.options;
-    // {Object} - readonly, custom settings
+	component.options;
+	// {Object} - readonly, custom settings
 
-    component.state;
-    // {Object} - readonly, latest state
+	component.state;
+	// {Object} - readonly, latest state
 
-    component.connections;
-    // {Object} - readonly, all connections
+	component.connections;
+	// {Object} - readonly, all connections
 };
 
 exports.uninstall = function() {
-    // OPTIONAL
+	// OPTIONAL
 };
 ```
 
@@ -616,19 +626,19 @@ When is the message instance created?
 ```javascript
 // FIRST CASE:
 component.on('data', function(message) {
-    // Properties:
-    message.id;               // {Number} A message identificator
-    message.index;            // {Number} An input number
-    message.begin;            // {Date} when it started
-    message.data;             // {Anything} user defined data
-    message.completed;        // {Boolean} is sending completed?
-    message.parent;           // {Component} a parent instance
+	// Properties:
+	message.id;               // {Number} A message identificator
+	message.index;            // {Number} An input number
+	message.begin;            // {Date} when it started
+	message.data;             // {Anything} user defined data
+	message.completed;        // {Boolean} is sending completed?
+	message.parent;           // {Component} a parent instance
 
-    // Methods (private message repository):
-    message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
-    message.get(key);         // Gets a key-value (doesn't read data from "data")
-    message.rem(key);         // Removes a key-value (doesn't read data from "data")
-    message.rewrite(data);    // Rewrites the current with new
+	// Methods (private message repository):
+	message.set(key, value);  // Sets a key-value to message repository (doesn't modify data)
+	message.get(key);         // Gets a key-value (doesn't read data from "data")
+	message.rem(key);         // Removes a key-value (doesn't read data from "data")
+	message.rewrite(data);    // Rewrites the current with new
 });
 
 // SECOND CASE
@@ -640,13 +650,13 @@ var message = component.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
 ```javascript
 // data from all inputs go to 'data' event
 component.on('data', function(message) {
-    // message as specified above
-    message.index; // Input number
+	// message as specified above
+	message.index; // Input number
 });
 
 // data from specific input go also to the corresponding event -> input 0 to event '0'
 component.on('0', function(message) {
-    // message as specified above
+	// message as specified above
 });
 ```
 
@@ -658,31 +668,31 @@ component.on('0', function(message) {
 
 ```javascript
 ON('open.componentname', function(component, options) {
-    // Settings will be open
+	// Settings will be open
 });
 
 ON('save.componentname', function(component, options) {
-    // Settings will be save
+	// Settings will be save
 });
 
 ON('select.componentname', function(component) {
-    // A component has been selected in designer.
+	// A component has been selected in designer.
 });
 
 ON('click.componentname', function(component) {
-    // Performed "click"
+	// Performed "click"
 });
 
 ON('add.componentname', function(component) {
-    // A component has been added.
+	// A component has been added.
 });
 
 ON('rem.componentname', function(component) {
-    // A component has been removed.
+	// A component has been removed.
 });
 
 ON('apply', function() {
-    // Designer will be sent to server and then will be applied
+	// Designer will be sent to server and then will be applied
 });
 ```
 
@@ -695,20 +705,20 @@ __How to change count of outputs/inputs dynamically?__
 ```javascript
 ON('save.componentname', function(component, options) {
 
-    component.output = 5;
-    // component.input = 3;
+	component.output = 5;
+	// component.input = 3;
 
-    // or
-    component.output = ['green', 'red', 'blue'];
-    // component.input = ['green', 'red', 'blue'];
+	// or
+	component.output = ['green', 'red', 'blue'];
+	// component.input = ['green', 'red', 'blue'];
 
-    // or set output to default
-    component.output = null;
-    // component.input = null;
+	// or set output to default
+	component.output = null;
+	// component.input = null;
 });
 ```
 
-### Components: jComponent +v11.0.0
+### Components: jComponent +v16
 
 Bellow jComponents can be used in `Settings form`:
 
@@ -757,11 +767,11 @@ __Server-side__:
 ```javascript
 // Register trigger
 FLOW.trigger('name', function(next, data) {
-    // Data sent from client-side
-    console.log(data);
+	// Data sent from client-side
+	console.log(data);
 
-    // Sends back some data
-    next([1, 2, 3, 4]);
+	// Sends back some data
+	next([1, 2, 3, 4]);
 });
 
 // Unregister trigger
@@ -775,7 +785,7 @@ __Client-side__:
 
 // Call the trigger
 TRIGGER('name', function(data) {
-    console.log(data); // outputs [1, 2, 3, 4]
+	console.log(data); // outputs [1, 2, 3, 4]
 });
 
 TRIGGER('name', 'path.to.bind.response'); // window.path.to.bind.response === [1, 2, 3, 4]
@@ -786,20 +796,20 @@ TRIGGER('name', 'path.to.bind.response'); // window.path.to.bind.response === [1
 ```javascript
 // Context-menu settings will be open
 ON('settings.open', function(items) {
-    // now you can add some item into the items
+	// now you can add some item into the items
 });
 
 ON('settings.select', function(item) {
-    // item has been selected
+	// item has been selected
 });
 
 // Features will be open
 ON('features.open', function(items) {
-    // now you can add some item into the items
+	// now you can add some item into the items
 });
 
 ON('features.select', function(item) {
-    // item has been selected
+	// item has been selected
 });
 
 // flow;
