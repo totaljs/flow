@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v5.2.0';
+exports.version = 'v5.2.1';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -587,6 +587,17 @@ function io_count(o) {
 // ===================================================
 
 function Component(options) {
+
+	if (options instanceof Component) {
+		delete options.status;
+		delete options.debug;
+		delete options.click;
+		delete options.emit;
+		delete options.on;
+		delete options.signal;
+		delete options.send;
+	}
+
 	U.extend(this, options);
 	this.duration = 0;
 	this.countinput = 0;
@@ -1236,7 +1247,6 @@ FLOW.register = function(name, options, fn) {
 	}
 
 	var id = name.slug().replace(/-/g, '');
-
 	var obj = FLOW.components[name] = U.clone(options); // because of additional custom fields
 	obj.id = id;
 	obj.component = name;
@@ -1400,7 +1410,6 @@ FLOW.reset = function(components, callback) {
 	var count = 0;
 	components.wait(function(item, next) {
 
-
 		var instance = FLOW.instances[item.id];
 		if (!instance)
 			return next();
@@ -1483,6 +1492,7 @@ FLOW.init = function(components, callback) {
 		instance.color = com.color || declaration.color;
 		instance.notes = com.notes || '';
 		instance.disabledio = com.disabledio = com.disabledio || { input: [], output: [] };
+
 		declaration.fn.call(instance, instance, declaration);
 		instance.$refresh();
 
@@ -1539,7 +1549,7 @@ FLOW.init_component = function(c) {
 
 	var declaration = FLOW.components[c.component];
 	if (!declaration)
-		return ;
+		return FLOW;
 
 	var close = [];
 
@@ -1550,9 +1560,7 @@ FLOW.init_component = function(c) {
 	});
 
 	FLOW.reset(close, function(resetinstances) {
-
 		resetinstances.forEach(function(com){
-
 			var instance = new Component(com);
 			instance.custom = {};
 			FLOW.instances[com.id] = instance;
@@ -1562,6 +1570,7 @@ FLOW.init_component = function(c) {
 			instance.notes = com.notes || '';
 			instance.cloning = declaration.cloning;
 			instance.$refresh();
+			instance.$closed = false;
 			declaration.fn.call(instance, instance, declaration);
 
 			if (com.state !== instance.state)
@@ -1711,6 +1720,7 @@ FLOW.execute = function(filename) {
 	var id = m.id;
 	if (!id)
 		return console.log(FILENAME + ': Missing ID property, skipping.');
+
 	var install = m.install;
 	delete m.id;
 	delete m.install;
@@ -1724,7 +1734,6 @@ FLOW.execute = function(filename) {
 		}, 500);
 	})(name, filename, FILENAME);
 
-	// @TODO: sync && F.cluster.emit('flow.cluster.execute', filename);
 	return FLOW;
 };
 
