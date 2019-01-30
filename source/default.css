@@ -80,11 +80,12 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .components-container { width: 240px; overflow: hidden; padding-right: 20px; }
 .components { list-style-type: none; margin: 0; padding: 0; }
 .components .component { padding: 2px 15px; cursor: move; font-size: 12px; line-height: 14px; }
-.components .component:hover { background-color: #2b2b2b; box-shadow: 0 0 16px 0px rgba(0, 0, 0, 0.1); }
+.components .component:hover { background-color: #E0E0E0; box-shadow: 0 0 16px 0px rgba(0, 0, 0, 0.1); }
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-.components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; }
+.components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; cursor: default; }
 .components .group:first-child { margin-top: 0; }
 .components .fa { width: 18px; }
+.themedark .component:hover { background-color: #202020; }
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 50px; left: 0; }
 .designer-scrollbar { width: 111%; overflow: auto; height: 110%; }

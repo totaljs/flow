@@ -23,6 +23,8 @@
 </head>
 <body data-jc="exec,binder"@{if R.dark} class="themedark"@{fi}>
 
+	@{json(user, 'userdata')}
+
 	<div data-jc="LAZY autocomplete"></div>
 	<div data-jc="LAZY calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data-jc="LAZY message__null__button:@(Close)"></div>
