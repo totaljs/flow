@@ -477,3 +477,59 @@ label span { vertical-align: middle; }
 	from { transform: scale(1); }
 	to { transform: scale(1.15);}
 }
+
+.ui-directory { position: absolute; opacity: 0; transition: 0.25s transform cubic-bezier(0.23, 1, 0.32, 1); left: -100; top: -100; z-index: 100; box-shadow: 0 1px 20px rgba(0,0,0,0.1); background-color: white; border-radius: 3px; border: 1px solid #E0E0E0; overflow: hidden; }
+.ui-directory-search { height: 38px; background: white; border-radius: 3px 3px 0 0; border-bottom: 1px solid #E0E0E0; line-height: 22px; }
+.ui-directory-search input { width: 100%; background-color: white; border: 0; font-size: 12px; outline: 0; padding: 0; margin: 0; line-height: 16px; outline: 0; }
+.ui-directory-search > div { margin: 0 20px 0 35px; padding: 6px 10px 0 0; line-height: 24px; }
+.ui-directory-search > span { float: left; width: 16px; text-align: center; padding: 8px 0 0 12px; font-size: 12px; }
+.ui-directory-add { float: right !important; padding-left: 0 !important; color: gray; text-align: left !important; font-size: 11px !important; cursor: pointer; width: 22px !important; }
+.ui-directory-add:hover { color: black; }
+.ui-directory-search .fa-times { color: red; cursor: pointer; }
+.ui-directory-visible { opacity: 1; }
+.ui-directory-container { height: 150px; overflow-x: hidden; overflow-y: auto; overflow-scrolling: touch; margin: 0 30px 0 0; padding: 0; }
+.ui-directory ul { list-style-type: none; margin: 0; padding: 0; }
+.ui-directory .selected { background-color: #F0F0F0; color: black; }
+.ui-directory-default li { padding: 0 40px 0 10px; height: 26px; line-height: 26px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.ui-directory li { border-top: 1px solid #F0F0F0; font-size: 12px; background-color: white; cursor: pointer; margin: 0; }
+.ui-directory li:first-child { border-top: 0; }
+
+.ui-input { position: relative; font-size: 13px; }
+.ui-input-required .ui-input-control { border-color: #D0D0D0; }
+.ui-input-label { margin-bottom: 3px; font-size: 12px; }
+.ui-input-label i { margin-right: 4px; }
+.ui-input-required .ui-input-label:before { content: '***'; color: red; margin-right: 3px; }
+.ui-input-control { border: 1px solid #E0E0E0; border-radius: 3px; height: 32px; background-color: white; }
+.ui-input-input { padding: 6px 2px 0 6px; position: relative; line-height: 20px; }
+.ui-input-placeholder { position: absolute; color: gray; margin: 0; user-select: none; cursor: text; width: 100%; text-align: left; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.ui-input-control input { border: 0; outline: 0; background-color: white; width: 100%; padding: 0; margin: 0; line-height: 15px; font-size: 13px; color: black; font-family: Arial; }
+.ui-input-control input::-ms-expand { display: none; }
+.ui-input-icon-left { width: 32px; height: 30px; line-height: 32px; float: left; text-align: center; border-right: 1px solid #E0E0E0; }
+.ui-input-icon-right { width: 32px; height: 30px; line-height: 32px; float: right; border-left: 1px solid #E0E0E0; text-align: center; }
+.ui-input-required .ui-input-icon-left { border-color: #D0D0D0; }
+.ui-input-required .ui-input-icon-right { border-color: #D0D0D0; }
+.ui-input-ricon .ui-input-input { margin-right: 35px; }
+.ui-input-licon .ui-input-input { margin-left: 32px; }
+.ui-input-ricon .fa-times { color: red; }
+.ui-input-click { cursor: pointer; }
+.ui-input-error { margin-top: 7px; font-size: 11px; color: red; }
+.ui-input .right input, .ui-input .right .ui-input-placeholder { text-align: right; }
+.ui-input .center input, .ui-input .center .ui-input-placeholder { text-align: center; }
+.ui-input-dropdown, .ui-input-dropdown input, .ui-input-dropdown .ui-input-placeholder { cursor: pointer; }
+.ui-input-invalid .ui-input-control, .ui-input-invalid .ui-input-icon-left, .ui-input-invalid .ui-input-icon-right { border-color: red; }
+.ui-input.ui-disabled .ui-input-control { background-color: #F0F0F0; }
+.ui-input.ui-disabled input { background-color: #F0F0F0; color: #A0A0A0; }
+.ui-input.ui-disabled .ui-input-placeholder { color: #A0A0A0; }
+.ui-input.ui-disabled .ui-input-icon-left, .ui-input.ui-disabled .ui-input-icon-right { color: gray; }
+.ui-input-increment { padding: 5px 0 0; }
+.ui-input-increment i { display: block; line-height: 10px; font-size: 15px; cursor: pointer; }
+.ui-input-inner .ui-input-label { position: absolute; z-index: 1; margin: 12px 0 0 7px; font-size: 13px; }
+.ui-input-inner.ui-input-binded .ui-input-label { font-size: 11px; margin-top: 3px; color: gray; }
+.ui-input-inner .ui-input-input { padding-top: 9px; }
+.ui-input-binded.ui-input-inner .ui-input-input { padding-top: 15px; }
+.ui-input-inner .ui-input-control { height: 38px; }
+.ui-input-inner .ui-input-icon-left, .ui-input-inner .ui-input-icon-right { height: 37px; line-height: 37px; }
+.ui-input-inner.ui-input-required .ui-input-label:before { content: '*'; }
+.ui-input-inner .ui-input-increment { padding: 8px 0 0; }
+.ui-input-inner .ui-input-increment i { line-height: 10px; }
+.ui-input-masked input { letter-spacing: 1px; font-family: Menlo,Consolas,monospace; }

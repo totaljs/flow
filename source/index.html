@@ -21,21 +21,22 @@
 	<script src="@{R.url}default.js"></script>
 	@{import('head')}
 </head>
-<body data-jc="exec,binder"@{if R.dark} class="themedark"@{fi}>
+<body data---="exec,binder"@{if R.dark} class="themedark"@{fi}>
 
 	@{json(user, 'userdata')}
 
-	<div data-jc="LAZY autocomplete"></div>
-	<div data-jc="LAZY calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
-	<div data-jc="LAZY message__null__button:@(Close)"></div>
-	<div data-jc="LAZY snackbar__null__button:@(Dismiss)"></div>
-	<div data-jc="confirm"></div>
-	<div data-jc="features__null__placeholder:@(Search feature ...)"></div>
-	<div data-jc="contextmenu"></div>
-	<div data-jc="colorpicker"></div>
-	<div data-jc="loading" class="ui-loading ui-loading-firstload"></div>
-	<div data-jc="shortcuts"></div>
-	<div data-jc="websocket__null__url:@{R.socket}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
+	<div data---="LAZY autocomplete"></div>
+	<div data---="LAZY calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
+	<div data---="LAZY message__null__button:@(Close)"></div>
+	<div data---="LAZY snackbar__null__button:@(Dismiss)"></div>
+	<div data---="LAZY directory"></div>
+	<div data---="confirm"></div>
+	<div data---="features__null__placeholder:@(Search feature ...)"></div>
+	<div data---="contextmenu"></div>
+	<div data---="colorpicker"></div>
+	<div data---="loading" class="ui-loading ui-loading-firstload"></div>
+	<div data---="shortcuts"></div>
+	<div data---="websocket__null__url:@{R.socket}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
@@ -71,7 +72,7 @@
 			</div>
 
 			<div class="scroller">
-				<div data-jc="repeater__common.errors">
+				<div data---="repeater__common.errors">
 					<script type="text/html">
 						<div class="erroroutput">
 							<div class="erroroutput-name"><i class="fa fa-square mr5" style="color:{{ color }}"></i><b>{{ name }}</b> / {{ tab }}</div>
@@ -92,7 +93,7 @@
 		<div class="hidden body-debug" data-bind="common.panel__show:value=='debug'">
 			<div style="padding:15px 15px 0">
 				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
-				<div data-jc="checkbox__common.beautify">@(Beautify)</div>
+				<div data---="checkbox__common.beautify">@(Beautify)</div>
 				<hr class="nmb" style="margin-top:15px" />
 			</div>
 			<div id="body-debug-output" class="scroller"></div>
@@ -105,8 +106,8 @@
 				<div><span data-bind="flow.traffic.counter__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<div><span data-bind="common.onlineusers__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
 				<div class="checkboxes">
-					<div data-jc="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
-					<div data-jc="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
+					<div data---="checkbox__common.animations" class="b">@(Show real-time traffic visualizer)</div>
+					<div data---="checkbox__common.traffictab">@(Show traffic from the current tab)</div>
 				</div>
 			</div>
 
@@ -119,7 +120,7 @@
 						<div class="traffic-name sort exec" data-exec="trafficsort" data-name="name">{{ value | trafficsort('name') }}@(Component)</div>
 					</script>
 				</div>
-				<div data-jc="repeater__flow.traffic">
+				<div data---="repeater__flow.traffic">
 					<script type="text/html">
 						<div class="traffic-container">
 							<div class="traffic-value{{ if output > 59 }} red{{ fi }}">{{ outputc }}</div>
@@ -143,13 +144,13 @@
 		</section>
 
 		<div class="components-search-padding">
-			<div data-jc="textbox__common.search__placeholder:@(Search components ...);type:search"></div>
+			<div data---="textbox__common.search__placeholder:@(Search components ...);type:search"></div>
 		</div>
 
-		<div data-jc="search__common.search__selector:li">
+		<div data---="search__common.search__selector:li">
 			<div class="components-container">
 				<div class="scroller">
-					<ul data-jc="repeater-group__common.components__group:group" class="components">
+					<ul data---="repeater-group__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
 								<div><i class="fa fa-circle" style="color:{{ color }}"></i>{{ name }}</div>
@@ -180,7 +181,7 @@
 
 		<section class="tabs tabs-flow">
 
-			<nav data-jc="repeater__flow.tabs">
+			<nav data---="repeater__flow.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__!.selected:value.id=='{{ id }}'">{{ name }}</a>
 				</script>
@@ -213,18 +214,18 @@
 				<div class="designer-shadow-right"></div>
 				<div class="designer-shadow-bottom"></div>
 				<div class="designer-shadow-left"></div>
-				<div data-jc="designer__flow.designer"></div>
+				<div data---="designer__flow.designer"></div>
 			</div>
 		</div>
 	</div>
 
-	<div data-jc="importer__common.form__if:tab;url:@{R.url}forms/form-tab.html;cleaner:5"></div>
-	<div data-jc="importer__common.form__if:export;url:@{R.url}forms/form-export.html;reload:export/reload;cleaner:5"></div>
-	<div data-jc="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload;cleaner:5"></div>
-	<div data-jc="importer__common.form__if:database;url:@{R.url}forms/form-database.html;cleaner:5"></div>
-	<div data-jc="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
-	<div data-jc="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
-	<div data-jc="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:tab;url:@{R.url}forms/form-tab.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:export;url:@{R.url}forms/form-export.html;reload:export/reload;cleaner:5"></div>
+	<div data---="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload;cleaner:5"></div>
+	<div data---="importer__common.form__if:database;url:@{R.url}forms/form-database.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
+	<div data---="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
+	<div data---="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -232,11 +233,6 @@
 	<script>
 
 		window.user = PARSE('#userdata');
-
-		UPTODATE('1 day', function() {
-			return !document.hasFocus();
-		});
-
 		M.environment('flow.jc');
 
 		var MESSAGES = {};
@@ -1268,7 +1264,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data-jc="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data-jc="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data-jc="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data-jc="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append(('<div data----id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data----scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data---="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);

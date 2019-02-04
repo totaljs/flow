@@ -22,6 +22,10 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .body-traffic-heading .checkboxes { border-top: 1px solid #EEE; border-bottom: 1px solid #EEE; padding: 10px 0; margin: 10px 0 5px; }
 .themedark .body-traffic-heading .checkboxes { border-top-color: #303030; border-bottom-color: #303030; }
 
+.shortcuthint b { padding-top: 5px; display: block; color: black; }
+.shortcuthint { font-size: 12px; padding-bottom: 5px; border-top: 1px solid #E0E0E0; }
+.shortcuthint:first-child { border-top: 0; }
+
 #panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; z-index: 100 }
 #panel-notification div { line-height: 14px; margin-top: 3px; }
 #panel-notification label { font-size: 10px; text-transform: uppercase; display: block; font-weight: bold; color: black; }

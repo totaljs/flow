@@ -97,7 +97,7 @@ $(window).on('resize', function() {
 });
 
 function getSize(el) {
-	var size = SINGLETON('size');
+	var size = {};
 	el = $(el);
 	size.width = el.width();
 	size.height = el.height();

@@ -20,6 +20,7 @@ const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const MESSAGE_ONLINE = { type: 'online' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
+const FILEVARIABLES = '/flow/variables.txt';
 const FLAGS = ['get', 'dnscache'];
 const FLAGSVERSION = ['get', 'dnscache', '< 1'];
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
@@ -37,7 +38,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v5.2.1';
+exports.version = 'v5.3.0';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -1635,18 +1636,24 @@ FLOW.save2 = function(callback) {
 	data.tabs = MESSAGE_DESIGNER.tabs;
 	data.components = FLOW.clearInstances();
 	data.version = +exports.version.replace(/(v|\.)/g, '');
-	data.variables = FLOW.$variables;
 
 	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
 
 	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
-		err && F.error(err, 'FLOW.save()');
-		callback && callback();
-		EMIT('flow.save');
+		err && F.error(err, 'FLOW.save("designer")');
+		Fs.writeFile(F.path.root(FILEVARIABLES), FLOW.$variables, function(err) {
+			err && F.error(err, 'FLOW.save("variables")');
+			callback && callback();
+			EMIT('flow.save');
+		});
 	});
 
 	FLOW.refresh_connections();
-	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
+
+	if (OPT.backup) {
+		Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
+		Fs.writeFile(F.path.root(FILEVARIABLES.replace(/\.txt/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')),  FLOW.$variables, NOOP);
+	}
 };
 
 FLOW.save3 = function() {
@@ -1748,47 +1755,58 @@ FLOW.load = function(callback) {
 				FLOW.execute(filename);
 				next();
 			}, function() {
-				Fs.readFile(F.path.root(FILEDESIGNER), function(err, data) {
 
-					if (data)
-						data = data.toString('utf8').parseJSON(true);
+				// Reads variables
+				Fs.readFile(F.path.root(FILEVARIABLES), function(err, data) {
 
-					if (!data)
-						data = { components: [] };
+					FLOW.$variables = data ? data.toString('utf8') : '';
 
-					FLOW.$variables = data.variables || '';
-					FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+					// Reads designer
+					Fs.readFile(F.path.root(FILEDESIGNER), function(err, data) {
 
-					MESSAGE_DESIGNER.tabs = data.tabs;
+						if (data)
+							data = data.toString('utf8').parseJSON(true);
 
-					data.components.forEach(function(item) {
-						var declaration = FLOW.components[item.component];
-						if (declaration && declaration.options)
-							item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
-						if (!data.version) {
-							// Backward compatibility
-							Object.keys(item.connections).forEach(function(index) {
-								var arr = item.connections[index];
-								for (var i = 0; i < arr.length; i++) {
-									if (typeof(arr[i]) === 'string')
-										arr[i] = { index: '0', id: arr[i] };
-								}
+						if (!data)
+							data = { components: [] };
+
+						if (!FLOW.$variables)
+							FLOW.$variables = data.variables || '';
+
+						FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+
+						MESSAGE_DESIGNER.tabs = data.tabs;
+
+						data.components.forEach(function(item) {
+							var declaration = FLOW.components[item.component];
+							if (declaration && declaration.options)
+								item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
+							if (!data.version) {
+								// Backward compatibility
+								Object.keys(item.connections).forEach(function(index) {
+									var arr = item.connections[index];
+									for (var i = 0; i < arr.length; i++) {
+										if (typeof(arr[i]) === 'string')
+											arr[i] = { index: '0', id: arr[i] };
+									}
+								});
+							}
+						});
+
+						FLOW.refresh_connections();
+
+						Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
+							indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
+
+							if (!FLOW.inmemory)
+								FLOW.inmemory = {};
+
+							EMIT('flow');
+							FLOW.init(data.components, function(){
+								FLOW.designer();
+								READY = true;
+								callback && callback();
 							});
-						}
-					});
-
-					FLOW.refresh_connections();
-
-					Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
-						indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
-						if (!FLOW.inmemory)
-							FLOW.inmemory = {};
-
-						EMIT('flow');
-						FLOW.init(data.components, function(){
-							FLOW.designer();
-							READY = true;
-							callback && callback();
 						});
 					});
 				});

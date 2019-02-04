@@ -1,24 +1,24 @@
-<div data-jc="form__common.form__if:import;width:500;submit:import/submit;title:@(Import Flow)" class="hidden">
+<div data---="form__common.form__if:import;width:500;submit:import/submit;title:@(Import Flow)" class="hidden">
 	<div class="padding" data-bind="formimportanalysis.is__.bg-smoke:value">
-		<div data-jc="filereader__formimport.filebody__accept:text/plain;placeholder:@(Browse your device)" class="m">@(Load export from a file)</div>
-		<div data-jc="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
-		<div data-jc="checkbox__formimport.replace">@(Clear current design)</div>
+		<div data---="filereader__formimport.filebody__accept:text/plain;placeholder:@(Browse your device)" class="m">@(Load export from a file)</div>
+		<div data---="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
+		<div data---="checkbox__formimport.replace">@(Clear current design)</div>
 	</div>
 	<div class="hidden" data-bind="formimportanalysis.is__visible:value==true">
 		<hr class="nmt" />
 		<div class="padding npt">
 			<div data-bind="formimportanalysis.tabs__visible:value && value.length > 0" class="m">
-				<div data-jc="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
+				<div data---="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
 			</div>
-			<div data-jc="checkbox__formimport.components">@(Install missing components from templates)</div>
+			<div data---="checkbox__formimport.components">@(Install missing components from templates)</div>
 			<div data-bind="formimportanalysis.variables__visible:value" class="m">
-				<div data-jc="checkbox__formimport.variables">@(Import and replace variables)</div>
+				<div data---="checkbox__formimport.variables">@(Import and replace variables)</div>
 			</div>
-			<div data-jc="error__formimportanalysis.errors"></div>
+			<div data---="error__formimportanalysis.errors"></div>
 		</div>
 	</div>
 	<div class="ui-form-buttons center">
-		<div data-jc="validation__formimport__if:value.is === true">
+		<div data---="validation__formimport__if:value.is === true">
 			<button name="submit" disabled="disabled">@(IMPORT)</button>
 		</div>
 		<button name="cancel">@(Close)</button>
@@ -148,7 +148,7 @@
 						tabs = formimportanalysis.tabs;
 						components = formimportanalysis.components;
 					}
-					
+
 					EMIT('changed', 'tabs');
 					components.forEach(c => EMIT('changed', 'add', c.id));
 
