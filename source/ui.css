@@ -41,6 +41,7 @@
 .ui-designer .highlight .rect { animation: highlight 0.5s alternate infinite; clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
 .ui-designer .icon { font:normal normal normal 18px FontAwesome; fill: white; }
 .ui-designer .iconline { stroke: rgba(255,255,255,0.2); stroke-width: 1px; }
+.ui-designer .selector { fill: rgb(150,122,220); stroke: rgb(106, 58, 226); stroke-width: 2; }
 
 .ui-form-noscroll, .ui-form-noscroll body { overflow: hidden; }
 .ui-form-container { width: 100%; position: fixed; left: 0; top: 0; bottom: 0; right: 0; background-color: rgba(230,233,237,0.8); z-index: 5; overflow-y: scroll; transform-style: preserve-3d; overflow-scrolling: touch; }
@@ -349,12 +350,15 @@ label span { vertical-align: middle; }
 .themedark .ui-designer .data { fill: #3084E1; }
 .themedark .ui-designer .m1 { fill: white; }
 .themedark .ui-designer .input, .themedark .ui-designer .output { stroke: black; }
+.themedark .ui-designer .selected > rect:first-child { opacity: 0.4; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 .themedark .ui-designer > div { background-color: #202020; }
 .themedark .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }
 .themedark .ui-form-container { background-color: rgba(0,0,0,0.5); }
 .themedark .ui-form { box-shadow: 0 0 20px black; }
 .themedark .ui-confirm { background-color: rgba(0,0,0,0.5); }
+.themedark .selector { stroke: rgb(202,202,202); }
+
 
 .themedark .ui-contextmenu { background-color: white; }
 .themedark .ui-contextmenu-arrow { color: white; }

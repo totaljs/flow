@@ -538,7 +538,7 @@
 		ON('designer.selectable', function(el) {
 			flow.selected = el;
 			$('#designerbuttons button').each(function(index) {
-				var node = $(this);
+				var button = $(this);
 				var disabled = false;
 				if (el && this.name === 'duplicate' && el.$type === 'connection') {
 					disabled = true;
@@ -551,7 +551,7 @@
 					if (this.name === 'paste')
 						disabled = flow.clipboard == null;
 				}
-				node.tclass('disabled', disabled);
+				button.tclass('disabled', disabled);
 			});
 		});
 
@@ -781,7 +781,8 @@
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
 			component.options.comoutput = component.output;
-			component.options.cominput = component.input;
+			component.options.cominput = component.input;			
+			component.options.comreadme = undefined;
 
 			if (!component.isnew && is_server) {
 				SETTER('websocket', 'send', { target: settings.$id, type: 'options', body: component.options });
@@ -1294,7 +1295,6 @@
 		});
 
 		ON('designer.duplicate', function(shiftKey) {
-			//!el.hclass('disabled') && SETTER('designer', 'duplicate');
 			EMIT('designer.copy', shiftKey === true ? shiftKey : false);
 			EMIT('designer.paste');
 		});
@@ -1419,27 +1419,22 @@
 					});
 
 					item.connections.length && 	item.connections.trim();
+					item.isnew = true;
 					flow.components.push(item);
 					flow.designer.push(item);
 					EMIT('add.' + item.component);
 					EMIT('changed', 'add', item.id);
 				});
 
-				var first = new_comps[0];
-
 				flow.clipboard = null;
 				EMIT('designer.selectable', flow.selected);
 				setState(MESSAGES.apply);
+
 				setTimeout(function() {
 					EMIT('designer.refresh');
-					SETTER('loading', 'hide', 500);
-					var st = first.y - 100;
-					new_comps.forEach(function(c){ $('.node_' + c.id).aclass('highlight'); });
-					highlightcomponent(new_comps[0].id);
-					setTimeout(function(){
-						new_comps.forEach(function(c){ $('.node_' + c.id).rclass('highlight'); });
-					}, 8000);
-				}, 50);
+					SETTER('designer', 'selectNew');
+					SETTER('loading', 'hide', 400);
+				}, 100);
 			});
 		});
 
