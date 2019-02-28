@@ -1,28 +1,36 @@
-<div data---="form__common.form__if:tab;width:400;enter:true;title:@(Edit tab);submit:tab/submit;autofocus:true" class="hidden">
-	<div class="padding npb">
-		<div data---="textbox__formtab.name__maxlength:30;required:true;placeholder:@(Type a tab name)" class="m">@(Name)</div>
+<div data---="modal__common.form__if:tab;width:400;enter:true;title:@(Edit tab);submit:tab/submit" class="hidden">
 
-		<div class="row">
-			<div class="col-md-3 m">
-				<div data---="dropdown__formtab.position__required:true;type:number;datasource:formtabpositions">@(Position)</div>
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
+	</div>
+
+	<div>
+		<div class="padding npb">
+			<div data---="input__formtab.name__maxlength:30;required:1;innerlabel:1" class="m">@(Name)</div>
+
+			<div class="row">
+				<div class="col-md-4 m">
+					<div data---="input__formtab.position__required:1;dirsource:formtabpositions;innerlabel:1">@(Position)</div>
+				</div>
 			</div>
-		</div>
 
-		<div data-bind="formtab.id__visible:value" class="hidden m fs12">
-			<div class="mt5"><a href="javascript:void(0)" class="link exec" data-exec="tab/duplicate"><i class="fa fa-copy"></i>@(Duplicate tab with all components)</a></div>
-			<div data-bind="formtab.id__visible:value && flow.tabs.length > 1">
-				<hr style="margin:10px 0" />
-				<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
-				<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="tab/remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
+			<div data-bind="formtab.id__visible:value" class="hidden m fs12">
+				<div class="mt5"><a href="javascript:void(0)" class="link exec" data-exec="tab/duplicate"><i class="fa fa-copy"></i>@(Duplicate tab with all components)</a></div>
+				<div data-bind="formtab.id__visible:value && flow.tabs.length > 1">
+					<hr style="margin:10px 0" />
+					<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
+					<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="tab/remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="ui-form-buttons">
-		<div data---="validation__formtab">
-			<button name="submit" disabled="disabled">@(SUBMIT)</button>
-		</div>
-		<button name="cancel">@(Close)</button>
+
+	<div data---="validation__formtab">
+		<span class="link cancel">@(Close)</span>
+		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(SAVE)</button>
 	</div>
+
 </div>
 
 <script>

@@ -38,7 +38,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v5.3.0';
+exports.version = 'v6.0.0';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -1387,18 +1387,18 @@ FLOW.changes = function(arr) {
 
 function change_move(c){
 	var instance = FLOW.instances[c.id];
-	if (!instance)
-		return;
-	instance.x = c.x;
-	instance.y = c.y;
+	if (instance) {
+		instance.x = c.x;
+		instance.y = c.y;
+	}
 }
 
 function change_connections(id, conn){
 	var instance = FLOW.instances[id];
-	if (!instance)
-		return;
-	instance.connections = conn || {};
-	instance.$refresh();
+	if (instance) {
+		instance.connections = conn || {};
+		instance.$refresh();
+	}
 }
 
 FLOW.reset = function(components, callback) {
@@ -1744,9 +1744,91 @@ FLOW.execute = function(filename) {
 	return FLOW;
 };
 
-// Loads data when flow is starting
-FLOW.load = function(callback) {
+FLOW.kill = function(callback) {
+	var keys = Object.keys(FLOW.instances);
+	var close = [];
+	for (var i = 0; i < keys.length; i++)
+		close.push(FLOW.instances[keys[i]]);
+	FLOW.reset(close, callback);
+};
 
+FLOW.reload = function(type, callback) {
+
+	if (typeof(type) === 'function') {
+		callback = type;
+		type = 0;
+	}
+
+	if (type === 1) {
+		FLOW.kill(function() {
+			MESSAGE_DESIGNER.database = [];
+			FLOW.load(callback, true);
+		});
+	} else {
+		FLOW.kill(function() {
+			reload(callback);
+		});
+	}
+};
+
+function reload(callback) {
+	// Reads variables
+	Fs.readFile(F.path.root(FILEVARIABLES), function(err, data) {
+
+		FLOW.$variables = data ? data.toString('utf8') : '';
+
+		// Reads designer
+		Fs.readFile(F.path.root(FILEDESIGNER), function(err, data) {
+
+			if (data)
+				data = data.toString('utf8').parseJSON(true);
+
+			if (!data)
+				data = { components: [] };
+
+			if (!FLOW.$variables)
+				FLOW.$variables = data.variables || '';
+
+			FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+
+			MESSAGE_DESIGNER.tabs = data.tabs;
+
+			data.components.forEach(function(item) {
+				var declaration = FLOW.components[item.component];
+				if (declaration && declaration.options)
+					item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
+				if (!data.version) {
+					// Backward compatibility
+					Object.keys(item.connections).forEach(function(index) {
+						var arr = item.connections[index];
+						for (var i = 0; i < arr.length; i++) {
+							if (typeof(arr[i]) === 'string')
+								arr[i] = { index: '0', id: arr[i] };
+						}
+					});
+				}
+			});
+
+			FLOW.refresh_connections();
+
+			Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
+				indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
+
+				if (!FLOW.inmemory)
+					FLOW.inmemory = {};
+
+				FLOW.init(data.components, function(){
+					FLOW.designer();
+					READY = true;
+					callback && callback();
+				});
+			});
+		});
+	});
+}
+
+// Loads data when flow is starting
+FLOW.load = function(callback, isreload) {
 	var path = F.path.root(PATH);
 	F.path.exists(path, function(e) {
 		!e && Fs.mkdirSync(path);
@@ -1755,65 +1837,15 @@ FLOW.load = function(callback) {
 				FLOW.execute(filename);
 				next();
 			}, function() {
-
-				// Reads variables
-				Fs.readFile(F.path.root(FILEVARIABLES), function(err, data) {
-
-					FLOW.$variables = data ? data.toString('utf8') : '';
-
-					// Reads designer
-					Fs.readFile(F.path.root(FILEDESIGNER), function(err, data) {
-
-						if (data)
-							data = data.toString('utf8').parseJSON(true);
-
-						if (!data)
-							data = { components: [] };
-
-						if (!FLOW.$variables)
-							FLOW.$variables = data.variables || '';
-
-						FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
-
-						MESSAGE_DESIGNER.tabs = data.tabs;
-
-						data.components.forEach(function(item) {
-							var declaration = FLOW.components[item.component];
-							if (declaration && declaration.options)
-								item.options = U.extend(U.extend({}, declaration.options || EMPTYOBJECT, true), item.options, true);
-							if (!data.version) {
-								// Backward compatibility
-								Object.keys(item.connections).forEach(function(index) {
-									var arr = item.connections[index];
-									for (var i = 0; i < arr.length; i++) {
-										if (typeof(arr[i]) === 'string')
-											arr[i] = { index: '0', id: arr[i] };
-									}
-								});
-							}
-						});
-
-						FLOW.refresh_connections();
-
-						Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
-							indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
-
-							if (!FLOW.inmemory)
-								FLOW.inmemory = {};
-
-							EMIT('flow');
-							FLOW.init(data.components, function(){
-								FLOW.designer();
-								READY = true;
-								callback && callback();
-							});
-						});
-					});
+				reload(function() {
+					if (isreload)
+						EMIT('flow.reload');
+					else
+						EMIT('flow');
 				});
 			});
 		}, n => U.getExtension(n) === 'js');
 	});
-
 	return FLOW;
 };
 

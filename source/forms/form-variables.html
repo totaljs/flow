@@ -1,10 +1,17 @@
-<div data---="form__common.form__if:variables;width:960;submit:variables/submit;title:@(Global Variables)" class="hidden">
-	<div class="padding">
-		<div data---="codemirror__formvariables.body__type:totaljsresources;height:250">@(Variables)</div>
-		<div class="black mt10">
-			<strong>@(Example:)</strong>
-		</div>
-		<pre class="variablesexample"><code><i>// @(Comments can be used too)</i>
+<div data---="modal__common.form__if:variables;width:960;submit:variables/submit;title:@(Global Variables)" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
+	</div>
+
+	<div>
+		<div class="padding">
+			<div data---="codemirror__formvariables.body__type:totaljsresources;height:250">@(Variables)</div>
+			<div class="black mt10">
+				<strong>@(Example:)</strong>
+			</div>
+			<pre class="variablesexample"><code><i>// @(Comments can be used too)</i>
 @(key1)                                  : <b>@(A string value)</b>
 @(key2)                                  : <b>@(A string value)</b>
 
@@ -17,13 +24,13 @@ my-custom-date            <span>(date)</span>      : <b>2016-07-26</b>
 my-custom-array           <span>(array)</span>     : <b>[1, 2, 3, 4]</b>
 binds-environment-value   <span>(env)</span>       : <b>process.env</b>
 binds-config-value        <span>(config)</span>    : <b>name</b></code></pre>
-	</div>
-	<div class="ui-form-buttons">
-		<div data---="validation__formvariables">
-			<button name="submit" disabled="disabled">@(SUBMIT)</button>
 		</div>
-		<button name="cancel">@(Close)</button>
 	</div>
+	<div data---="validation__formvariables">
+		<span class="link cancel">@(Close)</span>
+		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(SAVE)</button>
+	</div>
+
 </div>
 
 <script>
@@ -34,7 +41,7 @@ binds-config-value        <span>(config)</span>    : <b>name</b></code></pre>
 			SETTER('websocket', 'send', { type: 'getvariables' });
 		};
 
-		exports.submit = function(com) {
+		exports.submit = function() {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to use variables?)', ['"check-circle" @(Yes)', '@(Cancel)'], function(index) {
 				if (!index) {
 					SETTER('loading', 'hide', 1000);

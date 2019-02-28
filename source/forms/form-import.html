@@ -1,27 +1,34 @@
-<div data---="form__common.form__if:import;width:500;submit:import/submit;title:@(Import Flow)" class="hidden">
-	<div class="padding" data-bind="formimportanalysis.is__.bg-smoke:value">
-		<div data---="filereader__formimport.filebody__accept:text/plain;placeholder:@(Browse your device)" class="m">@(Load export from a file)</div>
-		<div data---="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
-		<div data---="checkbox__formimport.replace">@(Clear current design)</div>
+<div data---="modal__common.form__if:import;width:500;submit:import/submit;title:@(Import Flow)" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
 	</div>
-	<div class="hidden" data-bind="formimportanalysis.is__visible:value==true">
-		<hr class="nmt" />
-		<div class="padding npt">
-			<div data-bind="formimportanalysis.tabs__visible:value && value.length > 0" class="m">
-				<div data---="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
+
+	<div>
+		<div class="padding" data-bind="formimportanalysis.is__.bg-smoke">
+			<div data---="filereader__formimport.filebody__placeholder:@(Browse your device)" class="m">@(Load export from a file)</div>
+			<div data---="textarea__formimport.body__height:200;required:true__''" class="m">@(Put exported data)</div>
+			<div data---="checkbox__formimport.replace">@(Clear current design)</div>
+		</div>
+		<div class="hidden" data-bind="formimportanalysis.is__show">
+			<hr class="nmt" />
+			<div class="padding npt">
+				<div data-bind="formimportanalysis.tabs__show:value && value.length > 0" class="m">
+					<div data---="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
+				</div>
+				<div data---="checkbox__formimport.components">@(Install missing components from templates)</div>
+				<div data-bind="formimportanalysis.variables__show" class="m">
+					<div data---="checkbox__formimport.variables">@(Import and replace variables)</div>
+				</div>
+				<div data---="error__formimportanalysis.errors"></div>
 			</div>
-			<div data---="checkbox__formimport.components">@(Install missing components from templates)</div>
-			<div data-bind="formimportanalysis.variables__visible:value" class="m">
-				<div data---="checkbox__formimport.variables">@(Import and replace variables)</div>
-			</div>
-			<div data---="error__formimportanalysis.errors"></div>
 		</div>
 	</div>
-	<div class="ui-form-buttons center">
-		<div data---="validation__formimport__if:value.is === true">
-			<button name="submit" disabled="disabled">@(IMPORT)</button>
-		</div>
-		<button name="cancel">@(Close)</button>
+
+	<div data---="validation__formimport__if:value.is === true">
+		<span class="link cancel">@(Close)</span>
+		<button name="submit" disabled><i class="fa fa-cloud-download mr5"></i>@(IMPORT)</button>
 	</div>
 </div>
 
@@ -43,8 +50,10 @@
 			var data = null;
 
 			try {
-				data = PARSE(decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))));
-			} catch (e) {}
+				data = PARSE(formimport.body.indexOf('{') === -1 ? decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))) : formimport.body);
+			} catch (e) {
+				INVALID('formimport.body');
+			}
 
 			if (!data) {
 				SET('formimport.is', false);
@@ -112,7 +121,7 @@
 				importcomponents();
 		};
 
-		exports.submit = function(form) {
+		exports.submit = function(hide) {
 			SETTER('confirm', 'confirm', '@(Are you sure you want to restore entered data?)', ['"check-circle" @(Yes)', '@(Cancel)'], function(index) {
 
 				if (index)
@@ -197,7 +206,7 @@
 					UPDATE('flow');
 					SETTER('binder', 'scan');
 					COMPILE();
-					form.hide();
+					hide();
 
 					setTimeout(function() {
 						FREE();

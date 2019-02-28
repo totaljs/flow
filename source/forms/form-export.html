@@ -1,15 +1,26 @@
-<div data---="form__common.form__if:export;width:500;submit:export/submit;title:@(Export Flow)" class="hidden">
-	<div class="padding bg-smoke">
-		<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
-		<div data---="checkbox__formexport.variables">@(Export variables)</div>
+<div data---="modal__common.form__if:export;width:500;submit:export/submit;title:@(Export Flow)" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
 	</div>
-	<div class="padding npb">
-		<div data---="textarea__formexport.body__height:200;icon:clipboard;readonly:true" class="m">@(Copy data to clipboard)</div>
+
+	<div>
+		<div class="padding bg-smoke">
+			<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
+			<div data---="checkbox__formexport.variables">@(Export variables)</div>
+		</div>
+		<div class="padding">
+			<div data---="textarea__formexport.body__height:200;icon:clipboard;readonly:true" class="m">@(Copy data to clipboard)</div>
+			<div data---="radiobutton__formexport.type__items:json|JSON,base64|Base64;type__'json'"></div>
+		</div>
 	</div>
-	<div class="ui-form-buttons">
+
+	<div>
+		<span class="link cancel">@(Cancel)</span>
 		<button name="submit"><i class="fa fa-floppy-o mr5"></i>@(Save to File)</button>
-		<button name="cancel">@(Close)</button>
 	</div>
+
 </div>
 
 <script>
@@ -52,17 +63,19 @@
 					delete o.$component;
 				});
 
-				SET('formexport.body', btoa(encodeURIComponent(STRINGIFY(obj))));
+				SET('formexport.body', formexport.type === 'json' ? JSON.stringify(obj, null, '\t') : btoa(encodeURIComponent(STRINGIFY(obj))));
 			}, 500);
 		};
 
 		exports.submit = function() {
-			var blob = new Blob([formexport.body], { type: 'text/plain; charset=utf-8' });
-			saveAs(blob, 'flow_{0}.txt'.format(NOW.format('yyyyMMdd-HHmm')));
+			var type = formexport.type;
+			var blob = new Blob([formexport.body], { type: type === 'json' ? 'application/json' : 'text/plain; charset=utf-8' });
+			saveAs(blob, ('flow_{0}.' + (type === 'json' ? 'json' : 'txt')).format(NOW.format('yyyyMMdd-HHmm')));
 		};
 
 		WATCH('formexport.tabs', exports.rebuild);
 		WATCH('formexport.variables', exports.rebuild);
+		WATCH('formexport.type', exports.rebuild);
 	});
 
 </script>

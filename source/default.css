@@ -151,7 +151,7 @@ svg { cursor: move; }
 .help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 3px; }
 .help .fa { margin-right: 5px; }
 
-.scroller { width: 110%; height: 100%; overflow-x: hidden; padding-right: 10%; overflow-scrolling: touch; }
+.scroller { width: 114%; height: 100%; overflow-x: hidden; padding-right: 10%; overflow-y: scroll; overflow-scrolling: touch; }
 
 .markdown { margin-top: 5px; font-size: 12px; line-height: 16px; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif; color: #404040; }
 .markdown h1 { margin: 0 0 15px; font-size: 23px; padding: 0 0 5px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 23px; font-family: Arial, sans-serif; }

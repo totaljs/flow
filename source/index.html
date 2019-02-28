@@ -29,10 +29,13 @@
 	<div data---="LAZY calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data---="LAZY message__null__button:@(Close)"></div>
 	<div data---="LAZY snackbar__null__button:@(Dismiss)"></div>
+	<div data---="LAZY menu"></div>
 	<div data---="LAZY directory"></div>
-	<div data---="confirm"></div>
+	<div data---="LAZY timepicker"></div>
+	<div data---="LAZY datepicker__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
+	<div data---="LAZY contextmenu"></div>
+	<div data---="LAZY confirm"></div>
 	<div data---="features__null__placeholder:@(Search feature ...)"></div>
-	<div data---="contextmenu"></div>
 	<div data---="colorpicker"></div>
 	<div data---="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data---="shortcuts"></div>
@@ -781,7 +784,7 @@
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
 			component.options.comoutput = component.output;
-			component.options.cominput = component.input;			
+			component.options.cominput = component.input;
 			component.options.comreadme = undefined;
 
 			if (!component.isnew && is_server) {
@@ -912,7 +915,7 @@
 
 			formtabpositions = [];
 			for (var i = 0; i < flow.tabs.length + 1; i++)
-				formtabpositions.push({ id: i + 1, name: i + 1 });
+				formtabpositions.push({ id: i + 1, name: (i + 1) + '' });
 
 			UPDATE('formtabpositions');
 			SET('formtab', { position: flow.tabs.length + 1 }, true);
@@ -923,7 +926,7 @@
 
 			formtabpositions = [];
 			for (var i = 0; i < flow.tabs.length; i++)
-				formtabpositions.push({ id: i + 1, name: i + 1 });
+				formtabpositions.push({ id: i + 1, name: (i + 1) + '' });
 
 			UPDATE('formtabpositions');
 
@@ -1265,7 +1268,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div></div>{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data---="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#flow.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data---="modal__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div><span class="link cancel"><i class="fa fa-times"></i></span><label></label></div><div><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div></div>{1}</div></div></div><div><span class="link cancel">@(Cancel)</span><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY)</button></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);
@@ -1464,11 +1467,13 @@
 		function settings_menu(el) {
 			var items = [];
 
-			items.push({ name: '@(Components)', icon: 'fa-database', value: 'database' });
-			items.push({ name: '@(Variables)', icon: 'fa-sliders', value: 'variables' });
-			items.push({ name: '@(Export designer)', icon: 'fa-copy', value: 'export' });
-			items.push({ name: '@(Import designer)', icon: 'fa-folder-o', value: 'import' });
-			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
+			items.push({ name: '@(Components)', icon: 'database', value: 'database' });
+			items.push({ name: '@(Variables)', icon: 'sliders', value: 'variables' });
+			items.push('-');
+			items.push({ name: '@(Export designer)', icon: 'copy', value: 'export' });
+			items.push({ name: '@(Import designer)', icon: 'folder-o', value: 'import' });
+			items.push('-');
+			items.push({ name: '@(Clear current tab)', icon: 'trash-o', value: 'clear' });
 
 			@{if helpers.FLOWBOARD || helpers.DASHBOARD}
 			items.push('@(Applications)');
@@ -1482,8 +1487,13 @@
 
 			EMIT('settings.open', items);
 
-			SETTER('contextmenu', 'show', 'left', el, items, function(value) {
+			var opt = {};
+			opt.items = items;
+			opt.element = el;
+			opt.offsetY = -5;
 
+			opt.callback = function(item) {
+				var value = item.value;
 				EMIT('settings.select', value);
 
 				switch (value) {
@@ -1499,7 +1509,9 @@
 						EMIT('flow.clear');
 						return;
 				}
-			}, 5);
+			};
+
+			SETTER('menu', 'show', opt);
 		}
 
 		SETTER(true, 'shortcuts', 'register', 'F1', function(e) {

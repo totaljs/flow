@@ -1,15 +1,21 @@
-<div data---="form__common.form2__title:@(Registered components);if:components;width:850;submit:components/submit" class="hidden">
-	<div class="padding">
-		<div class="padding bg-smoke" style="border-radius:3px">
-			<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true">@(Choose components)</div>
-		</div>
-		<div class="mt10">
-			<a href="javascript:void(0)" class="exec fs12" data-exec="components/select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</a>
+<div data---="modal__common.form2__title:@(Choose components);if:components;width:850;submit:components/submit" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
+	</div>
+
+	<div>
+		<div class="padding">
+			<div class="padding bg-smoke" style="border-radius:3px">
+				<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true"></div>
+			</div>
 		</div>
 	</div>
-	<div class="ui-form-buttons">
-		<button name="submit">@(Submit)</button>
-		<button name="cancel">@(Close)</button>
+	<div>
+		<span class="link exec fs12 pull-left" style="margin-top:22px" data-exec="components/select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</span>
+		<span class="link cancel">@(Cancel)</span>
+		<button name="submit">@(INSTALL)</button>
 	</div>
 </div>
 

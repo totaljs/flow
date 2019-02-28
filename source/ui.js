@@ -1410,7 +1410,7 @@ COMPONENT('designer', function() {
 				self.allowedselected = [];
 
 			if (e.target.tagName === 'BODY') {
-				
+
 				if (e.ctrlKey || e.metaKey)
 					tmp.css('cursor', 'default');
 				else
@@ -1469,7 +1469,7 @@ COMPONENT('designer', function() {
 					var mpos = offsetter(e);
 					var off = svg.offset();
 
-					var newposx = mpos.x - off.left; 
+					var newposx = mpos.x - off.left;
 					var newposy = mpos.y - off.top;
 					var mbx = move.mposx - newposx;
 					var mby = move.mposy - newposy;
@@ -1495,7 +1495,7 @@ COMPONENT('designer', function() {
 		self.mup = function(x, y, offsetX, offsetY, e) {
 
 			if (!move.moved)
-				self.select(move.node, e, 'component');	
+				self.select(move.node, e, 'component');
 
 			var el = $(e.target);
 			switch (move.type) {
@@ -1688,12 +1688,12 @@ COMPONENT('designer', function() {
 			}
 
 			if (selected.length && selected.filter(function(sel) { return sel.get(0) === el.get(0); }).length && (e && (e.ctrlKey || e.metaKey))) {
-				selected = selected.filter(function(sel) { 
+				selected = selected.filter(function(sel) {
 					var is = sel.get(0) === el.get(0);
 					is && el.rclass('selected');
 					return !is;
 				});
-				 
+
 				selected.$type = selected.length ? type : null;
 				EMIT('designer.selectable', selected);
 				return;
@@ -1736,7 +1736,7 @@ COMPONENT('designer', function() {
 			mousepos.x = mousepos.x - off.left;
 			mousepos.y = mousepos.y - off.top;
 
-			var width = mousepos.x - select.origin.x; 
+			var width = mousepos.x - select.origin.x;
 			var height = mousepos.y - select.origin.y;
 
 			if (height <= 0) {
@@ -1751,7 +1751,7 @@ COMPONENT('designer', function() {
 			self.selectMultiple(select.x, select.y, select.x + width, select.y + height, off);
 		};
 
-		self.selectorup = function(e) {
+		self.selectorup = function() {
 			select.active = false;
 			selector.attr('width', 0).attr('height', 0).attr('opacity', 0);
 			selected.forEach(function(el){
@@ -2322,7 +2322,7 @@ function offsetter(evt) {
 
 COMPONENT('checkbox', function(self, config) {
 
-	self.nocompile();
+	self.nocompile && self.nocompile();
 
 	self.validate = function(value) {
 		return (config.disabled || !config.required) ? true : (value === true || value === 'true' || value === 'on');
@@ -4746,7 +4746,7 @@ COMPONENT('filereader', function(self, config) {
 
 		var element = self.element;
 		var content = self.html();
-		var html = '<span class="fa fa-folder"></span><input type="file"' + (config.accept ? ' accept="' + config.accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (config.placeholder || '') + '" readonly="readonly" />';
+		var html = '<span class="fa fa-folder-o"></span><input type="file"' + (config.accept ? ' accept="' + config.accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (config.placeholder || '') + '" readonly="readonly" />';
 
 		if (content.length) {
 			self.html('<div class="ui-filereader-label' + (config.required ? ' ui-filereader-label-required' : '') + '">' + (config.icon ? '<span class="fa fa-' + config.icon + '"></span> ' : '') + content + ':</div><div class="ui-filereader">' + html + '</div>');
@@ -5813,12 +5813,13 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 
 	var cls = 'ui-directory';
 	var cls2 = '.' + cls;
-	var container, timeout, icon, plus, input = null;
+	var container, timeout, icon, plus, skipreset = false, skipclear = false, ready = false, input = null;
 	var is = false, selectedindex = 0, resultscount = 0;
-	var template = '<li data-index="{{ $.index }}" data-search="{{ name }}" {{ if selected }} class="selected{{ if classname }} {{ classname }}{{ fi }}"{{ else if classname }} class="{{ classname }}"{{ fi }}>{{ name | ui_directory_helper }}</li>';
+	var template = '<li data-index="{{ $.index }}" data-search="{{ name }}" {{ if selected }} class="current selected{{ if classname }} {{ classname }}{{ fi }}"{{ else if classname }} class="{{ classname }}"{{ fi }}>{{ name | encode | ui_directory_helper }}</li>';
 
 	Thelpers.ui_directory_helper = function(val) {
-		return this.template ? (typeof(this.template) === 'string' ? Tangular.render(this.template, this) : this.render(this, val)) : self.opt.render ? self.opt.render(this, val) : val;
+		var t = this;
+		return t.template ? (typeof(t.template) === 'string' ? t.template.indexOf('{{') === -1 ? t.template : Tangular.render(t.template, this) : t.render(this, val)) : self.opt.render ? self.opt.render(this, val) : val;
 	};
 
 	self.template = Tangular.compile(template);
@@ -5839,20 +5840,22 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 	self.make = function() {
 
 		self.aclass(cls + ' hidden');
-		self.append('<div class="{1}-search"><span class="{1}-add hidden"><i class="fa fa-plus"></i></span><span class="{1}-button"><i class="fa fa-search"></i></span><div><input type="text" placeholder="{0}" class="{1}-search-input" /></div></div><div class="{1}-container"><ul></ul></div>'.format(config.placeholder, cls));
+		self.append('<div class="{1}-search"><span class="{1}-add hidden"><i class="fa fa-plus"></i></span><span class="{1}-button"><i class="fa fa-search"></i></span><div><input type="text" placeholder="{0}" class="{1}-search-input" name="dir{2}" autocomplete="dir{2}" /></div></div><div class="{1}-container"><ul></ul></div>'.format(config.placeholder, cls, Date.now()));
 		container = self.find('ul');
 		input = self.find('input');
 		icon = self.find(cls2 + '-button').find('.fa');
 		plus = self.find(cls2 + '-add');
 
 		self.event('mouseenter mouseleave', 'li', function() {
-			container.find('li.selected').rclass('selected');
-			$(this).aclass('selected');
-			var arr = container.find('li:visible');
-			for (var i = 0; i < arr.length; i++) {
-				if ($(arr[i]).hclass('selected')) {
-					selectedindex = i;
-					break;
+			if (ready) {
+				container.find('li.current').rclass('current');
+				$(this).aclass('current');
+				var arr = container.find('li:visible');
+				for (var i = 0; i < arr.length; i++) {
+					if ($(arr[i]).hclass('current')) {
+						selectedindex = i;
+						break;
+					}
 				}
 			}
 		});
@@ -5907,13 +5910,16 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		self.event('keydown', 'input', function(e) {
 			var o = false;
 			switch (e.which) {
+				case 8:
+					skipclear = false;
+					break;
 				case 27:
 					o = true;
 					self.hide();
 					break;
 				case 13:
 					o = true;
-					var sel = self.find('li.selected');
+					var sel = self.find('li.current');
 					if (self.opt.callback) {
 						if (sel.length)
 							self.opt.callback(self.opt.items[+sel.attrd('index')], self.opt.element);
@@ -5970,12 +5976,13 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			var el = $(this);
 
 			if (el.hclass('hidden')) {
-				el.rclass('selected');
+				el.rclass('current');
 				return;
 			}
 
 			var is = selectedindex === counter;
-			el.tclass('selected', is);
+			el.tclass('current', is);
+
 			if (is) {
 				var t = (h * counter) - h;
 				if ((t + h * 4) > h)
@@ -5996,9 +6003,11 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		self.opt.custom && plus.tclass('hidden', !value);
 
 		if (!value && !self.opt.ajax) {
-			container.find('li').rclass('hidden');
+			if (!skipclear)
+				container.find('li').rclass('hidden');
+			if (!skipreset)
+				selectedindex = 0;
 			resultscount = self.opt.items ? self.opt.items.length : 0;
-			selectedindex = 0;
 			self.move();
 			return;
 		}
@@ -6016,10 +6025,13 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 						var indexer = {};
 						for (var i = 0; i < items.length; i++) {
 							var item = items[i];
+							if (self.opt.exclude && self.opt.exclude(item))
+								continue;
 							indexer.index = i;
 							resultscount++;
 							builder.push(self.template(item, indexer));
 						}
+						skipclear = true;
 						self.opt.items = items;
 						container.html(builder);
 						self.move();
@@ -6036,6 +6048,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 				if (!is)
 					resultscount++;
 			});
+			skipclear = true;
 			self.move();
 		}
 	};
@@ -6054,13 +6067,19 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		// opt.minwidth
 		// opt.maxwidth
 		// opt.key
+		// opt.exclude    --> function(item) must return Boolean
+		// opt.search
+		// opt.selected   --> only for String Array "opt.items"
+
+		var el = opt.element instanceof jQuery ? opt.element[0] : opt.element;
+
+		if (opt.items == null)
+			opt.items = EMPTYARRAY;
 
 		self.tclass(cls + '-default', !opt.render);
 
 		if (!opt.minwidth)
 			opt.minwidth = 200;
-
-		var el = opt.element instanceof jQuery ? opt.element[0] : opt.element;
 
 		if (is) {
 			clearTimeout(timeout);
@@ -6096,21 +6115,42 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 
 		self.bindevents();
 
+		self.tclass(cls + '-search-hidden', opt.search === false);
+
 		self.opt = opt;
 		opt.class && self.aclass(opt.class);
 
 		input.val('');
 		var builder = [];
 		var ta = opt.key ? Tangular.compile(template.replace(/\{\{\sname/g, '{{ ' + opt.key)) : self.template;
+		var selected = null;
 
 		if (!opt.ajax) {
 			var indexer = {};
 			for (var i = 0; i < items.length; i++) {
 				item = items[i];
+
 				if (typeof(item) === 'string')
-					item = { name: item };
+					item = { name: item, id: item, selected: item === opt.selected };
+
+				if (opt.exclude && opt.exclude(item))
+					continue;
+
+				if (item.selected) {
+					selected = i;
+					skipreset = true;
+				}
+
 				indexer.index = i;
 				builder.push(ta(item, indexer));
+			}
+
+			if (opt.empty) {
+				item = {};
+				item[opt.key || 'name'] = opt.empty;
+				item.template = '<b>{0}</b>'.format(opt.empty);
+				indexer.index = -1;
+				builder.unshift(ta(item, indexer));
 			}
 		}
 
@@ -6124,25 +6164,29 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		else if (opt.maxwidth && width > opt.maxwidth)
 			width = opt.maxwidth;
 
-		opt.ajaxold = null;
+		ready = false;
 
+		opt.ajaxold = null;
 		plus.aclass('hidden');
 		self.find('input').prop('placeholder', opt.placeholder || config.placeholder);
-		self.find(cls2 + '-container').css('width', width + 30);
+		var scroller = self.find(cls2 + '-container').css('width', width + 30);
 		container.html(builder);
 
 		var options = { left: offset.left + (opt.offsetX || 0), top: offset.top + (opt.offsetY || 0), width: width };
 		self.css(options);
 
 		!isMOBILE && setTimeout(function() {
-			self.is = false;
+			ready = true;
 			input.focus();
-		}, 500);
+		}, 200);
 
 		setTimeout(function() {
 			self.initializing = false;
 			is = true;
-			container.parent()[0].scrollTop = 0;
+			if (selected == null)
+				scroller[0].scrollTop = 0;
+			else
+				scroller[0].scrollTop = container.find('.selected').offset().top - (self.element.height() / 2 >> 0);
 		}, 50);
 
 		if (is) {
@@ -6150,13 +6194,21 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			return;
 		}
 
-		selectedindex = 0;
+		selectedindex = selected || 0;
 		resultscount = items ? items.length : 0;
-		self.move();
-		self.search();
+		skipclear = true;
 
+		self.search();
 		self.rclass('hidden');
-		self.aclass(cls + '-visible', 100);
+
+		setTimeout(function() {
+			if (self.opt && self.target && self.target.offsetParent)
+				self.aclass(cls + '-visible');
+			else
+				self.hide(1);
+		}, 100);
+
+		skipreset = false;
 	};
 
 	self.hide = function(sleep) {
@@ -6164,30 +6216,336 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			return;
 		clearTimeout(timeout);
 		timeout = setTimeout(function() {
-			self.is = false;
 			self.unbindevents();
 			self.rclass(cls + '-visible').aclass('hidden');
 			if (self.opt) {
+				self.opt.close && self.opt.close();
 				self.opt.class && self.rclass(self.opt.class);
 				self.opt = null;
 			}
 			is = false;
 		}, sleep ? sleep : 100);
 	};
-
 });
 
-COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', function(self, config) {
+COMPONENT('modal', 'zindex:12;width:800', function(self, config) {
+
+	var cls = 'ui-modal';
+	var cls2 = '.' + cls;
+	var W = window;
+	var eheader, earea, ebody, efooter, emodal, icon, first = true;
+
+	if (W.$$modal == null) {
+		W.$$modal = 0;
+
+		var resizemodal = function() {
+			SETTER('modal', 'resize');
+		};
+		var resize = function() {
+			setTimeout2(cls, resizemodal, 300);
+		};
+		if (W.OP)
+			W.OP.on('resize', resize);
+		else
+			$(W).on('resize', resize);
+	}
+
+	self.readonly();
+
+	self.make = function() {
+
+		$(document.body).append('<div id="{0}" class="{1}-container hidden"></div>'.format(self.ID, cls));
+
+		var scr = self.find('> script');
+		self.template = scr.length ? scr.html() : '';
+		self.aclass(cls);
+
+		var el = $('#' + self.ID);
+		el[0].appendChild(self.dom);
+
+		self.rclass('hidden');
+		self.replace(el);
+
+		self.event('click', '.cancel', self.cancel);
+		self.event('click', 'button[name]', function() {
+			var t = this;
+			if (!t.disabled) {
+				switch (t.name) {
+					case 'submit':
+					case 'cancel':
+						self[t.name]();
+						break;
+				}
+			}
+		});
+
+
+		if (!self.template)
+			self.prepare();
+
+		config.enter && self.event('keydown', 'input', function(e) {
+			e.which === 13 && !self.find('button[name="submit"]')[0].disabled && setTimeout(self.submit, 800);
+		});
+	};
+
+	self.submit = function() {
+		if (config.submit)
+			EXEC(config.submit, self.hide);
+		else
+			self.hide();
+	};
+
+	self.cancel = function() {
+		if (config.cancel)
+			EXEC(config.cancel, self.hide);
+		else
+			self.hide();
+	};
+
+	self.hide = function() {
+		self.set('');
+	};
+
+	self.resize = function() {
+
+		if (self.hclass('hidden'))
+			return;
+
+		var mobile = WIDTH() === 'xs';
+
+		var hh = eheader.height();
+		var hb = ebody.height();
+		var hf = efooter.height();
+		var h = Math.ceil((WH / 100) * (mobile ? 94 : 90));
+		var hs = hh + hb + hf;
+
+		var top = ((WH - h) / 2.2) >> 0;
+		var width = mobile ? emodal.width() : config.width;
+		var ml = Math.ceil(width / 2) * -1;
+
+		if (config.center) {
+			top = Math.ceil((WH / 2) - (hs / 2));
+			if (top < 0)
+				top = (WH - h) / 2 >> 0;
+		}
+
+		if (!mobile && config.align) {
+			top = '';
+			ml = '';
+			hh += 25;
+		}
+
+		var sw = SCROLLBARWIDTH();
+		ebody.css({ 'margin-right': sw ? sw : null });
+		emodal.css({ top: top, 'margin-left': ml });
+		earea.css({ 'max-height': h - hh - hf, 'width': width + 30 });
+	};
+
+	self.configure = function(key, value, init, prev) {
+		switch (key) {
+			case 'title':
+				eheader && eheader.find('label').html(value);
+				break;
+			case 'width':
+				emodal && emodal.css('max-width', config.width);
+				self.resize();
+				break;
+			case 'center':
+				self.resize();
+				break;
+			case 'align':
+				prev && emodal.rclass(cls + '-align-' + prev);
+				value && emodal.aclass(cls + '-align-' + value);
+				self.resize();
+				break;
+			case 'icon':
+				if (eheader) {
+					if (icon) {
+						prev && icon.rclass('fa-' + prev);
+					} else {
+						eheader.prepend('<i class="{0}-icon fa"></i>'.format(cls));
+						icon = eheader.find(cls2 + '-icon');
+					}
+					value && icon.aclass('fa-' + value);
+				}
+				break;
+		}
+	};
+
+	self.prepare = function(dynamic) {
+
+		self.find(cls2 + ' > div').each(function(index) {
+			$(this).aclass(cls + '-' + (index === 0 ? 'header' : index === 1 ? 'body' : 'footer'));
+		});
+
+		eheader = self.find(cls2 + '-header');
+		ebody = self.find(cls2 + '-body');
+		efooter = self.find(cls2 + '-footer');
+		emodal = self.find(cls2);
+		ebody.wrap('<div class="{0}-body-area" />'.format(cls));
+		earea = self.find(cls2 + '-body-area');
+		config.label && eheader.find('label').html(config.label);
+		dynamic && self.reconfigure(config);
+
+		earea.on('scroll', function() {
+			if (!self.$scrolling) {
+				EMIT('scrolling', self.name);
+				EMIT('reflow', self.name);
+				self.$scrolling = true;
+				setTimeout(function() {
+					self.$scrolling = false;
+				}, 1500);
+			}
+		});
+	};
+
+	self.setter = function(value) {
+
+		setTimeout2(cls + '-noscroll', function() {
+			$('html').tclass(cls + '-noscroll', !!$(cls2 + '-container').not('.hidden').length);
+		}, 789);
+
+		var hidden = value !== config.if;
+
+		if (self.hclass('hidden') === hidden)
+			return;
+
+		setTimeout2(cls + 'reflow', function() {
+			EMIT('reflow', self.name);
+		}, 10);
+
+		if (hidden) {
+			self.rclass(cls + '-visible');
+			setTimeout(function() {
+				self.aclass('hidden');
+				self.release(true);
+			}, 100);
+			W.$$modal--;
+			return;
+		}
+
+		if (self.template) {
+			var is = (/(data-bind|data-jc|data-{2,})="/).test(self.template);
+			self.find('div[data-jc-replaced]').html(self.template);
+			self.prepare(true);
+			self.template = null;
+			is && COMPILE();
+		}
+
+		if (W.$$modal < 1)
+			W.$$modal = 1;
+
+		W.$$modal++;
+
+		self.css('z-index', W.$$modal * config.zindex);
+		self.element.scrollTop(0);
+		self.rclass('hidden');
+
+		self.resize();
+		self.release(false);
+
+		config.reload && EXEC(config.reload, self);
+		config.default && DEFAULT(config.default, true);
+
+		if (!isMOBILE && config.autofocus) {
+			var el = self.find(config.autofocus === true ? 'input[type="text"],input[type="password"],select,textarea' : config.autofocus);
+			el.length && el[0].focus();
+		}
+
+		var delay = first ? 500 : 0;
+
+		setTimeout(function() {
+			earea[0].scrollTop = 0;
+			self.aclass(cls + '-visible');
+		}, 300 + delay);
+
+		// Fixes a problem with freezing of scrolling in Chrome
+		setTimeout2(self.ID, function() {
+			self.css('z-index', (W.$$modal * config.zindex) + 1);
+		}, 500 + delay);
+
+		first = false;
+	};
+});
+
+COMPONENT('radiobutton', function(self, config) {
+
+	self.nocompile && self.nocompile();
+
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		switch (key) {
+			case 'disabled':
+				self.tclass('ui-disabled', value);
+				break;
+			case 'required':
+				self.find('.ui-radiobutton-label').tclass('ui-radiobutton-label-required', value);
+				break;
+			case 'type':
+				self.type = config.type;
+				break;
+			case 'label':
+				self.find('.ui-radiobutton-label').html(value);
+				break;
+			case 'items':
+				self.find('div').remove();
+				var builder = [];
+				value.split(',').forEach(function(item) {
+					item = item.split('|');
+					builder.push('<div data-value="{0}"><i></i><span>{1}</span></div>'.format(item[0] || item[1], item[1] || item[0]));
+				});
+				self.append(builder.join(''));
+				self.refresh();
+				break;
+		}
+	};
+
+	self.make = function() {
+		var builder = [];
+		var label = config.label || self.html();
+		label && builder.push('<div class="ui-radiobutton-label{1}">{0}</div>'.format(label, config.required ? ' ui-radiobutton-label-required' : ''));
+		self.aclass('ui-radiobutton{0}'.format(config.inline === false ? ' ui-radiobutton-block' : ''));
+		self.event('click', 'div', function() {
+			if (config.disabled)
+				return;
+			var value = self.parser($(this).attrd('value'));
+			self.set(value);
+			self.change(true);
+		});
+		self.html(builder.join(''));
+		config.items && self.reconfigure('items:' + config.items);
+		config.type && (self.type = config.type);
+	};
+
+	self.validate = function(value) {
+		return config.disabled || !config.required ? true : !!value;
+	};
+
+	self.setter = function(value) {
+		self.find('div').each(function() {
+			var el = $(this);
+			var is = el.attrd('value') === (value == null ? null : value.toString());
+			el.tclass('ui-radiobutton-selected', is);
+			el.find('.fa').tclass('fa-circle-o', !is).tclass('fa-circle', is);
+		});
+	};
+});
+
+COMPONENT('input', 'maxlength:200;dirkey:name;dirvalue:id;increment:1;autovalue:name;after:\\:', function(self, config) {
 
 	var cls = 'ui-input';
 	var cls2 = '.' + cls;
 	var input, placeholder, dirsource, binded, customvalidator, mask;
 
+	self.nocompile();
+	self.bindvisible(20);
+
 	self.init = function() {
 		Thelpers.ui_input_icon = function(val) {
 			return val.charAt(0) === '!' ? ('<span class="ui-input-icon-custom">' + val.substring(1) + '</span>') : ('<i class="fa fa-' + val + '"></i>');
 		};
-		W.ui_input_template = Tangular.compile('{{ if label }}<div class="{0}-label">{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ label }}{{ after }}</div>{{ fi }}<div class="{0}-control{{ if dirsource }} ui-input-dropdown{{ fi }}{{ if licon }} {0}-licon{{ fi }}{{ if ricon || type === \'number\' }} {0}-ricon{{ fi }}">{{ if ricon || type === \'number\' }}<div class="{0}-icon-right{{ if type === \'number\' }} ui-input-increment{{ else if riconclick || type === \'date\' || type === \'time\' || type === \'search\' || type === \'password\' }} ui-input-click{{ fi }}">{{ if type === \'number\' }}<i class="fa fa-caret-up"></i><i class="fa fa-caret-down"></i>{{ else }}{{ ricon | ui_input_icon }}{{ fi }}</div>{{ fi }}{{ if licon }}<div class="{0}-icon-left{{ if liconclick }} ui-input-click{{ fi }}">{{ licon | ui_input_icon }}</div>{{ fi }}<div class="{0}-input{{ if align === 1 || align === \'center\' }} center{{ else if align === 2 || align === \'right\' }} right{{ fi }}">{{ if placeholder && !innerlabel }}<div class="{0}-placeholder">{{ placeholder }}</div>{{ fi }}<input type="{{ if !dirsource && type === \'password\' }}password{{ else }}text{{ fi }}"{{ if autofill }} name="{{ PATH }}"{{ else }} autocomplete="false"{{ fi }}{{ if dirsource }} readonly{{ else }} data-jc-bind=""{{ fi }}{{ if maxlength > 0}} maxlength="{{ maxlength }}"{{ fi }}{{ if autofocus }} autofocus{{ fi }} /></div></div>{{ if error }}<div class="ui-input-error hidden"><i class="fa fa-warning"></i> {{ error }}</div>{{ fi }}'.format(cls));
+		W.ui_input_template = Tangular.compile(('{{ if label }}<div class="{0}-label">{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ label }}{{ after }}</div>{{ fi }}<div class="{0}-control{{ if licon }} {0}-licon{{ fi }}{{ if ricon || (type === \'number\' && increment) }} {0}-ricon{{ fi }}">{{ if ricon || (type === \'number\' && increment) }}<div class="{0}-icon-right{{ if type === \'number\' && increment }} {0}-increment{{ else if riconclick || type === \'date\' || type === \'time\' || type === \'search\' || type === \'password\' }} {0}-click{{ fi }}">{{ if type === \'number\' }}<i class="fa fa-caret-up"></i><i class="fa fa-caret-down"></i>{{ else }}{{ ricon | ui_input_icon }}{{ fi }}</div>{{ fi }}{{ if licon }}<div class="{0}-icon-left{{ if liconclick }} {0}-click{{ fi }}">{{ licon | ui_input_icon }}</div>{{ fi }}<div class="{0}-input{{ if align === 1 || align === \'center\' }} center{{ else if align === 2 || align === \'right\' }} right{{ fi }}">{{ if placeholder && !innerlabel }}<div class="{0}-placeholder">{{ placeholder }}</div>{{ fi }}<input type="{{ if !dirsource && type === \'password\' }}password{{ else }}text{{ fi }}"{{ if autofill }} name="{{ PATH }}"{{ else }} autocomplete="input' + Date.now() + '"{{ fi }}{{ if dirsource }} readonly{{ else }} data-jc-bind=""{{ fi }}{{ if maxlength > 0}} maxlength="{{ maxlength }}"{{ fi }}{{ if autofocus }} autofocus{{ fi }} /></div></div>{{ if error }}<div class="{0}-error hidden"><i class="fa fa-warning"></i> {{ error }}</div>{{ fi }}').format(cls));
 	};
 
 	self.make = function() {
@@ -6211,6 +6569,17 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 		self.event('focus', 'input', function() {
 			self.aclass(cls + '-focused');
 			config.autocomplete && EXEC(config.autocomplete, self, input.parent());
+			if (config.autosource) {
+				var opt = {};
+				opt.element = self.element;
+				opt.search = GET(config.autosource);
+				opt.callback = function(value) {
+					self.set(typeof(value) === 'string' ? value : value[config.autovalue], 2);
+					self.change();
+					self.bindvalue();
+				};
+				SETTER('autocomplete', 'show', opt);
+			}
 		});
 
 		self.event('paste', 'input', function(e) {
@@ -6345,10 +6714,39 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 			opt.offsetWidth = 2;
 			opt.minwidth = config.dirminwidth || 200;
 			opt.maxwidth = config.dirmaxwidth;
-			opt.key = config.key;
+			opt.key = config.dirkey || config.key;
+			opt.empty = config.dirempty;
+
+			if (config.dirsearch === false)
+				opt.search = false;
+
+			var val = self.get();
+			opt.selected = val;
+
+			if (config.direxclude === false) {
+				for (var i = 0; i < dirsource.length; i++) {
+					var item = dirsource[i];
+					if (item)
+						item.selected = typeof(item) === 'object' && item[config.dirvalue] === val;
+				}
+			} else {
+				opt.exclude = function(item) {
+					return item ? item[config.dirvalue] === val : false;
+				};
+			}
 
 			opt.callback = function(item, el, custom) {
-				var val = custom || typeof(item) === 'string' ? item : item[config.value];
+
+				// empty
+				if (item == null) {
+					input.val('');
+					self.set(null, 2);
+					self.change();
+					self.check();
+					return;
+				}
+
+				var val = custom || typeof(item) === 'string' ? item : item[config.dirvalue || config.value];
 				if (custom && typeof(config.dircustom) === 'string') {
 					var fn = GET(config.dircustom);
 					fn(val, function(val) {
@@ -6356,7 +6754,7 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 						self.change();
 						self.bindvalue();
 					});
-				} else {
+				} else if (!custom) {
 					self.set(val, 2);
 					self.change();
 					self.bindvalue();
@@ -6384,6 +6782,7 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 
 			var el = $(this);
 			var left = el.hclass(cls + '-icon-left');
+			var opt;
 
 			if (config.dirsource && left && config.liconclick) {
 				e.preventDefault();
@@ -6392,15 +6791,23 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 
 			if (!left && !config.riconclick) {
 				if (config.type === 'date') {
-					SETTER('calendar', 'toggle', self.element, self.get(), function(date) {
+					opt = {};
+					opt.element = self.element;
+					opt.value = self.get();
+					opt.callback = function(date) {
 						self.change(true);
 						self.set(date);
-					});
+					};
+					SETTER('datepicker', 'show', opt);
 				} else if (config.type === 'time') {
-					SETTER('timepicker', 'toggle', self.element, self.get(), function(date) {
+					opt = {};
+					opt.element = self.element;
+					opt.value = self.get();
+					opt.callback = function(date) {
 						self.change(true);
 						self.set(date);
-					});
+					};
+					SETTER('timepicker', 'show', opt);
 				} else if (config.type === 'search')
 					self.set('');
 				else if (config.type === 'password')
@@ -6410,7 +6817,6 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 					self.change(true);
 					self.inc(config.increment * n);
 				}
-
 				return;
 			}
 
@@ -6578,8 +6984,8 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 					if (item === value)
 						break;
 					item = null;
-				} else if (item[config.value] === value) {
-					item = item[config.key];
+				} else if (item[config.dirvalue || config.value] === value) {
+					item = item[config.dirkey || config.key];
 					break;
 				} else
 					item = null;
@@ -6629,6 +7035,7 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 					dirsource = value;
 					self.bindvalue();
 				});
+				self.tclass(cls + '-dropdown', !!value);
 				break;
 			case 'disabled':
 				self.tclass('ui-disabled', value == true);
@@ -6646,7 +7053,7 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 				customvalidator = value ? (/\(|=|>|<|\+|-|\)/).test(value) ? FN('value=>' + value) : (function(path) { return function(value) { return GET(path)(value); }; })(value) : null;
 				break;
 			case 'innerlabel':
-				self.tclass('ui-input-inner', value);
+				self.tclass(cls + '-inner', value);
 				break;
 			case 'maskregexp':
 				if (value) {
@@ -6728,4 +7135,589 @@ COMPONENT('input', 'maxlength:200;key:name;value:id;increment:1;after:\\:', func
 		self.tclass(cls + '-invalid', invalid);
 		config.error && self.find(cls2 + '-error').tclass('hidden', !invalid);
 	};
+});
+
+COMPONENT('datepicker', 'today:Set today;firstday:0;close:Close;yearselect:true;monthselect:true;yearfrom:-70 years;yearto:5 years', function(self, config) {
+
+	var skip = false;
+	var visible = false;
+	var touchdiff;
+	var startX;
+
+	self.days = EMPTYARRAY;
+	self.months = EMPTYARRAY;
+	self.months_short = EMPTYARRAY;
+	self.years_from;
+	self.years_to;
+
+	self.singleton();
+	self.readonly();
+	self.nocompile();
+
+	self.configure = function(key, value) {
+		switch (key) {
+			case 'days':
+				if (value instanceof Array)
+					self.days = value;
+				else
+					self.days = value.split(',').trim();
+
+				for (var i = 0; i < DAYS.length; i++) {
+					DAYS[i] = self.days[i];
+					self.days[i] = DAYS[i].substring(0, 2).toUpperCase();
+				}
+
+				break;
+
+			case 'months':
+				if (value instanceof Array)
+					self.months = value;
+				else
+					self.months = value.split(',').trim();
+
+				self.months_short = [];
+
+				for (var i = 0, length = self.months.length; i < length; i++) {
+					var m = self.months[i];
+					MONTHS[i] = m;
+					if (m.length > 4)
+						m = m.substring(0, 3) + '.';
+					self.months_short.push(m);
+				}
+				break;
+
+			case 'yearfrom':
+				if (value.indexOf('current') !== -1)
+					self.years_from = +(new Date().format('yyyy'));
+				else
+					self.years_from = +(new Date().add(value).format('yyyy'));
+				break;
+
+			case 'yearto':
+				if (value.indexOf('current') !== -1)
+					self.years_to = +(new Date().format('yyyy'));
+				else
+					self.years_to = +(new Date().add(value).format('yyyy'));
+				break;
+		}
+	};
+
+	function getMonthDays(dt) {
+
+		var m = dt.getMonth();
+		var y = dt.getFullYear();
+
+		if (m === -1) {
+			m = 11;
+			y--;
+		}
+
+		return (32 - new Date(y, m, 32).getDate());
+	}
+
+	self.calculate = function(year, month, selected) {
+
+		var d = new Date(year, month, 1, 12, 0);
+		var output = { header: [], days: [], month: month, year: year };
+		var firstDay = config.firstday;
+		var firstCount = 0;
+		var frm = d.getDay() - firstDay;
+		var today = new Date();
+		var ty = today.getFullYear();
+		var tm = today.getMonth();
+		var td = today.getDate();
+		var sy = selected ? selected.getFullYear() : -1;
+		var sm = selected ? selected.getMonth() : -1;
+		var sd = selected ? selected.getDate() : -1;
+		var days = getMonthDays(d);
+
+		if (frm < 0)
+			frm = 7 + frm;
+
+		while (firstCount++ < 7) {
+			output.header.push({ index: firstDay, name: self.days[firstDay] });
+			firstDay++;
+			if (firstDay > 6)
+				firstDay = 0;
+		}
+
+		var index = 0;
+		var indexEmpty = 0;
+		var count = 0;
+		var prev = getMonthDays(new Date(year, month - 1, 1, 12, 0)) - frm;
+		var cur;
+
+		for (var i = 0; i < days + frm; i++) {
+
+			var obj = { isToday: false, isSelected: false, isEmpty: false, isFuture: false, number: 0, index: ++count };
+
+			if (i >= frm) {
+				obj.number = ++index;
+				obj.isSelected = sy === year && sm === month && sd === index;
+				obj.isToday = ty === year && tm === month && td === index;
+				obj.isFuture = ty < year;
+				if (!obj.isFuture && year === ty) {
+					if (tm < month)
+						obj.isFuture = true;
+					else if (tm === month)
+						obj.isFuture = td < index;
+				}
+
+			} else {
+				indexEmpty++;
+				obj.number = prev + indexEmpty;
+				obj.isEmpty = true;
+				cur = d.add('-' + indexEmpty + ' days');
+			}
+
+			if (!obj.isEmpty)
+				cur = d.add(i + ' days');
+
+			obj.month = i >= frm && obj.number <= days ? d.getMonth() : cur.getMonth();
+			obj.year = i >= frm && obj.number <= days ? d.getFullYear() : cur.getFullYear();
+			obj.date = cur;
+			output.days.push(obj);
+		}
+
+		indexEmpty = 0;
+
+		for (var i = count; i < 42; i++) {
+			var cur = d.add(i + ' days');
+			var obj = { isToday: false, isSelected: false, isEmpty: true, isFuture: true, number: ++indexEmpty, index: ++count };
+			obj.month = cur.getMonth();
+			obj.year = cur.getFullYear();
+			obj.date = cur;
+			output.days.push(obj);
+		}
+
+		return output;
+	};
+
+	self.hide = function() {
+		if (visible) {
+			self.unbindevents();
+			self.opt.close && self.opt.close();
+			self.opt = null;
+			self.older = null;
+			self.target = null;
+			self.aclass('hidden');
+			self.rclass('ui-datepicker-visible');
+			visible = false;
+		}
+		return self;
+	};
+
+	self.show = function(opt) {
+
+		setTimeout(function() {
+			clearTimeout2('datepickerhide');
+		}, 5);
+
+		var el = $(opt.element);
+		var dom = el[0];
+
+		if (self.target === dom) {
+			self.hide();
+			return;
+		}
+
+		if (self.opt && self.opt.close)
+			self.opt.close();
+
+		var off = el.offset();
+		var h = el.innerHeight();
+		var l = off.left + (opt.offsetX || 0);
+		var t = off.top + h + 12 + (opt.offsetY || 0);
+		var s = 250;
+
+		if (l + s > WW) {
+			var w = el.innerWidth();
+			l = (l + w) - s;
+		}
+
+		var dt = typeof(opt.value) === 'string' ? GET(opt.value) : opt.value;
+		if ((!(dt instanceof Date)) || isNaN(dt.getTime()))
+			dt = NOW;
+
+		self.opt = opt;
+		self.time = dt.format('HH:mm:ss');
+		self.css({ left: l, top: t });
+		self.rclass('hidden');
+		self.date(dt);
+		self.aclass('ui-datepicker-visible', 50);
+		self.bindevents();
+		self.target = dom;
+		visible = true;
+		return self;
+	};
+
+	self.setdate = function(dt) {
+
+		var time = self.time.split(':');
+
+		if (time.length > 1) {
+			dt.setHours(+(time[0] || '0'));
+			dt.setMinutes(+(time[1] || '0'));
+			dt.setSeconds(+(time[2] || '0'));
+		}
+
+		if (typeof(self.opt.value) === 'string')
+			SET2(self.opt.value, dt);
+		else
+			self.opt.callback(dt);
+	};
+
+	self.make = function() {
+
+		self.aclass('ui-datepicker hidden');
+
+		var conf = {};
+
+		if (!config.days) {
+			conf.days = [];
+			for (var i = 0; i < DAYS.length; i++)
+				conf.days.push(DAYS[i].substring(0, 2).toUpperCase());
+		}
+
+		!config.months && (conf.months = MONTHS);
+		self.reconfigure(conf);
+
+		self.event('click', '.ui-datepicker-today-a', function() {
+			self.setdate(new Date());
+			self.hide();
+		});
+
+		self.event('click touchend', '.ui-datepicker-day', function() {
+			if (Date.now() - touchdiff > 500)
+				return;
+			var arr = this.getAttribute('data-date').split('-');
+			var dt = new Date(+arr[0], +arr[1], +arr[2], 12, 0);
+			self.find('.ui-datepicker-selected').rclass('ui-datepicker-selected');
+			var el = $(this).aclass('ui-datepicker-selected');
+			skip = !el.hclass('ui-datepicker-disabled');
+			self.setdate(dt);
+			self.hide();
+		});
+
+		self.event('click', '.ui-datepicker-header', function(e) {
+			e.stopPropagation();
+		});
+
+		self.event('change', '.ui-datepicker-year', function(e) {
+
+			clearTimeout2('datepickerhide');
+			e.preventDefault();
+			e.stopPropagation();
+
+			var arr = $(this).attrd('date').split('-');
+			var dt = new Date(+arr[0], +arr[1], 1, 12, 0);
+			dt.setFullYear(this.value);
+			self.date(dt, true);
+		});
+
+		self.event('change', '.ui-datepicker-month', function(e){
+
+			clearTimeout2('datepickerhide');
+			e.preventDefault();
+			e.stopPropagation();
+
+			var arr = $(this).attrd('date').split('-');
+			var dt = new Date(+arr[0], +arr[1], 1, 12, 0);
+			dt.setMonth(this.value);
+			self.date(dt, true);
+		});
+
+		self.event('click', 'button', function(e) {
+
+			e.preventDefault();
+			e.stopPropagation();
+
+			var arr = $(this).attrd('date').split('-');
+			var dt = new Date(+arr[0], +arr[1], 1, 12, 0);
+			switch (this.name) {
+				case 'prev':
+					dt.setMonth(dt.getMonth() - 1);
+					break;
+				case 'next':
+					dt.setMonth(dt.getMonth() + 1);
+					break;
+			}
+
+			self.date(dt, true);
+		});
+
+		self.event('touchstart touchmove', '.ui-datepicker-table',function(e){
+
+			e.stopPropagation();
+			e.preventDefault();
+
+			var x = e.originalEvent.touches[0].pageX;
+
+			if (e.type === 'touchstart') {
+				startX = x;
+				touchdiff = Date.now();
+				return;
+			}
+
+			var diffX = startX - x;
+			if (diffX > 70 || diffX < -70) {
+				var arr = $(this).data('date').split('-');
+				var dt = new Date(+arr[0], +arr[1], 1, 12, 0);
+				dt.setMonth(dt.getMonth() + (diffX > 50 ? 1 : -1));
+				self.date(dt, true);
+			}
+		});
+
+
+		window.$datepicker = self;
+
+		var hide = function() {
+			visible && window.$datepicker && window.$datepicker.hide();
+		};
+
+		var hide2 = function() {
+			visible && setTimeout2('datepickerhide', function() {
+				window.$datepicker && window.$datepicker.hide();
+			}, 20);
+		};
+
+		self.bindevents = function() {
+			if (!visible)
+				$(window).on('scroll click', hide2);
+		};
+
+		self.unbindevents = function() {
+			if (visible)
+				$(window).off('scroll click', hide2);
+		};
+
+		self.on('reflow + scroll + resize', hide);
+	};
+
+	self.date = function(value, skipday) {
+
+		var clssel = 'ui-datepicker-selected';
+
+		if (typeof(value) === 'string')
+			value = value.parseDate();
+
+		var year = value == null ? null : value.getFullYear();
+		if (year && (year < self.years_from || year > self.years_to))
+			return;
+
+		if (!value || isNaN(value.getTime())) {
+			self.find('.' + clssel).rclass(clssel);
+			value = NOW;
+		}
+
+		var empty = !value;
+
+		if (skipday) {
+			skipday = false;
+			empty = true;
+		}
+
+		if (skip) {
+			skip = false;
+			return;
+		}
+
+		if (!value)
+			value = NOW = new Date();
+
+		var output = self.calculate(value.getFullYear(), value.getMonth(), value);
+		var builder = [];
+
+		for (var i = 0; i < 42; i++) {
+
+			var item = output.days[i];
+
+			if (i % 7 === 0) {
+				builder.length && builder.push('</tr>');
+				builder.push('<tr>');
+			}
+
+			var cls = [];
+
+			item.isEmpty && cls.push('ui-datepicker-disabled');
+			cls.push('ui-datepicker-day');
+
+			!empty && item.isSelected && cls.push(clssel);
+			item.isToday && cls.push('ui-datepicker-day-today');
+			builder.push('<td class="{0}" data-date="{1}-{2}-{3}"><div>{3}</div></td>'.format(cls.join(' '), item.year, item.month, item.number));
+		}
+
+		builder.push('</tr>');
+
+		var header = [];
+		for (var i = 0; i < 7; i++)
+			header.push('<th>{0}</th>'.format(output.header[i].name));
+
+		var years = value.getFullYear();
+		if (config.yearselect) {
+			years = '';
+			var current_year = value.getFullYear();
+			for (var i = self.years_from; i <= self.years_to; i++)
+				years += '<option value="{0}" {1}>{0}</option>'.format(i, i === current_year ? 'selected' : '');
+			years = '<select data-date="{0}-{1}" class="ui-datepicker-year">{2}</select>'.format(output.year, output.month, years);
+		}
+
+		var months = self.months[value.getMonth()];
+		if (config.monthselect) {
+			months = '';
+			var current_month = value.getMonth();
+			for (var i = 0, l = self.months.length; i < l; i++)
+				months += '<option value="{0}" {2}>{1}</option>'.format(i, self.months[i], i === current_month ? 'selected' : '');
+			months = '<select data-date="{0}-{1}" class="ui-datepicker-month">{2}</select>'.format(output.year, output.month, months);
+		}
+
+		self.html('<div class="ui-datepicker-header"><button class="ui-datepicker-header-prev" name="prev" data-date="{0}-{1}"><span class="fa fa-arrow-left"></span></button><div class="ui-datepicker-header-info">{2} {3}</div><button class="ui-datepicker-header-next" name="next" data-date="{0}-{1}"><span class="fa fa-arrow-right"></span></button></div><div class="ui-datepicker-table" data-date="{0}-{1}"><table cellpadding="0" cellspacing="0" border="0"><thead>{4}</thead><tbody>{5}</tbody></table></div>'.format(output.year, output.month, months, years, header.join(''), builder.join('')) + (config.today ? '<div class="ui-datepicker-today"><span class="link">{0}</span><span class="link ui-datepicker-today-a"><i class="fa fa-datepicker"></i>{1}</span></div>'.format(config.close, config.today) : ''));
+	};
+});
+
+COMPONENT('menu', function(self) {
+
+	self.singleton();
+	self.readonly();
+	self.nocompile && self.nocompile();
+
+	var cls = 'ui-menu';
+	var is = false;
+	var events = {};
+	var ul;
+
+	self.make = function() {
+		self.aclass(cls + ' hidden');
+		self.append('<ul></ul>');
+		ul = self.find('ul');
+
+		self.event('touchstart mousedown', 'li', function(e) {
+			var el = $(this);
+			if (el.hclass(cls + '-divider')) {
+				e.preventDefault();
+				e.stopPropagation();
+			} else {
+				self.opt.callback(self.opt.items[el.index()]);
+				self.hide();
+			}
+		});
+
+		events.hide = function() {
+			is && self.hide();
+		};
+
+		self.event('scroll', events.hide);
+		self.on('reflow', events.hide);
+		self.on('scroll', events.hide);
+		self.on('resize', events.hide);
+
+		events.click = function(e) {
+			if (is && (!self.target || (self.target !== e.target && !self.target.contains(e.target))))
+				self.hide();
+		};
+	};
+
+	self.bindevents = function() {
+		events.is = true;
+		$(document).on('touchstart mousedown', events.click);
+		$(window).on('scroll', events.hide);
+	};
+
+	self.unbindevents = function() {
+		events.is = false;
+		$(document).off('touchstart mousedown', events.click);
+		$(window).off('scroll', events.hide);
+	};
+
+	self.showxy = function(x, y, items, callback) {
+		var opt = {};
+		opt.x = x;
+		opt.y = y;
+		opt.items = items;
+		opt.callback = callback;
+		self.show(opt);
+	};
+
+	self.show = function(opt) {
+
+		if (typeof(opt) === 'string') {
+			// old version
+			opt = { align: opt };
+			opt.element = arguments[1];
+			opt.items = arguments[2];
+			opt.callback = arguments[3];
+			opt.offsetX = arguments[4];
+			opt.offsetY = arguments[5];
+		}
+
+		var tmp = opt.element instanceof jQuery ? opt.element[0] : opt.element.element ? opt.element.dom : opt.element;
+
+		if (is && self.target === tmp) {
+			self.hide();
+			return;
+		}
+
+		var builder = [];
+
+		self.target = tmp;
+		self.opt = opt;
+
+		for (var i = 0; i < opt.items.length; i++) {
+			var item = opt.items[i];
+			builder.push(typeof(item) == 'string' ? '<li class="{1}-divider">{0}</li>'.format(item === '-' ? '<hr />' : ('<span>' + item + '</span>'), cls) : '<li{2}>{0}{1}</li>'.format(item.icon ? '<i class="fa fa-{0}"></i>'.format(item.icon) : '', item.name, item.icon ? '' : (' class="' + cls + '-nofa"')));
+		}
+
+		var css = {};
+		css.left = 0;
+		css.top = 0;
+		self.element.css(css);
+
+		ul.html(builder.join(''));
+
+		if (!is) {
+			self.rclass('hidden');
+			self.aclass(cls + '-visible', 100);
+			is = true;
+			if (!events.is)
+				self.bindevents();
+		}
+
+		var target = $(opt.element);
+		var w = self.width();
+		var offset = target.offset();
+
+		if (opt.element) {
+			switch (opt.align) {
+				case 'center':
+					css.left = Math.ceil((offset.left - w / 2) + (target.innerWidth() / 2));
+					break;
+				case 'right':
+					css.left = (offset.left - w) + target.innerWidth();
+					break;
+				default:
+					css.left = offset.left;
+					break;
+			}
+		} else {
+			css.left = opt.x;
+			css.top = opt.y;
+		}
+
+		css.top = offset.top + target.innerHeight() + 10 + (opt.offsetY || 0);
+
+		if (opt.offsetX)
+			css.left += opt.offsetX;
+
+		self.element.css(css);
+	};
+
+	self.hide = function() {
+		events.is && self.unbindevents();
+		is = false;
+		self.target = null;
+		self.opt = null;
+		self.aclass('hidden');
+		self.rclass(cls + '-visible');
+	};
+
 });
