@@ -1637,7 +1637,7 @@ FLOW.save2 = function(callback) {
 	data.components = FLOW.clearInstances();
 	data.version = +exports.version.replace(/(v|\.)/g, '');
 
-	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v);
+	var json = JSON.stringify(data, (k,v) => k === '$component' ? undefined : v, '\t');
 
 	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
 		err && F.error(err, 'FLOW.save("designer")');
