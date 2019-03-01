@@ -125,7 +125,7 @@
 			else
 				items = common.templates.findItem('name', name).items;
 
-			items.quicksort();
+			items.quicksort('url');
 			SET('formcomponents.database', items);
 			SET('formcomponents.components', items.slice(0).map(function(item) {
 				return item.url;

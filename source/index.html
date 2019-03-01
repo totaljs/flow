@@ -29,12 +29,12 @@
 	<div data---="LAZY calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data---="LAZY message__null__button:@(Close)"></div>
 	<div data---="LAZY snackbar__null__button:@(Dismiss)"></div>
-	<div data---="LAZY menu"></div>
 	<div data---="LAZY directory"></div>
 	<div data---="LAZY timepicker"></div>
 	<div data---="LAZY datepicker__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data---="LAZY contextmenu"></div>
-	<div data---="LAZY confirm"></div>
+	<div data---="menu"></div>
+	<div data---="confirm"></div>
 	<div data---="features__null__placeholder:@(Search feature ...)"></div>
 	<div data---="colorpicker"></div>
 	<div data---="loading" class="ui-loading ui-loading-firstload"></div>
@@ -70,7 +70,7 @@
 		<div class="hidden body-errors" data-bind="common.panel__show:value=='errors'">
 
 			<div class="padding npb npt mt10">
-				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</a>
+				<span class="link red fs11 exec" data-exec="#errors.clear"><i class="fa fa-times mr5"></i>@(Clear all errors)</span>
 				<hr class="mt10 nmb" />
 			</div>
 
@@ -95,7 +95,7 @@
 
 		<div class="hidden body-debug" data-bind="common.panel__show:value=='debug'">
 			<div style="padding:15px 15px 0">
-				<a href="javascript:void(0)" class="red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</a>
+				<span class="link red fs11 exec" data-exec="#debug.clear" style="float:right;margin-top:2px"><i class="fa fa-times mr5"></i>@(Clear console)</span>
 				<div data---="checkbox__common.beautify">@(Beautify)</div>
 				<hr class="nmb" style="margin-top:15px" />
 			</div>
@@ -482,7 +482,9 @@
 		});
 
 		ON('designer.rem', function(ids) {
+
 			ids && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected components?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
+
 				if (index)
 					return;
 
@@ -988,8 +990,8 @@
 			UPDATE('flow.tabs');
 			SETTER('binder', 'scan');
 			location.hash = o.linker;
-
 			EMIT('changed', 'tabs');
+			setState(MESSAGES.apply, true);
 		});
 
 		ON('online', function(online) {

@@ -1494,8 +1494,10 @@ COMPONENT('designer', function() {
 
 		self.mup = function(x, y, offsetX, offsetY, e) {
 
-			if (!move.moved)
-				self.select(move.node, e, 'component');
+			if (!move.moved) {
+				if (move.node && move.node[0] && move.node[0].tagName !== 'path')
+					self.select(move.node, e, 'component');
+			}
 
 			var el = $(e.target);
 			switch (move.type) {
@@ -1664,6 +1666,7 @@ COMPONENT('designer', function() {
 		};
 
 		self.select = function(el, e, type) {
+
 			// reset cache for self.move function
 			self.allowedselected = [];
 

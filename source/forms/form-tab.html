@@ -28,7 +28,7 @@
 
 	<div data---="validation__formtab">
 		<span class="link cancel">@(Close)</span>
-		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(SAVE)</button>
+		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(APPLY)</button>
 	</div>
 
 </div>
@@ -37,9 +37,9 @@
 
 	PLUGIN('tab', function(exports) {
 
-		exports.submit = function(com) {
+		exports.submit = function(hide) {
 			EMIT('tabs.save', formtab);
-			com.hide();
+			hide();
 		};
 
 		exports.remove = function() {

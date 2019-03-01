@@ -56,7 +56,7 @@ function markdown(value, el) {
 			}
 		});
 	}, 1, el);
-	return value.trim().markdown();
+	return value.trim().markdown().replace(/\t/g, '  ');;
 }
 
 Thelpers.markdown = function(value) {
@@ -64,7 +64,7 @@ Thelpers.markdown = function(value) {
 };
 
 Thelpers.markdownnotes = function(value) {
-	return '<div class="md">{0}</div>'.format((value || '').markdown({ wrap: false }));
+	return '<div class="md">{0}</div>'.format((value || '').markdown({ wrap: false })).replace(/\t/g, '  ');
 };
 
 function savescrollposition() {
