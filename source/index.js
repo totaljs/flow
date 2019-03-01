@@ -11,18 +11,18 @@ const MESSAGE_TRAFFIC = { type: 'traffic' };
 const MESSAGE_STATIC = { type: 'callback' };
 const MESSAGE_VARIABLES = { type: 'variables' };
 const MESSAGE_TEMPLATES = { type: 'templates' };
+const MESSAGE_COMPONENTS = { type: 'components' };
 const MESSAGE_PAUSED = { type: 'paused' };
 const MESSAGE_ERROR = { type: 'error' };
 const MESSAGE_ERRORS = { type: 'errors' };
 const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
-const MESSAGE_COMPONENTVERSION = { type: 'componentversion' };
 const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const MESSAGE_ONLINE = { type: 'online' };
+const MESSAGE_TEMPLATE = { type: 'template' };
 const PATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FILEVARIABLES = '/flow/variables.txt';
 const FLAGS = ['get', 'dnscache'];
-const FLAGSVERSION = ['get', 'dnscache', '< 1'];
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
 const PAUSEDEVENTS = { 'data': 1, '0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1, '99': 1 };
 
@@ -31,7 +31,6 @@ var FILEINMEMORY = '/flow/repository.json';
 var COUNTER = 0;
 var OPT;
 var DDOS = {};
-var UPDATES = {};
 var FN = {};
 var FILENAME;
 var READY = false;
@@ -72,10 +71,10 @@ exports.install = function(options) {
 	OPT.socket = OPT.url;
 
 	if (OPT.templates == null)
-		OPT.templates = 'https://cdn.totaljs.com/flow/templates.json';
+		OPT.templates = 'https://cdn.totaljs.com/flow/templates/list.json';
 
-	if (OPT.updates == null)
-		OPT.updates = true;
+	if (OPT.components == null)
+		OPT.components = 'https://cdn.totaljs.com/flow/list.json';
 
 	if (OPT.limit == null)
 		OPT.limit = 150;
@@ -232,10 +231,6 @@ FN.service = function(counter) {
 		DDOS = {};
 
 	if (TYPE !== 2) {
-
-		if (counter % 10 === 0)
-			UPDATES = {};
-
 		FLOW.trafficreset();
 		FLOW.emit2('service', counter);
 
@@ -284,7 +279,6 @@ FN.view_index = function() {
 
 	this.theme('');
 	var R = this.repository;
-	R.updates = !!OPT.updates;
 	R.url = OPT.url;
 	R.dark = OPT.dark;
 	R.version = +exports.version.replace(/\.|v/g, '');
@@ -340,14 +334,6 @@ FN.websocket = function() {
 			return;
 		}
 
-		if (message.type === 'componentversion') {
-			FLOW.getVersion(message.url, function(version) {
-				MESSAGE_COMPONENTVERSION.version = version;
-				FLOW.send(MESSAGE_COMPONENTVERSION);
-			});
-			return;
-		}
-
 		if (message.type === 'templates') {
 
 			var arr = [];
@@ -389,6 +375,55 @@ FN.websocket = function() {
 
 				MESSAGE_TEMPLATES.body = templates;
 				MESSAGE_TEMPLATES.body && client.send(MESSAGE_TEMPLATES);
+			});
+
+			return;
+		}
+
+		if (message.type === 'template')
+			download_template(message.body, client);
+
+		if (message.type === 'components') {
+
+			var arr = [];
+			var templ = [];
+
+			OPT.components2 && arr.push(OPT.components2);
+			OPT.components && arr.push(OPT.components);
+
+			arr.wait(function(item, next) {
+				U.request(item, FLAGS, function(err, response) {
+					if (!err) {
+						var arr = response.trim().parseJSON();
+						if (arr instanceof Array) {
+							for (var i = 0; i < arr.length; i++)
+								templ.push(arr[i]);
+						}
+					}
+					next();
+				});
+			}, function() {
+
+				var templates = [];
+
+				for (var a = 0; a < templ.length; a++) {
+					var template = templ[a];
+					var obj = templates.findItem('name', template.name);
+					if (obj == null) {
+						templates.push(template);
+						continue;
+					}
+
+					// Merge
+					for (var j = 0; j < template.items.length; j++) {
+						var url = template.items[j];
+						if (obj.items.indexOf(url) === -1)
+							obj.items.push(url);
+					}
+				}
+
+				MESSAGE_COMPONENTS.body = templates;
+				MESSAGE_COMPONENTS.body && client.send(MESSAGE_COMPONENTS);
 			});
 
 			return;
@@ -1941,46 +1976,17 @@ FLOW.npm = function(dependencies, callback) {
 	});
 };
 
-FLOW.getVersion = function(url, callback) {
-
-	if (UPDATES[url] != null) {
-		if (UPDATES[url] === 1)
-			setTimeout((url, callback) => FLOW.getVersion(url, callback), 500, url, callback);
-		else
-			callback(UPDATES[url]);
-		return;
-	}
-
-	// Is working ...
-	UPDATES[url] = 1;
-	U.request(url, FLAGSVERSION, function(err, response) {
-
-		var beg = (response || '').indexOf('exports.version');
-		if (beg === -1) {
-			UPDATES[url] = '';
-			callback('');
-			return;
+function download_template(url, client) {
+	U.request(url, FLAGS, function(err, response) {
+		if (err) {
+			MESSAGE_ERROR.body = err.toString();
+			FLOW.send(MESSAGE_ERROR);
+		} else {
+			MESSAGE_TEMPLATE.body = response;
+			client && client.send(MESSAGE_TEMPLATE);
 		}
-
-		var end = response.indexOf(';', beg);
-		if (end === -1)
-			end = response.indexOf('\n', beg);
-
-		if (end === -1) {
-			UPDATES[url] = '';
-			callback('');
-			return;
-		}
-
-		var version = response.substring(beg + 15, end).match(/[0-9.]+/);
-		if (version) {
-			version = version.toString();
-			UPDATES[url] = version;
-		}
-
-		callback(version ? version : '');
 	});
-};
+}
 
 FLOW.install = function(filename, body, callback) {
 

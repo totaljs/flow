@@ -8,7 +8,7 @@
 	<div>
 		<div class="padding">
 			<div class="padding bg-smoke" style="border-radius:3px">
-				<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true"></div>
+				<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url"></div>
 			</div>
 		</div>
 	</div>
@@ -23,7 +23,7 @@
 
 	PLUGIN('components', function(exports) {
 
-		SETTER('websocket', 'send', { 'type': 'templates' });
+		SETTER('websocket', 'send', { 'type': 'components' });
 
 		exports.submit = function() {
 			SET('common.form2', '');
@@ -39,9 +39,9 @@
 
 		exports.select = function() {
 			formcomponents.database.forEach(function(item) {
-				var index = formcomponents.components.indexOf(item);
+				var index = formcomponents.components.indexOf(item.url);
 				if (index === -1)
-					formcomponents.components.push(item);
+					formcomponents.components.push(item.url);
 				else
 					formcomponents.components.splice(index, 1);
 			});

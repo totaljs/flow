@@ -615,7 +615,7 @@ COMPONENT('repeater-group', function(self, config) {
 			return;
 		}
 
-		if (!force && NOTMODIFIED(self.id, value))
+		if (!force && !config.nocache && NOTMODIFIED(self.id, value))
 			return;
 
 		force = false;
@@ -2470,7 +2470,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 
 			var el = $(this);
 			var is = !el.hasClass('ui-checkboxlist-checked');
-			var index = +el.attr('data-index');
+			var index = +el.attrd('index');
 			var value = data[index];
 
 			if (value == null)
@@ -4746,7 +4746,7 @@ COMPONENT('filereader', function(self, config) {
 
 		var element = self.element;
 		var content = self.html();
-		var html = '<span class="fa fa-folder-o"></span><input type="file"' + (config.accept ? ' accept="' + config.accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (config.placeholder || '') + '" readonly="readonly" />';
+		var html = '<span class="far fa-folder"></span><input type="file"' + (config.accept ? ' accept="' + config.accept + '"' : '') + ' class="ui-filereader-input" /><input type="text" placeholder="' + (config.placeholder || '') + '" readonly="readonly" />';
 
 		if (content.length) {
 			self.html('<div class="ui-filereader-label' + (config.required ? ' ui-filereader-label-required' : '') + '">' + (config.icon ? '<span class="fa fa-' + config.icon + '"></span> ' : '') + content + ':</div><div class="ui-filereader">' + html + '</div>');
@@ -4756,7 +4756,7 @@ COMPONENT('filereader', function(self, config) {
 		}
 
 		element.find('.ui-filereader-input').bind('change', function(evt) {
-			self.process(evt.target.files);
+			self.process.call(this, evt.target.files);
 		});
 	};
 
@@ -4770,6 +4770,7 @@ COMPONENT('filereader', function(self, config) {
 				self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
 				reader = null;
 				setTimeout(next, 500);
+				el.value = '';
 			};
 			reader.readAsText(file);
 		}, function() {
@@ -7720,4 +7721,82 @@ COMPONENT('menu', function(self) {
 		self.rclass(cls + '-visible');
 	};
 
+});
+
+COMPONENT('intro', function(self, config) {
+
+	var cls = 'ui-intro';
+	var cls2 = '.' + cls;
+	var container = 'intro' + GUID(4);
+	var content, figures, buttons, button = null;
+	var index = 0;
+	var visible = false;
+
+	self.readonly();
+
+	self.make = function() {
+		$(document.body).append('<div id="{0}" class="hidden {1}"><div class="{1}-body"></div></div>'.format(container, cls));
+		content = self.element;
+		container = $('#' + container);
+		content.rclass('hidden');
+		var body = container.find(cls2 + '-body');
+		body[0].appendChild(self.element[0]);
+		self.replace(container);
+		content.aclass('ui-intro-figures');
+		figures = content.find('figure');
+		var items = [];
+
+		figures.each(function(index) {
+			items.push('<i class="fa fa-circle {0}-button" data-index="{1}"></i>'.format(cls, index));
+		});
+
+		body.append('<div class="{0}-pagination"><button name="next"></button>{1}</div>'.format(cls, items.join('')));
+		buttons = self.find(cls2 + '-button');
+		button = self.find(cls2 + '-pagination').find('button');
+
+		self.event('click', 'button[name="next"]', function() {
+			index++;
+			if (index >= figures.length) {
+				self.set('');
+				config.exec && EXEC(config.exec);
+				config.remove && self.remove();
+			} else {
+				self.move(index);
+				config.page && EXEC(config.page, index);
+			}
+		});
+
+		self.event('click', 'button[name="close"]', function() {
+			self.set('');
+			config.exec && EXEC(config.exec, true);
+			config.remove && self.remove();
+		});
+
+		self.event('click', cls2 + '-button', function() {
+			self.move(+this.getAttribute('data-index'));
+		});
+	};
+
+	self.move = function(indexer) {
+		figures.filter('.visible').rclass('visible');
+		buttons.filter('.selected').rclass('selected');
+		figures.eq(indexer).aclass('visible');
+		buttons.eq(indexer).aclass('selected');
+		button.html(indexer < buttons.length - 1 ? ((config.next || 'Next') + '<i class="fa fa-chevron-right"></i>') : (config.close || 'Done'));
+		index = indexer;
+		return self;
+	};
+
+	self.setter = function(value) {
+		var is = value == config.if;
+		if (is === visible)
+			return;
+		index = 0;
+		self.move(0);
+		visible = is;
+		self.tclass('hidden', !is);
+		setTimeout(function() {
+			self.find(cls2 + '-body').tclass(cls + '-body-visible', is);
+		}, 100);
+	};
 });

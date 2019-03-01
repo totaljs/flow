@@ -229,6 +229,8 @@
 	<div data---="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
 	<div data---="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
 	<div data---="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:welcome;url:@{R.url}forms/intro-welcome.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:templates;url:@{R.url}forms/form-templates.html;cleaner:5"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -252,7 +254,7 @@
 			!this.animations && (this.animations = true);
 			this.touches = false;
 			this.theme === undefined && (this.theme = '@{if R.dark}dark@{fi}');
-			this.updates = @{R.updates};
+			this.updates = 0;
 			this.version = +'@{R.version}';
 			this.beautify === undefined && (this.beautify = true);
 			this.callbacks = {};
@@ -1002,7 +1004,23 @@
 			common.logging && console.log('--->', message);
 
 			if (message.type === 'templates') {
-				SET('common.templates', message.body);
+				var arr = message.body;
+				SET('common.designs', arr);
+				return;
+			}
+
+			if (message.type === 'template') {
+				SETTER('loading', 'show');
+				SETTER('loading', 'hide', 2000);
+				SET('common.form', 'import');
+				SET('formimport.body', message.body, 1000);
+				return;
+			}
+
+			if (message.type === 'components') {
+				var arr = message.body;
+				updateVersions(arr, common.components);
+				SET('common.templates', arr);
 				return;
 			}
 
@@ -1098,7 +1116,14 @@
 					SETTER('confirm', 'confirm', '@(<h3 class="nmb red">Crash mode</h3>Flow is in <b>crash mode</b> and data processing is paused. You need to press <b>APPLY</b> for re-init Flow again.)', ['"chevron-right"@(Continue in editing)'], NOOP);
 				}
 
+				if (!common.ready) {
+					common.ready = true;
+					if (!flow.components.length)
+						SET('common.form', 'welcome');
+				};
+
 				message.database.quicksort('name');
+				updateVersions(common.templates, message.database);
 				SET('common.components', message.database);
 				SET('flow.paused', message.paused === true);
 
@@ -1330,6 +1355,26 @@
 			EMIT('designer.selectable', flow.selected);
 		});
 
+		function updateVersions(templates, components) {
+
+			if (!templates || !components)
+				return;
+
+			for (var i = 0; i < templates.length; i++) {
+				var item = templates[i];
+				for (var j = 0; j < item.items.length; j++) {
+					var subitem = item.items[j];
+					subitem.name = subitem.url.substring(subitem.url.lastIndexOf('/') + 1, subitem.url.length - 3);
+					var com = components.findItem('id', subitem.name);
+					if (com) {
+						com.versionrepo = subitem.version;
+						com.canupdate = com.version !== com.versionrepo;
+					}
+				}
+			}
+
+		}
+
 		function findBottom() {
 			var tab = common.tab.id;
 			var bottom = 0;
@@ -1470,8 +1515,9 @@
 			items.push({ name: '@(Components)', icon: 'database', value: 'database' });
 			items.push({ name: '@(Variables)', icon: 'sliders', value: 'variables' });
 			items.push('-');
-			items.push({ name: '@(Export designer)', icon: 'copy', value: 'export' });
-			items.push({ name: '@(Import designer)', icon: 'folder-o', value: 'import' });
+			items.push({ name: '@(Export designer)', icon: 'cloud-upload', value: 'export' });
+			items.push({ name: '@(Import designer)', icon: 'cloud-download', value: 'import' });
+			items.push({ name: '@(Templates)', icon: 'swatchbook', value: 'templates' });
 			items.push('-');
 			items.push({ name: '@(Clear current tab)', icon: 'trash-o', value: 'clear' });
 
@@ -1503,6 +1549,7 @@
 					case 'variables':
 					case 'import':
 					case 'export':
+					case 'templates':
 						SET('common.form', value);
 						return;
 					case 'clear':
@@ -1517,6 +1564,7 @@
 		SETTER(true, 'shortcuts', 'register', 'F1', function(e) {
 
 			var items = [];
+			items.push({ name: '@(Templates)', value: 1, icon: 'swatchbook', form: 'templates' });
 			items.push({ name: '@(Components)', value: 19, icon: 'database', keywords: 'database', form: 'database' });
 			items.push({ name: '@(Variables)', value: 1, icon: 'sliders', form: 'variables' });
 			items.push({ name: '@(Console)', value: 3, icon: 'history', keywords: 'debug' });
@@ -1670,6 +1718,11 @@
 			} else
 				SET('common.form', 'database');
 		}
+
+		ON('ready', function() {
+			if (SCROLLBARWIDTH() === 0)
+				CSS('.scroller{width:110%}');
+		});
 
 	</script>
 

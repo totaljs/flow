@@ -34,8 +34,8 @@
 			</div>
 		</div>
 		<div class="padding npb">
-			<div data---="textbox__formdatabase.search__type:search;placeholder:@(Search components ...)" class="mt10"></div>
-			<div data-bind="formdatabase.updatescount__show" class="hidden fs12 mt10"><a href="javascript:void(0)" class="exec" data-exec="database/update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</a></div>
+			<div data---="input__formdatabase.search__type:search;innerlabel:1" class="mt10">@(Search components)</div>
+			<div data-bind="formdatabase.updatescount__show" class="hidden fs12 mt10"><span class="link exec" data-exec="database/update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</span></div>
 			<div data-bind="formdatabase.progress__show:value && value < 99" class="hidden">
 				<br />
 				<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
@@ -45,14 +45,10 @@
 				<div class="db-container">
 					<div data---="repeater-group__common.components__group:group" data-bind="common.templates__.db-norefresh:!(value && value.length)" class="dbcomponents">
 						<script type="text/html">
-							<div class="jsearch db-item{{ component | componentupdates }}" data-search="{{ name }}" data-id="{{ id }}">
+							<div class="jsearch db-item{{ if canupdate }} db-item-update{{ fi }}" data-search="{{ name }}" data-id="{{ id }}">
 								<span class="exec" data-exec="database/remove"><i class="fa fa-times-circle"></i></span>
-								{{ component | componentrefresh }}
-								<div>
-									<div class="name" title="{{ name }}"><i class="fa fa-circle mr5" style="color:{{ color }}"></i>{{ name }}</div>
-									<div class="author">{{ author }}</div>
-									<div class="version">{{ if version }}v{{ version }}{{ else }}&hellip;{{ fi }}<b class="canupdate">@(new update)</b></div>
-								</div>
+								<span class="exec db-refresh{{ if !canupdate }} hidden{{ fi }} refresh-{{ name }}" title="@(Update from repository)" data-exec="database/refresh"><i class="fa fa-refresh"></i></span>
+								<div class="name" title="{{ name }}"><i class="fa fa-circle mr5" style="color:{{ color }}"></i>{{ name }}{{ if version }} <span>v{{ version }}</span>{{ fi }}<b class="canupdate">@(new update)</b></div>
 							</div>
 						</script>
 						<script type="text/html">
@@ -73,11 +69,11 @@
 
 <script>
 
-	var formdatabase = { reload: false, updates: {}, versions: [], versioncurrent: null, versioncount: 0, versionindex: 0, updatescount: 0 };
+	var formdatabase = { reload: false, updates: {}, versioncurrent: null, versioncount: 0, versionindex: 0, updatescount: 0 };
 
 	PLUGIN('database', function(exports) {
 
-		SETTER('websocket', 'send', { 'type': 'templates' });
+		SETTER('websocket', 'send', { 'type': 'components' });
 
 		exports.submit = function(hide) {
 			setTimeout(function() {
@@ -96,15 +92,15 @@
 			var len = component.filename.length;
 			for (var i = 0, length = common.templates.length; i < length; i++) {
 				var template = common.templates[i];
-				var item = template.items.findItem(function(url) {
-					return url.substring(url.length - (len + 1)) === ('/' + component.filename);
+				var item = template.items.findItem(function(item) {
+					return item.name === component.id;
 				});
 				if (item)
 					break;
 			}
 
 			if (item) {
-				SETTER('websocket', 'send', { type: 'install', filename: item });
+				SETTER('websocket', 'send', { type: 'install', filename: item.url });
 				SET('formdatabase.url', '', true);
 				SETTER('snackbar', 'success', '@(The component <b>{0}</b> has been refreshed successfully.)'.format(component.name));
 			} else
@@ -116,26 +112,6 @@
 			SETTER('confirm', 'confirm', '@(Are you sure you want to remove this component?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
 				!index && SETTER('websocket', 'send', { type: 'uninstall', target: id });
 			});
-		};
-
-		exports.version = function(version) {
-			var container = $('.dbcomponents');
-			var item = formdatabase.versioncurrent;
-			if (item && version) {
-				if (item.version !== version) {
-					container.find('.db-item[data-id="{0}"]'.format(item.name)).aclass('db-item-update');
-					INC('formdatabase.updatescount', 1);
-				}
-				formdatabase.updates[item.name] = version;
-				container.find('.refresh-' + item.name).rclass('hidden');
-			}
-
-			var p = (formdatabase.versionindex * 100) / formdatabase.versioncount;
-			SET('formdatabase.progress', p);
-			formdatabase.versioncurrent = item = formdatabase.versions[formdatabase.versionindex++];
-			item && setTimeout(function() {
-				SETTER('websocket', 'send', { type: 'componentversion', url: item.url });
-			}, version ? 50 : 0);
 		};
 
 		exports.install = function(el) {
@@ -151,7 +127,9 @@
 
 			items.quicksort();
 			SET('formcomponents.database', items);
-			SET('formcomponents.components', items.slice(0), true);
+			SET('formcomponents.components', items.slice(0).map(function(item) {
+				return item.url;
+			}), true);
 			SET('common.form2', 'components');
 		};
 
@@ -162,17 +140,23 @@
 					return;
 
 				var list = [];
+				var items = [];
+
+				common.templates.forEach(function(t){
+					items = items.concat(t.items);
+				});
 
 				$('.dbcomponents').find('.db-item').each(function() {
 					var el = $(this);
 					var is = el.find('.canupdate').is(':visible');
 					if (is) {
-						var com = formdatabase.versions.findItem('name', el.attrd('id'));
+						var com = items.findItem('name', el.attrd('id'));
 						com && list.push(com);
 					}
 				});
 
-				SET('formdatabase.versions', 0);
+				SET('formdatabase.updatescount', 0);
+
 				SETTER('loading', 'show');
 				list.wait(function(item, next, index) {
 					SET('formdatabase.progress', (index * 100) / list.length);
@@ -194,6 +178,11 @@
 				SET('formdatabase.url', '', true);
 				SETTER('snackbar', 'success', '@(<b>The component</b> has been installed successfully.)');
 			}
+		});
+
+		WATCH('common.templates', function() {
+			UPD('common.components');
+			SET('formdatabase.updatescount', !!$('.db-item-update').length);
 		});
 
 		WATCH('formdatabase.file', function(path, value) {
@@ -225,36 +214,6 @@
 			}
 		});
 
-		WATCH('common.templates', function() {
-			common.updates && common.templates && setTimeout2('commontemplates', function() {
-
-				var is = false;
-				formdatabase.versions = [];
-
-				common.templates.forEach(function(group) {
-					group.items.forEach(function(item) {
-						var name = item.substring(item.lastIndexOf('/') + 1, item.length - 3);
-						var com = common.components.findItem('component', name);
-						com && formdatabase.versions.push({ url: item, version: com.version, name: com.component });
-					});
-				});
-
-				formdatabase.versioncount = formdatabase.versions.length;
-				exports.version();
-
-			}, 1000);
-		});
-
 	});
-
-	Thelpers.componentupdates = function(name) {
-		var version = formdatabase.updates[name];
-		return version == null ? '' : version !== this.version ? ' db-item-update' : '';
-	};
-
-	Thelpers.componentrefresh = function(name) {
-		var version = formdatabase.updates[name];
-		return '<span class="exec db-refresh{1} refresh-{0}" title="@(Update from repository)" data-exec="database/refresh"><i class="fa fa-refresh"></i></span>'.format(name, version == null ? ' hidden' : '');
-	};
 
 </script>

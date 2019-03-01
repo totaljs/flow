@@ -17,7 +17,7 @@
 				<div data-bind="formimportanalysis.tabs__show:value && value.length > 0" class="m">
 					<div data---="dropdowncheckbox__formimport.tabs__datasource:formimportanalysis.tabs;placeholder:@(Import all tabs)">@(Choose tabs)</div>
 				</div>
-				<div data---="checkbox__formimport.components">@(Install missing components from templates)</div>
+				<div data---="checkbox__formimport.components" class="b">@(Install missing components from templates)</div>
 				<div data-bind="formimportanalysis.variables__show" class="m">
 					<div data---="checkbox__formimport.variables">@(Import and replace variables)</div>
 				</div>
@@ -36,7 +36,7 @@
 
 	PLUGIN('import', function(exports) {
 
-		SETTER('websocket', 'send', { 'type': 'templates' });
+		SETTER('websocket', 'send', { 'type': 'components' });
 
 		exports.reload = function() {
 			SET('formimport.tabs', []);
@@ -65,13 +65,14 @@
 
 			data.components.forEach(function(item) {
 				var component = common.components.findItem('component', item.component);
-				!component && errors.push({ error: '@(Component "{0}" doesn\'t exist.)'.format(item.component), name: item.component });
+				!component && errors.push({ error: '@(Component "{0}" must be imported)'.format(item.component), name: item.component });
 			});
 
 			data.errors = errors.length ? errors : null;
 			data.is = true;
 			SET('formimport.is', true);
 			SET('formimportanalysis', data);
+			CHANGE('formimport.components', true);
 		};
 
 		exports.install = function(callback) {
@@ -85,9 +86,9 @@
 
 			Object.keys(common.templates).forEach(function(item) {
 				common.templates[item].items.forEach(function(link) {
-					var name = link.substring(link.lastIndexOf('/'));
+					var name = link.url.substring(link.url.lastIndexOf('/'));
 					if (tmp[name]) {
-						arr.push(link);
+						arr.push(link.url);
 						delete tmp[name];
 					}
 				});
@@ -192,6 +193,7 @@
 					location.hash = flow.tabs[0].linker;
 					!flow.components && (flow.components = []);
 					flow.connections = {};
+					formimportanalysis.panel && SET('common.panel', formimportanalysis.panel);
 
 					flow.components.forEach(function(item) {
 						item.$component = common.components.findItem('id', item.component);

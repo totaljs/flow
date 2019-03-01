@@ -57,6 +57,7 @@
 				if (formexport.variables)
 					obj.variables = formvariables.body;
 
+				obj.panel = common.panel;
 				obj.url = location.href;
 				obj.created = new Date();
 				obj.components.forEach(function(o) {

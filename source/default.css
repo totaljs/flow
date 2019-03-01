@@ -29,7 +29,7 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 #panel-notification { background-color: #FFFCD5; color: #837D2E; left: 20px; right: 20px; bottom: 17px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); position: absolute; padding: 12px 15px; font-size: 12px; transition: all 0.5s; transform: translate(150px,0); opacity: 0; border: 1px solid #EDE99C; z-index: 100 }
 #panel-notification div { line-height: 14px; margin-top: 3px; }
 #panel-notification label { font-size: 10px; text-transform: uppercase; display: block; font-weight: bold; color: black; }
-#panel-notification label .fa { margin-right: 3px; margin-bottom: 3px; }
+#panel-notification label i { margin-right: 3px; margin-bottom: 3px; }
 .panel-notified { transform: translate(0px,0) !important; opacity: 1 !important; }
 
 #info-panel-notes .markdown { margin: 5px 0 20px; padding: 15px 15px 5px; border-radius: 3px; background-color: #FEFBE8; border: 1px solid #FDF5C8; color: #573C0F; }
@@ -40,16 +40,16 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 
 .panel .tabs button { width: 25%; font-size: 12px; }
 
-section > label .fa { margin-right: 5px; }
+section > label i { margin-right: 5px; }
 section > label { display: block; padding: 8px 15px; color: #A0A0A0; font-size: 10px; text-transform: uppercase; background-color: #F9F9F9; border-radius: 3px 3px 0 0; text-shadow: 0 1px 1px white; border: 1px solid #E0E0E0; border-bottom: 0; font-weight: bold; }
 section > div { background-color: white; border-radius: 0 0 3px 3px; line-height: 18px; border: 1px solid #E0E0E0; }
 section > div:first-child { border-radius: 3px; }
 
 nav > .onlyicon { min-width: 30px; }
-nav > .onlyicon .fa { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 0; }
-nav .highlight .fa { color: white; }
+nav > .onlyicon i { margin-right: 0; width: 100%; text-align: center; display: block; padding-top: 0; }
+nav .highlight i { color: white; }
 nav .highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
-nav button.highlight .fa { color: white; }
+nav button.highlight i { color: white; }
 nav button.highlight { color: white !important; background-color: silver; font-weight: bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.1); }
 .tabs-controls .highlight { width: 120px; }
 .tabs-controls button { width: 48px; padding: 0; }
@@ -62,8 +62,8 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .tabs button:first-child { border-left: 0; }
 .tabs button:hover { text-decoration: none; color: black; }
 .tabs .changed { padding-right: 30px; }
-.tabs .changed:after { position: absolute; content: '\f111'; font-family: FontAwesome; font-size: 8px; color: red; margin: 5px 0 0 0; right: 10px; }
-.tabs .fa { margin-right: 5px; }
+.tabs .changed:after { position: absolute; content: '\f111'; font-family: 'Font Awesome 5 Free'; font-weight: 900; font-size: 8px; color: red; margin: 5px 0 0 0; right: 10px; }
+.tabs i { margin-right: 5px; }
 .tabs .selected { background-color: white; color: black; border-bottom: 0; }
 .tabs .br { border-right: 1px solid #D9D9D9; }
 .nb { border: 0 !important; }
@@ -88,14 +88,14 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; cursor: default; }
 .components .group:first-child { margin-top: 0; }
-.components .fa { width: 18px; }
+.components i { width: 18px; }
 .themedark .component:hover { background-color: #202020; }
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 50px; left: 0; }
 .designer-scrollbar { width: 111%; overflow: auto; height: 110%; }
 .themedark .designer-scrollbar { background-color: #101010; }
 .debugoutput { border-bottom: 1px solid #E0E0E0; font-size: 12px; padding: 10px 15px; }
-.debugoutput .fa { margin-right: 5px; }
+.debugoutput i { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
 .debugoutput-id { font-size: 11px; color: #A0A0A0; float: right; }
 .debugoutput-name { font-size: 12px; line-height: 14px; }
@@ -107,7 +107,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .themedark .debugoutput-id { color: #505050; }
 
 .erroroutput { border-bottom: 1px solid #E0E0E0; font-size: 11px; padding: 10px 20px; }
-.erroroutput .fa { margin-right: 5px; }
+.erroroutput i { margin-right: 5px; }
 .erroroutput-name { font-size: 12px; line-height: 14px; margin-bottom: 5px; }
 .erroroutput-name b { font-size: 11px; }
 .erroroutput-errors > div { border: 2px solid #DA4453; padding: 5px; border-radius: 3px; margin-bottom: 5px; }
@@ -117,7 +117,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .bg-fade { background: linear-gradient(#F8F8F8, white); border-bottom: 1px solid #E0E0E0; margin-bottom: 5px; padding-bottom: 7px !important; }
 svg { cursor: move; }
 
-.link .fa { margin-right: 5px; }
+.link i { margin-right: 5px; }
 .red { color: #E33733 !important; }
 .green { color: #8CC152 !important; }
 .blue { color: #3BAFDA; }
@@ -128,7 +128,7 @@ svg { cursor: move; }
 #success { height: 40px; top: 58px; left: 194px; width: 40px; background-color: #8CC152; font-size: 25px; line-height: 0; position: fixed; z-index: 19; color: white; text-align: center; padding: 8px 0 0 1px; display: none; transition: all 0.4s; z-index: 1000; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 .success-animation { transform: scale(2) translate(0, 50px); }
 .success { background-color: #8CC152; text-align: center; padding: 8px 10px; font-size: 12px; color: white; }
-.success .fa { margin-right: 5px; }
+.success i { margin-right: 5px; }
 .mainmenu-hidden #success { left: 30px; top: 80px; }
 
 .singleline { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
@@ -149,7 +149,7 @@ svg { cursor: move; }
 .mt10 { margin-top: 10px; }
 .help { margin-top: 5px; font-size: 11px; color: #A0A0A0; }
 .help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 3px; }
-.help .fa { margin-right: 5px; }
+.help i { margin-right: 5px; }
 
 .scroller { width: 114%; height: 100%; overflow-x: hidden; padding-right: 10%; overflow-y: scroll; overflow-scrolling: touch; }
 
@@ -197,7 +197,7 @@ svg { cursor: move; }
 .traffic-container { border-top: 1px solid #E0E0E0; height: 25px; font-size: 11px; padding: 0 20px 0 5px; }
 .traffic-container:first-child { border-top: 0; }
 .traffic-container .sort { cursor: pointer; }
-.traffic-container .sort .fa { margin-right: 3px; font-size: 10px; }
+.traffic-container .sort i { margin-right: 3px; font-size: 10px; }
 .traffic-container .sort:hover { text-decoration: underline; }
 .traffic-name { margin-right: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 5px 10px; cursor: pointer; }
 .traffic-name:hover { text-decoration: underline; }
@@ -213,22 +213,20 @@ svg { cursor: move; }
 
 .db-container { margin: 0 -10px; }
 .db-norefresh .db-refresh { display: none; }
-.db-item { position: relative; display: inline-block; background-color: white; border: 2px solid #E0E0E0; padding: 4px 10px; width: 206px; margin: 10px 10px 5px; border-radius: 3px; }
-.db-item > span { float: right; width: 20px; text-align: right; margin: 0; cursor: pointer; color: #E33733; }
+.db-item { border-bottom: 1px solid #E0E0E0; padding: 5px 0; margin: 0 10px; }
+.db-item > span { float: right; width: 22px; text-align: right; margin: 2px 0 0 0; cursor: pointer; color: #E33733; font-size: 12px; }
 .db-item > span .fa-refresh { color: #909090; }
 .db-item > span:hover { opacity: 0.8; }
-.db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.db-item .canupdate { display: none; color: red; }
-.db-item-update { border-color: #70B348; border-style: dashed; }
+.db-item > div { margin-right: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-item > div i { font-size: 11px; }
+.db-item .canupdate { display: none; color: red; margin-left: 5px; font-size: 11px; }
 .db-item-update .canupdate { display: inline-block; }
-.db-item .name { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
-.db-item .author { font-size: 11px; color: gray; }
-.db-item .version { font-size: 11px; }
-.db-item .version b { font-size: 10px; text-transform: uppercase; margin-left: 5px; }
-.db-category { font-size: 16px; color: black; margin: 15px 10px 5px; font-weight: bold; border-bottom: 3px solid black; padding: 5px 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
-.db-category .fa { margin-right: 8px; }
+.db-item .name { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
+.db-item .name span { color: gray; }
+.db-category { font-size: 16px; color: black; margin: 15px 10px 10px; font-weight: bold; border-bottom: 3px solid black; padding: 5px 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.db-category i { margin-right: 8px; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }
-.db-item .datetime .fa { margin-right: 5px; }
+.db-item .datetime i { margin-right: 5px; }
 
 .tabs-tools button { padding: 0; width: 50px; height: 50px; font-size: 16px; color: black; cursor: pointer; background-color: transparent; border: 0; border-right: 1px solid #D0D0D0; outline: 0; }
 .tabs-tools button:last-child { border-right: 0; }
@@ -305,3 +303,9 @@ svg { cursor: move; }
 .variablesexample i { color: gray; }
 
 .fr { float: right; }
+
+.db-template { height: 40px; border-bottom: 1px solid #E0E0E0; font-size: 12px; }
+.db-template > i { width: 34px; float: left; padding: 5px 0 0; color: #8CC152; height: 39px; font-size: 20px; }
+.db-template > div { margin: 0 80px 0 34px; }
+.db-template > div > div:first-child { font-weight: bold; color: black; font-size: 14px; }
+.db-template .link { float: right; width: 80px; text-align: right; line-height: 39px; height: 39px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
