@@ -1011,8 +1011,9 @@
 
 			if (message.type === 'template') {
 				SETTER('loading', 'show');
-				SETTER('loading', 'hide', 2000);
+				SETTER('loading', 'hide', 3000);
 				SET('common.form', 'import');
+				SET('formimport.replace', true, 1000);
 				SET('formimport.body', message.body, 1000);
 				return;
 			}
