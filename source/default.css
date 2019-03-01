@@ -340,8 +340,8 @@ svg { cursor: move; }
 
 .fr { float: right; }
 
-.db-template { height: 40px; border-bottom: 1px solid #E0E0E0; font-size: 12px; }
-.db-template > i { width: 34px; float: left; padding: 5px 0 0; color: #8CC152; height: 39px; font-size: 20px; }
+.db-template { height: 45px; border-bottom: 1px solid #E0E0E0; font-size: 12px; }
+.db-template > i { width: 34px; float: left; padding: 12px 0 0; color: #8CC152; height: 44px; font-size: 20px; }
 .db-template > div { margin: 0 80px 0 34px; }
-.db-template > div > div:first-child { font-weight: bold; color: black; font-size: 14px; }
-.db-template .link { float: right; width: 80px; text-align: right; line-height: 39px; height: 39px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+.db-template > div > div:first-child { padding: 3px 0 0; font-weight: bold; color: black; font-size: 14px; }
+.db-template .link { float: right; width: 80px; text-align: right; line-height: 45px; height: 45px; font-size: 14px; text-transform: uppercase; font-weight: bold; }

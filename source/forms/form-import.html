@@ -69,10 +69,14 @@
 			}
 
 			var errors = [];
+			var was = {};
 
 			data.components.forEach(function(item) {
 				var component = common.components.findItem('component', item.component);
-				!component && errors.push({ error: '@(Component "{0}" is missing)'.format(item.component), name: item.component });
+				if (!was[item.component]) {
+					was[item.component] = 1;
+					!component && errors.push({ error: '@(Component "{0}" is missing)'.format(item.component), name: item.component });
+				}
 			});
 
 			data.errors = errors.length ? errors : null;
