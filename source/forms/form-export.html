@@ -8,7 +8,9 @@
 	<div>
 		<div class="padding bg-smoke">
 			<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
-			<div data---="checkbox__formexport.variables">@(Export variables)</div>
+			<div data---="textarea__formexport.notes__height:60">@(Notes)</div>
+			<div class="help m">@(You can describe custom notes for this export)</div>
+			<div data---="checkbox__formexport.variables">@(Export all variables)</div>
 		</div>
 		<div class="padding">
 			<div data---="textarea__formexport.body__height:200;icon:clipboard;readonly:true" class="m">@(Copy data to clipboard)</div>
@@ -57,6 +59,9 @@
 				if (formexport.variables)
 					obj.variables = formvariables.body;
 
+				if (formexport.notes)
+					obj.notes = formexport.notes;
+
 				obj.panel = common.panel;
 				obj.url = location.href;
 				obj.created = new Date();
@@ -74,6 +79,7 @@
 			saveAs(blob, ('flow_{0}.' + (type === 'json' ? 'json' : 'txt')).format(NOW.format('yyyyMMdd-HHmm')));
 		};
 
+		WATCH('formexport.notes', exports.rebuild);
 		WATCH('formexport.tabs', exports.rebuild);
 		WATCH('formexport.variables', exports.rebuild);
 		WATCH('formexport.type', exports.rebuild);

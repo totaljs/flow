@@ -56,9 +56,9 @@
 			<div class="scroller">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
-					<div class="markdown mt5"></div>
+					<div class="mt5"></div>
 				</div>
-				<div class="markdown" id="info-panel"></div>
+				<div id="info-panel"></div>
 			</div>
 		</div>
 
@@ -242,8 +242,6 @@
 
 		var MESSAGES = {};
 		MESSAGES.apply = '<i class="fa fa-info-circle blue mr5"></i>@(You have to click the &quot;<b>APPLY</b>&quot; button to apply all the changes.)';
-
-		marked.setOptions({ gfm: true, breaks: true, sanitize: true, tables: true });
 
 		MAKE('common', function() {
 			this.id = 'flow';
@@ -1293,7 +1291,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data---="modal__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div><span class="link cancel"><i class="fa fa-times"></i></span><label></label></div><div><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div></div>{1}</div></div></div><div><span class="link cancel">@(Cancel)</span><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY)</button></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data---="modal__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div><span class="link cancel"><i class="fa fa-times"></i></span><label></label></div><div><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div></div>{1}</div></div></div><div><span class="link cancel">@(Cancel)</span><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY SETTINGS)</button></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);

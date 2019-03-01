@@ -14,6 +14,15 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .hidetools button:first-child { right: 0; border-radius: 0 0 0 3px; }
 .hidetools button:last-child { left: 0; border-radius: 0 0 3px 0; }
 
+.themedark .panel * { scrollbar-face-color: #646464; scrollbar-base-color: #646464; scrollbar-3dlight-color: #646464; scrollbar-highlight-color: #646464; scrollbar-track-color: #000; scrollbar-arrow-color: #000; scrollbar-dark-shadow-color: #646464; }
+.themedark .panel ::-webkit-scrollbar { width: 15px; height: 4px;}
+.themedark .panel ::-webkit-scrollbar-button {  background-color: #666; }
+.themedark .panel ::-webkit-scrollbar-track {  background-color: #646464;}
+.themedark .panel ::-webkit-scrollbar-track-piece { background-color: #000;}
+.themedark .panel ::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px;}
+.themedark .panel ::-webkit-scrollbar-corner { background-color: #646464;}}
+.themedark .panel ::-webkit-resizer { background-color: #666;}
+
 .tabs-tools { float: right; }
 .themedark .hidetools button { background-color: #404040; }
 .components-search-padding { padding: 15px; }
@@ -169,6 +178,32 @@ svg { cursor: move; }
 .markdown blockquote { border-left: 5px solid #E0E0E0; margin: 6px 0; padding: 6px; color: gray; }
 .markdown blockquote p { margin-bottom: 0; }
 
+.md { font-size: 15px; line-height: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; color: #404040; overflow-x: hidden; position: relative; }
+.md code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
+.md h1 { cursor: default; margin: 0 0 15px; font-size: 26px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 30px; font-family: -apple-systm, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; font-weight: normal; line-height: 32px; }
+.md h2 { cursor: default; margin: 30px 0 10px; font-weight: bold; font-size: 22px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 28px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+.md h3 { cursor: default; margin: 30px 0 8px; font-size: 18px; padding: 0 0 5px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+.md h4, .md h5 { cursor: default; margin: 20px 0 10px; font-size: 17px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; background-color: #F0F0F0; padding: 4px 3px; border-radius: 3px; border-bottom: 1px solid #E0E0E0; }
+.md p { margin: 0 0 15px; padding-left: 0; padding-right: 0; }
+.md p code, .md li code, .md blockquote code, .md h1 code, .md h2 code, .md h3 code, .md h4 code, .md td code { background-color: #E0E0E0; padding: 1px 4px 2px; border-radius: 3px; font-size: 14px; }
+.md p code, .md li code, .md blockquote code, .md td code { border: 1px solid #E0E0E0; background-color: #F5F5F5; }
+.md pre { padding: 0; border-radius: 4px; margin: 15px 0; width: 100%; }
+.md pre code { padding: 10px; font-size: 14px; line-height: 18px; overflow-scrolling: touch; border-radius: 3px; display: block; }
+.md table { width: 100%; margin: 0 0 20px; }
+.md ul { margin: 0 0 15px 0; padding: 0 0 0 2em; }
+.md img { max-width: 100%; }
+.md th { background-color: #F8F8F8; }
+.md blockquote { padding: 15px 20px; color: #777; border: 1px solid #DDD; margin: 10px 5px; border-radius: 3px; }
+.md blockquote:before { content: '\201C'; position: absolute; margin-left: -18px; margin-top: -17px; font: 45px 'PT Sans', sans-serif; color: #A0A0A0; }
+.md hr { border-color: #E0E0E0; border-width: 2px; }
+.md h1 code { font-size: 28px; font-weight: normal; background-color: #DAE8F8; }
+.md h2 code { font-size: 23px; font-weight: normal; background-color: #DAE8F8; }
+.md h3 code { font-size: 18px; font-weight: normal; background-color: #DAE8F8; }
+.md h4 code { font-size: 17px; font-weight: normal; background-color: #DAE8F8; }
+.md a code { background-color: #DAE8F8; text-decoration: none !important; border-color: #d5dfeb; }
+.md .video { position: relative; padding-bottom: 56.25%; padding-top: 25px; height: 0; margin-bottom: 15px; }
+.md .video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
 .mainmenu .ui-textbox-label { font-size: 11px; }
 .mainmenu .ui-textbox-input { padding: 5px 2px 0 5px; }
 .mainmenu .ui-textbox input { font-size: 12px; }
@@ -280,6 +315,7 @@ svg { cursor: move; }
 .themedark .debugoutput .hljs { background-color: #303030; color: gray; }
 .themedark #info-panel .hljs { background-color: #303030; color: gray; }
 .themedark #info-panel .hljs-keyword { color: #D0D0D0; }
+.themedark .hljs { scrollbar-color: #505050 #252525; }
 
 .themedark .designer-shadow-top { box-shadow: 0 0 25px rgba(0,0,0,0.4); }
 .themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.4); }

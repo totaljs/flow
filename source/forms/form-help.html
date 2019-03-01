@@ -1,24 +1,36 @@
-<div data---="modal__common.form__if:help;width:400;enter:true;title:@(Shortcuts);icon:keyboard-o" class="hidden">
-	<div class="padding">
-		<div class="shortcuthint">
-			<b>CTRL/CMD + C</b>
-			<div>@(Copy selected components)</div>
+<div data---="modal__common.form__if:help;width:500;title:@(Help);icon:question-circle" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
+	</div>
+
+	<div>
+		<div class="padding">
+			<div class="shortcuthint">
+				<b>CTRL/CMD + C</b>
+				<div>@(Copy selected components)</div>
+			</div>
+			<div class="shortcuthint">
+				<b>CTRL/CMD + SHIFT + C</b>
+				<div>@(Copy selected component and all connected components)</div>
+			</div>
+			<div class="shortcuthint">
+				<b>CTRL/CMD + V</b>
+				<div>@(Paste copied components)</div>
+			</div>
+			<div class="shortcuthint">
+				<b>CTRL/CMD + D</b>
+				<div>@(Duplicate selected components)</div>
+			</div>
+			<div class="shortcuthint nmb">
+				<b>CTRL/CMD + SHIFT + D</b>
+				<div>@(Duplicate selected component and all connected components)</div>
+			</div>
 		</div>
-		<div class="shortcuthint">
-			<b>CTRL/CMD + SHIFT + C</b>
-			<div>@(Copy selected component and all connected components)</div>
-		</div>
-		<div class="shortcuthint">
-			<b>CTRL/CMD + V</b>
-			<div>@(Paste copied components)</div>
-		</div>
-		<div class="shortcuthint">
-			<b>CTRL/CMD + D</b>
-			<div>@(Duplicate selected components)</div>
-		</div>
-		<div class="shortcuthint nmb">
-			<b>CTRL/CMD + SHIFT + D</b>
-			<div>@(Duplicate selected component and all connected components)</div>
-		</div>
+	</div>
+
+	<div class="center">
+		<button name="submit">@(Close window)</button>
 	</div>
 </div>
