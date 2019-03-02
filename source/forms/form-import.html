@@ -174,6 +174,10 @@
 					components.forEach(c => EMIT('changed', 'add', c.id));
 
 					if (formimport.replace) {
+						if (!tabs)
+							tabs = [];
+						for (var i = 0; i < tabs.length; i++)
+							tabs[i].changed = true;
 						flow.tabs = tabs;
 						flow.components = components;
 					} else {
@@ -222,6 +226,7 @@
 					hide();
 
 					setTimeout(function() {
+						SET('common.form', 'imported');
 						FREE();
 						EMIT('designer.refresh');
 						success();

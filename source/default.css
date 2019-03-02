@@ -6,7 +6,7 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .panel { float: right; width: 340px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; position: relative; }
 .panel-minized .panel { margin-right: -340px; }
 .panel-minized .body { margin-right: 0; }
-.body { margin-left: 217px; margin-right: 340px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F0F0F0; position: relative; transition: margin 0.3s; }
+.body { margin-left: 217px; margin-right: 340px; height: 100%; border-left: 1px solid #D0D0D0; border-right: 1px solid #D0D0D0; overflow: hidden; background-color: #F5F5F5; position: relative; transition: margin 0.3s; }
 
 .hidetools { position: relative; width: 100%; }
 .hidetools button { background-color: white; font-size: 11px; height: 20px; width: 20px; border: 0; outline: 0; position: absolute; top: 50px; z-index: 10; padding: 0; }
@@ -23,7 +23,10 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .themedark .panel ::-webkit-scrollbar-corner { background-color: #646464;}}
 .themedark .panel ::-webkit-resizer { background-color: #666;}
 
-.tabs-tools { float: right; }
+.tabs-scroller { overflow-y: hidden; overflow-x: scroll; height: 75px; overflow-scrolling: touch; }
+.tabs-scroller nav { display: block;}
+.tabs-flow { margin-right: 150px; }
+
 .themedark .hidetools button { background-color: #404040; }
 .components-search-padding { padding: 15px; }
 
@@ -63,7 +66,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .tabs-controls .highlight { width: 120px; }
 .tabs-controls button { width: 48px; padding: 0; }
 
-.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; }
+.tabs { background-color: #E6E9ED; box-shadow: inset 0 -2px 10px rgba(0,0,0,0.04); height: 50px; overflow: hidden; }
 .tabs a { float: left; padding: 15px 14px 0; font-size: 14px; color: gray; height: 50px; border-left: 1px solid #D9D9D9; max-width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-align: center; border-bottom-color: #D9D9D9; position: relative; }
 .tabs a:first-child { border-left: 0; }
 .tabs a:hover { text-decoration: none; color: black; }
@@ -80,7 +83,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .body > section.tabs { border-bottom: 1px solid #D9D9D9; }
 .body > section.tabs .selected { border-bottom: 1px solid #D9D9D9; }
 
-.themedark .body > section.tabs { border-bottom: 1px solid #202020; height: 51px; }
+.themedark .body > section.tabs { border-bottom: 1px solid #303030; height: 50px; }
 .themedark .body > section.tabs a { border-bottom-color: #202020; }
 .themedark .body > section.tabs .selected { border-bottom: 1px solid #202020; }
 
@@ -263,9 +266,11 @@ svg { cursor: move; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }
 .db-item .datetime i { margin-right: 5px; }
 
-.tabs-tools button { padding: 0; width: 50px; height: 50px; font-size: 16px; color: black; cursor: pointer; background-color: transparent; border: 0; border-right: 1px solid #D0D0D0; outline: 0; }
+.tabs-tools { border-bottom: 1px solid #D9D9D9; float: right; }
+.tabs-tools button { padding: 0; width: 50px; height: 49px; font-size: 16px; color: black; cursor: pointer; background-color: transparent; border: 0; border-left: 1px solid #D0D0D0; outline: 0; }
 .tabs-tools button:last-child { border-right: 0; }
 .tabs-tools button:hover { opacity: 0.7; }
+.themedark .tabs-tools { border-bottom-color: #303030; }
 
 .bg-smoke { background-color: #F8F8F8; }
 .bg-yellow { background-color: #FFFFD5; }
@@ -282,7 +287,7 @@ svg { cursor: move; }
 
 .themedark { color: gray; background-color: #1B1A1D; }
 .themedark .ui-form-container { color: #505050; }
-.themedark .body { background-colo: #202020; border-color: #303030; }
+.themedark .body { background-color: #202020; border-color: #303030; }
 .themedark .designer-container { box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
 .themedark .mainmenu { background-color: #202020; color: gray; }
 .themedark .components .group { color: white; border-top-color: #303030; }
@@ -321,7 +326,7 @@ svg { cursor: move; }
 .themedark .designer-shadow-bottom { box-shadow: 0 0 25px rgba(0,0,0,0.4); }
 .themedark .designer-shadow-left { box-shadow: 0 0 25px rgba(0,0,0,0.4); }
 .themedark .designer-shadow-right { box-shadow: 0 0 25px rgba(0,0,0,0.4); }
-.themedark .tabs-tools button { color: white; border-right-color: #303030; }
+.themedark .tabs-tools button { color: white; border-left-color: #303030; }
 .themedark .debugoutput .hljs-keyword { color: #D0D0D0; }
 .themedark .markdown { color: #A0A0A0; }
 .themedark .markdown h1 { border-color: #303030; color: white; }

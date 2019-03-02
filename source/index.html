@@ -142,7 +142,7 @@
 			<nav>
 				<button title="@(Apply the current Flow)" class="exec highlight" data-exec="#flow.apply"><i class="fa fa-play-circle"></i>@(APPLY)</button>
 				<button title="@(Pause / Play)" class="exec onlyicon" data-exec="flowpause" data-bind="flow.paused__change:flowpausestyle"><i class="fa"></i></button>
-				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-cogs"></i></button>
+				<button title="@(Settings)" class="exec onlyicon" data-exec="settings_menu"><i class="fa fa-chevron-down"></i></button>
 			</nav>
 		</section>
 
@@ -173,6 +173,7 @@
 	<div class="body body-designer">
 
 		<div class="tabs-tools">
+			<button class="exec" data-exec="#tabs.add" title="@(Add a new tab)"><i class="fa fa-plus"></i></button>
 			<button class="exec" data-exec="showhelp" title="@(Help)"><i class="fa fa-question-circle"></i></button>
 			<button class="exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></button>
 		</div>
@@ -183,15 +184,13 @@
 		</div>
 
 		<section class="tabs tabs-flow">
-
-			<nav data---="repeater__flow.tabs">
-				<script type="text/html">
-					<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__!.selected:value.id=='{{ id }}'">{{ name }}</a>
-				</script>
-			</nav>
-
-			<a href="javascript:void(0)" class="exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
-
+			<figure class="tabs-scroller">
+				<nav data---="repeater__flow.tabs">
+					<script type="text/html">
+						<a href="#{{ linker }}" class="tab{{ if changed }} changed{{ fi }}" data-id="{{ id }}" data-bind="common.tab__!.selected:value.id=='{{ id }}'">{{ name }}</a>
+					</script>
+				</nav>
+			</figure>
 		</section>
 
 		<div class="designer-container">
@@ -230,6 +229,7 @@
 	<div data---="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
 	<div data---="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
 	<div data---="importer__common.form__if:welcome;url:@{R.url}forms/intro-welcome.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:imported;url:@{R.url}forms/intro-imported.html;cleaner:5"></div>
 	<div data---="importer__common.form__if:templates;url:@{R.url}forms/form-templates.html;cleaner:5"></div>
 
 	<div id="flowsettings"></div>
@@ -678,6 +678,12 @@
 				var el = $('.designer-scrollbar');
 				var tmp = common.tabscroll['tab' + tab.id];
 				el.animate({ scrollLeft: tmp ? tmp.x : 0, scrollTop: tmp ? tmp.y : 0 }, 300);
+				setTimeout(function() {
+					var tc = $('.tabs-scroller');
+					var te = tc.find('a[href="#{0}"]'.format(tab.linker));
+					var x = te.offset().left - (tc.parent().offset().left) - 150;
+					tc.stop().animate({ scrollLeft: x < 0 ? 0 : x }, 100);
+				}, 800);
 			}
 
 			SET('common.tab', tab);
@@ -1723,6 +1729,10 @@
 		ON('ready', function() {
 			if (SCROLLBARWIDTH() === 0)
 				CSS('.scroller{width:110%}');
+		});
+
+		WATCH('flow.tabs', function() {
+			setTimeout(FUNC.resizetabs, 100);
 		});
 
 	</script>

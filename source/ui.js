@@ -6453,7 +6453,9 @@ COMPONENT('modal', 'zindex:12;width:800', function(self, config) {
 
 		if (!isMOBILE && config.autofocus) {
 			var el = self.find(config.autofocus === true ? 'input[type="text"],input[type="password"],select,textarea' : config.autofocus);
-			el.length && el[0].focus();
+			el.length && setTimeout(function() {
+				el[0].focus();
+			}, 1500);
 		}
 
 		var delay = first ? 500 : 0;

@@ -1,4 +1,4 @@
-<div data---="modal__common.form__if:tab;width:400;enter:true;title:@(Edit tab);submit:tab/submit" class="hidden">
+<div data---="modal__common.form__if:tab;width:400;enter:true;reload:tab/reload;submit:tab/submit;autofocus:true" class="hidden">
 
 	<div>
 		<span class="link cancel"><i class="fa fa-times"></i></span>
@@ -7,11 +7,11 @@
 
 	<div>
 		<div class="padding npb">
-			<div data---="input__formtab.name__maxlength:30;required:1;innerlabel:1" class="m">@(Name)</div>
+			<div data---="input__formtab.name__maxlength:30;required:1;placeholder:@(Type a tab name)" class="m">@(Name)</div>
 
 			<div class="row">
 				<div class="col-md-4 m">
-					<div data---="input__formtab.position__required:1;dirsource:formtabpositions;innerlabel:1">@(Position)</div>
+					<div data---="input__formtab.position__required:1;dirsource:formtabpositions">@(Position)</div>
 				</div>
 			</div>
 
@@ -36,6 +36,10 @@
 <script>
 
 	PLUGIN('tab', function(exports) {
+
+		exports.reload = function(com) {
+			com.reconfigure({ title: formtab.id ? '@(Edit tab)' : '@(Add tab)' });
+		};
 
 		exports.submit = function(hide) {
 			EMIT('tabs.save', formtab);

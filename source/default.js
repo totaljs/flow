@@ -104,6 +104,15 @@ $(window).on('resize', function() {
 	EMIT('resize', $(window));
 });
 
+FUNC.resizetabs = function() {
+	var el = $('.tabs-scroller nav');
+	var size = 0;
+	el.find('a').each(function() {
+		size += $(this).innerWidth() + 5;
+	});
+	el.css('width', size);
+};
+
 function getSize(el) {
 	var size = {};
 	el = $(el);
