@@ -1,4 +1,4 @@
-<div data---="modal__common.form__if:export;width:500;submit:export/submit;title:@(Export Flow)" class="hidden">
+<div data---="modal__common.form__if:export;width:700;submit:export/submit;title:@(Export Flow)" class="hidden">
 
 	<div>
 		<span class="link cancel"><i class="fa fa-times"></i></span>
@@ -8,13 +8,13 @@
 	<div>
 		<div class="padding bg-smoke">
 			<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
-			<div data---="textarea__formexport.notes__height:60">@(Notes)</div>
-			<div class="help m">@(You can describe custom notes for this export)</div>
+			<div data---="codemirror__formexport.notes__height:150;tabs:true;trim:true;type:markdown">@(Notes)</div>
+			<div class="help m">@(You can describe custom notes for this export in Markdown format)</div>
 			<div data---="checkbox__formexport.variables">@(Export all variables)</div>
 		</div>
 		<div class="padding">
 			<div data---="textarea__formexport.body__height:200;icon:clipboard;readonly:true" class="m">@(Copy data to clipboard)</div>
-			<div data---="radiobutton__formexport.type__items:json|JSON,base64|Base64;type__'json'"></div>
+			<div data---="radiobutton__formexport.type__items:json2|Minified JSON,json|JSON,base64|Base64;type__'json2'"></div>
 		</div>
 	</div>
 
@@ -69,7 +69,7 @@
 					delete o.$component;
 				});
 
-				SET('formexport.body', formexport.type === 'json' ? JSON.stringify(obj, null, '\t') : btoa(encodeURIComponent(STRINGIFY(obj))));
+				SET('formexport.body', formexport.type === 'json2' ? STRINGIFY(obj) : formexport.type === 'json' ? JSON.stringify(obj, null, '\t') : btoa(encodeURIComponent(STRINGIFY(obj))));
 			}, 500);
 		};
 
