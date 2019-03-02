@@ -266,11 +266,11 @@ svg { cursor: move; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }
 .db-item .datetime i { margin-right: 5px; }
 
-.tabs-tools { border-bottom: 1px solid #D9D9D9; float: right; }
+.tabs-tools { border-bottom: 1px solid #D9D9D9; float: right; background-color: #edeff1; }
 .tabs-tools button { padding: 0; width: 50px; height: 49px; font-size: 16px; color: black; cursor: pointer; background-color: transparent; border: 0; border-left: 1px solid #D0D0D0; outline: 0; }
 .tabs-tools button:last-child { border-right: 0; }
 .tabs-tools button:hover { opacity: 0.7; }
-.themedark .tabs-tools { border-bottom-color: #303030; }
+.themedark .tabs-tools { border-bottom-color: #303030; background-color: #181818; }
 
 .bg-smoke { background-color: #F8F8F8; }
 .bg-yellow { background-color: #FFFFD5; }
