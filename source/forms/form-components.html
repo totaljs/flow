@@ -1,15 +1,15 @@
-<div data---="modal__common.form2__title:@(Choose components);if:components;width:850;submit:components/submit" class="hidden">
+<div data---="modal__common.form2__title:@(Choose components);if:components;width:850;reload:components/reload;submit:components/submit;autofocus:true" class="hidden">
 
 	<div>
 		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<label></label>
+		<div style="margin:0 60px 0 0;padding-top: 10px">
+			<div data---="input__formcomponents.search__maxlength:50;type:search;searchalign:2;placeholder:@(Search components)"></div>
+		</div>
 	</div>
 
 	<div>
-		<div class="padding">
-			<div class="padding bg-smoke" style="border-radius:3px">
-				<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url"></div>
-			</div>
+		<div class="padding" data---="search__formcomponents.search__selector:.ui-checkboxlist-item-container">
+			<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url;$id:formcomponents"></div>
 		</div>
 	</div>
 	<div>
@@ -25,6 +25,10 @@
 
 		SETTER('websocket', 'send', { 'type': 'components' });
 
+		exports.reload = function() {
+			SET('formcomponents.search', '');
+		};
+
 		exports.submit = function() {
 			SET('common.form2', '');
 			SETTER('loading', 'show');
@@ -38,14 +42,7 @@
 		};
 
 		exports.select = function() {
-			formcomponents.database.forEach(function(item) {
-				var index = formcomponents.components.indexOf(item.url);
-				if (index === -1)
-					formcomponents.components.push(item.url);
-				else
-					formcomponents.components.splice(index, 1);
-			});
-			UPDATE('formcomponents.components');
+			SETTER('#formcomponents', 'selectall');
 		};
 
 	});

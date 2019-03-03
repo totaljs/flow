@@ -353,6 +353,8 @@ label span { vertical-align: middle; }
 .ui-loading-firstload { background: white; }
 .themedark .ui-loading-firstload { background: black; }
 .ui-modal { color: #303030; }
+.ui-modal-header .ui-input-control { border: 0; }
+.ui-modal-header .ui-input-icon-left { border-right: 0; }
 
 .themedark .ui-designer .node_connection { stroke: #505050; }
 .themedark .ui-designer .data { fill: #3084E1; }
@@ -533,7 +535,7 @@ label span { vertical-align: middle; }
 .ui-input-required .ui-input-icon-right { border-color: #D0D0D0; }
 .ui-input-ricon .ui-input-input { margin-right: 35px; }
 .ui-input-licon .ui-input-input { margin-left: 32px; }
-.ui-input-ricon .fa-times { color: red; }
+.ui-input-ricon .fa-times, .ui-input-licon .fa-times { color: red; }
 .ui-input-click { cursor: pointer; }
 .ui-input-error { margin-top: 7px; font-size: 11px; color: red; }
 .ui-input .right input, .ui-input .right .ui-input-placeholder { text-align: right; }
@@ -546,7 +548,8 @@ label span { vertical-align: middle; }
 .ui-input.ui-disabled .ui-input-icon-left, .ui-input.ui-disabled .ui-input-icon-right { color: gray; }
 .ui-input-increment { padding: 5px 0 0; }
 .ui-input-increment i { display: block; line-height: 10px; font-size: 15px; cursor: pointer; }
-.ui-input-inner .ui-input-label { position: absolute; z-index: 1; margin: 12px 0 0 7px; font-size: 13px; }
+.ui-input-inner { line-height: 17px; }
+.ui-input-inner .ui-input-label { position: absolute; z-index: 1; margin: 11px 0 0 7px; font-size: 13px; }
 .ui-input-inner.ui-input-binded .ui-input-label { font-size: 11px; margin-top: 3px; color: gray; }
 .ui-input-inner .ui-input-input { padding-top: 9px; }
 .ui-input-binded.ui-input-inner .ui-input-input { padding-top: 15px; }
