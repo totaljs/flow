@@ -104,6 +104,25 @@ $(window).on('resize', function() {
 	EMIT('resize', $(window));
 });
 
+(function () {
+	function scrollH(e) {
+		e = window.event || e;
+		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		var el = $(e.target);
+		if (el.hclass('tab') || el.hclass('tabs-scroller')) {
+			var scroller = $('figure.tabs-scroller');
+			scroller.scrollLeft(scroller.scrollLeft() - (delta * 40));
+			e.preventDefault();
+		}
+	}
+	if (window.addEventListener) {
+		window.addEventListener("mousewheel", scrollH, false);
+		window.addEventListener("DOMMouseScroll", scrollH, false);
+	} else {
+		window.attachEvent("onmousewheel", scrollH);
+	}
+})();
+
 FUNC.resizetabs = function() {
 	var el = $('.tabs-scroller nav');
 	var size = 0;
