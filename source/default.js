@@ -116,11 +116,10 @@ $(window).on('resize', function() {
 		}
 	}
 	if (window.addEventListener) {
-		window.addEventListener("mousewheel", scrollH, false);
-		window.addEventListener("DOMMouseScroll", scrollH, false);
-	} else {
-		window.attachEvent("onmousewheel", scrollH);
-	}
+		window.addEventListener('mousewheel', scrollH, false);
+		window.addEventListener('DOMMouseScroll', scrollH, false);
+	} else
+		window.attachEvent('onmousewheel', scrollH);
 })();
 
 FUNC.resizetabs = function() {
