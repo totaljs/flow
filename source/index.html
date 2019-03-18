@@ -53,7 +53,7 @@
 			</nav>
 		</section>
 		<div class="padding hidden" data-bind="common.panel__show:value=='info'">
-			<div class="scroller">
+			<div class="noscrollbar">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
 					<div class="mt5"></div>
@@ -74,7 +74,7 @@
 				<hr class="mt10 nmb" />
 			</div>
 
-			<div class="scroller">
+			<div class="noscrollbar">
 				<div data---="repeater__common.errors">
 					<script type="text/html">
 						<div class="erroroutput">
@@ -99,7 +99,7 @@
 				<div data---="checkbox__common.beautify">@(Beautify)</div>
 				<hr class="nmb" style="margin-top:15px" />
 			</div>
-			<div id="body-debug-output" class="scroller"></div>
+			<div id="body-debug-output" class="noscrollbar"></div>
 		</div>
 
 		<div class="hidden body-traffic" data-bind="common.panel__show:value=='traffic'">
@@ -114,8 +114,8 @@
 				</div>
 			</div>
 
-			<div class="scroller">
-				<div class="traffic-container b" style="margin-bottom:5px" data-bind="common.trafficsort__template:true">
+			<div class="noscrollbar">
+				<div class="traffic-container b" style="margin-bottom:5px" data-bind="common.trafficsort__template:.sort">
 					<script type="text/html">
 						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="outputs">{{ value | trafficsort('outputs') }}@(Output)</div>
 						<div class="traffic-value sort exec" data-exec="trafficsort" data-name="inputs">{{ value | trafficsort('inputs') }}@(Input)</div>
@@ -152,7 +152,7 @@
 
 		<div data---="search__common.search__selector:li">
 			<div class="components-container">
-				<div class="scroller">
+				<div class="noscrollbar">
 					<ul data---="repeater-group__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
@@ -1266,7 +1266,7 @@
 		});
 
 		ON('resize', function() {
-			$('.scroller').each(function() {
+			$('.noscrollbar').each(function() {
 				var el = $(this);
 				var top = el.offset().top;
 				var h = el.closest('.panel,.mainmenu').height();
@@ -1725,11 +1725,6 @@
 			} else
 				SET('common.form', 'database');
 		}
-
-		ON('ready', function() {
-			if (SCROLLBARWIDTH() === 0)
-				CSS('.scroller{width:110%}');
-		});
 
 		WATCH('flow.tabs', function() {
 			setTimeout(FUNC.resizetabs, 100);
