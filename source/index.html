@@ -1546,6 +1546,12 @@
 			opt.offsetY = -5;
 
 			opt.callback = function(item) {
+
+				if (item.url) {
+					location.href = item.url;
+					return;
+				}
+
 				var value = item.value;
 				EMIT('settings.select', value);
 
