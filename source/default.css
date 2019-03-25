@@ -15,13 +15,13 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .hidetools button:last-child { left: 0; border-radius: 0 0 3px 0; }
 
 .themedark .panel * { scrollbar-face-color: #646464; scrollbar-base-color: #646464; scrollbar-3dlight-color: #646464; scrollbar-highlight-color: #646464; scrollbar-track-color: #000; scrollbar-arrow-color: #000; scrollbar-dark-shadow-color: #646464; }
-.themedark .panel ::-webkit-scrollbar { width: 15px; height: 4px;}
+.themedark .panel ::-webkit-scrollbar { width: 15px; height: 4px; }
 .themedark .panel ::-webkit-scrollbar-button {  background-color: #666; }
-.themedark .panel ::-webkit-scrollbar-track {  background-color: #646464;}
-.themedark .panel ::-webkit-scrollbar-track-piece { background-color: #000;}
-.themedark .panel ::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px;}
-.themedark .panel ::-webkit-scrollbar-corner { background-color: #646464;}}
-.themedark .panel ::-webkit-resizer { background-color: #666;}
+.themedark .panel ::-webkit-scrollbar-track {  background-color: #646464; }
+.themedark .panel ::-webkit-scrollbar-track-piece { background-color: #000; }
+.themedark .panel ::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px; }
+.themedark .panel ::-webkit-scrollbar-corner { background-color: #646464; }
+.themedark .panel ::-webkit-resizer { background-color: #666; }
 
 .tabs-scroller { overflow-y: hidden; overflow-x: scroll; height: 75px; overflow-scrolling: touch; }
 .tabs-scroller nav { display: block;}
