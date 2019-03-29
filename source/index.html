@@ -1021,9 +1021,6 @@
 				SET('common.form', 'import');
 				SET('formimport.replace', true, 1000);
 				SET('formimport.body', message.body, 1000);
-				setTimeout(function() {
-					CHANGE('formimport.body', true);
-				}, 1500);
 				return;
 			}
 

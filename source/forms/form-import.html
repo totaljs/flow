@@ -54,10 +54,11 @@
 		};
 
 		exports.analyze = function() {
+
 			var data = null;
 
 			try {
-				data = PARSE(formimport.body.indexOf('{') === -1 ? decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))) : formimport.body);
+				data = JSON.parse(formimport.body.indexOf('{') === -1 ? decodeURIComponent(atob(formimport.body.trim().replace(/\n|\r/g, ''))) : formimport.body.trim());
 			} catch (e) {
 				INVALID('formimport.body');
 			}
