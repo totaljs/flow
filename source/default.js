@@ -510,12 +510,17 @@ function getIcons() {
 	for (var x = 0; x < classes.length; x++) {
 		var cls = classes[x];
 		var sel = cls.selectorText;
+
 		if (sel && sel.substring(0, 4) == '.fa-') {
-			sel = sel.substring(4, sel.indexOf(':')).trim();
+			sel = sel.split(',');
 			var val = cls.cssText ? cls.cssText : cls.cssText.style.cssText;
 			var a = val.match(/[^\x00-\x7F]+/);
 			if (a)
-				icons[sel] = a.toString();
+				sel.forEach(function(s){
+					s = s.trim();
+					s = s.substring(4, s.indexOf(':')).trim();
+						icons[s] = a.toString();
+				});
 		}
 	}
 	return icons;
