@@ -14,6 +14,7 @@ $color  : #8CC152;
 .ui-designer path.selected { stroke: #F6BB42 !important; stroke-width: 3px; }
 .ui-designer path.dropselection { stroke-dasharray: 10, 8; }
 .ui-designer .node_connection { stroke: black; }
+.ui-designer .node_debug { fill: red; }
 .ui-designer .selected > rect:first-child { opacity: 0.6; }
 .ui-designer .connection { stroke-dasharray: 3; stroke-width: 2px; stroke: red; }
 .ui-designer .node_name { font-size: 11px; fill: rgba(255,255,255,0.8); }
@@ -23,6 +24,7 @@ $color  : #8CC152;
 .ui-designer .duration { font-size: 10px; }
 .ui-designer .data { fill: black; }
 .ui-designer .pending { fill: #DA4453; animation: 0.3s pending infinite alternate; }
+.ui-designer .blink3 { fill: #DA4453; animation: 0.3s blink3 infinite alternate; }
 .ui-designer .hide { visibility: hidden; }
 .ui-designer .node_error {}
 .ui-designer .m1 { fill: #9FA6B1; }
@@ -467,6 +469,11 @@ label span { vertical-align: middle; }
 	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
 }
 
+@keyframes blink3 {
+	from { opacity: 0; }
+	to { opacity: 1 }
+}
+
 @keyframes highlight {
 	from { stroke: transparent; stroke-width: 3; transform: scale(1); }
 	to { stroke: #F9D549; stroke-width: 8; }
@@ -572,12 +579,11 @@ label span { vertical-align: middle; }
 .ui-modal-header label i { margin-right: 5px; }
 .ui-modal-header .cancel { float: right; line-height: 50px; width: 28px; color: red; transition: transform 0.2s; font-size: 16px; }
 .ui-modal-header .cancel:hover { transform: scale(1.2); }
-.ui-modal-footer { border-top: 1px solid #E0E0E0; height: 60px; padding: 0 15px; line-height: 58px; text-align: right; }
+.ui-modal-footer { border-top: 1px solid #E0E0E0; height: 70px; padding: 0 20px; line-height: 68px; text-align: right; }
 .ui-modal-footer button { height: 33px; border: 0; background-color: #4285F4; color: white; border-radius: 2px; padding: 0 15px; margin: 0; line-height: 28px; font-weight: bold; }
 .ui-modal-footer button:disabled { background-color: #E0E0E0; color: #A0A0A0; cursor: not-allowed; }
 .ui-modal-footer .link { font-size: 12px; vertical-align: middle; position: relative; display: inline-block; margin: 0 10px; }
 .ui-modal-footer i { margin-right: 5px; }
-.ui-modal .padding { padding: 15px; }
 .ui-modal-align-1 { left: auto; right: 25px; bottom: 25px; top: auto; }
 .ui-modal-align-2 { left: 25px; bottom: 25px; top: auto; }
 .ui-modal-align-3 { left: 25px; top: 25px; }
