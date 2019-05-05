@@ -509,6 +509,9 @@ FN.websocket = function() {
 				if (options.comnotes !== undefined)
 					instance.notes = options.comnotes;
 
+				if (!options.debug)
+					delete options.debug;
+
 				options.comname = undefined;
 				options.comreference = undefined;
 				options.comcolor = undefined;
@@ -907,9 +910,8 @@ Component.prototype.send = function(index, message) {
 
 	message.parent = self;
 
-  if (this.options.enableDebug) {
-    this.debug(message);
-  }
+	if (self.options && self.options.debug)
+		self.debug(message);
 
 	if (!connections || OPT.crashmode || MESSAGE_DESIGNER.paused) {
 		message.completed = true;
