@@ -907,6 +907,10 @@ Component.prototype.send = function(index, message) {
 
 	message.parent = self;
 
+  if (this.options.enableDebug) {
+    this.debug(message);
+  }
+
 	if (!connections || OPT.crashmode || MESSAGE_DESIGNER.paused) {
 		message.completed = true;
 		return message;
