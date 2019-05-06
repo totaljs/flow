@@ -356,7 +356,7 @@ exports.install = function(component) {
 		// usefull for enabling/disabling some behavior or triggering some actions
 	});
 
-	component.on('data', function(message) {
+	component.on('data', function(message, next) {
 
 		// RAW DATA
 		// returns {Object}
@@ -397,6 +397,10 @@ exports.install = function(component) {
 
 		// send this message :-)
 		component.send(message);
+
+		// or use the next param, it's a reference to component.send
+		// or a function passed in component.callback
+		next(message);
 
 	});
 
@@ -466,12 +470,10 @@ exports.install = function(component) {
 	// @index: {Number}
 	// returns {Number}
 
-	var message = component.send([index], data);
-	message.set('repositorykey', 'value');
-	console.log(message.get('repositorykey'));
+	component.send([index], flowdata);
 	// Sends data
 	// @index: {Number} - optional, the output index (otherwise all outputs)
-	// @data: {String/Object}
+	// @flowdata: {instance of FlowData} - use component.make(data); to create it if needed
 	// returns Message;
 
 	var message = component.send2([index], data);
@@ -482,6 +484,17 @@ exports.install = function(component) {
 	}
 	// +v3.0.0
 	// Alias for component.send() but with a check of connections
+
+	component.callback([index], flowdata, function(flowdata){ ... }, param);
+	// +v6.0.0
+	// Sends data to connected component and recieves a response back.
+	// @index: {Number} - optional, the output index (defualt output 0)
+	// @flowdata: {instance of FlowData} - same instance will be recieved in callback function
+	// @function: {Function} - callback function
+	// @param: {Any} - aditinal data
+	// expects only 1 component to be connected to the given output, if not only first component will recieve data
+	// returns {Component}
+
 
 	component.set(key, value);
 	// Writes a value to a private key-value store (data are stored on HDD)
@@ -649,7 +662,7 @@ var message = component.send('YOUR-DATA-TO-CHILD-CONNECTIONS');
 
 ```javascript
 // data from all inputs go to 'data' event
-component.on('data', function(message) {
+component.on('data', function(message, next) {
 	// message as specified above
 	message.index; // Input number
 });

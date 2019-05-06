@@ -895,6 +895,37 @@ Component.prototype.send2 = function(index, message) {
 		return this.send(index, message);
 };
 
+Component.prototype.callback = function(index, data, callback, param) {
+	var dataIsFn = typeof(data) === 'function';
+
+	if (typeof(index) === 'function') {
+		callback = index;
+		index = 0;
+	}
+
+	if (data === undefined || (callback === undefined && !dataIsFn))
+		return;
+
+	if (!(data instanceof FlowData) && dataIsFn) {
+		param = callback;
+		callback = data;
+		data = null;
+	}
+
+	var connections = this.connections;
+	var conn = connections[index];
+	if (!conn || !conn[0])
+		return;
+
+	conn = conn[0];
+
+	var instance = FLOW.instances[conn.id];
+
+	instance.$events.data && instance.emit('data', data, callback, param);
+	
+	return this;
+};
+
 Component.prototype.send = function(index, message) {
 
 	if (message === undefined) {
