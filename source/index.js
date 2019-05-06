@@ -922,7 +922,7 @@ Component.prototype.callback = function(index, data, callback, param) {
 	var instance = FLOW.instances[conn.id];
 
 	instance.$events.data && instance.emit('data', data, callback, param);
-	
+
 	return this;
 };
 
@@ -1021,8 +1021,8 @@ Component.prototype.send = function(index, message) {
 						if (FLOW.alltraffic[instance.id])
 							FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-						instance.$events.data && instance.emit('data', data);
-						instance.$events[ids[j].index] && instance.emit(ids[j].index, data);
+						instance.$events.data && instance.emit('data', data, instance.send);
+						instance.$events[ids[j].index] && instance.emit(ids[j].index, data, instance.send);
 					} catch (e) {
 						instance.error(e, self.id);
 					}
@@ -1081,8 +1081,8 @@ Component.prototype.send = function(index, message) {
 					if (FLOW.alltraffic[instance.id])
 						FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-					instance.$events.data && instance.emit('data', data);
-					instance.$events[arr[i].index] && instance.emit(arr[i].index, data);
+					instance.$events.data && instance.emit('data', data, instance.send);
+					instance.$events[arr[i].index] && instance.emit(arr[i].index, data, instance.send);
 				} catch (e) {
 					instance.error(e, self.id);
 				}
