@@ -292,7 +292,6 @@ function refreshTraffic() {
 	var count = common.traffic.count;
 	var key;
 	var animate = [];
-	var was = {};
 
 	for (var i = 0, length = common.trafficnodes.length; i < length; i++) {
 
@@ -307,6 +306,9 @@ function refreshTraffic() {
 		var duration = 0;
 		var ci = 0;
 		var co = 0;
+		var keys;
+		var index;
+		var outputk = '';
 
 		if (stats) {
 
@@ -315,6 +317,7 @@ function refreshTraffic() {
 				output = ((stats.output / count) * 100 >> 0);
 				inputc = stats.input;
 				outputc = stats.output;
+				outputk = (stats.no0 || 0) + 'x' + (stats.no1 || 0) + 'x' + (stats.no2 || 0) + 'x' + (stats.no3 || 0) + 'x' + (stats.no4 || 0) + 'x' + (stats.no5 || 0);
 			}
 
 			ci = stats.ci;
@@ -323,25 +326,17 @@ function refreshTraffic() {
 			pending = stats.pending;
 
 			// analyze
-			if (stats.ni && common.animations) {
-				var keys = Object.keys(flow.connections);
+			if (stats.no && common.animations) {
+				keys = Object.keys(flow.connections);
 				for (var j = 0, jl = keys.length; j < jl; j++) {
 					key = keys[j];
-					if (key.substring(key.length - id.length) === id) {
-						var subid = key.substring(0, key.indexOf('#', id.length));
-						var tmpout = common.traffic[subid];
-						if (tmpout && tmpout.no) {
-
-							if (was[subid]) {
-								for (var a = 0; a < animate.length; a++) {
-									if (animate[a].parent === subid)
-										animate[a].count--;
-								}
-							}
-
-							animate.push({ id: 'id' + subid + id, com: id, parent: subid, count: tmpout.no - (was[subid] || 0) });
-							was[subid] = (was[subid] || 0) + 1;
-						}
+					index = key.indexOf('#');
+					if (key.substring(0, index) === id) {
+						index = +key.substring(index + 1, key.indexOf('#', index + 1));
+						var subid = key.substring(key.lastIndexOf('#') + 1);
+						var tmpout = common.traffic[id];
+						if (tmpout && tmpout['no' + index])
+							animate.push({ id: 'id' + id + '' + index + '' + subid, com: subid, parent: id, count: tmpout['no' + index] });
 					}
 				}
 			}
@@ -349,7 +344,7 @@ function refreshTraffic() {
 
 		inputc < 0 && (inputc = 0);
 
-		var key = inputc + 'x' + outputc + 'x' + pending + 'x' + duration;
+		var key = inputc + 'x' + outputc + 'x' + pending + 'x' + duration + 'x' + outputk;
 		var item = el.get(0);
 
 		if (key === item.$traffic)
@@ -373,6 +368,7 @@ function refreshTraffic() {
 	}
 
 	if (common.animations && !common.form) {
+
 		for (var i = 0; i < animate.length; i++) {
 
 			var item = animate[i];

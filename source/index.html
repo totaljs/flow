@@ -689,8 +689,17 @@
 
 			SET('common.tab', tab);
 			flow.designer = [];
+			flow.instances = {};
 
 			flow.components.forEach(function(item) {
+				/*
+				item.i0 = item.connections['0'] ? item.connections['0'].length : 0;
+				item.i1 = item.connections['1'] ? item.connections['1'].length : 0;
+				item.i2 = item.connections['2'] ? item.connections['2'].length : 0;
+				item.i3 = item.connections['3'] ? item.connections['3'].length : 0;
+				item.i4 = item.connections['4'] ? item.connections['4'].length : 0;
+				item.i5 = item.connections['5'] ? item.connections['5'].length : 0;*/
+				flow.instances[item.id] = item;
 				item.tab === common.tab.id && flow.designer.push(item);
 			});
 
@@ -762,8 +771,9 @@
 		});
 
 		ON('flow.settings', function() {
+
 			var component = flow.components.findItem('id', settings.$id);
-			var tmp_d = component.options.debug === true;
+			var tmp_d = component.options ? component.options.debug === true : false;
 
 			component.options = settings[component.component];
 

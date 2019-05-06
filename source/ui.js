@@ -1207,57 +1207,64 @@ COMPONENT('designer', function() {
 
 	self.newdata = function(id, count) {
 
-		var p = document.getElementById(id);
-		if (!p || document.hidden)
+		var el = document.querySelectorAll('.' + id);
+		if (!el.length)
 			return;
 
 		var speed = 3;
 
-		if (count) {
-			var length = (p.getTotalLength() / 60) >> 0;
-			if (animcache[id]) {
-				animcache[id] += count;
-				if (animrunning[id] > 0) {
-					if (animrunning[id] < length) {
-						length = length - animrunning[id];
-						for (var i = 0; i < length + 1; i++)
-							self.animdata(id, p, speed);
+		for (var x = 0; x < el.length; x++) {
+			var p = el[x];
+
+			if (!p || p.hidden)
+				continue;
+
+			if (count) {
+				var length = (p.getTotalLength() / 60) >> 0;
+				if (animcache[id]) {
+					animcache[id] += count;
+					if (animrunning[id] > 0) {
+						if (animrunning[id] < length) {
+							length = length - animrunning[id];
+							for (var i = 0; i < length + 1; i++)
+								self.animdata(id, p, speed);
+						}
+						return;
 					}
-					return;
+				} else
+					animcache[id] = count;
+
+				var delay = 100;
+
+				if (count > 1 && count > length)
+					count = length;
+
+				animcache[id] -= count;
+
+				if (animcache[id] < 0)
+					animcache[id] = 0;
+
+				if (animcache[id] > 20)
+					speed = 5;
+
+				for (var i = 0; i < count; i++) {
+					setTimeout(function(p, id) {
+						!document.hidden && self.animdata(id, p, speed);
+					}, delay * i, p, id);
 				}
-			} else
-				animcache[id] = count;
 
-			var delay = 100;
+			} else if (animcache[id]) {
 
-			if (count > 1 && count > length)
-				count = length;
+				animcache[id]--;
 
-			animcache[id] -= count;
+				if (animcache[id] < 0)
+					animcache[id] = 0;
 
-			if (animcache[id] < 0)
-				animcache[id] = 0;
+				setTimeout(function(p, id) {
+					self.animdata(id, p, speed);
+				}, 100, p, id);
 
-			if (animcache[id] > 20)
-				speed = 5;
-
-			for (var i = 0; i < count; i++) {
-				setTimeout(function() {
-					!document.hidden && self.animdata(id, p, speed);
-				}, delay * i);
 			}
-
-		} else if (animcache[id]) {
-
-			animcache[id]--;
-
-			if (animcache[id] < 0)
-				animcache[id] = 0;
-
-			setTimeout(function() {
-				self.animdata(id, p, speed);
-			}, 100);
-
 		}
 	};
 
@@ -2246,8 +2253,8 @@ COMPONENT('designer', function() {
 		attr['data-from'] = aid;
 		attr['data-to'] = bid;
 		attr['data-toindex'] = iindex;
-		attr['class'] = 'node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
-		attr['id'] = 'id' + aid + '' + bid;
+		attr['class'] = ('id' + aid + '' + oindex + '' + bid) + ' node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
+		// attr['id'] = 'id' + aid + '' + bid;
 		lines.asvg('path').attr(attr);
 
 		isnew && EMIT('designer.add.connection', aid, bid);
