@@ -1917,7 +1917,7 @@ COMPONENT('designer', function() {
 		g.attrd('id', item.id);
 		var rect = g.asvg('rect');
 		g.asvg('text').attr('class', 'node_status node_status_' + item.id).attr('transform', 'translate(2,-8)').text((item.state ? item.state.text : '') || '').attr('fill', (item.state ? item.state.color : '') || 'gray');
-		g.asvg('circle').attr('class', 'node_debug blink3' + (item.options.debug ? '' : ' hidden')).attr('cx', 7).attr('cy', 7).attr('r', 3);
+		g.asvg('circle').attr('class', 'node_debug blink3' + (item.options && item.options.debug ? '' : ' hidden')).attr('cx', 7).attr('cy', 7).attr('r', 3);
 
 		var icon = null;
 
