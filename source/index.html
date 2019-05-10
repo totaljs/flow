@@ -104,7 +104,7 @@
 
 		<div class="hidden body-traffic" data-bind="common.panel__show:value=='traffic'">
 
-			<div class="body-traffic-heading" style="">
+			<div class="body-traffic-heading">
 				<div><span data-bind="flow.traffic.memory__html:value" class="b fr">...</span><i class="fa fa-microchip mr5"></i>@(Memory consumption:)</div>
 				<div><span data-bind="flow.traffic.counter__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-calculator mr5"></i>@(Count of messages:)</div>
 				<div><span data-bind="common.onlineusers__html:(value || 0).format(0) + 'x'" class="b fr">...</span><i class="fa fa-users mr5"></i>@(Online users:)</div>
@@ -176,6 +176,8 @@
 			<button class="exec green" data-exec="#tabs.add" title="@(New tab)"><i class="fa fa-plus"></i></button>
 			<button class="exec" data-exec="showhelp" title="@(Help)"><i class="fa fa-question-circle"></i></button>
 			<button class="exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></button>
+			<button class="exec scrolling" data-exec="tabscrolling" data-value="-200" title="@(Scroll tabs to right)"><i class="fa fa-chevron-left"></i></button>
+			<button class="exec scrolling" data-exec="tabscrolling" data-value="200" title="@(Scroll tabs to left)"><i class="fa fa-chevron-right"></i></button>
 		</div>
 
 		<div class="hidetools">
@@ -1396,7 +1398,6 @@
 					}
 				}
 			}
-
 		}
 
 		function findBottom() {
@@ -1409,7 +1410,7 @@
 					bottom = c.y;
 			});
 			return !bottom ? 20 : bottom + 100;
-		};
+		}
 
 		function findOffset() {
 			var offset = 0;
@@ -1420,7 +1421,13 @@
 					offset = c.y;
 			});
 			return offset;
-		};
+		}
+
+		function tabscrolling(el) {
+			var pos = +el.attrd('value');
+			var container = $('.tabs-scroller');
+			container.animate({ scrollLeft: container[0].scrollLeft + pos }, 200);
+		}
 
 		ON('designer.paste', function(el) {
 
