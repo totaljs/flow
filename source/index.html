@@ -45,7 +45,7 @@
 
 	<div class="panel">
 
-		<div class="resize-handle"></div>
+		<div class="panel-resize-handle"></div>
 		<section class="tabs tabs-panel">
 			<nav>
 				<button class="exec" data-path="common.panel" data-value="'info'" data-bind="common.panel__.selected:value=='info'"><i class="fa fa-info-circle"></i>@(Info)</button>
@@ -241,47 +241,99 @@
 
 	<script>
 
-		var panelresize = {
-			active: false,
-			offsetx: 0
-		};
+		(function() {
 
-		$('.resize-handle').on('mousedown', function(e){
-			panelresize.active = true;
-			panelresize.offsetx = e.offsetX;
-		});
+			var events = {};
+			var offsetX = 0;
+			var panel = $('.panel');
+			var noscrollbar = panel.find('.noscrollbar');
+			var body = $('.body');
+			var min = 340;
+			var max = (WW / 1.85) >> 0;
+			var ssw = SCROLLBARWIDTH();
+			var old = 0;
 
-		$('body').on('mousemove', function(e){
-			if (!panelresize.active)
-				return;
-			e.preventDefault();
-			var x = e.pageX - panelresize.offsetx;
-			x = $(window).width() - x;
-			if (x < 340)
-				x = 340;
-			$('.panel').width(x + 'px');
-			$('.body').css('margin-right', -x);
-			$('.panel .noscrollbar').width((x + 17) + 'px');
-		});
+			events.mup = function(e) {
 
-		$(window).on('mouseup', function(e){
-			if (panelresize.active)
-				SET('common.panelwidth', $('.panel').width());
-			panelresize.active = false;			
-		});
+				e.stopPropagation();
+				e.preventDefault();
 
-		ON('ready', function(){
-			var x = common.panelwidth;
-			$('.panel').width(x + 'px');
-			$('.body').css('margin-right', -x);
-			$('.panel .noscrollbar').width((x + 17) + 'px');
-		});
+				var w = $(W);
+				w.off('mousemove', events.mm);
+				w.off('touchmove', events.tm);
+				w.off('mouseup', events.mup);
+				w.off('touchend', events.mup);
+				var width = panel.width();
+				SET('common.panelwidth', width);
+			};
+
+			events.mm = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				events.resize(e.pageX);
+			};
+
+			events.tm = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				events.resize(e.touches[0].pageX);
+			};
+
+			events.resize = function(pageX, touch) {
+				var x = (WW - pageX - offsetX) >> 0;
+
+				if (x > max)
+					x = max;
+
+				if (x < min)
+					x = min;
+
+				panel.css('width', x);
+				body.css('margin-right', -x);
+				noscrollbar.css('width', (x + ssw))
+			};
+
+			WATCH('common.panelwidth', function(path, w) {
+				if (w !== old) {
+					old = w;
+					if (w < min)
+						w = min;
+					if (w > max)
+						w = max;
+					panel.width(w);
+					body.css('margin-right', -w);
+					noscrollbar.width(w + ssw);
+				}
+			});
+
+			$('.panel-resize-handle').on('mousedown touchstart', function(e){
+
+				e.preventDefault();
+				e.stopPropagation();
+
+				var w = $(W);
+				w.on('mousemove', events.mm);
+				w.on('touchmove', events.tm);
+				w.on('touchend', events.mup);
+				w.on('mouseup', events.mup);
+
+				max = (WW / 1.80) >> 0;
+
+				if (e.touches && e.touches[0])
+					offsetX = $(this).offset().left - e.touches[0].pageX;
+				else
+					offsetX = e.offsetX;
+			});
+
+		})();
 
 		window.user = PARSE('#userdata');
 		M.environment('flow.jc');
 
 		var MESSAGES = {};
 		MESSAGES.apply = '<i class="fa fa-info-circle blue mr5"></i>@(You have to click the &quot;<b>APPLY</b>&quot; button to apply all the changes.)';
+
+		isTOUCH && $(document.body).aclass('touch');
 
 		MAKE('common', function() {
 			this.id = 'flow';
@@ -723,8 +775,7 @@
 				setTimeout(function() {
 					var tc = $('.tabs-scroller');
 					var te = tc.find('a[href="#{0}"]'.format(tab.linker));
-					var x = te.offset().left - (tc.parent().offset().left) - 150;
-					tc.stop().animate({ scrollLeft: x < 0 ? 0 : x }, 100);
+					te[0].scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
 				}, 800);
 			}
 
@@ -733,13 +784,6 @@
 			flow.instances = {};
 
 			flow.components.forEach(function(item) {
-				/*
-				item.i0 = item.connections['0'] ? item.connections['0'].length : 0;
-				item.i1 = item.connections['1'] ? item.connections['1'].length : 0;
-				item.i2 = item.connections['2'] ? item.connections['2'].length : 0;
-				item.i3 = item.connections['3'] ? item.connections['3'].length : 0;
-				item.i4 = item.connections['4'] ? item.connections['4'].length : 0;
-				item.i5 = item.connections['5'] ? item.connections['5'].length : 0;*/
 				flow.instances[item.id] = item;
 				item.tab === common.tab.id && flow.designer.push(item);
 			});

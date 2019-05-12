@@ -351,8 +351,9 @@ svg { cursor: move; }
 .db-template > div > div:first-child { padding: 3px 0 0; font-weight: bold; color: black; font-size: 14px; }
 .db-template .link { float: right; width: 80px; text-align: right; line-height: 45px; height: 45px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
 
-.resize-handle { position: absolute; width: 10px; height: 100%; cursor: ew-resize; transition: background-color 0.2s; }
-.resize-handle:hover { background-color: rgba(191, 191, 191, 0.16); }
-.resize-handle.active { background-color: rgba(191, 191, 191, 0.16); }
+.panel-resize-handle { position: absolute; width: 5px; height: 100%; cursor: ew-resize; transition: background-color 0.2s; }
+.panel-resize-handle:hover { background-color: rgba(191, 191, 191, 0.16); }
+.panel-resize-handle.active { background-color: rgba(191, 191, 191, 0.16); }
+.touch .panel-resize-handle { width: 15px; }
 
 .keepbreaks { white-space: pre-wrap; }
