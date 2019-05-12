@@ -44,6 +44,8 @@
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
 	<div class="panel">
+
+		<div class="resize-handle"></div>
 		<section class="tabs tabs-panel">
 			<nav>
 				<button class="exec" data-path="common.panel" data-value="'info'" data-bind="common.panel__.selected:value=='info'"><i class="fa fa-info-circle"></i>@(Info)</button>
@@ -52,8 +54,8 @@
 				<button class="exec" data-path="common.panel" data-value="'traffic'" data-bind="common.panel__.selected:value=='traffic'"><i class="fa fa-tasks"></i>@(Traffic)</button>
 			</nav>
 		</section>
-		<div class="padding hidden noscrollbar" data-bind="common.panel__show:value=='info'">
-			<div>
+		<div class="hidden noscrollbar" data-bind="common.panel__show:value=='info'">
+			<div class="padding">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
 					<div class="mt5"></div>
@@ -83,7 +85,7 @@
 							{{ foreach m in errors }}
 								<div>
 									<div class="gray">@({{ m.count }}x errors) / {{ m.date | format('@(yyyy-MM-dd HH:mm:ss)') }}</div>
-									<div>{{ m.error }}</div>
+									<div class="keepbreaks">{{ m.error }}</div>
 								</div>
 							{{ end }}
 							</div>
@@ -239,6 +241,42 @@
 
 	<script>
 
+		var panelresize = {
+			active: false,
+			offsetx: 0
+		};
+
+		$('.resize-handle').on('mousedown', function(e){
+			panelresize.active = true;
+			panelresize.offsetx = e.offsetX;
+		});
+
+		$('body').on('mousemove', function(e){
+			if (!panelresize.active)
+				return;
+			e.preventDefault();
+			var x = e.pageX - panelresize.offsetx;
+			x = $(window).width() - x;
+			if (x < 340)
+				x = 340;
+			$('.panel').width(x + 'px');
+			$('.body').css('margin-right', -x);
+			$('.panel .noscrollbar').width((x + 17) + 'px');
+		});
+
+		$(window).on('mouseup', function(e){
+			if (panelresize.active)
+				SET('common.panelwidth', $('.panel').width());
+			panelresize.active = false;			
+		});
+
+		ON('ready', function(){
+			var x = common.panelwidth;
+			$('.panel').width(x + 'px');
+			$('.body').css('margin-right', -x);
+			$('.panel .noscrollbar').width((x + 17) + 'px');
+		});
+
 		window.user = PARSE('#userdata');
 		M.environment('flow.jc');
 
@@ -270,6 +308,7 @@
 		CACHEPATH('common.minimized', '1 month');
 		CACHEPATH('common.minimizedmainmenu', '1 month');
 		CACHEPATH('common.panel', '1 month');
+		CACHEPATH('common.panelwidth', '1 month');
 		CACHEPATH('common.beautify', '1 month');
 		CACHEPATH('common.theme', '1 month');
 		CACHEPATH('common.tabscroll', '1 month');
@@ -1284,17 +1323,24 @@
 			FIND('designer').disabled = value ? true : false;
 		});
 
-		ON('resize', function() {
+		ON('resize', function(w) {
 			$('.noscrollbar').each(function() {
 				var el = $(this);
 				var top = el.offset().top;
 				var h = el.closest('.panel,.mainmenu').height();
 				el.css('height', h - top);
 			});
+
 		});
 
 		WATCH('common.minimized', function(path, value) {
-			$(document.body).tclass('panel-minized', value);
+			if (value) {
+				$('.panel').css('margin-right', -($('.panel').width()));
+				$('.body').css('margin-right',0);
+			} else {
+				$('.panel').css('margin-right', 0);
+				$('.body').css('margin-right', $('.panel').width());
+			}
 		}, true);
 
 		function setState(value, noChange) {
