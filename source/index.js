@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.0.0';
+exports.version = 'v6.1.0';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -807,9 +807,15 @@ Component.prototype.signal = function(index, data) {
 };
 
 Component.prototype.inputs = function() {
+
 	var self = this;
-	var keys = Object.keys(FLOW.inputs[self.id]);
+	var obj = FLOW.inputs[self.id];
 	var arr = [];
+
+	if (obj == null)
+		return arr;
+
+	var keys = Object.keys(obj);
 
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var id = keys[i];
@@ -822,8 +828,13 @@ Component.prototype.inputs = function() {
 
 Component.prototype.outputs = function() {
 	var self = this;
-	var keys = Object.keys(FLOW.outputs[self.id]);
+	var obj = FLOW.outputs[self.id];
 	var arr = [];
+
+	if (obj == null)
+		return arr;
+
+	var keys = Object.keys(obj);
 
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var id = keys[i];
@@ -1891,8 +1902,6 @@ function reload(callback) {
 				}
 			});
 
-			FLOW.refresh_connections();
-
 			Fs.readFile(F.path.root(FILEINMEMORY), function(err, indata) {
 				indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
 
@@ -1901,6 +1910,7 @@ function reload(callback) {
 
 				FLOW.init(data.components, function(){
 					FLOW.designer();
+					FLOW.refresh_connections();
 					READY = true;
 					callback && callback();
 				});
