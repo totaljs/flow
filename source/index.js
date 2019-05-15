@@ -1041,8 +1041,8 @@ Component.prototype.send = function(index, message) {
 						if (FLOW.alltraffic[instance.id])
 							FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-						instance.$events.data && instance.emit('data', data, instance.send);
-						instance.$events[ids[j].index] && instance.emit(ids[j].index, data, instance.send);
+						instance.$events.data && instance.emit('data', data, instance.send.bind(instance));
+						instance.$events[ids[j].index] && instance.emit(ids[j].index, data, instance.send.bind(instance));
 
 					} catch (e) {
 						instance.error(e, self.id);
@@ -1102,8 +1102,8 @@ Component.prototype.send = function(index, message) {
 					if (FLOW.alltraffic[instance.id])
 						FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-					instance.$events.data && instance.emit('data', data, instance.send);
-					instance.$events[arr[i].index] && instance.emit(arr[i].index, data, instance.send);
+					instance.$events.data && instance.emit('data', data, instance.send.bind(instance));
+					instance.$events[arr[i].index] && instance.emit(arr[i].index, data, instance.send.bind(instance));
 				} catch (e) {
 					instance.error(e, self.id);
 				}
