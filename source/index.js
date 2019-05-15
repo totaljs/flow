@@ -647,13 +647,19 @@ function Component(options) {
 		delete options.send;
 	}
 
-	U.extend(this, options);
-	this.duration = 0;
-	this.countinput = 0;
-	this.countoutput = 0;
-	this.state = { text: '', color: 'gray' };
-	this.$events = {};
-	this.$pending = 0;
+	var t = this;
+
+	U.extend(t, options);
+	t.duration = 0;
+	t.countinput = 0;
+	t.countoutput = 0;
+	t.state = { text: '', color: 'gray' };
+	t.$events = {};
+	t.$pending = 0;
+
+	t.$send = function(index, message) {
+		t.send(index, message);
+	};
 }
 
 Component.prototype = {
@@ -1041,8 +1047,8 @@ Component.prototype.send = function(index, message) {
 						if (FLOW.alltraffic[instance.id])
 							FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-						instance.$events.data && instance.emit('data', data, instance.send);
-						instance.$events[ids[j].index] && instance.emit(ids[j].index, data, instance.send);
+						instance.$events.data && instance.emit('data', data, instance.$send);
+						instance.$events[ids[j].index] && instance.emit(ids[j].index, data, instance.$send);
 
 					} catch (e) {
 						instance.error(e, self.id);
@@ -1102,8 +1108,8 @@ Component.prototype.send = function(index, message) {
 					if (FLOW.alltraffic[instance.id])
 						FLOW.alltraffic[instance.id].ci = instance.countinput;
 
-					instance.$events.data && instance.emit('data', data, instance.send);
-					instance.$events[arr[i].index] && instance.emit(arr[i].index, data, instance.send);
+					instance.$events.data && instance.emit('data', data, instance.$send);
+					instance.$events[arr[i].index] && instance.emit(arr[i].index, data, instance.$send);
 				} catch (e) {
 					instance.error(e, self.id);
 				}
