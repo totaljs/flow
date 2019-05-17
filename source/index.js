@@ -946,8 +946,20 @@ Component.prototype.callback = function(index, data, callback, param) {
 	if (!conn || !conn[0])
 		return;
 
+	if (self.disabledio.output.indexOf(index) > -1)
+		return;
+
+	FLOW.traffic(self.id, 'output', null, index);
+
 	conn = conn[0];
 	var instance = FLOW.instances[conn.id];
+
+	var skip = instance.disabledio.input.indexOf(0) > -1;
+	FLOW.traffic(instance.id, 'input', !skip);
+
+	if (skip)
+		return;
+	
 	instance && instance.$events.data && instance.emit('data', data, callback, param);
 	return self;
 };
