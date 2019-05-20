@@ -1639,13 +1639,13 @@ FLOW.refresh_variables = function(data, client) {
 		FLOW.variables = tmp;
 
 		var keys = Object.keys(FLOW.instances);
+		EMIT('flow.variables', FLOW.variables);
 
 		for (var i = 0, length = keys.length; i < length; i++) {
 			var instance = FLOW.instances[keys[i]];
 			instance.$events.variables && instance.emit('variables', FLOW.variables);
 		}
 
-		EMIT('flow.variables', FLOW.variables);
 		FLOW.save3();
 		client.send({ type: 'variables-saved' });
 
@@ -1901,6 +1901,8 @@ function reload(callback) {
 				FLOW.$variables = data.variables || '';
 
 			FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+
+			EMIT('flow.variables', FLOW.variables);
 
 			MESSAGE_DESIGNER.tabs = data.tabs;
 
