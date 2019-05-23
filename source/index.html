@@ -1579,12 +1579,16 @@
 
 				new_comps.forEach(function(item) {
 					Object.keys(item.connections).forEach(function(index) {
-						item.connections[index] = item.connections[index].filter(function(conn, i) {
+						var conns = item.connections[index].filter(function(conn, i) {
 							if (ids[conn.id]) {
 								conn.id = ids[conn.id];
 								return conn;
 							}
 						});
+						if (conns.length)
+							item.connections[index] = conns;
+						else
+							delete item.connections[index];
 					});
 
 					item.connections.length && 	item.connections.trim();
