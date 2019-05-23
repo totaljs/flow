@@ -6504,7 +6504,7 @@ COMPONENT('radiobutton', function(self, config) {
 				self.find('.ui-radiobutton-label').html(value);
 				break;
 			case 'items':
-				self.find('div').remove();
+				self.find('div[data-value]').remove();
 				var builder = [];
 				value.split(',').forEach(function(item) {
 					item = item.split('|');
