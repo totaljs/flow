@@ -938,11 +938,15 @@ Component.prototype.callback = function(index, data, callback, param) {
 		param = callback;
 		callback = data;
 		data = null;
-	}
-
+	}	
+	
 	var self = this;
 	var connections = self.connections;
 	var conn = connections[index];
+
+	if (self.options && self.options.debug)
+		self.debug(data);
+
 	if (!conn || !conn[0])
 		return;
 
