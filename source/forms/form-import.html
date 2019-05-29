@@ -175,6 +175,11 @@
 					components.forEach(c => EMIT('changed', 'add', c.id));
 
 					if (formimport.replace) {
+
+						var rem = flow.tabs.slice(0);
+						for (var i = 0; i < rem.length; i++)
+							EMIT('tabs.rem', rem[i].id);
+
 						if (!tabs)
 							tabs = [];
 						for (var i = 0; i < tabs.length; i++)

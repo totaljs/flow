@@ -1058,7 +1058,7 @@
 
 			SET('flow.tabs', flow.tabs.remove('id', id));
 			SETTER('binder', 'scan');
-			if (common.tab.id === id)
+			if (common.tab.id === id && flow.tabs.length)
 				location.hash = flow.tabs[0].linker;
 			EMIT('designer.unselect');
 			setState(MESSAGES.apply, true);
@@ -1122,7 +1122,7 @@
 				SETTER('loading', 'hide', 3000);
 				SET('common.form', 'import');
 				SET('formimport.replace', true, 1000);
-				SET('formimport.body', message.body, 1000);
+				SETR('formimport.body', message.body, 1000);
 				return;
 			}
 

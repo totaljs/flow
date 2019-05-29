@@ -2592,7 +2592,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 	};
 });
 
-COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;limit:0;selectedtext:{0} selected', function(self, config) {
+COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:null;limit:0;selectedtext:{0} selected', function(self, config) {
 
 	var data = [], render = '';
 	var container, values, content, datasource = null;
