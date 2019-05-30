@@ -938,17 +938,16 @@ Component.prototype.callback = function(index, data, callback, param) {
 		param = callback;
 		callback = data;
 		data = null;
-	}	
-	
+	}
+
 	var self = this;
 	var connections = self.connections;
 	var conn = connections[index];
+	if (!conn || !conn[0])
+		return;
 
 	if (self.options && self.options.debug)
 		self.debug(data);
-
-	if (!conn || !conn[0])
-		return;
 
 	if (self.disabledio.output.indexOf(index) > -1)
 		return;
@@ -958,13 +957,17 @@ Component.prototype.callback = function(index, data, callback, param) {
 	conn = conn[0];
 	var instance = FLOW.instances[conn.id];
 
-	var skip = instance.disabledio.input.indexOf(0) > -1;
+	if (!instance)
+		return;
+
+	var skip = instance.disabledio.input.indexOf(+conn.index) > -1;
 	FLOW.traffic(instance.id, 'input', !skip);
 
 	if (skip)
 		return;
 	
-	instance && instance.$events.data && instance.emit('data', data, callback, param);
+	instance.$events.data && instance.emit('data', data, callback, param);
+	instance.$events[conn.index] && instance.emit(conn.index, data, callback, param);
 	return self;
 };
 
