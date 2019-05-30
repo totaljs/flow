@@ -57,7 +57,7 @@
 				});
 
 				if (formexport.variables)
-					obj.variables = formvariables.body;
+					obj.variables = GET('formvariables.body') || '';
 
 				if (formexport.notes)
 					obj.notes = formexport.notes;
@@ -85,6 +85,7 @@
 		WATCH('formexport.tabs', exports.rebuild);
 		WATCH('formexport.variables', exports.rebuild);
 		WATCH('formexport.type', exports.rebuild);
+		WATCH('formvariables.body', exports.rebuild);
 	});
 
 </script>
