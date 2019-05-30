@@ -1907,7 +1907,7 @@ function reload(callback) {
 			if (!FLOW.$variables)
 				FLOW.$variables = data.variables || '';
 
-			FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : EMPTYOBJECT;
+			FLOW.variables = FLOW.$variables ? FLOW.$variables.parseConfig() : {};
 
 			EMIT('flow.variables', FLOW.variables);
 
