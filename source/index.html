@@ -178,8 +178,8 @@
 			<button class="exec green" data-exec="#tabs.add" title="@(New tab)"><i class="fa fa-plus"></i></button>
 			<button class="exec" data-exec="showhelp" title="@(Help)"><i class="fa fa-question-circle"></i></button>
 			<button class="exec" data-exec="themechanger" title="@(Change theme)"><i class="fa fa-paint-brush"></i></button>
-			<button class="exec scrolling" data-exec="tabscrolling" data-value="-200" title="@(Scroll tabs to right)"><i class="fa fa-chevron-left"></i></button>
-			<button class="exec scrolling" data-exec="tabscrolling" data-value="200" title="@(Scroll tabs to left)"><i class="fa fa-chevron-right"></i></button>
+			<button class="exec scrolling hidden" data-exec="tabscrolling" data-value="-200" title="@(Scroll tabs to right)"><i class="fa fa-chevron-left"></i></button>
+			<button class="exec scrolling hidden" data-exec="tabscrolling" data-value="200" title="@(Scroll tabs to left)"><i class="fa fa-chevron-right"></i></button>
 		</div>
 
 		<div class="hidetools">
@@ -1122,7 +1122,9 @@
 				SETTER('loading', 'hide', 3000);
 				SET('common.form', 'import');
 				SET('formimport.replace', true, 1000);
-				SETR('formimport.body', message.body, 1000);
+				setTimeout(function() {
+					SETR('formimport.body', message.body);
+				}, 2800);
 				return;
 			}
 
@@ -1374,7 +1376,7 @@
 				var h = el.closest('.panel,.mainmenu').height();
 				el.css('height', h - top);
 			});
-
+			setTimeout2('resizetabs', FUNC.resizetabs, 200);
 		});
 
 		WATCH('common.minimized', function(path, value) {

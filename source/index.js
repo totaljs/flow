@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.0';
+exports.version = 'v6.1.1';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -392,6 +392,9 @@ FN.websocket = function() {
 
 		if (message.type === 'template')
 			download_template(message.body, client);
+
+		if (message.type === 'database')
+			self.send(MESSAGE_DESIGNER);
 
 		if (message.type === 'components') {
 
@@ -965,7 +968,7 @@ Component.prototype.callback = function(index, data, callback, param) {
 
 	if (skip)
 		return;
-	
+
 	instance.$events.data && instance.emit('data', data, callback, param);
 	instance.$events[conn.index] && instance.emit(conn.index, data, callback, param);
 	return self;
@@ -2102,6 +2105,7 @@ FLOW.install = function(filename, body, callback) {
 
 	var u = filename.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
+
 		U.download(filename, FLAGS, function(err, response) {
 
 			if (err) {

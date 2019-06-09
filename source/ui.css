@@ -715,8 +715,8 @@ label span { vertical-align: middle; }
 	100% { transform: scale(1); }
 }
 
-.ui-menu { position: absolute; z-index: 100; background-color: white; padding: 5px 0; border-radius: 3px; box-shadow: 2px 5px 10px rgba(0,0,0,0.05); transition: 0.2s all; transform: scale(0.3); transform-origin: top left; opacity: 0; border: 1px solid #E0E0E0; }
-.ui-menu-visible { transform: scale(1); opacity: 1; }
+.ui-menu { position: absolute; z-index: 100; background-color: white; padding: 5px 0; border-radius: 3px; box-shadow: 2px 5px 10px rgba(0,0,0,0.05); border: 1px solid #E0E0E0; }
+.ui-menu-visible {}
 .ui-menu ul { margin: 0; padding: 0; }
 .ui-menu li { margin: 0; padding: 5px 20px 5px 5px; list-style-type: none; font-size: 12px; cursor: pointer; }
 .ui-menu li:hover { background-color: #F0F0F0; }

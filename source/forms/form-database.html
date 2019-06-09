@@ -35,7 +35,9 @@
 		</div>
 		<div class="padding npb">
 			<div data---="input__formdatabase.search__type:search;innerlabel:1" class="mt10">@(Search components)</div>
+			<div data-bind="common.components__show:value && value.length" class="hidden fs12 mt10"><span class="link exec red" data-exec="database/removeall" style="float:right"><i class="fa fa-trash-o mr5"></i>@(Remove all components)</span></div>
 			<div data-bind="formdatabase.updatescount__show" class="hidden fs12 mt10"><span class="link exec" data-exec="database/update"><i class="fa fa-refresh fa-spin mr5"></i>@(Update components)</span></div>
+			<div class="clearfix"></div>
 			<div data-bind="formdatabase.progress__show:value && value < 99" class="hidden">
 				<br />
 				<div class="fs11"><i class="fa fa-refresh fa-spin mr5"></i>@(Getting new updates ...)</div>
@@ -43,7 +45,7 @@
 			</div>
 			<div data---="search__formdatabase.search__selector:.jsearch" class="mt10">
 				<div class="db-container">
-					<div data---="repeater-group__common.components__group:group" data-bind="common.templates__.db-norefresh:!(value && value.length)" class="dbcomponents">
+					<div data---="repeater-group__common.components__group:group;$setter:database/checkupdates" data-bind="common.templates__.db-norefresh:!(value && value.length)" class="dbcomponents">
 						<script type="text/html">
 							<div class="jsearch db-item{{ if canupdate }} db-item-update{{ fi }}" data-search="{{ name }}" data-id="{{ id }}">
 								<span class="exec" data-exec="database/remove"><i class="fa fa-times-circle"></i></span>
@@ -86,6 +88,12 @@
 			hide();
 		};
 
+		exports.refreshdatabase = function() {
+			setTimeout(function() {
+				SETTER('websocket', 'send', { 'type': 'database' });
+			}, 1000);
+		};
+
 		exports.refresh = function(el) {
 			var id = el.parent().attrd('id');
 			var component = common.components.findItem('id', id);
@@ -110,7 +118,37 @@
 		exports.remove = function(el) {
 			var id = el.parent().attrd('id');
 			SETTER('confirm', 'confirm', '@(Are you sure you want to remove this component?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
-				!index && SETTER('websocket', 'send', { type: 'uninstall', target: id });
+				if (!index) {
+					SETTER('websocket', 'send', { type: 'uninstall', target: id });
+					exports.refreshdatabase();
+				}
+			});
+		};
+
+		exports.removeall = function(el) {
+			var id = el.parent().attrd('id');
+			SETTER('confirm', 'confirm', '@(Are you sure you want to remove all components?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
+
+				if (index)
+					return;
+
+				var id = [];
+
+				$('.db-item').each(function() {
+					id.push($(this).attrd('id'));
+				});
+
+				SETTER('loading', 'show');
+				id.wait(function(id, next) {
+					SETTER('websocket', 'send', { type: 'uninstall', target: id });
+					setTimeout(next, 200);
+				}, function() {
+					SETTER('snackbar', 'success', '@(All components have been removed successfully.)');
+					setTimeout(function() {
+						exports.refreshdatabase();
+						SETTER('loading', 'hide', 2000);
+					}, 1000);
+				});
 			});
 		};
 
@@ -168,6 +206,12 @@
 			});
 		};
 
+		exports.checkupdates = function() {
+			setTimeout2('checkupdates', function() {
+				SET('formdatabase.updatescount', $('.db-item-update').length);
+			}, 500);
+		};
+
 		exports.dragdrop = function(files) {
 			FIND('#formdatabasefile').process(files);
 		};
@@ -182,7 +226,6 @@
 
 		WATCH('common.templates', function() {
 			UPD('common.components');
-			SET('formdatabase.updatescount', !!$('.db-item-update').length);
 		});
 
 		WATCH('formdatabase.file', function(path, value) {

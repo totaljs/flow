@@ -110,7 +110,10 @@ FUNC.resizetabs = function() {
 	el.find('a').each(function() {
 		size += $(this).innerWidth() + 5;
 	});
+	var main = el.parent().width() - 66;
+	size = Math.ceil(size);
 	el.css('width', size);
+	$('.scrolling').tclass('hidden', size < main);
 };
 
 function getSize(el) {
