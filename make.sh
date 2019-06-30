@@ -3,5 +3,5 @@
 NAME=`basename "$PWD"`.package
 
 cd source
-tpm create "$NAME"
+totaljs --package "$NAME"
 mv "$NAME" ../
