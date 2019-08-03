@@ -665,13 +665,20 @@ COMPONENT('repeater-group', function(self, config) {
 
 COMPONENT('textbox', function(self, config) {
 
-	var input, content = null;
+	var input, content = null, isfilled = false;
+	var innerlabel = function() {
+		var is = !!input[0].value;
+		if (isfilled !== is) {
+			isfilled = is;
+			self.tclass('ui-textbox-filled', isfilled);
+		}
+	};
 
-	self.nocompile();
+	self.nocompile && self.nocompile();
 
 	self.validate = function(value) {
 
-		if (!config.required || config.disabled)
+		if ((!config.required || config.disabled) && !self.forcedvalidation())
 			return true;
 
 		if (self.type === 'date')
@@ -728,6 +735,10 @@ COMPONENT('textbox', function(self, config) {
 			}
 		});
 
+		self.event('click', '.ui-textbox-label', function() {
+			input.focus();
+		});
+
 		self.event('click', '.ui-textbox-control-icon', function() {
 			if (config.disabled || config.readonly)
 				return;
@@ -735,8 +746,14 @@ COMPONENT('textbox', function(self, config) {
 				self.$stateremoved = false;
 				$(this).rclass('fa-times').aclass('fa-search');
 				self.set('');
-			} else if (config.icon2click)
-				EXEC(config.icon2click, self);
+			} else if (self.type === 'password') {
+				var el = $(this);
+				var type = input.attr('type');
+
+				input.attr('type', type === 'text' ? 'password' : 'text');
+				el.rclass2('fa-').aclass(type === 'text' ? 'fa-eye' : 'fa-eye-slash');
+			} else if (config.iconclick)
+				EXEC(config.iconclick, self);
 		});
 
 		self.event('focus', 'input', function() {
@@ -744,7 +761,19 @@ COMPONENT('textbox', function(self, config) {
 				EXEC(config.autocomplete, self);
 		});
 
+		self.event('input', 'input', innerlabel);
 		self.redraw();
+		config.iconclick && self.configure('iconclick', config.iconclick);
+	};
+
+	self.setter2 = function(value) {
+		if (self.type === 'search') {
+			if (self.$stateremoved && !value)
+				return;
+			self.$stateremoved = !value;
+			self.find('.ui-textbox-control-icon').tclass('fa-times', !!value).tclass('fa-search', !value);
+		}
+		innerlabel();
 	};
 
 	self.redraw = function() {
@@ -767,7 +796,7 @@ COMPONENT('textbox', function(self, config) {
 		self.tclass('ui-textbox-required', config.required === true);
 		self.type = config.type;
 		attrs.attr('type', tmp);
-		config.placeholder && attrs.attr('placeholder', config.placeholder);
+		config.placeholder && !config.innerlabel && attrs.attr('placeholder', config.placeholder);
 		config.maxlength && attrs.attr('maxlength', config.maxlength);
 		config.keypress != null && attrs.attr('data-jc-keypress', config.keypress);
 		config.delay && attrs.attr('data-jc-keypress-delay', config.delay);
@@ -776,7 +805,14 @@ COMPONENT('textbox', function(self, config) {
 		config.error && attrs.attr('error');
 		attrs.attr('data-jc-bind', '');
 
-		config.autofill && attrs.attr('name', self.path.replace(/\./g, '_'));
+		if (config.autofill) {
+			attrs.attr('name', self.path.replace(/\./g, '_'));
+			self.autofill && self.autofill();
+		} else {
+			attrs.attr('name', 'input' + Date.now());
+			attrs.attr('autocomplete', 'new-password');
+		}
+
 		config.align && attrs.attr('class', 'ui-' + config.align);
 		!isMOBILE && config.autofocus && attrs.attr('autofocus');
 
@@ -787,21 +823,18 @@ COMPONENT('textbox', function(self, config) {
 
 		if (!icon2 && self.type === 'date')
 			icon2 = 'calendar';
-		else if (self.type === 'search') {
+		else if (!icon2 && self.type === 'password')
+			icon2 = 'eye';
+		else if (self.type === 'search')
 			icon2 = 'search';
-			self.setter2 = function(value) {
-				if (self.$stateremoved && !value)
-					return;
-				self.$stateremoved = !value;
-				self.find('.ui-textbox-control-icon').tclass('fa-times', !!value).tclass('fa-search', !value);
-			};
-		}
 
 		icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-{0} ui-textbox-control-icon"></span></div>'.format(icon2));
 		config.increment && !icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
 
 		if (config.label)
 			content = config.label;
+
+		self.tclass('ui-textbox-innerlabel', !!config.innerlabel);
 
 		if (content.length) {
 			var html = builder.join('');
@@ -877,6 +910,11 @@ COMPONENT('textbox', function(self, config) {
 			case 'autofocus':
 				input.focus();
 				break;
+			case 'icon2click': // backward compatibility
+			case 'iconclick':
+				config.iconclick = value;
+				self.find('.ui-textbox-control').css('cursor', value ? 'pointer' : 'default');
+				break;
 			case 'icon':
 				var tmp = self.find('.ui-textbox-label .fa');
 				if (tmp.length)
@@ -888,6 +926,9 @@ COMPONENT('textbox', function(self, config) {
 			case 'increment':
 				redraw = true;
 				break;
+			case 'labeltype':
+				redraw = true;
+				break;
 		}
 
 		redraw && setTimeout2('redraw.' + self.id, function() {
@@ -897,22 +938,47 @@ COMPONENT('textbox', function(self, config) {
 	};
 
 	self.formatter(function(path, value) {
+		if (value) {
+			switch (config.type) {
+				case 'lower':
+					value = value.toString().toLowerCase();
+					break;
+				case 'upper':
+					value = value.toString().toUpperCase();
+					break;
+			}
+		}
 		return config.type === 'date' ? (value ? value.format(config.format || 'yyyy-MM-dd') : value) : value;
 	});
 
 	self.parser(function(path, value) {
+		if (value) {
+			switch (config.type) {
+				case 'lower':
+					value = value.toLowerCase();
+					break;
+				case 'upper':
+					value = value.toUpperCase();
+					break;
+			}
+		}
 		return value ? config.spaces === false ? value.replace(/\s/g, '') : value : value;
 	});
 
 	self.state = function(type) {
 		if (!type)
 			return;
-		var invalid = config.required ? self.isInvalid() : false;
+		var invalid = config.required ? self.isInvalid() : self.forcedvalidation() ? self.isInvalid() : false;
 		if (invalid === self.$oldstate)
 			return;
 		self.$oldstate = invalid;
 		self.tclass('ui-textbox-invalid', invalid);
 		config.error && self.find('.ui-textbox-helper').tclass('ui-textbox-helper-show', invalid);
+	};
+
+	self.forcedvalidation = function() {
+		var val = self.get();
+		return (self.type === 'phone' || self.type === 'email') && (val != null && (typeof val === 'string' && val.length !== 0));
 	};
 });
 
@@ -5874,6 +5940,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		});
 
 		self.event('click', cls2 + '-button', function(e) {
+			skipclear = false;
 			input.val('');
 			self.search();
 			e.stopPropagation();
@@ -5887,7 +5954,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			}
 		});
 
-		self.event('touchstart mousedown', 'li', function(e) {
+		self.event('click', 'li', function(e) {
 			self.opt.callback && self.opt.callback(self.opt.items[+this.getAttribute('data-index')], self.opt.element);
 			self.hide();
 			e.preventDefault();
@@ -5946,16 +6013,14 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 					selectedindex--;
 					if (selectedindex < 0)
 						selectedindex = 0;
-					else
-						self.move();
+					self.move();
 					break;
 				case 40: // down
 					o = true;
-					selectedindex++ ;
+					selectedindex++;
 					if (selectedindex >= resultscount)
 						selectedindex = resultscount;
-					else
-						self.move();
+					self.move();
 					break;
 			}
 
@@ -5984,8 +6049,13 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		var counter = 0;
 		var scroller = container.parent();
 		var h = scroller.height();
+		var li = container.find('li');
+		var hli = li.eq(0).innerHeight() || 30;
+		var was = false;
+		var last = -1;
+		var lastselected = 0;
 
-		container.find('li').each(function() {
+		li.each(function(index) {
 			var el = $(this);
 
 			if (el.hclass('hidden')) {
@@ -5997,14 +6067,24 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			el.tclass('current', is);
 
 			if (is) {
-				var t = (h * counter) - h;
-				if ((t + h * 4) > h)
-					scroller.scrollTop(t - h);
+				was = true;
+				var t = (hli * (counter || 1));
+				var f = Math.ceil((h / hli) / 2);
+				if (counter > f)
+					scroller[0].scrollTop = (t + f) - (h / 2.8 >> 0);
 				else
-					scroller.scrollTop(0);
+					scroller[0].scrollTop = 0;
 			}
+
 			counter++;
+			last = index;
+			lastselected++;
 		});
+
+		if (!was && last >= 0) {
+			selectedindex = lastselected;
+			li.eq(last).aclass('current');
+		}
 	};
 
 	self.search = function(value) {
@@ -6033,7 +6113,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			if (self.ajaxold !== val) {
 				self.ajaxold = val;
 				setTimeout2(self.ID, function(val) {
-					self.opt.ajax(val, function(items) {
+					self.opt && self.opt.ajax(val, function(items) {
 						var builder = [];
 						var indexer = {};
 						for (var i = 0; i < items.length; i++) {
@@ -6105,6 +6185,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		self.initializing = true;
 		self.target = el;
 		opt.ajax = null;
+		self.ajaxold = null;
 
 		var element = $(opt.element);
 		var callback = opt.callback;
@@ -6126,8 +6207,7 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			return;
 		}
 
-		self.bindevents();
-
+		setTimeout(self.bindevents, 500);
 		self.tclass(cls + '-search-hidden', opt.search === false);
 
 		self.opt = opt;
@@ -6169,8 +6249,9 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 
 		self.target = element[0];
 
+		var w = element.width();
 		var offset = element.offset();
-		var width = element.width() + (opt.offsetWidth || 0);
+		var width = w + (opt.offsetWidth || 0);
 
 		if (opt.minwidth && width < opt.minwidth)
 			width = opt.minwidth;
@@ -6185,7 +6266,28 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 		var scroller = self.find(cls2 + '-container').css('width', width + 30);
 		container.html(builder);
 
-		var options = { left: offset.left + (opt.offsetX || 0), top: offset.top + (opt.offsetY || 0), width: width };
+		var options = { left: 0, top: 0, width: width };
+
+		switch (opt.align) {
+			case 'center':
+				options.left = Math.ceil((offset.left - width / 2) + (width / 2));
+				break;
+			case 'right':
+				options.left = (offset.left - width) + w;
+				break;
+			default:
+				options.left = offset.left;
+				break;
+		}
+
+		options.top = opt.position === 'bottom' ? ((offset.top - self.height()) + element.height()) : offset.top;
+
+		if (opt.offsetX)
+			options.left += opt.offsetX;
+
+		if (opt.offsetY)
+			options.top += opt.offsetY;
+
 		self.css(options);
 
 		!isMOBILE && setTimeout(function() {
@@ -6198,9 +6300,12 @@ COMPONENT('directory', 'minwidth:200', function(self, config) {
 			is = true;
 			if (selected == null)
 				scroller[0].scrollTop = 0;
-			else
-				scroller[0].scrollTop = container.find('.selected').offset().top - (self.element.height() / 2 >> 0);
-		}, 50);
+			else {
+				var h = container.find('li:first-child').height();
+				var y = (container.find('li.selected').index() * h) - (h * 2);
+				scroller[0].scrollTop = y < 0 ? 0 : y;
+			}
+		}, 100);
 
 		if (is) {
 			self.search();
@@ -6551,7 +6656,7 @@ COMPONENT('input', 'maxlength:200;dirkey:name;dirvalue:id;increment:1;autovalue:
 
 	var cls = 'ui-input';
 	var cls2 = '.' + cls;
-	var input, placeholder, dirsource, binded, customvalidator, mask;
+	var input, placeholder, dirsource, binded, customvalidator, mask, isdirvisible = false;
 
 	self.nocompile();
 	self.bindvisible(20);
@@ -6607,6 +6712,9 @@ COMPONENT('input', 'maxlength:200;dirkey:name;dirvalue:id;increment:1;autovalue:
 				setTimeout(function(input) {
 					input.selectionStart = input.selectionEnd = 0;
 				}, 50, this);
+			} else if (config.dirsource && (config.autofocus != false && config.autofocus != 0)) {
+				if (!isdirvisible)
+					self.find(cls2 + '-control').trigger('click');
 			}
 		});
 
@@ -6735,8 +6843,13 @@ COMPONENT('input', 'maxlength:200;dirkey:name;dirvalue:id;increment:1;autovalue:
 
 		self.event('click', cls2 + '-control', function() {
 
-			if (!config.dirsource || config.disabled)
+			if (!config.dirsource || config.disabled || isdirvisible)
 				return;
+
+			isdirvisible = true;
+			setTimeout(function() {
+				isdirvisible = false;
+			}, 500);
 
 			var opt = {};
 			opt.element = self.find(cls2 + '-control');
