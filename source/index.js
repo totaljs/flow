@@ -1187,7 +1187,7 @@ Component.prototype.status = function(text, color) {
 
 const ERR_MESSAGE = {};
 
-Component.prototype.debug = function(data, style, group) {
+Component.prototype.debug = function(data, style, group, id) {
 
 	MESSAGE_DEBUG.group = group;
 
@@ -1203,7 +1203,7 @@ Component.prototype.debug = function(data, style, group) {
 	} else
 		MESSAGE_DEBUG.body = data instanceof Buffer ? print_buffer(data) : data instanceof Error ? data.toString() : data;
 
-	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : undefined;
+	MESSAGE_DEBUG.identificator = data instanceof FlowData ? data.id : id;
 	MESSAGE_DEBUG.time = data instanceof FlowData ? ((new Date() - data.begin) / 1000).floor(2) : null;
 	MESSAGE_DEBUG.style = style || 'info';
 	MESSAGE_DEBUG.id = this.id;
