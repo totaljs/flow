@@ -518,7 +518,7 @@ function getIcons() {
 				sel.forEach(function(s){
 					s = s.trim();
 					s = s.substring(4, s.indexOf(':')).trim();
-						icons[s] = a.toString();
+					icons[s] = a.toString();
 				});
 		}
 	}
@@ -531,14 +531,13 @@ function changedTab() {
 }
 
 if (String.prototype.markdown == null) {
-	/*! Markdown | (c) 2019 Peter Sirka | www.petersirka.com */
 	(function Markdown() {
 
 		var links = /(!)?\[.*?\]\(.*?\)/g;
 		var links2 = /&lt;(https|http)+:\/\/.*?&gt;/g;
 		var imagelinks = /\[!\[.*?\]\(.*?\)\]\(.*?\)/g;
 		var format = /__.*?__|_.*?_|\*\*.*?\*\*|\*.*?\*|~~.*?~~|~.*?~/g;
-		var ordered = /^([a-z|0-9]{1,2}\.\s)|-\s/i;
+		var ordered = /^[a-z|0-9]{1}\.\s|^-\s/i;
 		var orderedsize = /^(\s|\t)+/;
 		var code = /`.*?`/g;
 		var encodetags = /<|>/g;
@@ -560,7 +559,7 @@ if (String.prototype.markdown == null) {
 		function markdown_imagelinks(value) {
 			var end = value.indexOf(')') + 1;
 			var img = value.substring(1, end);
-			return '<a href="' + value.substring(end + 2, value.length - 1) + '">' + markdown_links(img) + '</a>';
+			return '<a href="' + value.substring(end + 2, value.length - 1) + '" target="_blank">' + markdown_links(img) + '</a>';
 		}
 
 		function markdown_table(value, align, ishead) {
@@ -591,14 +590,20 @@ if (String.prototype.markdown == null) {
 					responsive = false;
 					text = text.substring(1);
 				}
+			} else {
+				if ((/^#\d+$/).test(link)) {
+					// footnotes
+					return (/^\d+$/).test(text) ? '<sup data-id="{0}" class="footnote">{1}</sup>'.format(link.substring(1), text) : '<span data-id="{0}" class="footnote">{1}</span>'.format(link.substring(1), text);
+				}
 			}
 
-			return img ? ('<img src="' + link + '" alt="' + text + '"' + (responsive ? ' class="img-responsive"' : '') + ' border="0" />') : ('<a href="' + link + '">' + text + '</a>');
+			var nofollow = link.charAt(0) === '@' ? 'rel="nofollow"' : 'target="_blank"';
+			return img ? ('<img src="' + link + '" alt="' + text + '"' + (responsive ? ' class="img-responsive"' : '') + ' border="0" />') : ('<a href="' + link + '" ' + nofollow + '>' + text + '</a>');
 		}
 
-		function markdown_links2(value)	{
+		function markdown_links2(value) {
 			value = value.substring(4, value.length - 4);
-			return '<a href="' + value + '">' + value + '</a>';
+			return '<a href="' + value + '" target="_blank">' + value + '</a>';
 		}
 
 		function markdown_format(value, index, text) {
@@ -607,15 +612,27 @@ if (String.prototype.markdown == null) {
 			var n = text.charAt(index + value.length);
 
 			if ((!p || regemptychar.test(p)) && (!n || regemptychar.test(n))) {
-				switch (value.charAt(0)) {
-					case '_':
-						return '<strong>' + value.replace(formatclean, '') + '</strong>';
-					case '*':
-						return '<em>' + value.replace(formatclean, '') + '</em>';
-					case '~':
-						return '<strike>' + value.replace(formatclean, '') + '</strike>';
+
+				var beg = '';
+				var end = '';
+
+				if (value.indexOf('*') !== -1) {
+					beg += '<em>';
+					end = '</em>' + end;
 				}
+				if (value.indexOf('_') !== -1) {
+					beg += '<strong>';
+					end = '</strong>' + end;
+				}
+
+				if (value.indexOf('~') !== -1) {
+					beg += '<strike>';
+					end = '</strike>' + end;
+				}
+
+				return beg + value.replace(formatclean, '') + end;
 			}
+
 			return value;
 		}
 
@@ -651,6 +668,20 @@ if (String.prototype.markdown == null) {
 			return value.substring(0, beg - 1) + '<i class="fa fa-' + value.substring(beg, end) + '"></i>' + value.substring(end + 1);
 		}
 
+		function markdown_urlify(str) {
+			return str.replace(/(^|\s)+(((https?:\/\/)|(www\.))[^\s]+)/g, function(url, b, c) {
+				var len = url.length;
+				var l = url.charAt(len - 1);
+				var f = url.charAt(0);
+				if (l === '.' || l === ',')
+					url = url.substring(0, len - 1);
+				else
+					l = '';
+				url = (c === 'www.' ? 'http://' + url : url).trim();
+				return (f.charCodeAt(0) < 40 ? f : '') + '[' + url + '](' + url + ')' + l;
+			});
+		}
+
 		String.prototype.markdown = function(opt) {
 
 			// opt.wrap = true;
@@ -666,8 +697,20 @@ if (String.prototype.markdown == null) {
 			// opt.headlines = true;
 			// opt.hr = true;
 			// opt.blockquotes = true;
+			// opt.sections = true;
+			// opt.custom
+			// opt.footnotes = true;
+			// opt.urlify = true;
 
-			var lines = this.split('\n');
+			var str = this;
+
+			if (!opt)
+				opt = {};
+
+			if (opt.urlify !== false && opt.links !== false)
+				str = markdown_urlify(str);
+
+			var lines = str.split('\n');
 			var builder = [];
 			var ul = [];
 			var table = false;
@@ -676,9 +719,6 @@ if (String.prototype.markdown == null) {
 			var prev;
 			var prevsize = 0;
 			var tmp;
-
-			if (!opt)
-				opt = {};
 
 			if (opt.wrap == null)
 				opt.wrap = true;
@@ -689,8 +729,7 @@ if (String.prototype.markdown == null) {
 			var closeul = function() {
 				while (ul.length) {
 					var text = ul.pop();
-					if (opt.ul !== false)
-						builder.push('</' + text + '>');
+					builder.push('</' + text + '>');
 				}
 			};
 
@@ -706,7 +745,7 @@ if (String.prototype.markdown == null) {
 
 					if (iscode) {
 						if (opt.code !== false)
-							builder.push('</code></pre>');
+							builder.push('</code></pre></div>');
 						iscode = false;
 						continue;
 					}
@@ -714,7 +753,7 @@ if (String.prototype.markdown == null) {
 					closeul();
 					iscode = true;
 					if (opt.code !== false)
-						tmp = '<pre><code class="lang-' + lines[i].substring(3) + '">';
+						tmp = '<div class="code"><pre><code class="lang-' + lines[i].substring(3) + '">';
 					prev = 'code';
 					continue;
 				}
@@ -728,6 +767,9 @@ if (String.prototype.markdown == null) {
 				}
 
 				var line = lines[i];
+
+				if (opt.custom)
+					line = opt.custom(line);
 
 				if (opt.links !== false) {
 					if (opt.images !== false)
@@ -844,6 +886,15 @@ if (String.prototype.markdown == null) {
 					continue;
 				}
 
+				// footnotes
+				if ((/^#\d+:(\s)+/).test(line)) {
+					if (opt.footnotes !== false) {
+						tmp = line.indexOf(':');
+						builder.push('<div class="footnotebody" data-id="{0}"><span>{0}:</span> {1}</div>'.format(line.substring(1, tmp).trim(), line.substring(tmp + 1).trim()));
+					}
+					continue;
+				}
+
 				if (line.substring(0, 5) === '&gt; ') {
 					if (opt.blockquotes !== false)
 						builder.push('<blockquote>' + line.substring(5).trim() + '</blockquote>');
@@ -851,9 +902,16 @@ if (String.prototype.markdown == null) {
 					continue;
 				}
 
+				if (line.substring(0, 5) === '&lt; ') {
+					if (opt.sections !== false)
+						builder.push('<section>' + line.substring(5).trim() + '</section>');
+					prev = '<';
+					continue;
+				}
+
 				var tmpline = line.trim();
 
-				if (ordered.test(tmpline)) {
+				if (opt.ul !== false && ordered.test(tmpline)) {
 
 					var size = line.match(orderedsize);
 					if (size)
@@ -874,8 +932,7 @@ if (String.prototype.markdown == null) {
 						} else {
 							// back to normal
 							prevsize = size;
-							if (opt.ul !== false)
-								builder.push('</' + ul.pop() + '>');
+							builder.push('</' + ul.pop() + '>');
 						}
 					}
 
@@ -884,10 +941,7 @@ if (String.prototype.markdown == null) {
 						var subtype;
 						if (type === 'ol')
 							subtype = tmpline.charAt(0);
-
-						if (opt.ul !== false)
-							builder.push('<' + type + (subtype ? (' type="' + subtype + '"') : '') + '>');
-
+						builder.push('<' + type + (subtype ? (' type="' + subtype + '"') : '') + '>');
 						ul.push(type + (append ? '></li' : ''));
 						prev = type;
 						prevsize = size;
