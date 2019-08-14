@@ -658,19 +658,23 @@
 			if (!id)
 				return;
 			var component = flow.components.findItem('id', id);
-			EMIT('select.' + component.component, component);
-			staticContent(component.component, 'readme', function(response) {
-				EMIT('info', response || '', component.notes);
-			});
+			if (component) {
+				EMIT('select.' + component.component, component);
+				staticContent(component.component, 'readme', function(response) {
+					EMIT('info', response || '', component.notes);
+				});
+			}
 		});
 
 		ON('designer.click', function(id) {
 			if (!id)
 				return;
 			var component = flow.components.findItem('id', id);
-			EMIT('click.' + component.component, component);
-			SETTER('websocket', 'send', { target: id, event: 'click' });
-			success();
+			if (component) {
+				EMIT('click.' + component.component, component);
+				SETTER('websocket', 'send', { target: id, event: 'click' });
+				success();
+			}
 		});
 
 		ON('designer.add.connection', function(a, b) {
