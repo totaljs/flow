@@ -194,12 +194,45 @@ FLOW.variable(key);
 // return {Object}
 // +v3.0.0
 
-
 FLOW.arg(str);
 FLOW.arg(obj);
 // This method can bind global Flow variables to the current object or string.
 // FLOW.arg('This pharse {variable-key} will be replaced.') returns {String}
 // FLOW.arg({ name: '{variable-key}', secret: '{variable-secret}' }) returns {Object} (new instance)
+```
+
+__Prototype overrides__
+
+- changes in v6.1.3 allows custom logic for saving and reading designer config as well as variables.
+
+```javascript
+// 
+FLOW.read_designer = function(callback) {
+	// read the data somehow
+	// return an err if any and an object in the callback
+	callback(<err | null>, <obj>);
+};
+
+FLOW.save_designer = function(data, callback, backup) {
+	// save the data somehow
+	// return err if any in the callback
+	callback(<err>);
+
+	// if the backup is enabled in the config
+	// you should also create a backup somehow
+};
+
+FLOW.read_variables = function(callback) {
+	// read variables somehow
+	// return an err if any and string in the callback
+	callback(<err | null>, <json string>);
+};
+
+FLOW.save_variables = function(data, callback) {
+	// save the data somehow
+	// return err if any in the callback
+	callback(<err>);
+};
 ```
 
 __Events__:

@@ -148,7 +148,7 @@ exports.install = function(options) {
 	// Service
 	ON('service', FN.service);
 
-	// Repository according "index" of cluster instance
+	// Repository according to the "index" of cluster instance
 	if (F.isCluster)
 		FILEINMEMORY = FILEINMEMORY.replace('.json', F.id + '.json');
 
@@ -1758,27 +1758,61 @@ FLOW.save2 = function(callback) {
 	data.components = FLOW.clearInstances();
 	data.version = +exports.version.replace(/(v|\.)/g, '');
 
-	var json = JSON.stringify(data, (k,v) => k === '$component' || k === 'comreadme' ? undefined : v, '\t');
-
-	Fs.writeFile(F.path.root(FILEDESIGNER), json, function(err) {
+	FLOW.save_designer(data, function(err){
 		err && F.error(err, 'FLOW.save("designer")');
-		Fs.writeFile(F.path.root(FILEVARIABLES), FLOW.$variables, function(err) {
+		FLOW.save_variables(FLOW.$variables, function(err){
 			err && F.error(err, 'FLOW.save("variables")');
 			callback && callback();
 			EMIT('flow.save');
 		});
-	});
+	}, OPT.backup);
 
 	FLOW.refresh_connections();
+};
 
-	if (OPT.backup) {
+FLOW.save3 = function() {
+	setTimeout2('flow.save3', FLOW.save2, 5000);
+};
+
+// Reads designer config file
+// This function can be overwritten
+// returns object
+FLOW.read_designer = function(callback) {
+
+	Fs.readFile(F.path.root(FILEDESIGNER), function(err, data){
+		if (data)
+			data = data.toString('utf8').parseJSON(true);
+
+		callback(data);		
+	});
+};
+
+// Saves designer to file system
+// This function can be overwritten
+FLOW.save_designer = function(data, callback, backup) {
+
+	var json = JSON.stringify(data, (k,v) => k === '$component' || k === 'comreadme' ? undefined : v, '\t');
+
+	Fs.writeFile(F.path.root(FILEDESIGNER), json, callback);
+
+	if (backup) {
 		Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
 		Fs.writeFile(F.path.root(FILEVARIABLES.replace(/\.txt/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')),  FLOW.$variables, NOOP);
 	}
 };
 
-FLOW.save3 = function() {
-	setTimeout2('flow.save3', FLOW.save2, 5000);
+// Reads variables file
+// This function can be overwritten
+// returns string
+FLOW.read_variables = function(callback) {
+
+	Fs.readFile(F.path.root(FILEVARIABLES), callback);
+};
+
+// Saves variables to file system
+// This function can be overwritten
+FLOW.save_variables = function(data, callback) {
+	Fs.writeFile(F.path.root(FILEVARIABLES), data, callback);
 };
 
 FLOW.refresh_connections = function() {
@@ -1893,16 +1927,14 @@ FLOW.reload = function(type, callback) {
 };
 
 function reload(callback) {
+
 	// Reads variables
-	Fs.readFile(F.path.root(FILEVARIABLES), function(err, data) {
+	FLOW.read_variables(function(err, data) {
 
 		FLOW.$variables = data ? data.toString('utf8') : '';
 
 		// Reads designer
-		Fs.readFile(F.path.root(FILEDESIGNER), function(err, data) {
-
-			if (data)
-				data = data.toString('utf8').parseJSON(true);
+		FLOW.read_designer(function(data) {
 
 			if (!data)
 				data = { components: [] };
@@ -1949,7 +1981,7 @@ function reload(callback) {
 	});
 }
 
-// Loads data when flow is starting
+// Loads components and designer cofig when flow starts
 FLOW.load = function(callback, isreload) {
 	var path = F.path.root(PATH);
 	F.path.exists(path, function(e) {
