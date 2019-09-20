@@ -225,11 +225,12 @@ FLOW.save_designer = function(data, callback, backup) {
 FLOW.read_variables = function(callback) {
 	// read variables somehow
 	// return an err if any and string in the callback
-	callback(<err | null>, <json string>);
+	// string = total.js framework config file syntax
+	callback(<err | null>, <string>);
 };
 
 FLOW.save_variables = function(data, callback) {
-	// save the data somehow
+	// save the data(string) somehow
 	// return err if any in the callback
 	callback(<err>);
 };
