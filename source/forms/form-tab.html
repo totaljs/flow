@@ -66,6 +66,7 @@
 			newtab.name = formtab.name;
 			newtab.id = Date.now().toString();
 			newtab.changed = true;
+			common.ownerid && (newtab.ownerid = common.ownerid);
 
 			flow.components.forEach(function(item) {
 				if (item.tab === formtab.id) {

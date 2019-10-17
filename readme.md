@@ -206,7 +206,6 @@ __Prototype overrides__
 - changes in v6.1.3 allows custom logic for saving and reading designer config as well as variables.
 
 ```javascript
-// 
 FLOW.read_designer = function(callback) {
 	// read the data somehow
 	// return an err if any and an object in the callback

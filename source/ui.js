@@ -579,13 +579,22 @@ COMPONENT('repeater', function(self) {
 	};
 });
 
-COMPONENT('repeater-group', function(self, config) {
+COMPONENT('repeatergroup', function(self, config) {
 
-	var template_group = null;
+	var html, template_group;
 	var reg = /\$(index|path)/g;
 	var force = false;
+	var recompile = false;
 
 	self.readonly();
+
+	self.released = function(is) {
+		if (is) {
+			html = self.html();
+			self.empty();
+		} else
+			html && self.html(html);
+	};
 
 	self.make = function() {
 		self.find('script').each(function(index) {
@@ -596,6 +605,7 @@ COMPONENT('repeater-group', function(self, config) {
 				template_group = Tangular.compile(html);
 			else
 				self.template = Tangular.compile(html);
+			!recompile && (recompile = html.COMPILABLE());
 		});
 	};
 
@@ -615,10 +625,11 @@ COMPONENT('repeater-group', function(self, config) {
 			return;
 		}
 
-		if (!force && !config.nocache && NOTMODIFIED(self.id, value))
+		if (!force && NOTMODIFIED(self.id, value))
 			return;
 
 		force = false;
+		html = '';
 		var length = value.length;
 		var groups = {};
 
@@ -642,10 +653,10 @@ COMPONENT('repeater-group', function(self, config) {
 
 			for (var i = 0, length = arr.length; i < length; i++) {
 				var item = arr[i];
-				item.index = index++;
 				tmp += self.template(item).replace(reg, function(text) {
 					return text.substring(0, 2) === '$i' ? index.toString() : self.path + '[' + index + ']';
 				});
+				item.index = index++;
 			}
 
 			if (key !== '0') {
@@ -660,6 +671,7 @@ COMPONENT('repeater-group', function(self, config) {
 		});
 
 		self.html(builder);
+		recompile && COMPILE();
 	};
 });
 
@@ -1619,10 +1631,8 @@ COMPONENT('designer', function() {
 					}
 					break;
 				case 5:
-					if (move.moved) {
-						setState(MESSAGES.apply);
+					if (move.moved)
 						EMIT('changed', 'mov', move.node.attrd('id'));
-					}
 					break;
 			}
 			move.type === 1 && savescrollposition();
@@ -2203,8 +2213,6 @@ COMPONENT('designer', function() {
 					self.allowedselected.push(id);
 					EMIT('changed', 'mov', id);
 				});
-
-				setState(MESSAGES.apply);
 			}
 
 		} else
@@ -2245,8 +2253,6 @@ COMPONENT('designer', function() {
 			el.attr('d', diagonal(off[4], off[5], off[6], off[7]));
 		});
 
-		var is = false;
-
 		self.find('.node').each(function() {
 			var el = $(this);
 			if (self.allowed && !self.allowed[el.attrd('id')])
@@ -2261,11 +2267,8 @@ COMPONENT('designer', function() {
 				instance.x = px;
 				instance.y = py;
 				EMIT('changed', 'mov', instance.id);
-				is = true;
 			}
 		});
-
-		is && setState(MESSAGES.apply);
 	};
 
 	self.autoconnect = function(reset) {

@@ -155,7 +155,7 @@
 		<div data---="search__common.search__selector:li">
 			<div class="components-container">
 				<div class="noscrollbar">
-					<ul data---="repeater-group__common.components__group:group" class="components">
+					<ul data---="repeatergroup__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
 								<div><i class="fa fa-circle" style="color:{{ color }}"></i>{{ name }}</div>
@@ -501,6 +501,9 @@
 				 	// don't care if it's new component or already moved
 					if (!~changes[id].indexOf('add') && !~changes[id].indexOf('mov'))
 						changes[id].push(action);
+					setTimeout2('change.move', function(){
+						saveMoved();
+					}, 1000);
 					break;
 				case 'rem':
 					if (~changes[id].indexOf('add'))
@@ -1859,6 +1862,20 @@
 		WATCH('flow.tabs', function() {
 			setTimeout(FUNC.resizetabs, 100);
 		});
+
+		function saveMoved(){
+			var temp = [];
+			var changes = common.changes;
+
+			Object.keys(changes).forEach(function(id){
+				if (!changes[id] || !~changes[id].indexOf('mov'))
+					return;
+				temp.push({ type: 'mov', com: cleanComponent(id, true) });
+				changes[id] = changes[id].remove(c => c === 'mov');
+			});
+
+			temp.length && SETTER('websocket', 'send', { type: 'apply', body: temp });
+		};
 
 	</script>
 
