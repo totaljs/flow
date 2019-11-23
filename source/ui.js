@@ -2080,7 +2080,7 @@ COMPONENT('designer', function() {
 		var top = ((height / 2) - ((item.$component.input * padding) / 2)) + 10;
 
 		top = ((height / 2) - ((input * padding) / 2)) + 10;
-		var titles = item.$component.inputtitles || EMPTYARRAY;
+		var titles = item.$component.inputs || EMPTYARRAY;
 
 		for (var i = 0; i < input; i++) {
 			var title = titles[i] || '';
@@ -2116,7 +2116,7 @@ COMPONENT('designer', function() {
 
 		top = ((height / 2) - ((output * padding) / 2)) + 10;
 
-		titles = item.$component.outputtitles || EMPTYARRAY;
+		titles = item.$component.outputs || EMPTYARRAY;
 
 		for (var i = 0; i < output; i++) {
 
