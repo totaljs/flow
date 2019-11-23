@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.3';
+exports.version = 'v6.1.4';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -1783,7 +1783,7 @@ FLOW.read_designer = function(callback) {
 		if (data)
 			data = data.toString('utf8').parseJSON(true);
 
-		callback(data);		
+		callback(data);
 	});
 };
 

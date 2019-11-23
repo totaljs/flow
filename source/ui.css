@@ -757,3 +757,15 @@ i.ui-intro-button { margin: 14px 3px 0; cursor: pointer; color: silver; font-siz
 .ui-intro-pagination button { float: right; border: 0; background-color: $color; color: white; border-radius: 0 0 3px 0; font: normal 11px Arial; text-transform: uppercase; font-weight: bold; height: 40px; width: 150px; padding: 0; margin: 0; outline: 0; }
 .ui-intro-pagination button:hover { opacity: 0.8; }
 .ui-intro-pagination button i { margin-left: 5px; }
+
+.ui-tooltip { position: absolute; z-index: 80; pointer-events: none; z-index: 1000; transition: opacity 0.2s; opacity: 0; }
+.ui-tooltip-visible { opacity: 1; }
+.ui-tooltip-body { padding: 5px 10px; font-size: 11px; background:rgba(0,0,0,0.9); color: white; border-radius: 2px; max-width: 280px; }
+.ui-tooltip-body::before { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); border-width: 5px 7px 0 7px; border-style: solid; border-color: rgba(0,0,0,0.9) transparent transparent transparent; z-index: 1000; }
+.ui-tooltip-arrow-left::before { left: 100%; top: 50%; margin-left: -5px; transform: translatey(-50%) rotate(-90deg); }
+.ui-tooltip-arrow-top::before { left: 50%; top: 100%; }
+.ui-tooltip-arrow-bottom::before { top: -8px; margin-top: 8px; transform: translateX(-50%) translatey(-100%) rotate(-180deg); }
+.ui-tooltip-arrow-right::before { left: -9px; top: 50%; transform: translatey(-50%) rotate(90deg); }
+
+.themedark .ui-tooltip-body { background:rgba(255,255,255,0.9); color: black; }
+.themedark .ui-tooltip-body::before { border-color: rgba(255,255,255,0.9) transparent transparent transparent; }

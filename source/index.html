@@ -33,6 +33,7 @@
 	<div data---="LAZY timepicker"></div>
 	<div data---="LAZY datepicker__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
 	<div data---="LAZY contextmenu"></div>
+	<div data---="LAZY tooltip"></div>
 	<div data---="menu"></div>
 	<div data---="confirm"></div>
 	<div data---="features__null__placeholder:@(Search feature ...)"></div>
@@ -761,6 +762,7 @@
 					}
 				});
 			}, 100);
+			el.noscrollbar();
 		});
 
 		ON('designer.refresh', function() {
@@ -1876,6 +1878,21 @@
 
 			temp.length && SETTER('websocket', 'send', { type: 'apply', body: temp });
 		};
+
+		$(document).on('mouseenter mouseleave', '.tooltip', function(e) {
+			if (e.type === 'mouseenter') {
+				var el = $(this);
+				var opt = {};
+				opt.element = el;
+				opt.html = el.attrd('tooltip');
+				opt.align = 'bottom';
+				// opt.timeout = 5000;
+				opt.offsetX = 8;
+				opt.offsetY = 15;
+				SETTER('tooltip', 'show', opt);
+			} else
+				SETTER('tooltip', 'hide');
+		});
 
 	</script>
 
