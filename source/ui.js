@@ -2080,14 +2080,12 @@ COMPONENT('designer', function() {
 		var top = ((height / 2) - ((item.$component.input * padding) / 2)) + 10;
 
 		top = ((height / 2) - ((input * padding) / 2)) + 10;
-		var titles = item.$component.inputs || EMPTYARRAY;
 
 		for (var i = 0; i < input; i++) {
-			var title = titles[i] || '';
 			var o = points.asvg('circle').attr('class', 'input').attrd('index', i).attr('cx', 0).attr('cy', top + i * padding).attr('r', radius);
 
-			if (title)
-				o.aclass('tooltip').attrd('tooltip', title);
+			// if (title)
+			// 	o.aclass('tooltip').attrd('tooltip', title);
 
 			if (inputcolors) {
 				var t = inputcolors[i] || '';
@@ -2096,7 +2094,7 @@ COMPONENT('designer', function() {
 					var tcolor = (t[0] || '').trim();
 					var ttitle = (t[1] || '').trim();
 					o.attr('fill', tcolor ? tcolor : common.theme === 'dark' ? 'white' : 'black');
-					ttitle && o.asvg('title').text(ttitle);
+					ttitle && o.aclass('tooltip').attrd('tooltip', ttitle);
 				} else {
 					if ((/^[a-z]|^#/).test(t))
 						o.attr('fill', t);
@@ -2116,16 +2114,16 @@ COMPONENT('designer', function() {
 
 		top = ((height / 2) - ((output * padding) / 2)) + 10;
 
-		titles = item.$component.outputs || EMPTYARRAY;
+		// titles = item.$component.outputs || EMPTYARRAY;
 
 		for (var i = 0; i < output; i++) {
 
-			var title = titles[i] || '';
+			// var title = titles[i] || '';
 			var err = i === output - 1;
 			var o = points.asvg('circle').attr('class', 'output').attrd('index', err ? 99 : i).attr('cx', width).attr('cy', (err ? 8 : 5) + top + i * padding).attr('r', (radius + (err ? -2 : 0)));
 
-			if (title)
-				o.aclass('tooltip').attrd('tooltip', title);
+			// if (title)
+			// 	o.aclass('tooltip').attrd('tooltip', title);
 
 			if (err) {
 				o.attr('fill', 'red');
@@ -2140,7 +2138,7 @@ COMPONENT('designer', function() {
 					var tcolor = (t[0] || '').trim();
 					var ttitle = (t[1] || '').trim();
 					o.attr('fill', tcolor ? tcolor : common.theme === 'dark' ? 'white' : 'black');
-					ttitle && o.asvg('title').text(ttitle);
+					ttitle && o.aclass('tooltip').attrd('tooltip', ttitle);
 				} else {
 					if ((/^[a-z]|^#/).test(t))
 						o.attr('fill', t);
