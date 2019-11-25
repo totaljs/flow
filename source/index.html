@@ -761,8 +761,8 @@
 						hljs.highlightBlock(block);
 					}
 				});
+				el.noscrollbar();
 			}, 100);
-			el.noscrollbar();
 		});
 
 		ON('designer.refresh', function() {
@@ -1891,7 +1891,13 @@
 				opt.offsetY = 15;
 				SETTER('tooltip', 'show', opt);
 			} else
-				SETTER('tooltip', 'hide');
+				SETTER('!tooltip', 'hide');
+		}).on('mousedown', function() {
+			SETTER('!tooltip', 'hide');
+		});
+
+		WATCH('common.panel', function() {
+			$('.noscrollbar').noscrollbar(true);
 		});
 
 	</script>
