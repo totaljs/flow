@@ -328,6 +328,10 @@
 
 		})();
 
+		setTimeout(function() {
+			$(W).trigger('resize');
+		}, 2000);
+
 		window.user = PARSE('#userdata');
 		M.environment('flow.jc');
 
