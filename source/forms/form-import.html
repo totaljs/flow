@@ -1,9 +1,4 @@
-<div data---="modal__common.form__if:import;width:700;submit:import/submit;title:@(Import Flow)" class="hidden">
-
-	<div>
-		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<label></label>
-	</div>
+<div data---="form__common.form__if:import;width:700;submit:import/submit;title:@(Import Flow)" class="hidden">
 
 	<div>
 		<div class="padding" data-bind="formimportanalysis.is__.bg-smoke">
@@ -33,10 +28,10 @@
 		</div>
 	</div>
 
-	<div data---="validation__formimport__if:value.is === true">
-		<span class="link cancel">@(Close)</span>
+	<nav data---="validation__formimport__if:value.is === true">
 		<button name="submit" disabled><i class="fa fa-cloud-download mr5"></i>@(IMPORT)</button>
-	</div>
+		<button name="cancel">@(Close)</button>
+	</nav>
 </div>
 
 <script>

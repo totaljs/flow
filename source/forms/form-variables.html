@@ -1,9 +1,4 @@
-<div data---="modal__common.form__if:variables;width:960;submit:variables/submit;title:@(Global Variables)" class="hidden">
-
-	<div>
-		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<label></label>
-	</div>
+<div data---="form__common.form__if:variables;width:960;submit:variables/submit;title:@(Global Variables)" class="hidden">
 
 	<div>
 		<div class="padding">
@@ -26,10 +21,10 @@ binds-environment-value   <span>(env)</span>       : <b>process.env</b>
 binds-config-value        <span>(config)</span>    : <b>name</b></code></pre>
 		</div>
 	</div>
-	<div data---="validation__formvariables">
-		<span class="link cancel">@(Close)</span>
+	<nav data---="validation__formvariables">
 		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(SAVE)</button>
-	</div>
+		<button name="cancel">@(Close)</button>
+	</nav>
 
 </div>
 

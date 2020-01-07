@@ -159,7 +159,7 @@
 					<ul data---="repeatergroup__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
-								<div><i class="fa fa-{{ icon }}" style="color:{{ color }}"></i>{{ name }}</div>
+								<div><i class="fa fa-{{ if icon }}{{ icon }}{{ else }}circle{{ fi }}" style="color:{{ color }}"></i>{{ name }}</div>
 							</li>
 						</script>
 						<script type="text/html">
@@ -1427,7 +1427,8 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					COMPILE($('#flowsettings').append(('<div data-jc-id="html.{0}" data---="modal__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div><span class="link cancel"><i class="fa fa-times"></i></span><label></label></div><div><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div><div data-bind="?.comcomponent__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div></div><div><span class="link cancel">@(Cancel)</span><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY SETTINGS)</button></div></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'))));
+					var form = ('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div><div data-bind="?.comcomponent__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div><nav><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY SETTINGS)</button><button name="cancel">@(Cancel)</button></nav></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'));
+					COMPILE($('#flowsettings').append(form));
 				} else
 					common.statics[key] = response;
 				callback(common.statics[key], false);

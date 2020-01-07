@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.4';
+exports.version = 'v6.1.5';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');

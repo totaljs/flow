@@ -1,9 +1,4 @@
-<div data---="modal__common.form__title:@(Flow components);if:database;width:932;submit:database/submit" class="hidden">
-
-	<div>
-		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<label></label>
-	</div>
+<div data---="form__common.form__title:@(Flow components);if:database;width:932;submit:database/submit" class="hidden">
 
 	<div data---="dragdropfiles__null__exec:database/dragdrop;class:+ui-form-dragdrop">
 		<div class="padding npb" style="background-color:#FFFCD3">
@@ -64,9 +59,9 @@
 		</div>
 	</div>
 
-	<div class="center">
-		<button name="submit">@(Close window)</button>
-	</div>
+	<nav>
+		<button name="submit" style="width:100%;max-width:inherit">@(Close window)</button>
+	</nav>
 </div>
 
 <script>

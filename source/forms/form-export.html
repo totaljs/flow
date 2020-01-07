@@ -1,10 +1,4 @@
-<div data---="modal__common.form__if:export;width:700;submit:export/submit;title:@(Export Flow)" class="hidden">
-
-	<div>
-		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<label></label>
-	</div>
-
+<div data---="form__common.form__if:export;width:700;submit:export/submit;title:@(Export Flow)" class="hidden">
 	<div>
 		<div class="padding bg-smoke">
 			<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
@@ -18,10 +12,10 @@
 		</div>
 	</div>
 
-	<div>
-		<span class="link cancel">@(Cancel)</span>
+	<nav>
 		<button name="submit"><i class="fa fa-floppy-o mr5"></i>@(Save to File)</button>
-	</div>
+		<button name="cancel">@(Cancel)</span>
+	</nav>
 
 </div>
 

@@ -102,7 +102,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; cursor: default; }
 .components .group:first-child { margin-top: 0; }
-.components i { width: 18px; }
+.components i { width: 14px; text-align: center; margin-right: 5px; }
 .themedark .component:hover { background-color: #202020; }
 
 .designer-container { position: absolute; bottom: 0; right: 0; overflow: hidden; top: 50px; left: 0; }
