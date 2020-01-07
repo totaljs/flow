@@ -159,7 +159,7 @@
 					<ul data---="repeatergroup__common.components__group:group" class="components">
 						<script type="text/html">
 							<li draggable="true" class="component" data-id="{{ id }}" data-search="{{ name }}">
-								<div><i class="fa fa-{{ icon }}" style="color:{{ color }}"></i>{{ name }}</div>
+								<div><i class="fa fa-{{ if icon }}{{ icon }}{{ else }}circle{{ fi }}" style="color:{{ color }}"></i>{{ name }}</div>
 							</li>
 						</script>
 						<script type="text/html">
