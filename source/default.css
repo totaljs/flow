@@ -359,3 +359,5 @@ svg { cursor: move; }
 .touch .panel-resize-handle { width: 15px; }
 
 .keepbreaks { white-space: pre-wrap; }
+
+.cm-tab { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAKElEQVRIiWNgGAWjYBQMacDIwMBgzMDAcBZKw8BQ4I+CUTAKRsEgAAAA4AwCz6/F0QAAAABJRU5ErkJggg==) no-repeat 100% 50%; }
