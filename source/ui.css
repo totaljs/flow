@@ -311,11 +311,55 @@ label span { vertical-align: middle; }
 .empty .ui-keyvalue-base { border-radius: 2px; }
 
 .ui-codemirror-label { margin-bottom: 5px; font-size: 12px; text-align: left; }
-.ui-codemirror-label i { width: 14px; }
-.ui-codemirror-label-required { font-weight: bold; }
+.ui-codemirror-label .fa { width: 14px; }
 .ui-codemirror-label-required:before { color: red; content: '***'; margin-right: 5px; }
-.ui-codemirror-invalid .CodeMirror { background-color: #FFF3F3 !important; border: 1px solid #E1A1A1 !important; }
-.CodeMirror { border: 1px solid #D0D0D0; border-radius: 3px; }
+.ui-codemirror-invalid .CodeMirror { border: 1px solid red !important; }
+.CodeMirror { border: 1px solid #E0E0E0; border-radius: 2px; }
+.ui-disabled .ui-codemirror { cursor: not-allowed; }
+.CodeMirror-scrollbar-filler { background-color: #303030; }
+.CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div { position: absolute; background: #A0A0A0; }
+.CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical { position: absolute; z-index: 6; background: #D0D0D0; }
+.CodeMirror-simplescroll-horizontal { bottom: 0; left: 0; height: 8px; }
+.CodeMirror-simplescroll-horizontal div { bottom: 0; height: 100%; }
+.CodeMirror-simplescroll-vertical { right: 0; top: 0; width: 8px; }
+.CodeMirror-simplescroll-vertical div { right: 0; width: 100%; }
+.CodeMirror-overlayscroll .CodeMirror-scrollbar-filler, .CodeMirror-overlayscroll .CodeMirror-gutter-filler { display: none; }
+.CodeMirror-overlayscroll-horizontal div, .CodeMirror-overlayscroll-vertical div { position: absolute; background: #A0A0A0; }
+.CodeMirror-scrollbar-filler { background: #D0D0D0 !important; }
+.CodeMirror-overlayscroll-horizontal, .CodeMirror-overlayscroll-vertical { position: absolute; z-index: 6; }
+.CodeMirror-overlayscroll-horizontal { bottom: 0; left: 0; height: 6px; }
+.CodeMirror-overlayscroll-horizontal div { bottom: 0; height: 100%; }
+.CodeMirror-overlayscroll-vertical { right: 0; top: 0; width: 6px; }
+.CodeMirror-overlayscroll-vertical div { right: 0; width: 100%; }
+.cm-trailingspace { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==); background-position: bottom left; background-repeat: repeat-x; }
+.cm-tab { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAKElEQVRIiWNgGAWjYBQMacDIwMBgzMDAcBZKw8BQ4I+CUTAKRsEgAAAA4AwCz6/F0QAAAABJRU5ErkJggg==) no-repeat 100% 50%; }
+.ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
+.ui-dark .CodeMirror-matchingtag { background-color: rgba(220,220,220,0.15); }
+.ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
+.ui-dark .cm-variable-S { background-color: rgba(255,59,231,.15); color: #f546fd; }
+.ui-dark .cm-variable-J { background-color: rgba(73,111,51,.35); color: #90ff2f; }
+.ui-dark .cm-variable-E { background-color: rgba(108,150,20,.15); color: #6C9614; }
+.ui-dark .cm-variable-B { background-color: rgba(27,27,27,.35); color: #84d087; }
+.ui-dark .CodeMirror-dialog button { background-color: #505050; color: white; }
+.ui-dark .CodeMirror-dialog { color: #A0A0A0; border-bottom-color: #404040; box-shadow: 0 2px 3px rgba(0,0,0,0.05); }
+.ui-dark .CodeMirror-dialog input { color: white; }
+.ui-dark .CodeMirror { background-color: #303030; color: #A0A0A0; border-color: #404040; }
+.ui-dark .CodeMirror-activeline-background { background-color: rgba(0,0,0,0.1); }
+.ui-dark .cm-s-default .cm-qualifier { color: gray; }
+.ui-dark .cm-s-default .cm-meta { color: #ae81ff; }
+.ui-dark div.CodeMirror-selected { background: #404040; }
+.ui-dark .CodeMirror-line::selection, .ui-dark .CodeMirror-line > span::selection, .ui-dark .CodeMirror-line > span > span::selection { background: rgba(70, 70, 70, .99); }
+.ui-dark .CodeMirror-line::-moz-selection, .ui-dark .CodeMirror-line > span::-moz-selection, .ui-dark .CodeMirror-line > span > span::-moz-selection { background: rgba(70, 70, 70, .99); }
+.ui-dark .CodeMirror-gutters { background: #404040; border-right: 0px; }
+.ui-dark .CodeMirror-guttermarker { color: white; }
+.ui-dark .CodeMirror-guttermarker-subtle { color: #d0d0d0; }
+.ui-dark .CodeMirror-linenumber { color: gray; }
+.ui-dark .CodeMirror-cursor { border-left: 1px solid #f8f8f0; }
+.ui-dark .CodeMirror { border-color: #404040; }
+.ui-dark .CodeMirror-simplescroll-horizontal div, .ui-dark .CodeMirror-simplescroll-vertical div { background: #151515; }
+.ui-dark .CodeMirror-simplescroll-horizontal, .ui-dark .CodeMirror-simplescroll-vertical { background: #303030; }
+.ui-dark .CodeMirror-overlayscroll-horizontal div, .ui-dark .CodeMirror-overlayscroll-vertical div { background: #151515; }
+.ui-dark .CodeMirror-scrollbar-filler { background-color: #202020; }
 
 .ui-contextmenu { position: absolute; opacity: 0; transition: 0.25s transform cubic-bezier(0.23, 1, 0.32, 1); left: -100px; top: -100px; z-index: 20; width: 200px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transform: translate(0px,20px); background-color: #303030; border-radius: 4px; }
 .ui-contextmenu-arrow { position: absolute; font-size: 30px; top: -20px; color: #303030; left: 107px; }
