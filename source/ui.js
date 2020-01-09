@@ -4546,7 +4546,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 
 				self.getter2 && self.getter2(val);
 				self.change(true);
-				self.rewrite(val);
+				self.rewrite(val, 2);
 				config.required && self.validate2();
 			}, 200);
 
