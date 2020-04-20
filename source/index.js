@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.5';
+exports.version = 'v6.1.6';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -501,102 +501,7 @@ FN.websocket = function() {
 			}
 
 			if (message.type === 'options') {
-
-				var tmp = FLOW.instances[message.target];
-
-				// Component doesn't exist
-				if (!tmp)
-					return;
-
-				var old_options = instance.options;
-				instance.options = message.body;
-
-				var options = instance.options;
-
-				instance.name = options.comname || '';
-				instance.reference = options.comreference;
-
-				if (options.comcolor != undefined)
-					instance.color = options.comcolor;
-
-				if (options.comnotes !== undefined)
-					instance.notes = options.comnotes;
-
-				if (!options.debug)
-					delete options.debug;
-
-				options.comname = undefined;
-				options.comreference = undefined;
-				options.comcolor = undefined;
-				options.comnotes = undefined;
-
-				var count;
-				var tmpcount;
-				var refreshconn = false;
-
-				if (options.comoutput != null) {
-					count = instance.output instanceof Array ? instance.output.length : instance.output;
-					tmpcount = io_count(options.comoutput);
-					tmpcount !== count && Object.keys(instance.connections).forEach(function(key) {
-						var index = +key;
-						if (index >= tmpcount) {
-							delete instance.connections[key];
-							refreshconn = true;
-						}
-					});
-					instance.output = options.comoutput;
-				}
-
-				if (options.cominput != null) {
-					count = instance.input instanceof Array ? instance.input.length : instance.input;
-					tmpcount = io_count(options.cominput);
-					tmpcount !== count && Object.keys(FLOW.instances).forEach(function(id) {
-
-						if (id === instance.id)
-							return;
-
-						var item = FLOW.instances[id];
-						var can = false;
-
-						Object.keys(item.connections).forEach(function(key) {
-							var l = item.connections[key].length;
-							item.connections[key] = item.connections[key].remove(function(item) {
-								return item.id === instance.id && (+item.index) >= tmpcount;
-							});
-							if (l !== item.connections[key].length)
-								can = true;
-							!item.connections[key].length && (delete instance.connections[key]);
-						});
-
-						if (can) {
-							var tmp = FLOW.instances[item.id];
-							tmp.connections = item.connections;
-							refreshconn = true;
-						}
-					});
-					instance.input = options.cominput;
-				}
-
-				options.comoutput = undefined;
-				options.cominput = undefined;
-
-				instance.$refresh();
-				instance.$events.options && instance.emit('options', instance.options, old_options);
-				EMIT('flow.options', instance);
-
-				tmp.options = instance.options;
-				tmp.name = instance.name;
-				tmp.output = instance.output;
-				tmp.input = instance.input;
-				tmp.connections = instance.connections;
-				tmp.reference = instance.reference;
-				tmp.color = instance.color;
-				tmp.notes = instance.notes;
-
-				refreshconn && FLOW.refresh_connections();
-				OPT.logging && FLOW.log('options', instance, client);
-				FLOW.save2();
-
+				instance.reoptions(message.body, client);
 			} else {
 				OPT.logging && FLOW.log(message.event, instance, client);
 				instance.$events[message.event] && instance.emit(message.event, message.body);
@@ -1283,6 +1188,99 @@ Component.prototype.$refresh = function() {
 	self.hasConnections = self.$connections.length > 0;
 };
 
+Component.prototype.reoptions = function(newoptions, client) {
+
+	// @client {WebSocketClient} is optional
+
+	var instance = this;
+
+	var old_options = instance.options;
+	instance.options = newoptions;
+
+	var options = instance.options;
+
+	if (options.NAME !== undefined)
+		instance.name = options.NAME || '';
+
+	if (options.REFERENCE != undefined)
+		instance.reference = options.REFERENCE;
+
+	if (options.COLOR !== undefined)
+		instance.color = options.COLOR;
+
+	if (options.NOTES !== undefined)
+		instance.notes = options.NOTES;
+
+	if (!options.debug)
+		delete options.debug;
+
+	options.NAME = undefined;
+	options.REFERENCE = undefined;
+	options.COLOR = undefined;
+	options.NOTES = undefined;
+
+	var count;
+	var tmpcount;
+	var refreshconn = false;
+
+	if (options.OUTPUT != null) {
+		count = instance.output instanceof Array ? instance.output.length : instance.output;
+		tmpcount = io_count(options.OUTPUT);
+		tmpcount !== count && Object.keys(instance.connections).forEach(function(key) {
+			var index = +key;
+			if (index >= tmpcount) {
+				delete instance.connections[key];
+				refreshconn = true;
+			}
+		});
+		instance.output = options.OUTPUT;
+	}
+
+	if (options.INPUT != null) {
+		count = instance.input instanceof Array ? instance.input.length : instance.input;
+		tmpcount = io_count(options.INPUT);
+		if (tmpcount !== count) {
+			Object.keys(FLOW.instances).forEach(function(id) {
+
+				if (id === instance.id)
+					return;
+
+				var item = FLOW.instances[id];
+				var can = false;
+
+				Object.keys(item.connections).forEach(function(key) {
+					var l = item.connections[key].length;
+					item.connections[key] = item.connections[key].remove(function(item) {
+						return item.id === instance.id && (+item.index) >= tmpcount;
+					});
+					if (l !== item.connections[key].length)
+						can = true;
+					!item.connections[key].length && (delete instance.connections[key]);
+				});
+
+				if (can) {
+					var tmp = FLOW.instances[item.id];
+					tmp.connections = item.connections;
+					refreshconn = true;
+				}
+			});
+		}
+		instance.input = options.INPUT;
+	}
+
+	options.OUTPUT = undefined;
+	options.INPUT = undefined;
+
+	instance.$refresh();
+	instance.$events.options && instance.emit('options', instance.options, old_options);
+	EMIT('flow.options', instance);
+
+	refreshconn && FLOW.refresh_connections();
+	OPT.logging && FLOW.log('options', instance, client);
+	FLOW.save2();
+	return instance;
+};
+
 function print_buffer(buf) {
 	var response = '<Buffer';
 	var arr = buf.toString('hex').split('');
@@ -1791,7 +1789,7 @@ FLOW.read_designer = function(callback) {
 // This function can be overwritten
 FLOW.save_designer = function(data, callback, backup) {
 
-	var json = JSON.stringify(data, (k,v) => k === '$component' || k === 'comreadme' ? undefined : v, '\t');
+	var json = JSON.stringify(data, (k,v) => k === '$component' || k === 'README' ? undefined : v, '\t');
 
 	Fs.writeFile(F.path.root(FILEDESIGNER), json, callback);
 

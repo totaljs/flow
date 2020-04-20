@@ -621,6 +621,11 @@ exports.install = function(component) {
 	// returns {Object} e.g. { inputs: [disabled inputs], outputs: [disabled outputs] } if nothing passed in
 	// +v5.0.0
 
+	component.reoptions(new_options);
+	// returns {Component}
+	// The method reconfigures the entire component again with new options
+	// +v6.1.5
+
 	// =====================
 	// PROPERTIES
 	// =====================

@@ -61,8 +61,8 @@
 				obj.created = new Date();
 				obj.components.forEach(function(o) {
 					delete o.$component;
-					if (o.options && o.options.comreadme)
-						delete o.options.comreadme;
+					if (o.options && o.options.README)
+						delete o.options.README;
 				});
 
 				SET('formexport.body', formexport.type === 'json2' ? STRINGIFY(obj) : formexport.type === 'json' ? JSON.stringify(obj, null, '\t') : btoa(encodeURIComponent(STRINGIFY(obj))));

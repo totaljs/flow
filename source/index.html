@@ -624,15 +624,15 @@
 			var component = flow.components.findItem('id', id);
 			var model = CLONE(component.$component.options || {});
 			component.options && $.extend(true, model, component.options);
-			model.comname = component.name;
-			model.comcomponent = component.component;
-			model.comcolor = component.color;
-			model.comnotes = component.notes;
-			model.comreference = component.reference;
+			model.NAME = component.name;
+			model.COMPONENT = component.component;
+			model.COLOR = component.color;
+			model.NOTES = component.notes;
+			model.REFERENCE = component.reference;
 			settings.$output = component.output;
 			settings.$input = component.input;
 			staticContent(component.component, 'html', function() {
-				model.comreadme = markdown(common.statics['readme.' + component.component] || '');
+				model.README = markdown(common.statics['readme.' + component.component] || '');
 				EMIT('open.' + component.component, component, model);
 				SET('settings.' + component.component, model);
 				SET('common.form', 'settings-' + component.component);
@@ -881,33 +881,33 @@
 			var tmp_r = component.reference;
 			var tmp_c = component.color;
 
-			component.name = component.options.comname;
-			component.reference = component.options.comreference;
-			component.color = component.options.comcolor;
-			component.notes = component.options.comnotes;
-			component.options.comcomponent = undefined;
+			component.name = component.options.NAME;
+			component.reference = component.options.REFERENCE;
+			component.color = component.options.COLOR;
+			component.notes = component.options.NOTES;
+			component.options.COMPONENT = undefined;
 
 			EMIT('save.' + component.component, component, component.options);
 
-			var is_designer = tmp_c !== component.color || tmp_n !== component.name || tmp_n !== component.options.comname || tmp_r !== component.options.comreference || component.output !== settings.$output || component.input !== settings.$input;
+			var is_designer = tmp_c !== component.color || tmp_n !== component.name || tmp_n !== component.options.NAME || tmp_r !== component.options.REFERENCE || component.output !== settings.$output || component.input !== settings.$input;
 
-			if (component.name !== component.options.comname)
-				component.options.comname = component.name;
+			if (component.name !== component.options.NAME)
+				component.options.NAME = component.name;
 
-			if (component.reference !== component.options.comreference)
-				component.options.comreference = component.reference;
+			if (component.reference !== component.options.REFERENCE)
+				component.options.REFERENCE = component.reference;
 
-			if (component.color !== component.options.comcolor)
-				component.options.comcolor = component.color;
+			if (component.color !== component.options.COLOR)
+				component.options.COLOR = component.color;
 
-			if (component.notes !== component.options.comnotes)
-				component.options.comnotes = component.notes;
+			if (component.notes !== component.options.NOTES)
+				component.options.NOTES = component.notes;
 
 			var is_server = is_designer ? true : STRINGIFY(component.options) !== settings.$backup;
 
-			component.options.comoutput = component.output;
-			component.options.cominput = component.input;
-			component.options.comreadme = undefined;
+			component.options.OUTPUT = component.output;
+			component.options.INPUT = component.input;
+			component.options.README = undefined;
 
 			if (!component.isnew && is_server) {
 				SETTER('websocket', 'send', { target: settings.$id, type: 'options', body: component.options });
@@ -937,13 +937,13 @@
 			}
 
 			setTimeout(function() {
-				component.options.comname = undefined;
-				component.options.comreference = undefined;
-				component.options.comoutput = undefined;
-				component.options.cominput = undefined;
-				component.options.comcolor = undefined;
-				component.options.comnotes = undefined;
-				component.options.comreadme = undefined;
+				component.options.NAME = undefined;
+				component.options.REFERENCE = undefined;
+				component.options.OUTPUT = undefined;
+				component.options.INPUT = undefined;
+				component.options.COLOR = undefined;
+				component.options.NOTES = undefined;
+				component.options.README = undefined;
 				if (is_designer)
 					EMIT('designer.refresh');
 				else if ((tmp_d && !component.options.debug) || (!tmp_d && component.options.debug))
@@ -1427,7 +1427,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					var form = ('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__comname__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__comreference__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__comcolor"></div></div></div><div data-bind="?.comcomponent__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div><nav><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY SETTINGS)</button><button name="cancel">@(Cancel)</button></nav></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'));
+					var form = ('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__NAME__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__REFERENCE__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__COLOR"></div></div></div><div data-bind="?.COMPONENT__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div><nav><button name="submit" class="exec" data-exec="#flow.settings">@(APPLY SETTINGS)</button><button name="cancel">@(Cancel)</button></nav></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'));
 					COMPILE($('#flowsettings').append(form));
 				} else
 					common.statics[key] = response;
