@@ -624,6 +624,7 @@ exports.install = function(component) {
 	component.reoptions(new_options);
 	// returns {Component}
 	// The method reconfigures the entire component again with new options
+	// "new_options" argument can contain properties for changing internal meta data of the component: NAME:String, REFERENCE:String, COLOR:String, NOTES:String, OUTPUT:Number/Array, INPUT:Number/Array
 	// +v6.1.5
 
 	// =====================
