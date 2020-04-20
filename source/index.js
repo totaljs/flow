@@ -1655,7 +1655,7 @@ FLOW.refresh_variables = function(data, client) {
 		}
 
 		FLOW.save3();
-		client.send({ type: 'variables-saved' });
+		client && client.send({ type: 'variables-saved' });
 
 	} catch (err) {
 		client && client.send({ type: 'variables-error', body: err.toString() });
