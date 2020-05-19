@@ -1184,7 +1184,6 @@ Component.prototype.throw = function(data) {
 Component.prototype.$refresh = function() {
 	var self = this;
 	self.$connections = Object.keys(self.connections || {});
-	self.$connections = self.$connections.remove('99');
 	self.hasConnections = self.$connections.length > 0;
 };
 
