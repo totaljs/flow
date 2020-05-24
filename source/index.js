@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.6';
+exports.version = 'v6.1.7';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -316,7 +316,7 @@ FN.websocket = function() {
 
 		if (client.query.designer === '1' && READY) {
 			MESSAGE_DESIGNER.crashmode = OPT.crashmode;
-			MESSAGE_DESIGNER.components = FLOW.clearInstances();
+			MESSAGE_DESIGNER.components = FLOW.clearInstances(true);
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer');
 		}
@@ -500,7 +500,9 @@ FN.websocket = function() {
 				FLOW.save3();
 			}
 
-			if (message.type === 'options') {
+			if (message.type === 'settings') {
+				client.send({ type: 'settings', id: message.target, body: instance.options });
+			} else if (message.type === 'options') {
 				instance.reoptions(message.body, client);
 			} else {
 				OPT.logging && FLOW.log(message.event, instance, client);
@@ -1433,10 +1435,15 @@ FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
 	return FLOW;
 };
 
-FLOW.clearInstances = function(){
-	return Object.keys(FLOW.instances).map(function(key){
-		var instance = FLOW.instances[key];
-		return {
+FLOW.clearInstances = function(isdesigner) {
+
+	var keys = Object.keys(FLOW.instances);
+	var arr = [];
+
+	for (var i = 0; i < keys.length; i++) {
+		var instance = FLOW.instances[keys[i]];
+
+		var obj = {
 			id: instance.id,
 			component: instance.component,
 			tab: instance.tab,
@@ -1447,7 +1454,6 @@ FLOW.clearInstances = function(){
 			connections: instance.connections,
 			disabledio: instance.disabledio,
 			state: instance.state,
-			options: instance.options,
 			color: instance.color,
 			notes: instance.notes,
 			icon: instance.icon,
@@ -1464,7 +1470,14 @@ FLOW.clearInstances = function(){
 			version: instance.version,
 			group: instance.group,
 		};
-	});
+
+		if (!isdesigner)
+			obj.options = instance.options;
+
+		arr.push(obj);
+	}
+
+	return arr;
 };
 
 FLOW.changes = function(arr) {
@@ -1715,7 +1728,7 @@ FLOW.send = function(message) {
 };
 
 FLOW.designer = function() {
-	MESSAGE_DESIGNER.components = FLOW.clearInstances();
+	MESSAGE_DESIGNER.components = FLOW.clearInstances(true);
 	FLOW.ws && FLOW.ws.send(MESSAGE_DESIGNER);
 	return FLOW;
 };

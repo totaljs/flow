@@ -621,25 +621,7 @@
 		});
 
 		ON('designer.settings', function(id) {
-			var component = flow.components.findItem('id', id);
-			var model = CLONE(component.$component.options || {});
-			component.options && $.extend(true, model, component.options);
-			model.NAME = component.name;
-			model.COMPONENT = component.component;
-			model.COLOR = component.color;
-			model.NOTES = component.notes;
-			model.REFERENCE = component.reference;
-			settings.$output = component.output;
-			settings.$input = component.input;
-			staticContent(component.component, 'html', function() {
-				model.README = markdown(common.statics['readme.' + component.component] || '');
-				EMIT('open.' + component.component, component, model);
-				SET('settings.' + component.component, model);
-				SET('common.form', 'settings-' + component.component);
-				RESET('settings.' + component.component + '.*', 500);
-				settings.$backup = STRINGIFY(model);
-			});
-			settings.$id = id;
+			SETTER('websocket', 'send', { type: 'settings', target: id });
 		});
 
 		ON('designer.selectable', function(el) {
@@ -1379,6 +1361,9 @@
 				SET('common.onlineusers', message.count);
 				return;
 			}
+
+			if (message.type === 'settings')
+				showsettings(message.id, message.body);
 		});
 
 		// Prevention for "backspace"
@@ -1858,6 +1843,27 @@
 			el.tclass('red', value != true);
 			el.tclass('green', value == true);
 			el.find('.fa').tclass('fa-pause', value != true).tclass('fa-play', value === true);
+		}
+
+		function showsettings(id, opt) {
+			var component = flow.components.findItem('id', id);
+			var model = opt;
+			model.NAME = component.name;
+			model.COMPONENT = component.component;
+			model.COLOR = component.color;
+			model.NOTES = component.notes;
+			model.REFERENCE = component.reference;
+			settings.$output = component.output;
+			settings.$input = component.input;
+			staticContent(component.component, 'html', function() {
+				model.README = markdown(common.statics['readme.' + component.component] || '');
+				EMIT('open.' + component.component, component, model);
+				SET('settings.' + component.component, model);
+				SET('common.form', 'settings-' + component.component);
+				RESET('settings.' + component.component + '.*', 500);
+				settings.$backup = STRINGIFY(model);
+			});
+			settings.$id = id;
 		}
 
 		function showcomponents() {
