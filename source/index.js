@@ -37,7 +37,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.7';
+exports.version = 'v6.1.8';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -532,6 +532,10 @@ FN.websocket = function() {
 			FLOW.changes(message.body);
 			OPT.logging && FLOW.log('apply', null, client);
 		}
+
+		if (message.type === 'export')
+			client.send({ type: message.type, options: FLOW.getOptions() });
+
 	});
 
 	FLOW.ws = self;
@@ -1478,6 +1482,17 @@ FLOW.clearInstances = function(isdesigner) {
 	}
 
 	return arr;
+};
+
+FLOW.getOptions = function() {
+	var keys = Object.keys(FLOW.instances);
+	var options = {};
+	for (var i = 0; i < keys.length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		if (instance.options)
+			options[keys[i]] = instance.options;
+	}
+	return options;
 };
 
 FLOW.changes = function(arr) {

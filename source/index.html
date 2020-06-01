@@ -621,7 +621,11 @@
 		});
 
 		ON('designer.settings', function(id) {
-			SETTER('websocket', 'send', { type: 'settings', target: id });
+			var component = flow.components.findItem('id', id);
+			if (component.isnew)
+				showsettings(id, component.$component.options ? CLONE(component.$component.options) : {});
+			else
+				SETTER('websocket', 'send', { type: 'settings', target: id });
 		});
 
 		ON('designer.selectable', function(el) {
@@ -1362,8 +1366,22 @@
 				return;
 			}
 
-			if (message.type === 'settings')
+			if (message.type === 'settings') {
 				showsettings(message.id, message.body);
+				return;
+			}
+
+			if (message.type === 'export') {
+
+				for (var i = 0; i < flow.components.length; i++) {
+					var tmp = flow.components[i];
+					if (message.options[tmp.id])
+						tmp.options = message.options[tmp.id];
+				}
+
+				SET('common.form', 'export');
+				return;
+			}
 		});
 
 		// Prevention for "backspace"
@@ -1684,10 +1702,12 @@
 						break;
 					case 'variables':
 					case 'import':
-					case 'export':
 					case 'templates':
 						SET('common.form', value);
 						return;
+					case 'export':
+						SETTER('websocket', 'send', { type: 'export' });
+						break;
 					case 'clear':
 						EMIT('flow.clear');
 						return;
