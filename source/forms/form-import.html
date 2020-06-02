@@ -68,6 +68,7 @@
 			var was = {};
 
 			data.components.forEach(function(item) {
+				item.isnew = true;
 				var component = common.components.findItem('component', item.component);
 				if (!was[item.component]) {
 					was[item.component] = 1;
