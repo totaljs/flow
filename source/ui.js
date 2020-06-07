@@ -1206,7 +1206,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	};
 
 	self.send = function(obj) {
-		queue.push(encodeURIComponent(JSON.stringify(obj)));
+		queue.push(JSON.stringify(obj));
 		self.process();
 		return self;
 	};
@@ -1258,7 +1258,6 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		var r = e.reason;
 		self.close(true);
 		if (r) {
-			r = decodeURIComponent(r);
 
 			if (r.indexOf('request length') !== -1)
 				SETTER('message', 'warning', '<i class="fa fa-warning mr5"></i><b>UNEXPECTED ERROR</b><div class="mt10">Flow wasn\'t saved due to the exceed designer size. You need to increase the limit.</div>');
@@ -1276,7 +1275,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	function onMessage(e) {
 		var data;
 		try {
-			data = PARSE(decodeURIComponent(e.data));
+			data = PARSE(e.data);
 			self.attrd('jc-path') && self.set(data);
 		} catch (e) {
 			WARN('WebSocket "{0}": {1}'.format(url, e.toString()));
@@ -1392,6 +1391,12 @@ COMPONENT('designer', function() {
 
 				if (animcache[id] > 20)
 					speed = 5;
+
+				if (animcache[id] > 50)
+					speed = 10;
+
+				if (animcache[id] > 100)
+					animcache[id] = 10;
 
 				for (var i = 0; i < count; i++) {
 					setTimeout(function(p, id) {
