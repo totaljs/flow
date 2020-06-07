@@ -616,9 +616,11 @@
 		ON('designer.settings', function(id) {
 			var component = flow.components.findItem('id', id);
 			if (component.isnew)
-				showsettings(id, component.$component.options ? CLONE(component.$component.options) : {});
-			else
+				showsettings(id, component.options || (component.$component.options ? CLONE(component.$component.options) : {}));
+			else {
+				SETTER('loading', 'show');
 				SETTER('websocket', 'send', { type: 'settings', target: id });
+			}
 		});
 
 		ON('designer.selectable', function(el) {
@@ -805,7 +807,10 @@
 
 		$(window).on('keydown', function(e) {
 			if (e.target.tagName === 'BODY' && !common.form) {
-				e.keyCode === 13 && (e.ctrlKey || e.metaKey) && EMIT('flow.apply');
+
+				if (e.keyCode === 13 && (e.ctrlKey || e.metaKey))
+					EMIT('flow.apply');
+
 				if (flow.selected && flow.selected.length) {
 					// ctrl+d
 					if (e.keyCode === 68 && (e.ctrlKey || e.metaKey)) {
@@ -1360,7 +1365,12 @@
 			}
 
 			if (message.type === 'settings') {
-				showsettings(message.id, message.body);
+				if (message.copyid) {
+					var component = flow.components.findItem('id', message.copyid);
+					if (component)
+						component.options = message.body;
+				} else
+					showsettings(message.id, message.body);
 				return;
 			}
 
@@ -1565,6 +1575,8 @@
 
 			var ids = {};
 			var new_comps = [];
+			var readsettings = [];
+
 			flow.clipboard.wait(function(component, next, index){
 
 				var obj = CLONE(component);
@@ -1575,9 +1587,8 @@
 				if (!flow.pasteconnected && component.tab === common.tab.id) {
 					obj.y += 50;
 					obj.x += 10;
-				} else {
+				} else
 					obj.y = obj.y - offset + bottom;
-				}
 
 				obj.tab = common.tab.id;
 
@@ -1586,6 +1597,7 @@
 				else
 					obj.state = { text: org.status || '', color: '' };
 
+				obj.parentid = component.id;
 				new_comps.push(obj);
 				ids[component.id] = obj.id;
 				setTimeout(next, 5);
@@ -1616,6 +1628,18 @@
 					EMIT('changed', 'add', item.id);
 				});
 
+				flow.components.wait(function(item, next) {
+					if (!item.parentid) {
+						next();
+						return;
+					}
+					SETTER('websocket', 'send', { type: 'settings', target: item.parentid, copyid: item.id });
+					delete item.parentid;
+					setTimeout(next, 100);
+				}, function() {
+					SETTER('loading', 'hide', 500);
+				});
+
 				flow.clipboard = null;
 				EMIT('designer.selectable', flow.selected);
 				setState(MESSAGES.apply);
@@ -1623,7 +1647,6 @@
 				setTimeout(function() {
 					EMIT('designer.refresh');
 					SETTER('designer', 'selectNew');
-					SETTER('loading', 'hide', 400);
 				}, 100);
 			});
 		});
@@ -1876,6 +1899,7 @@
 				SET('common.form', 'settings-' + component.component);
 				RESET('settings.' + component.component + '.*', 500);
 				settings.$backup = STRINGIFY(model);
+				SETTER('loading', 'hide', 500);
 			});
 			settings.$id = id;
 		}

@@ -501,7 +501,7 @@ FN.websocket = function() {
 			}
 
 			if (message.type === 'settings') {
-				client.send({ type: 'settings', id: message.target, body: instance.options });
+				client.send({ type: 'settings', id: message.target, body: instance.options, copyid: message.copyid });
 			} else if (message.type === 'options') {
 				instance.reoptions(message.body, client);
 			} else {
