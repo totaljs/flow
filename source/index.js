@@ -2119,19 +2119,36 @@ FLOW.trafficreset = function() {
 };
 
 FLOW.npm = function(dependencies, callback) {
-	if (!dependencies || !dependencies.length)
-		return callback();
+
+	if (!dependencies || !dependencies.length) {
+		callback && callback();
+		return;
+	}
+
 	var path = PATH.root('node_modules/');
 	PATH.exists(path, function(e) {
 		!e && Fs.mkdirSync(path);
 		dependencies.wait(function(item, next) {
 			var index = item.indexOf('@');
 			var filename = path + (index === -1 ? item : item.substring(0, index));
+
 			PATH.exists(filename, function(e) {
-				if (e)
-					return next();
+
+				if (e) {
+					next();
+					return;
+				}
+
+				var arg = {};
+
+				arg.cwd = path;
+
+				if (process.getuid() === 33)
+					arg.env = { NPM_CONFIG_CACHE: '/var/www/.npm' };
+
 				OPT.logging && FLOW.log('npm', item);
-				Exec('npm install ' + item, { cwd: path }, function(err) {
+
+				Exec('npm install ' + item, arg, function(err) {
 					OPT.logging && FLOW.log('npm', item + (err ? (' - ' + err.toString()) : ''));
 					err && console.error('NPM INSTALL: ' + item, err);
 					next();
