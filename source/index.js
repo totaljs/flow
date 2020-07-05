@@ -353,12 +353,11 @@ FN.websocket = function() {
 			OPT.templates && arr.push(OPT.templates);
 
 			arr.wait(function(item, next) {
-				U.request(item, FLAGS, function(err, response) {
+				RESTBuilder.GET(item).callback(function(err, response) {
 					if (!err) {
-						var arr = response.trim().parseJSON();
-						if (arr instanceof Array) {
-							for (var i = 0; i < arr.length; i++)
-								templ.push(arr[i]);
+						if (response instanceof Array) {
+							for (var i = 0; i < response.length; i++)
+								templ.push(response[i]);
 						}
 					}
 					next();
@@ -405,12 +404,11 @@ FN.websocket = function() {
 			OPT.components && arr.push(OPT.components);
 
 			arr.wait(function(item, next) {
-				U.request(item, FLAGS, function(err, response) {
+				RESTBuilder.GET(item).callback(function(err, response) {
 					if (!err) {
-						var arr = response.trim().parseJSON();
-						if (arr instanceof Array) {
-							for (var i = 0; i < arr.length; i++)
-								templ.push(arr[i]);
+						if (response instanceof Array) {
+							for (var i = 0; i < response.length; i++)
+								templ.push(response[i]);
 						}
 					}
 					next();
@@ -2159,7 +2157,7 @@ FLOW.npm = function(dependencies, callback) {
 };
 
 function download_template(url, client) {
-	U.request(url, FLAGS, function(err, response) {
+	RESTBuilder.GET(url).callback(function(err, response) {
 		if (err) {
 			MESSAGE_ERROR.body = err.toString();
 			FLOW.send(MESSAGE_ERROR);
@@ -2179,22 +2177,14 @@ FLOW.install = function(filename, body, callback) {
 
 	var u = filename.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
-
-		U.download(filename, FLAGS, function(err, response) {
-
+		var target = PATH.root(FLOWPATH + U.getName(filename));
+		DOWNLOAD(filename, target, function(err) {
 			if (err) {
 				MESSAGE_ERROR.body = err.toString();
 				FLOW.send(MESSAGE_ERROR);
-				return callback(err);
-			}
-
-			filename = PATH.root(FLOWPATH + U.getName(filename));
-			var writer = Fs.createWriteStream(filename);
-			response.pipe(writer);
-			writer.on('finish', function() {
-				FLOW.execute(filename);
-				callback && callback(null);
-			});
+			} else
+				FLOW.execute(target);
+			callback && callback(err);
 		});
 	} else {
 
