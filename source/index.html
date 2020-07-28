@@ -59,7 +59,7 @@
 			<div class="padding">
 				<div class="hidden" id="info-panel-notes">
 					<div class="b" style="font-size:10px;margin-bottom:8px"><i class="fa fa-file-text-o mr5"></i>@(NOTES)</div>
-					<div class="mt5"></div>
+					<div class="mt5 md"></div>
 				</div>
 				<div id="info-panel"></div>
 			</div>
@@ -707,7 +707,7 @@
 				var el = $('#info-panel');
 				el.html(markdown(value, el));
 				el = $('#info-panel-notes').tclass('hidden', !notes);
-				notes && el.find('.markdown').html(markdown(notes, el));
+				notes && el.find('.md').html(markdown(notes, el));
 			}
 		});
 
