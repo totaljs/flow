@@ -56,7 +56,7 @@ function markdown(value, el) {
 			}
 		});
 	}, 1, el);
-	return value.trim().markdown().replace(/\t/g, '  ');;
+	return value.trim().markdown().replace(/\t/g, '  ');
 }
 
 Thelpers.markdown = function(value) {
