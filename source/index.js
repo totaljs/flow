@@ -2143,7 +2143,7 @@ FLOW.npm = function(dependencies, callback) {
 
 				arg.cwd = path;
 
-				if (process.getuid() === 33)
+				if (process.getuid && process.getuid() === 33)
 					arg.env = { NPM_CONFIG_CACHE: '/var/www/.npm' };
 
 				OPT.logging && FLOW.log('npm', item);
