@@ -40,7 +40,7 @@
 	<div data---="colorpicker"></div>
 	<div data---="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data---="shortcuts"></div>
-	<div data---="websocket__null__url:@{R.socket.replace(/\:/g, '\\:')}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
+	<div data---="websocket__null__@{if F.version>=4000}encoder:false@{else}encoder:true@{fi};url:@{R.socket.replace(/\:/g, '\\:')}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
 
 	<div id="success"><span class="fa fa-refresh fa-spin"></span></div>
 
