@@ -22,7 +22,6 @@ const MESSAGE_TEMPLATE = { type: 'template' };
 const FLOWPATH = '/flow/';
 const FILEDESIGNER = '/flow/designer.json';
 const FILEVARIABLES = '/flow/variables.txt';
-const FLAGS = ['get', 'dnscache'];
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
 const PAUSEDEVENTS = { 'data': 1, '0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1, '99': 1 };
 
@@ -2162,7 +2161,7 @@ function download_template(url, client) {
 			MESSAGE_ERROR.body = err.toString();
 			FLOW.send(MESSAGE_ERROR);
 		} else {
-			MESSAGE_TEMPLATE.body = response;
+			MESSAGE_TEMPLATE.body = JSON.stringify(response);
 			client && client.send(MESSAGE_TEMPLATE);
 		}
 	});
