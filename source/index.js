@@ -442,7 +442,7 @@ FN.websocket = function() {
 		if (message.type === 'html') {
 			component = FLOW.components[message.target];
 			MESSAGE_STATIC.id = message.id;
-			MESSAGE_STATIC.body = U.minifyHTML(component ? TRANSLATOR(self.language || 'default', component.html) : '');
+			MESSAGE_STATIC.body = F.is4 ? U.minify_html(component ? TRANSLATOR(self.language || 'default', component.html) : '') : U.minifyHTML(component ? TRANSLATOR(self.language || 'default', component.html) : '');
 			client.send(MESSAGE_STATIC);
 			return;
 		} else if (message.type === 'clearerrors') {
