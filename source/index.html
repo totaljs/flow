@@ -500,9 +500,7 @@
 				 	// don't care if it's new component or already moved
 					if (!~changes[id].indexOf('add') && !~changes[id].indexOf('mov'))
 						changes[id].push(action);
-					setTimeout2('change.move', function(){
-						saveMoved();
-					}, 1000);
+					setTimeout2('change.move', saveMoved, 1000);
 					break;
 				case 'rem':
 					if (~changes[id].indexOf('add'))
@@ -939,13 +937,16 @@
 		});
 
 		function cleanComponent(id, mov) {
-			var comp = CLONE(flow.components.findItem('id', id));
-			if (mov)
-				return { id: id, x: comp.x, y: comp.y };
-			comp.$component = undefined;
-			comp.changed = undefined;
-			comp.isnew = undefined;
-			return comp;
+			var obj = flow.components.findItem('id', id);
+			if (obj) {
+				var comp = CLONE(obj);
+				if (mov)
+					return { id: id, x: comp.x, y: comp.y };
+				comp.$component = undefined;
+				comp.changed = undefined;
+				comp.isnew = undefined;
+				return comp;
+			}
 		};
 
 		ON('flow.apply', function() {
@@ -1925,8 +1926,11 @@
 			Object.keys(changes).forEach(function(id){
 				if (!changes[id] || !~changes[id].indexOf('mov'))
 					return;
-				temp.push({ type: 'mov', com: cleanComponent(id, true) });
-				changes[id] = changes[id].remove(c => c === 'mov');
+				var com = cleanComponent(id, true);
+				if (com) {
+					temp.push({ type: 'mov', com: com });
+					changes[id] = changes[id].remove(c => c === 'mov');
+				}
 			});
 
 			temp.length && SETTER('websocket', 'send', { type: 'apply', body: temp });

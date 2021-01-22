@@ -64,7 +64,7 @@ $color  : #8CC152;
 .ui-dark .ui-form-title { background-color: #191919; border-bottom-color: #191919; color: white; }
 .ui-form > nav { padding: 0 20px 0; border-top: 1px solid #E0E0E0; background-color: white; border-radius: 0 0 2px 2px; line-height: 65px; height: 65px; display: block; float: none; position: relative; }
 .ui-dark .ui-form > nav { background-color: #202020; border-top-color: #303030; }
-.ui-form > nav button { border: 0; margin: 15px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 20px; color: black; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; }
+.ui-form > nav button { width: 50%; border: 0; margin: 15px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 20px; color: black; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; }
 .ui-dark .ui-form nav button { border-color: #202020; background-color: #505050; color: #E0E0E0; }
 .ui-form > nav button i { width: 16px; }
 .ui-form > nav button:hover { opacity: 0.9; }
@@ -72,7 +72,7 @@ $color  : #8CC152;
 .ui-form > nav button:disabled { background-color: #F5F5F5 !important; border-color: #E0E0E0 !important; color: silver !important; cursor: not-allowed; box-shadow: none; }
 .ui-form > nav button:first-child { border-top-left-radius: 2px; border-bottom-left-radius: 2px; }
 .ui-form > nav button:last-child { border-top-right-radius: 2px; border-bottom-right-radius: 2px; }
-.ui-form > nav button[name='submit'] { max-width: 250px; width: 100%; font-weight: bold; background-color: #4285F4; color: white; font-size: 14px; }
+.ui-form > nav button[name='submit'] { font-weight: bold; background-color: #4285F4; color: white; font-size: 14px; }
 .ui-dark .ui-form > nav button:disabled { background-color: #303030 !important; color: #606060 !important; border-color: #202020 !important; }
 
 @media(max-width: 767px) {
@@ -449,7 +449,6 @@ label span { vertical-align: middle; }
 .themedark .ui-confirm { background-color: rgba(0,0,0,0.5); }
 .themedark .selector { stroke: rgb(202,202,202); }
 
-
 .themedark .ui-contextmenu { background-color: white; }
 .themedark .ui-contextmenu-arrow { color: white; }
 .themedark .ui-contextmenu-items .item { border-color: #E0E0E0; background-color: white; color: black; }
@@ -813,6 +812,8 @@ label span { vertical-align: middle; }
 .ui-menu-divider { padding: 0 !important; background: transparent !important; cursor: default !important; color: gray; font-size: 11px !important; }
 .ui-menu-divider span { display: block; margin: 5px 12px; }
 .ui-menu-divider hr { margin: 5px 0; border-color: #E0E0E0; }
+
+.themedark .ui-menu li { color: #444; }
 
 .ui-intro-noscroll, .ui-intro-noscroll body { overflow: hidden; }
 .ui-intro { position: fixed; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(0,0,0,0.8); width: 100%; height: 100%; overflow: hidden; z-index: 20; }
