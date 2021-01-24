@@ -668,7 +668,7 @@ Component.prototype.rem = function(key) {
 
 Component.prototype.log = function() {
 	[].splice.call(arguments, 0, 0, this.component);
-	F.logger.apply(F, arguments);
+	LOGGER.apply(LOGGER, arguments);
 	return this;
 };
 
@@ -2323,9 +2323,9 @@ FLOW.log = function(msg, data, client) {
 	}
 
 	if (data)
-		F.logger('flow', msg, 'user: ' + (client ? client.ip : 'system'), data);
+		LOGGER('flow', msg, 'user: ' + (client ? client.ip : 'system'), data);
 	else
-		F.logger('flow', msg, 'user: ' + (client ? client.ip : 'system'));
+		LOGGER('flow', msg, 'user: ' + (client ? client.ip : 'system'));
 
 	return FLOW;
 };
