@@ -4491,6 +4491,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		options.lineNumbers = config.linenumbers;
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
+		options.autoRefresh = true;
 		options.scrollbarStyle = 'simple';
 		options.scrollPastEnd = true;
 		options.extraKeys = { 'Cmd-D': findmatch, 'Ctrl-D': findmatch };
