@@ -317,7 +317,7 @@ FN.websocket = function() {
 			MESSAGE_DESIGNER.crashmode = OPT.crashmode;
 			MESSAGE_DESIGNER.components = FLOW.clearInstances(true);
 			client.send(MESSAGE_DESIGNER);
-			FLOW.emit('designer');
+			FLOW.emit('designer', client);
 		}
 
 		OPT.logging && FLOW.log('connect', null, client);
@@ -2250,6 +2250,7 @@ FLOW.uninstall = function(name, noSync) {
 };
 
 FLOW.find = function(fn) {
+
 	if (!fn || typeof(fn) !== 'function')
 		return;
 
