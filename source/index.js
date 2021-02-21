@@ -718,7 +718,7 @@ Component.prototype.signal = function(index, data) {
 		var ids = connections[dex];
 		for (var j = 0, jl = ids.length; j < jl; j++) {
 			var instance = FLOW.instances[ids[j].id];
-			instance && !instance.$closed && instance.emit('signal', data);
+			instance && !instance.$closed && instance.emit('signal', data, self);
 		}
 	}
 
