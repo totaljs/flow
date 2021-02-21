@@ -1,3 +1,9 @@
+======= 6.1.9
+
+- added a new event `ON('flow.client', client)`
+- added a new event `ON('flow.error', err, instance, parent)`
+- added a new event `ON('flow.pause', is)`
+
 ======= 6.1.6
 
 - added `flowinstance.reoptions(new_options)` applies a new config

@@ -36,7 +36,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.1.8';
+exports.version = 'v6.1.9';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -318,6 +318,7 @@ FN.websocket = function() {
 			MESSAGE_DESIGNER.components = FLOW.clearInstances(true);
 			client.send(MESSAGE_DESIGNER);
 			FLOW.emit('designer', client);
+			EMIT('flow.client', client);
 		}
 
 		OPT.logging && FLOW.log('connect', null, client);
@@ -471,6 +472,7 @@ FN.websocket = function() {
 			FLOW.emit('pause', MESSAGE_PAUSED.is);
 			FLOW.emit2('pause', MESSAGE_PAUSED.is);
 			FLOW.save3();
+			EMIT('flow.pause', MESSAGE_PAUSED.is);
 			OPT.logging && FLOW.log('pause', MESSAGE_PAUSED.is ? 'paused' : 'running', client);
 		} else if (message.target) {
 
@@ -1068,6 +1070,7 @@ Component.prototype.error = function(e, parent) {
 	}, 100);
 	self.throw(e);
 	FLOW.$events.error && FLOW.emit('error', e, self, parent);
+	EMIT('flow.error', e, self, parent);
 	return self;
 };
 
@@ -1800,11 +1803,9 @@ FLOW.save3 = function() {
 // This function can be overwritten
 // returns object
 FLOW.read_designer = function(callback) {
-
 	Fs.readFile(PATH.root(FILEDESIGNER), function(err, data){
 		if (data)
 			data = data.toString('utf8').parseJSON(true);
-
 		callback(data);
 	});
 };
@@ -1827,7 +1828,6 @@ FLOW.save_designer = function(data, callback, backup) {
 // This function can be overwritten
 // returns string
 FLOW.read_variables = function(callback) {
-
 	Fs.readFile(PATH.root(FILEVARIABLES), callback);
 };
 
