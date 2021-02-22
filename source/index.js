@@ -665,7 +665,8 @@ Component.prototype.get = function(key) {
 };
 
 Component.prototype.rem = function(key) {
-	return FLOW.rem('$' + this.id + key);
+	FLOW.rem('$' + this.id + key);
+	return this;
 };
 
 Component.prototype.log = function() {
@@ -675,7 +676,7 @@ Component.prototype.log = function() {
 };
 
 Component.prototype.make = function(data, index) {
-	return new FlowData(data, false, +index);
+	return new FlowData(data, false, index == null ? 0 : +index);
 };
 
 Component.prototype.click = function() {

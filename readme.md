@@ -528,7 +528,6 @@ exports.install = function(component) {
 	// expects only 1 component to be connected to the given output, if not only first component will recieve data
 	// returns {Component}
 
-
 	component.set(key, value);
 	// Writes a value to a private key-value store (data are stored on HDD)
 	// @key {String}
