@@ -1615,6 +1615,9 @@ FLOW.init = function(components, callback) {
 	for (var i = 0, length = components.length; i < length; i++) {
 
 		var com = components[i];
+		if (!com)
+			continue;
+
 		var declaration = FLOW.components[com.component];
 		if (!declaration) {
 			// console.error('FLOW.init: component "{0}" does\'t exist.'.format(com.component));
