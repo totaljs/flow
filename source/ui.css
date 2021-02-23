@@ -67,7 +67,7 @@ g.selected .rect { stroke: yellow !important; }
 .ui-dark .ui-form > nav { background-color: #202020; border-top-color: #303030; }
 .ui-form > nav button { width: 50%; border: 0; margin: 15px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 20px; color: black; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; }
 .ui-dark .ui-form nav button { border-color: #202020; background-color: #505050; color: #E0E0E0; }
-.ui-form > nav button i { width: 16px; }
+.ui-form > nav button i { width: 14px; margin-right: 5px; }
 .ui-form > nav button:hover { opacity: 0.9; }
 .ui-form > nav button:active { background-color: #D0D0D0; }
 .ui-form > nav button:disabled { background-color: #F5F5F5 !important; border-color: #E0E0E0 !important; color: silver !important; cursor: not-allowed; box-shadow: none; }
@@ -334,8 +334,13 @@ label span { vertical-align: middle; }
 .CodeMirror-overlayscroll-vertical div { right: 0; width: 100%; }
 .cm-trailingspace { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==); background-position: bottom left; background-repeat: repeat-x; }
 .cm-tab { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAKElEQVRIiWNgGAWjYBQMacDIwMBgzMDAcBZKw8BQ4I+CUTAKRsEgAAAA4AwCz6/F0QAAAABJRU5ErkJggg==) no-repeat 100% 50%; }
+.CodeMirror-ruler {}
+.CodeMirror-rulers { position: absolute; left: 0; right: 0; top: -50px; bottom: -20px; overflow: hidden; }
+.CodeMirror-ruler { border-left: 1px solid #ccc; top: 0; bottom: 0; position: absolute; }
 .ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
 .ui-dark .CodeMirror-matchingtag { background-color: rgba(220,220,220,0.15); }
+div.CodeMirror span.CodeMirror-matchingbracket { border-bottom: 2px solid blue; color: inherit; }
+.cm-matchhighlight { outline: 2px solid #4B85F7; }
 .ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
 .ui-dark .cm-variable-S { background-color: rgba(255,59,231,.15); color: #f546fd; }
 .ui-dark .cm-variable-J { background-color: rgba(73,111,51,.35); color: #90ff2f; }

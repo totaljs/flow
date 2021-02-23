@@ -4421,6 +4421,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 
 	var editor, container;
 	var cls2 = '.' + cls;
+	var HSM = { annotateScrollbar: true, delay: 100 };
 
 	self.getter = null;
 	self.bindvisible();
@@ -4490,13 +4491,25 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		container = self.find(cls2);
 
 		var options = {};
+
 		options.lineNumbers = config.linenumbers;
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
-		options.autoRefresh = true;
+		// options.autoRefresh = true;
 		options.scrollbarStyle = 'simple';
 		options.scrollPastEnd = true;
 		options.extraKeys = { 'Cmd-D': findmatch, 'Ctrl-D': findmatch };
+		options.matchBrackets = true;
+		options.rulers = [{ column: 130, lineStyle: 'dashed' }];
+		options.viewportMargin = 1000;
+		options.foldGutter = true;
+		options.highlightSelectionMatches = HSM;
+		options.matchTags = { bothTags: true };
+		options.autoCloseTags = true;
+		options.doubleIndentSwitch = false;
+		options.showCursorWhenSelecting = true;
+		options.blastCode = true;
+		options.autoCloseBrackets = true;
 
 		if (config.tabs)
 			options.indentWithTabs = true;
@@ -4504,7 +4517,6 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		if (config.type === 'markdown') {
 			options.styleActiveLine = true;
 			options.lineWrapping = true;
-			options.matchBrackets = true;
 		}
 
 		options.showTrailingSpace = false;
@@ -4536,7 +4548,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 
 		if (config.height !== 'auto') {
 			var is = typeof(config.height) === 'number';
-			editor.setSize('100%', is ? (config.height + 'px') : (config.height || '200px'));
+			editor.setSize('100%', is ? config.height : (config.height || 200));
 			!is && self.css('height', config.height);
 		}
 
@@ -4573,7 +4585,18 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		});
 	};
 
+	self.refreshcode = function() {
+		var el = self.element[0];
+		var is = el.parentNode && el.parentNode.tagName === 'body' ? false : W.isIE ? (!el.offsetWidth && !el.offsetHeight) : !el.offsetParent;
+		if (is)
+			setTimeout(self.refreshcode, 500);
+		else
+			editor.refresh();
+	};
+
 	self.setter = function(value, path, type) {
+
+		self.refreshcode();
 
 		editor.setValue(value || '');
 		editor.refresh();
@@ -4583,14 +4606,6 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 			editor.scrollTo(0, 0);
 			type && editor.setCursor(0);
 		}, 200);
-
-		setTimeout(function() {
-			editor.refresh();
-		}, 1000);
-
-		setTimeout(function() {
-			editor.refresh();
-		}, 2000);
 	};
 
 	self.state = function(type) {
@@ -4603,6 +4618,802 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		container.tclass(cls + '-invalid', invalid);
 	};
 }, [function(next) {
+
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+
+		var defaults = {
+			style: 'matchhighlight',
+			minChars: 2,
+			delay: 100,
+			wordsOnly: false,
+			annotateScrollbar: false,
+			showToken: false,
+			trim: true
+		};
+
+		var countel = null;
+
+		function refreshcount() {
+			if (!countel)
+				countel = $('.search').find('.count');
+			setTimeout2(defaults.style, function() {
+				if (countel) {
+					var tmp = document.querySelectorAll('.cm-matchhighlight').length;
+					countel.text(tmp + 'x').tclass('hidden', !tmp);
+				}
+			}, 100);
+		}
+
+		function State(options) {
+			this.options = {};
+			for (var name in defaults)
+				this.options[name] = (options && options.hasOwnProperty(name) ? options : defaults)[name];
+			this.overlay = this.timeout = null;
+			this.matchesonscroll = null;
+			this.active = false;
+		}
+
+		CodeMirror.defineOption('highlightSelectionMatches', false, function(cm, val, old) {
+			if (old && old != CodeMirror.Init) {
+				removeOverlay(cm);
+				clearTimeout(cm.state.matchHighlighter.timeout);
+				cm.state.matchHighlighter = null;
+				cm.off('cursorActivity', cursorActivity);
+				cm.off('focus', onFocus);
+			}
+
+			if (val) {
+				var state = cm.state.matchHighlighter = new State(val);
+				if (cm.hasFocus()) {
+					state.active = true;
+					highlightMatches(cm);
+				} else {
+					cm.on('focus', onFocus);
+				}
+				cm.on('cursorActivity', cursorActivity);
+			}
+		});
+
+		function cursorActivity(cm) {
+			var state = cm.state.matchHighlighter;
+			if (state.active || cm.hasFocus())
+				scheduleHighlight(cm, state);
+		}
+
+		function onFocus(cm) {
+			var state = cm.state.matchHighlighter;
+			if (!state.active) {
+				state.active = true;
+				scheduleHighlight(cm, state);
+			}
+		}
+
+		function scheduleHighlight(cm, state) {
+			clearTimeout(state.timeout);
+			state.timeout = setTimeout(highlightMatches, 300, cm);
+			// }, state.options.delay);
+		}
+
+		function addOverlay(cm, query, hasBoundary, style) {
+			var state = cm.state.matchHighlighter;
+			cm.addOverlay(state.overlay = makeOverlay(query, hasBoundary, style));
+			if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
+				var searchFor = hasBoundary ? new RegExp('\\b' + query.replace(/[\\[.+*?(){|^$]/g, '\\$&') + '\\b') : query;
+				state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false, { className: 'CodeMirror-selection-highlight-scrollbar' });
+			}
+		}
+
+		function removeOverlay(cm) {
+			var state = cm.state.matchHighlighter;
+			if (state.overlay) {
+				cm.removeOverlay(state.overlay);
+				state.overlay = null;
+				if (state.matchesonscroll) {
+					state.matchesonscroll.clear();
+					state.matchesonscroll = null;
+				}
+				refreshcount();
+			}
+		}
+
+		function checkstr(str) {
+			for (var i = 0; i < str.length; i++) {
+				var c = str.charCodeAt(i);
+				if (!((c > 47 && c < 58) || (c > 64 && c < 123) || (c > 128)))
+					return false;
+			}
+			return true;
+		}
+
+		function highlightMatches(cm) {
+
+			cm.operation(function() {
+
+				var state = cm.state.matchHighlighter;
+				removeOverlay(cm);
+
+				if (!cm.somethingSelected() && state.options.showToken) {
+					var re = state.options.showToken === true ? /[^\W\s$]/ : state.options.showToken;
+					var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+					while (start && re.test(line.charAt(start - 1))) --start;
+					while (end < line.length && re.test(line.charAt(end))) ++end;
+					if (start < end)
+						addOverlay(cm, line.slice(start, end), re, state.options.style);
+					return;
+				}
+
+				var from = cm.getCursor('from'), to = cm.getCursor('to');
+				var diff = Math.abs(from.ch - to.ch);
+
+				if (from.line != to.line || diff < 2)
+					return;
+
+				if (state.options.wordsOnly && !isWord(cm, from, to))
+					return;
+
+				var selection = cm.getRange(from, to);
+
+				if (!checkstr(selection))
+					return;
+
+				if (state.options.trim) selection = selection.replace(/^\s+|\s+$/g, '');
+				if (selection.length >= state.options.minChars) {
+					addOverlay(cm, selection, false, state.options.style);
+				}
+			});
+			refreshcount();
+		}
+
+		function isWord(cm, from, to) {
+			var str = cm.getRange(from, to);
+			if (str.match(/^\w+$/) !== null) {
+				if (from.ch > 0) {
+					var pos = {line: from.line, ch: from.ch - 1};
+					var chr = cm.getRange(pos, from);
+					if (chr.match(/\W/) === null)
+						return false;
+				}
+				if (to.ch < cm.getLine(from.line).length) {
+					var pos = {line: to.line, ch: to.ch + 1};
+					var chr = cm.getRange(to, pos);
+					if (chr.match(/\W/) === null)
+						return false;
+				}
+				return true;
+			} else
+				return false;
+		}
+
+		function boundariesAround(stream, re) {
+			return (!stream.start || !re.test(stream.string.charAt(stream.start - 1))) && (stream.pos == stream.string.length || !re.test(stream.string.charAt(stream.pos)));
+		}
+
+		function makeOverlay(query, hasBoundary, style) {
+			return { token: function(stream) {
+				if (stream.match(query) && (!hasBoundary || boundariesAround(stream, hasBoundary)))
+					return style;
+				stream.next();
+				stream.skipTo(query.charAt(0)) || stream.skipToEnd();
+			}};
+		}
+
+		CodeMirror.commands.countMatches = function() { refreshcount(); };
+		CodeMirror.commands.clearMatches = function(cm) { removeOverlay(cm); };
+	});
+
+	// CodeMirror, copyright (c) by Marijn Haverbeke and others
+	// Distributed under an MIT license: https://codemirror.net/LICENSE
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+
+		CodeMirror.defineOption('rulers', false, function(cm, val) {
+
+			cm.state.redrawrulers = drawRulers;
+
+			if (cm.state.rulerDiv) {
+				cm.state.rulerDiv.parentElement.removeChild(cm.state.rulerDiv);
+				cm.state.rulerDiv = null;
+				cm.off('refresh', drawRulers);
+			}
+
+			if (val && val.length) {
+				cm.state.rulerDiv = cm.display.lineSpace.parentElement.insertBefore(document.createElement('div'), cm.display.lineSpace);
+				cm.state.rulerDiv.className = 'CodeMirror-rulers';
+				drawRulers(cm);
+				cm.on('refresh', drawRulers);
+			}
+		});
+
+		function drawRulers(cm) {
+			cm.state.rulerDiv.textContent = '';
+			var val = cm.getOption('rulers');
+			var cw = cm.defaultCharWidth();
+			var left = cm.charCoords(CodeMirror.Pos(cm.firstLine(), 0), 'div').left;
+			cm.state.rulerDiv.style.minHeight = (cm.display.scroller.offsetHeight + 30) + 'px';
+			for (var i = 0; i < val.length; i++) {
+				var elt = document.createElement('div');
+				elt.className = 'CodeMirror-ruler';
+				var col, conf = val[i];
+				if (typeof(conf) == 'number') {
+					col = conf;
+				} else {
+					col = conf.column;
+					if (conf.className) elt.className += ' ' + conf.className;
+					if (conf.color) elt.style.borderColor = conf.color;
+					if (conf.lineStyle) elt.style.borderLeftStyle = conf.lineStyle;
+					if (conf.width) elt.style.borderLeftWidth = conf.width;
+				}
+				elt.style.left = (left + col * cw) + 'px';
+				cm.state.rulerDiv.appendChild(elt);
+			}
+		}
+	});
+
+	// CodeMirror, copyright (c) by Marijn Haverbeke and others
+	// Distributed under an MIT license: https://codemirror.net/LICENSE
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+
+		var reg_skip = (/[a-zA-Z'"`0-9/$\-{@]/);
+		var delay;
+		var defaults = {
+			pairs: '()[]{}\'\'""',
+			triples: '',
+			explode: '[]{}'
+		};
+
+		var Pos = CodeMirror.Pos;
+
+		CodeMirror.defineOption('autoCloseBrackets', false, function(cm, val, old) {
+
+			cm.on('keydown', function() {
+				if (delay) {
+					clearTimeout(delay);
+					delay = 0;
+				}
+			});
+
+			if (old && old != CodeMirror.Init) {
+				cm.removeKeyMap(keyMap);
+				cm.state.closeBrackets = null;
+			}
+
+			if (val) {
+				ensureBound(getOption(val, 'pairs'));
+				cm.state.closeBrackets = val;
+				cm.addKeyMap(keyMap);
+			}
+		});
+
+		function getOption(conf, name) {
+			if (name == 'pairs' && typeof conf == 'string')
+				return conf;
+			if (typeof(conf) == 'object' && conf[name] != null)
+				return conf[name];
+			return defaults[name];
+		}
+
+		var keyMap = { Backspace: handleBackspace, Enter: handleEnter };
+
+		function ensureBound(chars) {
+			for (var i = 0; i < chars.length; i++) {
+				var ch = chars.charAt(i), key = '\'' + ch + '\'';
+				!keyMap[key] && (keyMap[key] = handler(ch));
+			}
+		}
+
+		ensureBound(defaults.pairs + '`');
+
+		function handler(ch) {
+			return function(cm) {
+				return handleChar(cm, ch);
+			};
+		}
+
+		function getConfig(cm) {
+			var deflt = cm.state.closeBrackets;
+			if (!deflt || deflt.override)
+				return deflt;
+			return cm.getModeAt(cm.getCursor()).closeBrackets || deflt;
+		}
+
+		function handleBackspace() {
+			return CodeMirror.Pass;
+		}
+
+		function handleEnter(cm) {
+			var conf = getConfig(cm);
+			var explode = conf && getOption(conf, 'explode');
+			if (!explode || cm.getOption('disableInput'))
+				return CodeMirror.Pass;
+
+			var ranges = cm.listSelections();
+			for (var i = 0; i < ranges.length; i++) {
+				if (!ranges[i].empty())
+					return CodeMirror.Pass;
+				var around = charsAround(cm, ranges[i].head);
+				if (!around || explode.indexOf(around) % 2 != 0)
+					return CodeMirror.Pass;
+			}
+
+			cm.operation(function() {
+				var linesep = cm.lineSeparator() || '\n';
+				cm.replaceSelection(linesep + linesep, null);
+				cm.execCommand('goCharLeft');
+				ranges = cm.listSelections();
+				for (var i = 0; i < ranges.length; i++) {
+					var line = ranges[i].head.line;
+					cm.indentLine(line, null, true);
+					cm.indentLine(line + 1, null, true);
+				}
+			});
+		}
+
+		function handleChar(cm, ch) {
+
+			delay && clearTimeout(delay);
+
+			var conf = getConfig(cm);
+			if (!conf || cm.getOption('disableInput'))
+				return CodeMirror.Pass;
+
+			var pairs = getOption(conf, 'pairs');
+			var pos = pairs.indexOf(ch);
+			if (pos == -1)
+				return CodeMirror.Pass;
+
+			var triples = getOption(conf, 'triples');
+			var identical = pairs.charAt(pos + 1) == ch;
+			var ranges = cm.listSelections();
+			var opening = pos % 2 == 0;
+			var type;
+			var left = pos % 2 ? pairs.charAt(pos - 1) : ch;
+
+			for (var i = 0; i < ranges.length; i++) {
+				var range = ranges[i], cur = range.head, curType;
+				var next = cm.getRange(cur, Pos(cur.line, cur.ch + 1));
+				if (opening && !range.empty()) {
+					curType = 'surround';
+				} else if ((identical || !opening) && next == ch) {
+					cm.replaceSelection(next, null);
+					return CodeMirror.pass;
+				} else if (identical && cur.ch > 1 && triples.indexOf(ch) >= 0 && cm.getRange(Pos(cur.line, cur.ch - 2), cur) == ch + ch) {
+					if (cur.ch > 2 && /\bstring/.test(cm.getTokenTypeAt(Pos(cur.line, cur.ch - 2))))
+						return CodeMirror.Pass;
+					curType = 'addFour';
+				} else if (identical) {
+					var prev = cur.ch == 0 ? ' ' : cm.getRange(Pos(cur.line, cur.ch - 1), cur);
+					if (reg_skip.test(next) || reg_skip.test(prev))
+						return CodeMirror.Pass;
+					if (!CodeMirror.isWordChar(next) && prev != ch && !CodeMirror.isWordChar(prev))
+						curType = 'both';
+					else
+						return CodeMirror.Pass;
+				} else if (opening) {
+					if (reg_skip.test(next))
+						return CodeMirror.Pass;
+					curType = 'both';
+				} else
+					return CodeMirror.Pass;
+				if (!type)
+					type = curType;
+				else if (type != curType)
+					return CodeMirror.Pass;
+			}
+
+			var right = pos % 2 ? ch : pairs.charAt(pos + 1);
+
+			if (type == 'both') {
+				cm.operation(function() {
+					cm.replaceSelection(left, null);
+					delay && clearTimeout(delay);
+					delay = setTimeout(function() {
+						cm.operation(function() {
+							var pos = cm.getCursor();
+							var cur = cm.getModeAt(pos);
+							var t = cur.helperType || cur.name;
+							if (right === '}' && t === 'javascript' && FUNC.wrapbracket(cm, pos))
+								return;
+							cm.replaceSelection(right, 'before');
+							cm.triggerElectric(right);
+						});
+					}, 350);
+				});
+			}
+		}
+
+		function charsAround(cm, pos) {
+			var str = cm.getRange(Pos(pos.line, pos.ch - 1),
+				Pos(pos.line, pos.ch + 1));
+			return str.length == 2 ? str : null;
+		}
+	});
+
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+
+		CodeMirror.defineOption('autoCloseTags', false, function(cm, val, old) {
+			if (old != CodeMirror.Init && old)
+				cm.removeKeyMap('autoCloseTags');
+			if (!val)
+				return;
+			var map = { name: 'autoCloseTags' };
+			if (typeof val != 'object' || val.whenClosing)
+				map['\'/\''] = function(cm) {
+					return autoCloseSlash(cm);
+				};
+
+			if (typeof val != 'object' || val.whenOpening)
+				map['\'>\''] = function(cm) {
+					return autoCloseGT(cm);
+				};
+			cm.addKeyMap(map);
+		});
+
+		var htmlDontClose = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+		var htmlIndent = ['applet', 'blockquote', 'body', 'button', 'div', 'dl', 'fieldset', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'html', 'iframe', 'layer', 'legend', 'object', 'ol', 'p', 'select', 'table', 'ul'];
+
+		function autoCloseGT(cm) {
+
+			if (cm.getOption('disableInput'))
+				return CodeMirror.Pass;
+
+			var ranges = cm.listSelections();
+			var replacements = [];
+			var opt = cm.getOption('autoCloseTags');
+
+			for (var i = 0; i < ranges.length; i++) {
+				if (!ranges[i].empty())
+					return CodeMirror.Pass;
+
+				var pos = ranges[i].head, tok = cm.getTokenAt(pos);
+				var inner = CodeMirror.innerMode(cm.getMode(), tok.state), state = inner.state;
+				if (inner.mode.name != 'xml' || !state.tagName)
+					return CodeMirror.Pass;
+
+				var anchor = ranges[i].anchor;
+				var n = cm.getRange({ line: anchor.line, ch: anchor.ch }, { line: anchor.line, ch: anchor.ch + 1 });
+				if (!(!n || n === ' ' || n === '\t' || n === '\n'))
+					return CodeMirror.Pass;
+
+				var html = inner.mode.configuration == 'html';
+				var dontCloseTags = (typeof(opt) == 'object' && opt.dontCloseTags) || (html && htmlDontClose);
+				var indentTags = (typeof opt == 'object' && opt.indentTags) || (html && htmlIndent);
+
+				var tagName = state.tagName;
+				if (tok.end > pos.ch)
+					tagName = tagName.slice(0, tagName.length - tok.end + pos.ch);
+
+				var lowerTagName = tagName.toLowerCase();
+				// Don't process the '>' at the end of an end-tag or self-closing tag
+				if (!tagName || tok.type == 'string' && (tok.end != pos.ch || !/["']/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1) || tok.type == 'tag' && state.type == 'closeTag' || tok.string.indexOf('/') == (tok.string.length - 1) || dontCloseTags && indexOf(dontCloseTags, lowerTagName) > -1 || closingTagExists(cm, tagName, pos, state, true))
+					return CodeMirror.Pass;
+
+				var indent = indentTags && indexOf(indentTags, lowerTagName) > -1;
+				replacements[i] = { indent: indent, text: '></' + tagName + '>', newPos: CodeMirror.Pos(pos.line, pos.ch + 1) };
+			}
+
+			var dontIndentOnAutoClose = (typeof(opt) == 'object' && opt.dontIndentOnAutoClose);
+			for (var i = ranges.length - 1; i >= 0; i--) {
+				var info = replacements[i];
+				cm.replaceRange(info.text, ranges[i].head, ranges[i].anchor, '+insert');
+				var sel = cm.listSelections().slice(0);
+				sel[i] = { head: info.newPos, anchor: info.newPos };
+				cm.setSelections(sel);
+				if (!dontIndentOnAutoClose && info.indent) {
+					cm.indentLine(info.newPos.line, null, true);
+					cm.indentLine(info.newPos.line + 1, null, true);
+				}
+			}
+		}
+
+		function autoCloseCurrent(cm, typingSlash) {
+			var ranges = cm.listSelections();
+			var replacements = [];
+			var head = typingSlash ? '/' : '</';
+			var opt = cm.getOption('autoCloseTags');
+			var dontIndentOnAutoClose = (typeof(opt) == 'object' && opt.dontIndentOnSlash);
+			for (var i = 0; i < ranges.length; i++) {
+				if (!ranges[i].empty())
+					return CodeMirror.Pass;
+				var pos = ranges[i].head;
+				var tok = cm.getTokenAt(pos);
+				var inner = CodeMirror.innerMode(cm.getMode(), tok.state);
+				var state = inner.state;
+				if (typingSlash && (tok.type == 'string' || tok.string.charAt(0) != '<' || tok.start != pos.ch - 1))
+					return CodeMirror.Pass;
+
+				// Kludge to get around the fact that we are not in XML mode
+				// when completing in JS/CSS snippet in htmlmixed mode. Does not
+				// work for other XML embedded languages (there is no general
+				// way to go from a mixed mode to its current XML state).
+				var replacement;
+
+				if (inner.mode.name != 'xml') {
+					if (cm.getMode().name == 'htmlmixed' && inner.mode.name == 'javascript')
+						replacement = head + 'script';
+					else if (cm.getMode().name == 'htmlmixed' && inner.mode.name == 'css')
+						replacement = head + 'style';
+					else
+						return CodeMirror.Pass;
+				} else {
+					if (!state.context || !state.context.tagName || closingTagExists(cm, state.context.tagName, pos, state))
+						return CodeMirror.Pass;
+					replacement = head + state.context.tagName;
+				}
+				if (cm.getLine(pos.line).charAt(tok.end) != '>')
+					replacement += '>';
+				replacements[i] = replacement;
+			}
+
+			cm.replaceSelections(replacements);
+			ranges = cm.listSelections();
+
+			if (!dontIndentOnAutoClose) {
+				for (var i = 0; i < ranges.length; i++)
+					if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line)
+						cm.indentLine(ranges[i].head.line);
+			}
+		}
+
+		function autoCloseSlash(cm) {
+			return cm.getOption('disableInput') ? CodeMirror.Pass : autoCloseCurrent(cm, true);
+		}
+
+		CodeMirror.commands.closeTag = function(cm) {
+			return autoCloseCurrent(cm);
+		};
+
+		function indexOf(collection, elt) {
+			if (collection.indexOf)
+				return collection.indexOf(elt);
+			for (var i = 0, e = collection.length; i < e; ++i)
+				if (collection[i] == elt)
+					return i;
+			return -1;
+		}
+
+		// If xml-fold is loaded, we use its functionality to try and verify
+		// whether a given tag is actually unclosed.
+		function closingTagExists(cm, tagName, pos, state, newTag) {
+			if (!CodeMirror.scanForClosingTag)
+				return false;
+			var end = Math.min(cm.lastLine() + 1, pos.line + 500);
+			var nextClose = CodeMirror.scanForClosingTag(cm, pos, null, end);
+			if (!nextClose || nextClose.tag != tagName)
+				return false;
+
+			var cx = state.context;
+			// If the immediate wrapping context contains onCx instances of
+			// the same tag, a closing tag only exists if there are at least
+			// that many closing tags of that type following.
+			for (var onCx = newTag ? 1 : 0; cx && cx.tagName == tagName; cx = cx.prev)
+				++onCx;
+
+			pos = nextClose.to;
+			for (var i = 1; i < onCx; i++) {
+				var next = CodeMirror.scanForClosingTag(cm, pos, null, end);
+				if (!next || next.tag != tagName)
+					return false;
+				pos = next.to;
+			}
+			return true;
+		}
+	});
+
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+
+		var defaults = {
+			style: 'matchhighlight',
+			minChars: 2,
+			delay: 100,
+			wordsOnly: false,
+			annotateScrollbar: false,
+			showToken: false,
+			trim: true
+		};
+
+		var countel = null;
+
+		function refreshcount() {
+			if (!countel)
+				countel = $('.search').find('.count');
+			setTimeout2(defaults.style, function() {
+				if (countel) {
+					var tmp = document.querySelectorAll('.cm-matchhighlight').length;
+					countel.text(tmp + 'x').tclass('hidden', !tmp);
+				}
+			}, 100);
+		}
+
+		function State(options) {
+			this.options = {};
+			for (var name in defaults)
+				this.options[name] = (options && options.hasOwnProperty(name) ? options : defaults)[name];
+			this.overlay = this.timeout = null;
+			this.matchesonscroll = null;
+			this.active = false;
+		}
+
+		CodeMirror.defineOption('highlightSelectionMatches', false, function(cm, val, old) {
+			if (old && old != CodeMirror.Init) {
+				removeOverlay(cm);
+				clearTimeout(cm.state.matchHighlighter.timeout);
+				cm.state.matchHighlighter = null;
+				cm.off('cursorActivity', cursorActivity);
+				cm.off('focus', onFocus);
+			}
+
+			if (val) {
+				var state = cm.state.matchHighlighter = new State(val);
+				if (cm.hasFocus()) {
+					state.active = true;
+					highlightMatches(cm);
+				} else {
+					cm.on('focus', onFocus);
+				}
+				cm.on('cursorActivity', cursorActivity);
+			}
+		});
+
+		function cursorActivity(cm) {
+			var state = cm.state.matchHighlighter;
+			if (state.active || cm.hasFocus())
+				scheduleHighlight(cm, state);
+		}
+
+		function onFocus(cm) {
+			var state = cm.state.matchHighlighter;
+			if (!state.active) {
+				state.active = true;
+				scheduleHighlight(cm, state);
+			}
+		}
+
+		function scheduleHighlight(cm, state) {
+			clearTimeout(state.timeout);
+			state.timeout = setTimeout(highlightMatches, 300, cm);
+			// }, state.options.delay);
+		}
+
+		function addOverlay(cm, query, hasBoundary, style) {
+			var state = cm.state.matchHighlighter;
+			cm.addOverlay(state.overlay = makeOverlay(query, hasBoundary, style));
+			if (state.options.annotateScrollbar && cm.showMatchesOnScrollbar) {
+				var searchFor = hasBoundary ? new RegExp('\\b' + query.replace(/[\\[.+*?(){|^$]/g, '\\$&') + '\\b') : query;
+				state.matchesonscroll = cm.showMatchesOnScrollbar(searchFor, false, { className: 'CodeMirror-selection-highlight-scrollbar' });
+			}
+		}
+
+		function removeOverlay(cm) {
+			var state = cm.state.matchHighlighter;
+			if (state.overlay) {
+				cm.removeOverlay(state.overlay);
+				state.overlay = null;
+				if (state.matchesonscroll) {
+					state.matchesonscroll.clear();
+					state.matchesonscroll = null;
+				}
+				refreshcount();
+			}
+		}
+
+		function checkstr(str) {
+			for (var i = 0; i < str.length; i++) {
+				var c = str.charCodeAt(i);
+				if (!((c > 47 && c < 58) || (c > 64 && c < 123) || (c > 128)))
+					return false;
+			}
+			return true;
+		}
+
+		function highlightMatches(cm) {
+
+			cm.operation(function() {
+
+				var state = cm.state.matchHighlighter;
+				removeOverlay(cm);
+
+				if (!cm.somethingSelected() && state.options.showToken) {
+					var re = state.options.showToken === true ? /[^\W\s$]/ : state.options.showToken;
+					var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+					while (start && re.test(line.charAt(start - 1))) --start;
+					while (end < line.length && re.test(line.charAt(end))) ++end;
+					if (start < end)
+						addOverlay(cm, line.slice(start, end), re, state.options.style);
+					return;
+				}
+
+				var from = cm.getCursor('from'), to = cm.getCursor('to');
+				var diff = Math.abs(from.ch - to.ch);
+
+				if (from.line != to.line || diff < 2)
+					return;
+
+				if (state.options.wordsOnly && !isWord(cm, from, to))
+					return;
+
+				var selection = cm.getRange(from, to);
+
+				if (!checkstr(selection))
+					return;
+
+				if (state.options.trim) selection = selection.replace(/^\s+|\s+$/g, '');
+				if (selection.length >= state.options.minChars) {
+					addOverlay(cm, selection, false, state.options.style);
+				}
+			});
+			refreshcount();
+		}
+
+		function isWord(cm, from, to) {
+			var str = cm.getRange(from, to);
+			if (str.match(/^\w+$/) !== null) {
+				if (from.ch > 0) {
+					var pos = {line: from.line, ch: from.ch - 1};
+					var chr = cm.getRange(pos, from);
+					if (chr.match(/\W/) === null)
+						return false;
+				}
+				if (to.ch < cm.getLine(from.line).length) {
+					var pos = {line: to.line, ch: to.ch + 1};
+					var chr = cm.getRange(to, pos);
+					if (chr.match(/\W/) === null)
+						return false;
+				}
+				return true;
+			} else
+				return false;
+		}
+
+		function boundariesAround(stream, re) {
+			return (!stream.start || !re.test(stream.string.charAt(stream.start - 1))) && (stream.pos == stream.string.length || !re.test(stream.string.charAt(stream.pos)));
+		}
+
+		function makeOverlay(query, hasBoundary, style) {
+			return { token: function(stream) {
+				if (stream.match(query) && (!hasBoundary || boundariesAround(stream, hasBoundary)))
+					return style;
+				stream.next();
+				stream.skipTo(query.charAt(0)) || stream.skipToEnd();
+			}};
+		}
+
+		CodeMirror.commands.countMatches = function() { refreshcount(); };
+		CodeMirror.commands.clearMatches = function(cm) { removeOverlay(cm); };
+	});
+
+	(function(mod) {
+		mod(CodeMirror);
+	})(function(CodeMirror) {
+		CodeMirror.defineOption('showTrailingSpace', false, function(cm, val, prev) {
+			if (prev == CodeMirror.Init)
+				prev = false;
+			if (prev && !val)
+				cm.removeOverlay('trailingspace');
+			else if (!prev && val) {
+				cm.addOverlay({ token: function(stream) {
+					for (var l = stream.string.length, i = l; i; --i) {
+						if (stream.string.charCodeAt(i - 1) !== 32)
+							break;
+					}
+					if (i > stream.pos) {
+						stream.pos = i;
+						return null;
+					}
+					stream.pos = l;
+					return 'trailingspace';
+				}, name: 'trailingspace' });
+			}
+		});
+	});
 
 	CodeMirror.defineMode('totaljsresources', function() {
 		var REG_KEY = /^[a-z0-9_\-.#]+/i;
@@ -4675,7 +5486,6 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 			self.scroll = scroll;
 			self.screen = self.total = self.size = 1;
 			self.pos = 0;
-
 			self.node = document.createElement('div');
 			self.node.className = cls + '-' + orientation;
 			self.inner = self.node.appendChild(document.createElement('div'));
@@ -4786,8 +5596,8 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 			var needsH = measure.scrollWidth > measure.clientWidth + 1;
 			var needsV = measure.scrollHeight > measure.clientHeight + 1;
 
-			t.vert.node.style.display = needsV ? 'block' : 'none';
-			t.horiz.node.style.display = needsH ? 'block' : 'none';
+			t.vert.inner.style.display = needsV ? 'block' : 'none';
+			t.horiz.inner.style.display = needsH ? 'block' : 'none';
 
 			if (needsV) {
 				t.vert.update(measure.scrollHeight, measure.clientHeight, measure.viewHeight - (needsH ? width : 0));
@@ -4795,12 +5605,13 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 			}
 
 			if (needsH) {
-				t.horiz.update(measure.scrollWidth, measure.clientWidth, measure.viewWidth - (needsV ? width : 0) - measure.barLeft);
+				var l = 0; // measure.barLeft;
+				t.horiz.update(measure.scrollWidth, measure.clientWidth, measure.viewWidth - (needsV ? width : 0) - l);
 				t.horiz.node.style.right = needsV ? width + 'px' : '0';
-				t.horiz.node.style.left = measure.barLeft + 'px';
+				t.horiz.node.style.left = l + 'px';
 			}
 
-			return {right: needsV ? width : 0, bottom: needsH ? width : 0};
+			return { right: needsV ? width : 0, bottom: needsH ? width : 0 };
 		};
 
 		SimpleScrollbars.prototype.setScrollTop = function(pos) {
@@ -4820,6 +5631,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true', 
 		CodeMirror.scrollbarModel.simple = function(place, scroll) {
 			return new SimpleScrollbars('CodeMirror-simplescroll', place, scroll);
 		};
+
 		CodeMirror.scrollbarModel.overlay = function(place, scroll) {
 			return new SimpleScrollbars('CodeMirror-overlayscroll', place, scroll);
 		};
