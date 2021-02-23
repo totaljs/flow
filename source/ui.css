@@ -15,7 +15,8 @@ $color  : #8CC152;
 .ui-designer path.dropselection { stroke-dasharray: 10, 8; }
 .ui-designer .node_connection { stroke: black; }
 .ui-designer .node_debug { fill: red; }
-.ui-designer .selected > rect:first-child { opacity: 0.6; }
+/*.ui-designer .selected > rect:first-child { opacity: 0.9; }*/
+g.selected .rect { stroke: yellow !important; }
 .ui-designer .connection { stroke-dasharray: 3; stroke-width: 2px; stroke: red; }
 .ui-designer .node_name { font-size: 11px; fill: rgba(255,255,255,0.8); }
 .ui-designer .node_label { font-size: 14px; fill: white; }
@@ -442,7 +443,6 @@ label span { vertical-align: middle; }
 .themedark .ui-designer .data { fill: #3084E1; }
 .themedark .ui-designer .m1 { fill: white; }
 .themedark .ui-designer .input, .themedark .ui-designer .output { stroke: black; }
-.themedark .ui-designer .selected > rect:first-child { opacity: 0.4; }
 .themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 .themedark .ui-designer > div { background-color: #202020; }
 .themedark .ui-designer path.selected { stroke: #F6BB42; stroke-width: 3px; }

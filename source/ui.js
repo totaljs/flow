@@ -2153,7 +2153,8 @@ COMPONENT('designer', function() {
 		}
 
 		body.attr('transform', 'translate({0}, {1})'.format(output || input ? 15 : 10, (height / 2) - 2));
-		rect.attr('width', width).attr('height', height).attr('rx', 3).attr('ry', 3).attr('fill', item.color || item.$component.color || '#656D78').attr('class', 'rect');
+		var color = item.color || item.$component.color || '#656D78';
+		rect.attr('width', width).attr('height', height).attr('rx', 3).attr('ry', 3).attr('fill', color).attr('class', 'rect').attr('stroke', color).attr('stroke-width', 3);
 
 		// Performance killer:
 		// rect.attr('filter', 'url(#svgshadow)');
@@ -2409,19 +2410,20 @@ COMPONENT('designer', function() {
 		var aid = output.attrd('id');
 		var bid = input.attrd('id');
 
-		var attr = {};
-		attr['d'] = diagonal(ax, ay, bx, by);
-		attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
-		attr['stroke-width'] = 3;
-		attr['data-fromindex'] = oindex;
-		attr['data-from'] = aid;
-		attr['data-to'] = bid;
-		attr['data-toindex'] = iindex;
-		attr['class'] = ('id' + aid + '' + oindex + '' + bid) + ' node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
-		// attr['id'] = 'id' + aid + '' + bid;
-		lines.asvg('path').attr(attr);
-
-		isnew && EMIT('designer.add.connection', aid, bid);
+		if (aid !== bid) {
+			var attr = {};
+			attr['d'] = diagonal(ax, ay, bx, by);
+			attr['data-offset'] = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(acx, acy, bcx, bcy, ax, ay, bx, by);
+			attr['stroke-width'] = 3;
+			attr['data-fromindex'] = oindex;
+			attr['data-from'] = aid;
+			attr['data-to'] = bid;
+			attr['data-toindex'] = iindex;
+			attr['class'] = ('id' + aid + '' + oindex + '' + bid) + ' node_connection selectable from_' + aid + ' to_' + bid + (flow.connections[aid + '#' + oindex + '#' + iindex + '#' + bid] ? '' : ' path_new') + (oindex === 99 ? ' path_err' : '');
+			// attr['id'] = 'id' + aid + '' + bid;
+			lines.asvg('path').attr(attr);
+			isnew && EMIT('designer.add.connection', aid, bid);
+		}
 	};
 
 	self.setter = function(value) {
