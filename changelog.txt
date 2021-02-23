@@ -3,6 +3,7 @@
 - added a new event `ON('flow.client', client)`
 - added a new event `ON('flow.error', err, instance, parent)`
 - added a new event `ON('flow.pause', is)`
+- fixed `parent` argument in `signal` event
 - fixed unhandled errors
 
 ======= 6.1.6
