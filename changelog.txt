@@ -5,6 +5,7 @@
 - added a new event `ON('flow.pause', is)`
 - fixed `parent` argument in `signal` event
 - fixed unhandled errors
+- improved UI
 
 ======= 6.1.6
 
