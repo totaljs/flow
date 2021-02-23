@@ -647,7 +647,7 @@
 				if (obj.id === 'paste')
 					flow.clipboard_position = [e.pageX, e.pageY];
 
-				EXEC('#designer.' + obj.id, $(e.target).closest('.node'));
+				EXEC('#designer.' + obj.id, obj.id === 'settings' ? item.id : $(e.target).closest('.node'));
 			};
 
 			SETTER('menu', 'show', opt);
