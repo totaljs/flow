@@ -340,7 +340,7 @@ label span { vertical-align: middle; }
 .ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
 .ui-dark .CodeMirror-matchingtag { background-color: rgba(220,220,220,0.15); }
 div.CodeMirror span.CodeMirror-matchingbracket { border-bottom: 2px solid blue; color: inherit; }
-.cm-matchhighlight { outline: 2px solid #4B85F7; }
+.cm-matchhighlight { outline: 1px solid #4B85F7; }
 .ui-dark .cm-variable-R { background-color: rgba(231,241,151,.16); color: #dcf339; }
 .ui-dark .cm-variable-S { background-color: rgba(255,59,231,.15); color: #f546fd; }
 .ui-dark .cm-variable-J { background-color: rgba(73,111,51,.35); color: #90ff2f; }
