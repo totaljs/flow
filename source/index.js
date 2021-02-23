@@ -945,7 +945,7 @@ Component.prototype.send = function(index, message) {
 			if (arr[i] == '99')
 				continue;
 
-			var ids = connections[arr[i]];
+			var ids = connections[arr[i]] || EMPTYARRAY;
 			var canclone = true;
 
 			for (var j = 0, jl = ids.length; j < jl; j++) {
@@ -993,7 +993,7 @@ Component.prototype.send = function(index, message) {
 
 	} else {
 
-		arr = connections[index.toString()];
+		arr = connections[index.toString()] || EMPTYARRAY;
 
 		if (!arr || !arr.length) {
 			message.completed = true;
@@ -1521,6 +1521,7 @@ FLOW.changes = function(arr) {
 
 	if (needinit)
 		FLOW.reset(rem, function(){
+			clean_zombies(add);
 			FLOW.init(add, function(){
 				FLOW.save3();
 				FLOW.designer();
@@ -1996,6 +1997,8 @@ function reload(callback) {
 				if (!FLOW.inmemory)
 					FLOW.inmemory = {};
 
+				clean_zombies(data.components);
+
 				FLOW.init(data.components, function(){
 					FLOW.designer();
 					FLOW.refresh_connections();
@@ -2005,6 +2008,19 @@ function reload(callback) {
 			});
 		});
 	});
+}
+
+function clean_zombies(arr) {
+	var index = 0;
+	while (true) {
+		if (arr.length === index)
+			break;
+		var item = arr[index++];
+		if (item == null) {
+			arr.splice(index, 1);
+			index--;
+		}
+	}
 }
 
 // Loads components and designer cofig when flow starts
