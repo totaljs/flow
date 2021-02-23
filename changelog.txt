@@ -1,4 +1,4 @@
-======= 6.1.9
+======= 6.2.0
 
 - added a new event `ON('flow.client', client)`
 - added a new event `ON('flow.error', err, instance, parent)`

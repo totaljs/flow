@@ -1,22 +1,21 @@
-<div data---="modal__common.form2__title:@(Choose components);if:components;width:850;reload:components/reload;submit:components/submit;autofocus:true" class="hidden">
+<div data---="largeform__common.form2__title:@(Choose components);if:components;width:850;reload:components/reload;submit:components/submit;autofocus:true;scrollbar:0;zindex:100" class="hidden">
 
 	<div>
-		<span class="link cancel"><i class="fa fa-times"></i></span>
-		<div style="margin:0 60px 0 0;padding-top: 10px">
+		<div class="padding bg-smoke">
 			<div data---="input__formcomponents.search__maxlength:50;type:search;searchalign:2;placeholder:@(Search components)"></div>
+			<div class="help nmb"><span class="link exec" data-exec="components/select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</span></div>
+		</div>
+		<div data---="viewbox__formcomponents.search__scrollbar:1;visibleY:1;margin:80;parent:.ui-largeform-body">
+			<div class="padding" data---="search__formcomponents.search__selector:.ui-checkboxlist-item-container">
+				<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url;$id:formcomponents"></div>
+			</div>
 		</div>
 	</div>
 
-	<div>
-		<div class="padding" data---="search__formcomponents.search__selector:.ui-checkboxlist-item-container">
-			<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url;$id:formcomponents"></div>
-		</div>
-	</div>
-	<div>
-		<span class="link exec fs12 pull-left" style="margin-top:22px" data-exec="components/select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</span>
-		<span class="link cancel">@(Cancel)</span>
-		<button name="submit">@(INSTALL)</button>
-	</div>
+	<nav>
+		<button name="submit" data-bind="formcomponents.components__enabled:value&&value.length>0">@(Install selected) (<b data-bind="formcomponents.components__text:value ? value.length : 0"></b>)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
 </div>
 
 <script>
@@ -37,7 +36,7 @@
 				setTimeout(next, 500);
 			}, function() {
 				SETTER('loading', 'hide', 1000);
-				SETTER('snackbar', 'success', '@(Components have been installed successfully.)');
+				SETTER('message', 'success', '@(Components have been installed successfully.)');
 			});
 		};
 

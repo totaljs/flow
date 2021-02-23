@@ -2,6 +2,11 @@
 html,body { height: 100%; overflow: hidden; }
 body { background-color: #E6E9ED; font-smoothing: antialiased; }
 
+:root {
+	--radius: 3px;
+	--color: #4285F4;
+}
+
 .mainmenu { float: left; width: 217px; height: 100%; background-color: white; overflow: hidden; transition: margin 0.3s; }
 .panel { float: right; width: 340px; height: 100%; background-color: white; overflow: hidden; transition: margin-right 0.3s; position: relative; }
 .panel-minized .panel { margin-right: -340px; }
@@ -24,6 +29,9 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .themedark .panel ::-webkit-scrollbar-corner { background-color: #646464; }
 .themedark .panel ::-webkit-resizer { background-color: #666; }
 */
+
+.button-install { display: block; text-align: center; height: 40px; background-color: var(--color); font-size: 16px; color: #FFF; cursor: pointer; width: 100%; border: 0; border-radius: var(--radius); }
+.button-install i { margin-right: 8px; }
 
 .tabs-scroller { overflow-y: hidden; overflow-x: scroll; height: 75px; overflow-scrolling: touch; }
 .tabs-scroller nav { display: block;}

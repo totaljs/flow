@@ -47,6 +47,12 @@ function highlightcomponent(id) {
 	return true;
 }
 
+$(W).on('resize', function() {
+	setTimeout2('gwr', function() {
+		EMIT('resize2');
+	}, 200);
+});
+
 function markdown(value, el) {
 	el && setTimeout(function(el) {
 		$(el || document.body).find('pre code').each(function(i, block) {

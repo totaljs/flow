@@ -27,17 +27,21 @@
 
 	<div data---="LAZY autocomplete"></div>
 	<div data---="LAZY calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
-	<div data---="LAZY message__null__button:@(Close)"></div>
-	<div data---="LAZY snackbar__null__button:@(Dismiss)"></div>
-	<div data---="LAZY directory"></div>
-	<div data---="LAZY timepicker"></div>
 	<div data---="LAZY datepicker__null__days:@(SU,MO,TU,WE,TH,FR,SO);months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today);firstday:0"></div>
+	<div data---="LAZY message__null__style:2;button:@(Close)"></div>
+	<div data---="LAZY snackbar__null__button:@(Dismiss)"></div>
+	<div data---="LAZY clipboard"></div>
+	<div data---="LAZY directory"></div>
+	<div data---="LAZY filereader2"></div>
+	<div data---="LAZY floatinginput"></div>
+	<div data---="LAZY timepicker"></div>
 	<div data---="LAZY contextmenu"></div>
 	<div data---="LAZY tooltip"></div>
-	<div data---="menu"></div>
-	<div data---="confirm"></div>
+	<div data---="LAZY menu__null__style:2"></div>
+	<div data---="LAZY confirm"></div>
+	<div data---="LAZY approve"></div>
+	<div data---="LAZY colorpicker"></div>
 	<div data---="features__null__placeholder:@(Search feature ...)"></div>
-	<div data---="colorpicker"></div>
 	<div data---="loading" class="ui-loading ui-loading-firstload"></div>
 	<div data---="shortcuts"></div>
 	<div data---="websocket__null__@{if F.is4}encoder:false@{else}encoder:true@{fi};url:@{R.socket.replace(/\:/g, '\\:')}?designer=1&token=@{query.token}&baa=@{R.baa}"></div>
@@ -575,11 +579,7 @@
 
 		ON('designer.rem', function(ids) {
 
-			ids && SETTER('confirm', 'confirm', '@(Are you sure you want to remove selected components?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
-
-				if (index)
-					return;
-
+			ids && SETTER('approve', 'show', '@(Are you sure you want to remove selected components?)', '"trash-o" @(Remove)', function(index) {
 				ids.wait(function(id, next){
 					var instance = flow.components.findItem('id', id);
 					EMIT('rem.' + instance.component, instance);
@@ -619,6 +619,38 @@
 				SETTER('loading', 'show');
 				SETTER('websocket', 'send', { type: 'settings', target: id });
 			}
+		});
+
+		ON('designer.contextmenu', function(item, e) {
+
+			var opt = {};
+			opt.x = e.pageX;
+			opt.y = e.pageY;
+			opt.items = [];
+
+			if (item) {
+				opt.items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
+				opt.items.push({ id: 'copy', name: '@(Copy component)', icon: 'fa fa-file-text-o' });
+			}
+
+			if (flow.clipboard)
+				opt.items.push({ id: 'paste', name: '@(Paste component)', icon: 'fa fa-paste' });
+
+			if (item) {
+				opt.items.push({ id: 'duplicate', name: '@(Duplicate)', icon: 'fa fa-files-o' });
+				opt.items.push('-');
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fa fa-trash-o red', classname: 'b' });
+			}
+
+			opt.callback = function(obj) {
+
+				if (obj.id === 'paste')
+					flow.clipboard_position = [e.pageX, e.pageY];
+
+				EXEC('#designer.' + obj.id, $(e.target).closest('.node'));
+			};
+
+			SETTER('menu', 'show', opt);
 		});
 
 		ON('designer.selectable', function(el) {
@@ -837,9 +869,7 @@
 		}
 
 		ON('flow.clear', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to clear your current workflow in current tab?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
-				if (index)
-					return;
+			SETTER('approve', 'show', '@(Are you sure you want to clear your current workflow in current tab?)', '"trash-o" @(Clear)', function() {
 				flow.components = flow.components.remove(function(comp){
 					if (comp.tab === common.tab.id)
 						EMIT('changed', 'rem', comp.id);
@@ -950,10 +980,7 @@
 		};
 
 		ON('flow.apply', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to apply current workflow?)', ['"play-circle" @(APPLY NOW)', '@(Cancel)'], function(index) {
-
-				if (index)
-					return;
+			SETTER('approve', 'show', '@(Are you sure you want to apply current workflow?)', '"play-circle" @(APPLY NOW)', function() {
 
 				flow.crashmode = false;
 
@@ -1012,8 +1039,8 @@
 		});
 
 		ON('flow.restore', function() {
-			SETTER('confirm', 'confirm', '@(Are you sure you want to refresh this page?)', ['"trash-o" @(Yes)', '@(Cancel)'], function(index) {
-				!index && location.reload(true);
+			SETTER('approve', 'show', '@(Are you sure you want to refresh this page?)', '"trash-o" @(Refresh)', function(index) {
+				location.reload(true);
 			});
 		});
 
@@ -1225,7 +1252,7 @@
 
 				if (flow.crashmode) {
 					setState(MESSAGES.apply, true);
-					SETTER('confirm', 'confirm', '@(<h3 class="nmb red">Crash mode</h3>Flow is in <b>crash mode</b> and data processing is paused. You need to press <b>APPLY</b> for re-init Flow again.)', ['"chevron-right"@(Continue in editing)'], NOOP);
+					SETTER('confirm', 'show', '@(<h3 class="nmb red">Crash mode</h3>Flow is in <b>crash mode</b> and data processing is paused. You need to press <b>APPLY</b> for re-init Flow again.)', ['"chevron-right"@(Continue in editing)'], NOOP);
 				}
 
 				if (!common.ready) {
@@ -1436,7 +1463,7 @@
 					common.statics[key] = 'html.' + target;
 					var com = common.components.findItem('id', target);
 					var title = com ? com.name : target;
-					var form = ('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};width:960" class="hidden"><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-4 m"><div data---="textbox__NAME__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-4 m"><div data---="textbox__REFERENCE__placeholder:@(Type a reference for this instance)">@(Reference)</div></div><div class="col-md-4 m"><div class="fs12">@(Color:)</div><div data---="colorselector__COLOR"></div></div></div><div data-bind="?.COMPONENT__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div><nav><button name="submit" class="exec" data-exec="#flow.settings"><i class="far fa-check-circle"></i>@(APPLY SETTINGS)</button><button name="cancel">@(Cancel)</button></nav></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'));
+					var form = ('<div data-jc-id="html.{0}" data---="form__common.form__title:@(Settings\\:) {2};if:settings-{0};scrollbar:1;visibleY:1;width:960" class="hidden invisible"><div data-jc-scope="settings.{0}"><div><div class="padding bg-fade"><div class="row"><div class="col-md-6 m"><div data---="input__NAME__placeholder:@(Type a label for node)">@(Label)</div></div><div class="col-md-3 m"><div data---="input__REFERENCE__placeholder:@(Custom reference/id/number)">@(Reference)</div></div><div class="col-md-3 m"><div data---="input__COLOR__type:color">@(Color)</div></div></div><div data-bind="?.COMPONENT__show:value!==\'debug\'" class="m"><div data---="checkbox__debug">@(Enable console debug)</div></div></div>{1}</div></div><nav><button name="submit" class="exec" data-exec="#flow.settings"><i class="far fa-check-circle"></i>@(APPLY SETTINGS)</button><button name="cancel">@(Cancel)</button></nav></div>').format(target, response || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />', title.replace(/\:/g, '\\:'));
 					COMPILE($('#flowsettings').append(form));
 				} else
 					common.statics[key] = response;
@@ -1573,12 +1600,24 @@
 
 			var bottom = findBottom();
 			var offset = findOffset();
+			var scrollbar = $('.designer-scrollbar')[0];
+			var scrollX = scrollbar.scrollLeft;
+			var scrollY = scrollbar.scrollTop;
 
 			var ids = {};
 			var new_comps = [];
 			var readsettings = [];
+			var pos = flow.clipboard_position || EMPTYARRAY;
+			var minus = pos[0] ? FIND('designer').element.offset().left - 70 : 0;
 
-			flow.clipboard.wait(function(component, next, index){
+			if (pos[0])
+				pos[0] += (scrollX - 50);
+
+			if (pos[1])
+				pos[1] += (scrollY - 30);
+
+			flow.clipboard_position = null;
+			flow.clipboard.wait(function(component, next, index) {
 
 				var obj = CLONE(component);
 				var org = component.$component;
@@ -1586,10 +1625,10 @@
 				obj.id = Date.now().toString();
 
 				if (!flow.pasteconnected && component.tab === common.tab.id) {
-					obj.y += 50;
-					obj.x += 10;
+					obj.x = (pos[0] || obj.x + 10) - minus;
+					obj.y = (pos[1] || obj.y + 50);
 				} else
-					obj.y = obj.y - offset + bottom;
+					obj.y = (pos[1] || obj.y) - offset + bottom;
 
 				obj.tab = common.tab.id;
 
@@ -1854,12 +1893,12 @@
 
 		function flowpause() {
 			if (flow.paused) {
-				SETTER('confirm', 'show', '@(Are you sure you want to <b>start</b> the entire Flow?)', ['"play"@(Start now)', '@(Cancel)'], function(index) {
-					!index && SETTER('websocket', 'send', { type: 'pause' });
+				SETTER('approve', 'show', '@(Are you sure you want to <b>start</b> the entire Flow?)', '"play"@(Start now)', function() {
+					SETTER('websocket', 'send', { type: 'pause' });
 				});
 			} else {
-				SETTER('confirm', 'show', '@(Are you sure you want to <b>pause</b> the entire Flow?)', ['"pause"@(Pause now)', '@(Cancel)'], function(index) {
-					!index && SETTER('websocket', 'send', { type: 'pause' });
+				SETTER('approve', 'show', '@(Are you sure you want to <b>pause</b> the entire Flow?)', '"pause"@(Pause now)', function() {
+					SETTER('websocket', 'send', { type: 'pause' });
 				});
 			}
 		}
@@ -1908,8 +1947,8 @@
 		function showcomponents() {
 			var is = flow.components.findItem('isnew', true) != null;
 			if (is) {
-				SETTER('confirm', 'show', '@(Installing of new components can remove uninitialized components. Are you sure you want to continue?)', ['@(Yes, continue)', '@(Cancel)'], function(index) {
-					!index && SET('common.form', 'database');
+				SETTER('approve', 'show', '@(Installing of new components can remove uninitialized components. Are you sure you want to continue?)', '@(Yes, continue)', function() {
+					SET('common.form', 'database');
 				});
 			} else
 				SET('common.form', 'database');

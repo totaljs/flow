@@ -1,4 +1,4 @@
-<div data---="form__common.form__if:export;width:700;submit:export/submit;title:@(Export Flow)" class="hidden">
+<div data---="form__common.form__if:export;width:700;submit:export/submit;icon:cloud-upload;title:@(Export Flow)" class="hidden">
 	<div>
 		<div class="padding bg-smoke">
 			<div data---="dropdowncheckbox__formexport.tabs__datasource:flow.tabs;placeholder:@(All tabs)" class="m">@(Choose tabs)</div>
@@ -8,6 +8,7 @@
 		</div>
 		<div class="padding">
 			<div data---="textarea__formexport.body__height:200;icon:clipboard;readonly:true" class="m">@(Copy data to clipboard)</div>
+			<div class="fs11 pull-right"><span class="link gray exec" data-exec="export/copy"><i class="fa fa-copy"></i>@(Copy to clipboard)</span></div>
 			<div data---="radiobutton__formexport.type__items:json2|Minified JSON,json|JSON,base64|Base64;type__'json2'"></div>
 		</div>
 	</div>
@@ -28,6 +29,11 @@
 		exports.reload = function() {
 			SETTER('websocket', 'send', { type: 'getvariables' });
 			exports.rebuild();
+		};
+
+		exports.copy = function() {
+			SETTER('clipboard', 'copy', formexport.body);
+			SETTER('snackbar', 'show', '@(The Flow design has been exported to your clipboard successfully.)');
 		};
 
 		exports.rebuild = function() {
