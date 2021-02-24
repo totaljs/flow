@@ -428,9 +428,6 @@ div.CodeMirror span.CodeMirror-matchingbracket { border-bottom: 2px solid blue; 
 .ui-loading div { background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMzU4IDQxNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxuczpzZXJpZj0iaHR0cDovL3d3dy5zZXJpZi5jb20vIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEuNDE0MjEiPjxzdHlsZT4jdG90YWwxe2FuaW1hdGlvbjphbmltIDFzIGluZmluaXRlIDAuNXM7dHJhbnNmb3JtLW9yaWdpbjpjZW50ZXJ9QGtleWZyYW1lcyBhbmltezAle3RyYW5zZm9ybTpyb3RhdGUoMGRlZyl9MTAwJXt0cmFuc2Zvcm06cm90YXRlKDE4MGRlZyl9fTwvc3R5bGU+PGZpbHRlciBpZD0ic3Znc2hhZG93IiB4PSIwIiB5PSIwIiB3aWR0aD0iMTgwJSIgaGVpZ2h0PSIxODAlIj48ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjEwIi8+PGZlT2Zmc2V0IGR4PSIxMCIgZHk9IjEwIiByZXN1bHQ9Im9mZnNldGJsdXIiLz48ZmVDb21wb25lbnRUcmFuc2Zlcj48ZmVGdW5jQSB0eXBlPSJsaW5lYXIiIHNsb3BlPSIwLjEwIi8+PC9mZUNvbXBvbmVudFRyYW5zZmVyPjxmZU1lcmdlPjxmZU1lcmdlTm9kZS8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPjwvZmlsdGVyPjxnIHRyYW5zZm9ybS1vcmlnaW49ImNlbnRlciI+PGcgaWQ9InRvdGFsMSI+PHBhdGggZD0iTTE3OC45NzYsMGwxNzguOTc2LDEwMy4zMzJsMCwyMDYuNjYzbC0xNzguOTc2LDEwMy4zMzJsLTE3OC45NzYsLTEwMy4zMzJsMCwtMjA2LjY2M2wxNzguOTc2LC0xMDMuMzMyWm0wLjE5OCwxMTkuODQ5bDcxLjU5LDQxLjMzM2wwLDgyLjY2NWwtNzEuNTksNDEuMzMzbC03MS41OTEsLTQxLjMzM2wwLC04Mi42NjVsNzEuNTkxLC00MS4zMzNaIiBzdHlsZT0iZmlsbDojNjZiNjM5IiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDQ5KSIgZmlsdGVyPSJ1cmwoI3N2Z3NoYWRvdykiPjxwYXRoIGQ9Ik0xNjYuMzE3LDE1NS40M2wtMjYuNTA1LDU4Ljg1bC01OS40MiwwLjkwNWwyNy4xODUsLTU5LjM0bC0yNy45MDcsLTYwLjQzM2w1OC41MzIsLTAuMTcybDI4LjEwNyw1OC4zMzlsMC42MDIsMC41NDJsLTAuMjk3LDAuNjU1bDAuMzA1LDAuNjUybC0wLjYwMiwwLjAwMloiIHN0eWxlPSJmaWxsOiM5YWQ5NTkiLz48cGF0aCBkPSJNMTM2LjY2NSwyMTkuMjczbC00My4zMzksOTYuNDcxbC05My4zMjYsLTU0LjIxNGwwLC0yMDcuMzQybDk1LjAxMSwtNTQuMTg4bDQxLjExNyw5MS4xNTZsLTY0LjQzMSwtMC4zNjdsMzAuNDg1LDY0LjQyNmwtMjkuNTkzLDY0LjkyN2w2NC4wNzYsLTAuODY5WiIgc3R5bGU9ImZpbGw6IzlhZDk1OSIvPjwvZz48L2c+PC9zdmc+) no-repeat 50% 50%; background-size: 80px 80px; width: 80px; height: 80px; position: absolute; left: 50%; top: 50%; margin: -40px 0 0 -40px; }
 .ui-loading-firstload { background: white; }
 .themedark .ui-loading-firstload { background: black; }
-.ui-modal { color: #303030; }
-.ui-modal-header .ui-input-control { border: 0; }
-.ui-modal-header .ui-input-icon-left { border-right: 0; }
 
 .themedark .ui-designer .node_connection { stroke: #505050; }
 .themedark .ui-designer .data { fill: #3084E1; }
@@ -639,32 +636,6 @@ div.CodeMirror span.CodeMirror-matchingbracket { border-bottom: 2px solid blue; 
 .ui-input-inner .ui-input-value { line-height: 13px; height: 14px; margin-top: 3px; font-size: 13px !important; }
 .ui-input-type-icon .ui-input-value, .ui-input-type-emoji .ui-input-value { font-size: 15px; }
 .ui-input-type-icon .ui-input-control, .ui-input-type-color .ui-input-control, .ui-input-type-color .ui-input-emoji { cursor: pointer; }
-
-.ui-modal-noscroll, .ui-modal-noscroll body { overflow: hidden; }
-.ui-modal-container { background-color: rgba(10,10,10,0.8); position: fixed; left: 0; right: 0; top: 0; bottom: 0; }
-.ui-modal { background-color: white; margin: 0 auto; border-radius: 3px; box-shadow: 0 0 30px rgba(0,0,0,0.05); transform: scale(0); transition: transform 0.2s; position: absolute; left: 50%; overflow: hidden; border: 1px solid #E0E0E0; }
-.ui-modal-visible .ui-modal { transform: scale(1); }
-.ui-modal-body { margin-right: 30px; }
-.ui-modal-body-area { overflow-x: hidden; overflow-y: scroll; overflow-scrolling: touch; width: 100%; }
-.ui-modal-header { border-bottom: 1px solid #E0E0E0; height: 50px; padding: 0 0 0 15px; }
-.ui-modal-icon { float: left; height: 50px; line-height: 50px; margin-right: 7px; }
-.ui-modal-header label { height: 50px; line-height: 50px; font-size: 16px; float: left; padding: 0; margin: 0; font-weight: bold; color: black; }
-.ui-modal-header label i { margin-right: 5px; }
-.ui-modal-header .cancel { float: right; line-height: 50px; width: 28px; color: red; transition: transform 0.2s; font-size: 16px; }
-.ui-modal-header .cancel:hover { transform: scale(1.2); }
-.ui-modal-footer { border-top: 1px solid #E0E0E0; height: 70px; padding: 0 20px; line-height: 68px; text-align: right; }
-.ui-modal-footer button { height: 33px; border: 0; background-color: #4285F4; color: white; border-radius: 2px; padding: 0 15px; margin: 0; line-height: 28px; font-weight: bold; }
-.ui-modal-footer button:disabled { background-color: #E0E0E0; color: #A0A0A0; cursor: not-allowed; }
-.ui-modal-footer .link { font-size: 12px; vertical-align: middle; position: relative; display: inline-block; margin: 0 10px; }
-.ui-modal-footer i { margin-right: 5px; }
-.ui-modal-align-1 { left: auto; right: 25px; bottom: 25px; top: auto; }
-.ui-modal-align-2 { left: 25px; bottom: 25px; top: auto; }
-.ui-modal-align-3 { left: 25px; top: 25px; }
-.ui-modal-align-4 { left: auto; right: 25px; top: 25px; }
-
-@media(max-width: 768px) {
-	.ui-modal { width: 90%; left: 50%; right: auto; bottom: auto; }
-}
 
 .ui-radiobutton { color: black; font-size: 12px; }
 .ui-radiobutton div { cursor: pointer; margin: 0 10px 5px 0; line-height: 16px; position: relative; display: inline-block; }
