@@ -339,7 +339,7 @@ FN.websocket = function() {
 		if (message.type === 'readme') {
 			component = FLOW.components[message.target];
 			MESSAGE_STATIC.id = message.id;
-			MESSAGE_STATIC.body = component ? TRANSLATOR(client.language || 'default', component.readme) : '';
+			MESSAGE_STATIC.body = component ? TRANSLATOR(client.req.$language || 'default', component.readme) : '';
 			client.send(MESSAGE_STATIC);
 			return;
 		}
@@ -443,7 +443,7 @@ FN.websocket = function() {
 		if (message.type === 'html') {
 			component = FLOW.components[message.target];
 			MESSAGE_STATIC.id = message.id;
-			MESSAGE_STATIC.body = F.is4 ? U.minify_html(component ? TRANSLATOR(client.language || 'default', component.html) : '') : U.minifyHTML(component ? TRANSLATOR(client.language || 'default', component.html) : '');
+			MESSAGE_STATIC.body = F.is4 ? U.minify_html(component ? TRANSLATOR(client.req.$language || 'default', component.html) : '') : U.minifyHTML(component ? TRANSLATOR(client.req.$language || 'default', component.html) : '');
 			client.send(MESSAGE_STATIC);
 			return;
 		} else if (message.type === 'clearerrors') {
