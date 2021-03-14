@@ -1284,6 +1284,7 @@ Component.prototype.reoptions = function(newoptions, client) {
 	refreshconn && FLOW.refresh_connections();
 	OPT.logging && FLOW.log('options', instance, client);
 	FLOW.save2();
+	FLOW.emit2('design');
 	return instance;
 };
 
