@@ -1750,6 +1750,7 @@ FLOW.send = function(message) {
 FLOW.designer = function() {
 	MESSAGE_DESIGNER.components = FLOW.clearInstances(true);
 	FLOW.ws && FLOW.ws.send(MESSAGE_DESIGNER);
+	FLOW.emit2('design');
 	return FLOW;
 };
 
