@@ -38,7 +38,8 @@ body { background-color: #E6E9ED; font-smoothing: antialiased; }
 .tabs-flow { margin-right: 150px; }
 
 .themedark .hidetools button { background-color: #404040; }
-.components-search-padding { padding: 15px; }
+.components-search-padding { padding: 15px; border-bottom: 1px solid #E0E0E0; }
+.themedark .components-search-padding { border-bottom-color: #404040; }
 
 .body-traffic-heading { line-height: 18px; padding: 20px 20px 0 15px; font-size: 12px; }
 .body-traffic-heading .checkboxes { border-top: 1px solid #EEE; border-bottom: 1px solid #EEE; padding: 10px 0; margin: 10px 0 5px; }
@@ -109,7 +110,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .components .component:hover { background-color: #E0E0E0; box-shadow: 0 0 16px 0px rgba(0, 0, 0, 0.1); }
 .components .component div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .components .group { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-size: 14px; border-top: 1px solid #E0E0E0; padding: 12px 15px 8px; color: gray; font-weight: bold; margin-top: 15px; cursor: default; }
-.components .group:first-child { margin-top: 0; }
+.components .group:first-child { margin-top: 0; border-top: 0; }
 .components i { width: 14px; text-align: center; margin-right: 5px; }
 .themedark .component:hover { background-color: #202020; }
 
