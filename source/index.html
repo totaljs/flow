@@ -1287,7 +1287,7 @@
 					setTimeout(function() {
 						common.components.forEach(function(item) {
 							var key = 'extension' + item.component;
-							if (item.clientside && !common.statics[key]) {
+							if (item.extension && !common.statics[key]) {
 								common.statics[key] = 1;
 								try {
 									new Function(item.extension)();
