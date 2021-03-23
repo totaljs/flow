@@ -543,6 +543,7 @@
 			obj.id = Date.now().toString();
 			obj.isnew = true;
 			obj.disabledio = { input: [], output: [] };
+			obj.name = component.title || component.name;
 
 			if (typeof(component.status) === 'object')
 				obj.state = { text: component.status.text, color: component.status.color };

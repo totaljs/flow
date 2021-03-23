@@ -36,7 +36,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.2.0';
+exports.version = 'v6.2.1';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -1377,7 +1377,12 @@ FLOW.register = function(name, options, fn) {
 	var obj = FLOW.components[name] = U.clone(options); // because of additional custom fields
 	obj.id = id;
 	obj.component = name;
-	obj.name = options.title || name;
+
+	if (!options.name)
+		options.name = options.title;
+
+	obj.name = options.name || name;
+	obj.title = options.title;
 	obj.author = options.author || 'Unknown';
 	obj.color = options.color;
 	obj.icon = (options.icon ? options.icon.substring(0, 3) === 'fa-' ? options.icon.substring(0, 2) : options.icon : options.icon) || '';
