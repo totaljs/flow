@@ -771,7 +771,7 @@
 
 			var text;
 
-			if (value.substring(0, 7) === '<Buffer')
+			if (value && typeof(value) === 'string' && value.substring(0, 7) === '<Buffer')
 				value = '`' + value + '`';
 
 			if (typeof(value) === 'string')
