@@ -121,7 +121,7 @@ nav button.highlight { color: white !important; background-color: silver; font-w
 .debugoutput i { margin-right: 5px; }
 .debugoutput-time { color: #A0A0A0; line-height: 16px; }
 .debugoutput-id { font-size: 11px; color: #A0A0A0; float: right; }
-.debugoutput-name { font-size: 12px; line-height: 14px; }
+.debugoutput-name { font-size: 12px; line-height: 14px; margin-bottom: 5px; }
 .debugoutput-name b { font-size: 11px; }
 .debuggroup-name { font-weight: bold; color: black; background-color: #F0F0F0; padding: 3px 5px; border-radius: 3px; }
 .themedark .debuggroup-name { color: #E0E0E0; background-color: black; }
@@ -174,47 +174,93 @@ svg { cursor: move; }
 .help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 3px; }
 .help i { margin-right: 5px; }
 
-.markdown { margin-top: 5px; font-size: 12px; line-height: 16px; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif; color: #404040; }
-.markdown h1 { margin: 0 0 15px; font-size: 23px; padding: 0 0 5px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 23px; font-family: Arial, sans-serif; }
-.markdown h2 { margin: 15px 0 10px; font-weight: bold; font-size: 20px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 28px; font-family: Arial, sans-serif; }
-.markdown h3 { margin: 15px 0 10px; font-size: 18px; padding: 0 0 5px; font-weight: bold; color: black; line-height: 22px; font-family: Arial, sans-serif; }
-.markdown h1:first-child { margin-top: 0; }
-.markdown h2:first-child { margin-top: 0; }
-.markdown h3:first-child { margin-top: 0; }
-.markdown p code, .markdown li code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code { background-color: #E0E0E0; padding: 0 5px 1px; border-radius: 3px; font-size: 12px; line-height: 15px; }
-.markdown p { margin: 0 0 10px; line-height:  }
-.markdown pre { padding: 0; border-radius: 3px; margin: 10px 0; width: 100%; }
-.markdown pre code { padding: 15px; font-size: 12px; line-height: 16px; }
-.markdown ul { margin: 0 0 10px 0; padding: 0 0 0 2em; }
-.markdown th { background-color: #F8F8F8; }
-.markdown blockquote { border-left: 5px solid #E0E0E0; margin: 6px 0; padding: 6px; color: gray; }
-.markdown blockquote p { margin-bottom: 0; }
-
-.md { font-size: 15px; line-height: 20px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; color: #404040; overflow-x: hidden; position: relative; }
-.md code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
-.md h1 { cursor: default; margin: 0 0 15px; font-size: 26px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 30px; font-family: -apple-systm, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; font-weight: normal; line-height: 32px; }
-.md h2 { cursor: default; margin: 30px 0 10px; font-weight: bold; font-size: 22px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 28px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
-.md h3 { cursor: default; margin: 30px 0 8px; font-size: 18px; padding: 0 0 5px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
-.md h4, .md h5 { cursor: default; margin: 20px 0 10px; font-size: 17px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; background-color: #F0F0F0; padding: 4px 3px; border-radius: 3px; border-bottom: 1px solid #E0E0E0; }
-.md p { margin: 0 0 15px; padding-left: 0; padding-right: 0; }
-.md p code, .md li code, .md blockquote code, .md h1 code, .md h2 code, .md h3 code, .md h4 code, .md td code { background-color: #E0E0E0; padding: 1px 4px 2px; border-radius: 3px; font-size: 14px; }
-.md p code, .md li code, .md blockquote code, .md td code { border: 1px solid #E0E0E0; background-color: #F5F5F5; }
-.md pre { padding: 0; border-radius: 4px; margin: 15px 0; width: 100%; }
-.md pre code { padding: 10px; font-size: 14px; line-height: 18px; overflow-scrolling: touch; border-radius: 3px; display: block; }
-.md table { width: 100%; margin: 0 0 20px; }
-.md ul { margin: 0 0 15px 0; padding: 0 0 0 2em; }
-.md img { max-width: 100%; }
+.md { margin-top: 5px; font-size: 12px; line-height: 16px; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif; color: #404040; }
+.md h1 { margin: 0 0 15px; font-size: 23px; padding: 0 0 5px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 23px; font-family: Arial, sans-serif; }
+.md h2 { margin: 15px 0 10px; font-weight: bold; font-size: 20px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: black; line-height: 28px; font-family: Arial, sans-serif; }
+.md h3 { margin: 15px 0 10px; font-size: 18px; padding: 0 0 5px; font-weight: bold; color: black; line-height: 22px; font-family: Arial, sans-serif; }
+.md h1:first-child { margin-top: 0; }
+.md h2:first-child { margin-top: 0; }
+.md h3:first-child { margin-top: 0; }
+.md p code, .md li code, .md blockquote code, .md h1 code, .md h2 code, .md h3 code, .md h4 code { background-color: #E0E0E0; padding: 0 5px 1px; border-radius: 3px; font-size: 12px; line-height: 15px; }
+.md p { margin: 0 0 10px; line-height:  }
+.md pre { padding: 0; border-radius: 3px; margin: 10px 0; width: 100%; }
+.md pre code { padding: 15px; font-size: 12px; line-height: 16px; }
+.md ul { margin: 0 0 10px 0; padding: 0 0 0 2em; }
 .md th { background-color: #F8F8F8; }
-.md blockquote { padding: 15px 20px; color: #777; border: 1px solid #DDD; margin: 10px 5px; border-radius: 3px; }
-.md blockquote:before { content: '\201C'; position: absolute; margin-left: -18px; margin-top: -17px; font: 45px 'PT Sans', sans-serif; color: #A0A0A0; }
-.md hr { border-color: #E0E0E0; border-width: 2px; }
-.md h1 code { font-size: 28px; font-weight: normal; background-color: #DAE8F8; }
-.md h2 code { font-size: 23px; font-weight: normal; background-color: #DAE8F8; }
-.md h3 code { font-size: 18px; font-weight: normal; background-color: #DAE8F8; }
-.md h4 code { font-size: 17px; font-weight: normal; background-color: #DAE8F8; }
-.md a code { background-color: #DAE8F8; text-decoration: none !important; border-color: #d5dfeb; }
-.md .video { position: relative; padding-bottom: 56.25%; padding-top: 25px; height: 0; margin-bottom: 15px; }
-.md .video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.md blockquote { border-left: 5px solid #E0E0E0; margin: 6px 0; padding: 6px; color: gray; }
+.md blockquote p { margin-bottom: 0; }
+
+/*.markdown { white-space: break-spaces; }*/
+.markdown-small .markdown { font-size: 14px; line-height: 18px; }
+.markdown { font-size: 16px; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; color: #404040; overflow-x: hidden; padding: 0; }
+.markdown-container > *:last-child { margin-bottom: 0; }
+.markdown code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
+.markdown h1 { cursor: default; margin: 0 0 20px; font-size: 30px; padding: 0 0 13px; border-bottom: 1px solid #E0E0E0; color: #000; line-height: 38px; font-family: -apple-systm, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-weight: normal; line-height: 32px; font-weight: bold; }
+.markdown h2 { cursor: default; margin: 0 0 18px; font-weight: bold; font-size: 25px; padding: 0 0 8px; border-bottom: 1px solid #E0E0E0; color: #000; line-height: 28px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; }
+.markdown h3 { cursor: default; margin: 0 0 10px; font-size: 20px; padding: 0 0 5px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; }
+.markdown h4, .markdown h5 { cursor: default; margin: 0 0 10px; font-size: 17px; color: #404040; font-weight: bold; line-height: 22px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; background-color: #F0F0F0; padding: 4px 3px; border-radius: var(--radius); border-bottom: 1px solid #E0E0E0; }
+.markdown p { margin: 0 0 15px; padding-left: 0; padding-right: 0; }
+.markdown-small p { margin-bottom: 10px; }
+.markdown p code, .markdown li code, .markdown section code, .markdown blockquote code, .markdown h1 code, .markdown h2 code, .markdown h3 code, .markdown h4 code, .markdown td code { background-color: #E0E0E0; padding: 1px 4px 2px; border-radius: var(--radius); font-size: 14px; }
+.markdown p code, .markdown section code, .markdown li code, .markdown blockquote code, .markdown td code { border: 1px solid #E0E0E0; background-color: #F5F5F5; }
+.markdown pre { padding: 0; border-radius: var(--radius); margin: 20px 0; width: 100%; }
+.markdown pre code { padding: 10px; font-size: 14px; line-height: 18px; overflow-scrolling: touch; border-radius: var(--radius); }
+.markdown table { margin: 0 0 15px; width: auto !important; }
+.markdown ul { margin: 0 0 20px 0; padding: 0 0 0 2em; }
+.markdown ul ul { margin-bottom: 0; }
+.markdown img { max-width: 100%; }
+.markdown th { background-color: #F8F8F8; }
+.markdown blockquote { color: #000; margin: 0 0 15px; padding: 10px 0 0 20px; position: relative; font-style: italic; }
+.markdown blockquote:before { content: '\201C'; position: absolute; margin-left: -18px; margin-top: -13px; font: 45px 'PT Sans', sans-serif; color: #A0A0A0; }
+.markdown section { padding: 15px 20px; background-color: #FFFED1; margin: 10px 0 15px; border-radius: var(--radius); }
+.markdown hr { border-color: #E0E0E0; border-width: 2px; }
+.markdown .line2 { border-width: 4px; margin: 15px 0 30px !important; }
+.markdown h1 code { font-size: 28px; font-weight: normal; background-color: #DAE8F8; }
+.markdown h2 code { font-size: 23px; font-weight: normal; background-color: #DAE8F8; }
+.markdown h3 code { font-size: 18px; font-weight: normal; background-color: #DAE8F8; }
+.markdown h4 code { font-size: 17px; font-weight: normal; background-color: #DAE8F8; }
+.markdown a code { background-color: #DAE8F8; text-decoration: none !important; border-color: #D5DFEB; }
+.markdown-small .markdown h1 { margin: 0 0 20px; font-size: 28px; padding: 0 0 13px; line-height: 30px; line-height: 30px; }
+.markdown-footnote { background-color: rgba(0,0,0,0.1); padding: 0 2px; border-radius: var(--radius); cursor: help; }
+.markdown-footnotebody { font-size: 11px; border-top: 1px solid #E0E0E0; font-family: Arial; color: #505050; }
+.markdown-showsecret { cursor: pointer; display: block; padding: 8px 15px; user-select: none; font-size: 14px; }
+.markdown-showsecret b { margin-left: 8px; }
+.markdown-showsecret .pull-right { margin: 2px 0 0; }
+.markdown-secret { padding: 0; border-radius: var(--radius); border: 1px solid #E0E0E0; }
+.markdown-secret > div { padding: 15px 15px 1px; border-radius: 0 0 var(--radius) var(--radius); background-color: #F8F8F8; }
+.markdown-small p code, .markdown-small li code, .markdown-small section code, .markdown-small blockquote code, .markdown-small h1 code, .markdown-small h2 code, .markdown-small h3 code, .markdown-small h4 code, .markdown-small td code, .markdown-small pre code { font-size: 12px; }
+.markdown-tasks { list-style-type: none; padding-left: 12px !important; }
+.markdown-tasks li > i:first-child { margin-right: 5px; }
+.markdown-code { margin-bottom: 15px; }
+.markdown-block { margin: 0; }
+.markdown-block:last-child { margin-bottom: 15px; }
+.markdown-block > div { padding: 10px 10px 1px; border: 1px solid #E0E0E0; margin: 10px 0; border-radius: var(--radius); }
+.markdown-showblock { cursor: pointer; display: block; padding: 3px 0; user-select: none; border-bottom: 1px solid #E0E0E0; }
+.markdown-showblock i { width: 16px; font-size: 12px; padding: 6px 0 0; float: left; }
+.markdown-showblock-visible { border-bottom: 0; }
+.markdown-showblock code { font-size: 15px; background-color: #DAE8F8; text-decoration: none !important; border-color: #D5DFEB; padding: 1px 2px; border-radius: var(--radius); }
+
+.themedark .markdown { color: #C0C0C0; }
+.themedark .markdown blockquote { color: #FFF; }
+.themedark .markdown blockquote:before { color: #707070; }
+.themedark .markdown th { background-color: #404040; }
+.themedark .markdown h2 { color: #FFF; border-bottom-color: #404040; }
+.themedark .markdown h1 { color: #FFF; border-bottom-color: #404040; }
+.themedark .markdown h1 code { background-color: #404040; }
+.themedark .markdown hr { border-color: #404040; }
+.themedark .markdown h2 code { background-color: #404040; }
+.themedark .markdown h3 code { background-color: #404040; }
+.themedark .markdown h4 code { background-color: #404040; }
+.themedark .markdown section { background-color: #404040; }
+.themedark .markdown a code { background-color: #303030; border-color: #454545; }
+.themedark .markdown h4, .themedark .markdown h5 { color: #C0C0C0; background-color: #505050; border-bottom: 1px solid #404040; }
+.themedark .markdown p code, .themedark .markdown section code, .themedark .markdown li code, .themedark .markdown blockquote code, .themedark .markdown td code { border-color: #404040; background-color: #505050; }
+.themedark .markdown-footnote { background-color: rgba(255,255,255,0.1); }
+.themedark .markdown-footnotebody { border-top-color: #505050; color: #888; }
+.themedark .markdown-block > div, .themedark .markdown-showblock { border-color: #404040; }
+.themedark .markdown-showblock code { background-color: #404040; border-color: #404040; }
+.themedark .markdown-secret { border: 1px solid #404040; }
+.themedark .markdown-secret > div { background-color: #303030; }
 
 .mainmenu .ui-textbox-label { font-size: 11px; }
 .mainmenu .ui-textbox-input { padding: 5px 2px 0 5px; }
