@@ -1495,17 +1495,22 @@ COMPONENT('designer', function(self, config, cls) {
 
 		tmp.on('contextmenu', function(e) {
 
-			var node = $(e.target).closest('.node');
+			var target = $(e.target);
+			var node = target.closest('.node');
 			var item = null;
+			var isconn = false;
 
 			e.preventDefault();
 
 			if (node.length) {
 				var id = node.attrd('id');
 				item = self.get().findItem('id', id);
+			} else if (target.hclass('node_connection')) {
+				isconn = true;
+				item = target;
 			}
 
-			EMIT('designer.contextmenu', item, e);
+			EMIT('designer.contextmenu', item, e, isconn, target);
 		});
 
 		tmp.on('mousedown mousemove mouseup', function(e) {
@@ -1848,6 +1853,9 @@ COMPONENT('designer', function(self, config, cls) {
 		};
 
 		self.select = function(el, e, type) {
+
+			if (!el)
+				SETTER('!menu', 'hide');
 
 			// reset cache for self.move function
 			self.allowedselected = [];

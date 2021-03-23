@@ -584,36 +584,34 @@
 		});
 
 		ON('designer.rem', function(ids) {
-
-			ids && SETTER('approve', 'show', '@(Are you sure you want to remove selected components?)', '"trash-o" @(Remove)', function(index) {
-				ids.wait(function(id, next){
-					var instance = flow.components.findItem('id', id);
-					EMIT('rem.' + instance.component, instance);
-					flow.components = flow.components.remove('id', id);
-					flow.designer = flow.designer.remove('id', id);
-					flow.components.forEach(function(component) {
-						Object.keys(component.connections).forEach(function(key) {
-							var connections = component.connections[key];
-							component.connections[key] = connections.remove('id', id);
-							!component.connections[key].length && (delete component.connections[key]);
-						});
+			// ids && SETTER('approve', 'show', '@(Are you sure you want to remove selected components?)', '"trash-o" @(Remove)', function(index) {
+			ids.wait(function(id, next){
+				var instance = flow.components.findItem('id', id);
+				EMIT('rem.' + instance.component, instance);
+				flow.components = flow.components.remove('id', id);
+				flow.designer = flow.designer.remove('id', id);
+				flow.components.forEach(function(component) {
+					Object.keys(component.connections).forEach(function(key) {
+						var connections = component.connections[key];
+						component.connections[key] = connections.remove('id', id);
+						!component.connections[key].length && (delete component.connections[key]);
 					});
-
-					var el = $('.node_' + id);
-
-					EMIT('changed', 'rem', id);
-
-					$('.node_connection').each(function() {
-						var el = $(this);
-						(el.attrd('from') === id || el.attrd('to') === id) && el.remove();
-					});
-
-					el.remove();
-					next();
-				}, function done(){
-					setState(MESSAGES.apply);
-					EMIT('designer.unselect');
 				});
+
+				var el = $('.node_' + id);
+
+				EMIT('changed', 'rem', id);
+
+				$('.node_connection').each(function() {
+					var el = $(this);
+					(el.attrd('from') === id || el.attrd('to') === id) && el.remove();
+				});
+
+				el.remove();
+				next();
+			}, function done(){
+				setState(MESSAGES.apply);
+				EMIT('designer.unselect');
 			});
 		});
 
@@ -627,14 +625,14 @@
 			}
 		});
 
-		ON('designer.contextmenu', function(item, e) {
+		ON('designer.contextmenu', function(item, e, connection, target) {
 
 			var opt = {};
 			opt.x = e.pageX;
 			opt.y = e.pageY;
 			opt.items = [];
 
-			if (item) {
+			if (!connection && item) {
 				opt.items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
 				opt.items.push({ id: 'copy', name: '@(Copy component)', icon: 'fa fa-file-text-o' });
 			}
@@ -642,11 +640,14 @@
 			if (flow.clipboard)
 				opt.items.push({ id: 'paste', name: '@(Paste component)', icon: 'fa fa-paste' });
 
-			if (item) {
+			if (!connection && item) {
 				opt.items.push({ id: 'duplicate', name: '@(Duplicate)', icon: 'fa fa-files-o' });
 				opt.items.push('-');
 				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fa fa-trash-o red', classname: 'b' });
 			}
+
+			if (connection)
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fa fa-trash-o red', classname: 'b' });
 
 			opt.callback = function(obj) {
 
@@ -656,7 +657,8 @@
 				EXEC('#designer.' + obj.id, obj.id === 'settings' ? item.id : $(e.target).closest('.node'));
 			};
 
-			SETTER('menu', 'show', opt);
+			if (opt.items.length)
+				SETTER('menu', 'show', opt);
 		});
 
 		ON('designer.selectable', function(el) {
@@ -1520,10 +1522,12 @@
 			if (el && el.hclass('disabled'))
 				return;
 
-			if (!flow.selected.length)
+			if (!flow.selected || !flow.selected.length)
 				return;
 
-			var ids = flow.selected.map(function(sel){ return sel.attrd('id'); });
+			var ids = flow.selected.map(function(sel) {
+				return sel.attrd('id');
+			});
 
 			flow.clipboard = flow.components.findAll(function(com) {
 				return ids.indexOf(com.id) > -1;
