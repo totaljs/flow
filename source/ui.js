@@ -1548,6 +1548,8 @@ COMPONENT('designer', function(self, config, cls) {
 			}
 		});
 
+		var touch;
+
 		tmp.on('touchstart touchmove touchend', function(evt) {
 
 			if (!common.touches)
@@ -1555,6 +1557,7 @@ COMPONENT('designer', function(self, config, cls) {
 
 			var e = evt.touches[0];
 			var offset;
+
 			if (evt.type === 'touchmove') {
 				offset = offsetter(evt);
 				touch = evt;
@@ -1567,20 +1570,26 @@ COMPONENT('designer', function(self, config, cls) {
 					evt.preventDefault();
 				}
 			} else if (evt.type === 'touchend') {
-				offset = offsetter(touch);
-				e = touch.touches[0];
 
-				if (move.type === 2 || move.type === 3) {
-					offset.x += move.scrollX;
-					offset.y += move.scrollY;
+				if (touch) {
+					offset = offsetter(touch);
+					e = touch.touches[0];
+
+					if (move.type === 2 || move.type === 3) {
+						offset.x += move.scrollX;
+						offset.y += move.scrollY;
+					}
+
+					touch.target = move.node ? findPoint(move.node.hclass('output') ? '.input' : '.output', move.tx, move.ty) : svg.get(0);
+					self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
+					touch = null;
 				}
 
-				touch.target = move.node ? findPoint(move.node.hclass('output') ? '.input' : '.output', move.tx, move.ty) : svg.get(0);
-				self.mup(e.pageX, e.pageY, offset.x, offset.y, touch);
 			} else {
 				offset = offsetter(evt);
 				move.scrollX = +scroller.prop('scrollLeft');
 				move.scrollY = +scroller.prop('scrollTop');
+				touch = evt;
 				self.mdown(e.pageX, e.pageY, offset.x, offset.y, evt);
 			}
 		});
@@ -2050,14 +2059,19 @@ COMPONENT('designer', function(self, config, cls) {
 					if (!dragdrop.input || !dragdrop.output)
 						return;
 
+					if (drag.cache === e.target)
+						return;
+
 					if (drag.conn) {
 						drag.conn.rclass('dropselection');
 						drag.conn = null;
 					}
 
-					if (e.target.nodeName === 'path')
+					if (e.target.nodeName === 'path') {
 						drag.conn = $(e.target).aclass('dropselection');
+					}
 
+					drag.cache = e.target;
 					break;
 
 				case 'drop':
@@ -2509,7 +2523,9 @@ function offsetter(evt) {
 		position.x = evt.pageX;
 		position.y = evt.pageY;
 	}
+
 	var parent = evt.target;
+
 	while (parent.offsetParent) {
 		position.x -= parent.offsetLeft;
 		position.y -= parent.offsetTop;

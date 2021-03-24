@@ -14,6 +14,7 @@ $color  : #8CC152;
 .ui-designer path.selected { stroke: #F6BB42 !important; stroke-width: 3px; }
 .ui-designer path.dropselection { stroke-dasharray: 10, 8; }
 .ui-designer .node_connection { stroke: black; }
+.dragged .node_connection { stroke-width: 5px; }
 .ui-designer .node_debug { fill: red; }
 /*.ui-designer .selected > rect:first-child { opacity: 0.9; }*/
 g.selected .rect { stroke: yellow !important; }

@@ -441,6 +441,7 @@
 
 			val && SETTER('designer', 'dragdrop', val);
 			e.stopPropagation();
+
 		}).on('touchmove', '[draggable]', function(e) {
 
 			if (!common.touches)
@@ -473,8 +474,12 @@
 			var y = mdraggable.y - off.top;
 			x += el.prop('scrollLeft');
 			y += el.prop('scrollTop');
-			var zoom = d.getZoom();
-			EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
+
+			if (x >= 0 && y >= 0) {
+				var zoom = d.getZoom();
+				EMIT('designer.add', mdraggable.component, (x - 50) / zoom, (y - 30) / zoom, false);
+			}
+
 		}).on('dragstart', function(e) {
 
 			if (common.touches)
@@ -492,7 +497,11 @@
 			if (val) {
 				e.originalEvent.dataTransfer.setData('text', '1');
 				SETTER('designer', 'dragdrop', val);
+				$('body').aclass('dragged');
 			}
+
+		}).on('dragend', function() {
+			$('body').rclass('dragged');
 		});
 
 		common.changes = {};
@@ -553,7 +562,7 @@
 			if (is) {
 				obj.connections[0] = [ct];
 				var comfrom = flow.components.findItem('id', cf);
-				var comto = comfrom.connections[toindex].findItem('id', ct);
+				var comto = comfrom.connections[fromindex].findItem('id', ct);
 				if (comto) {
 					if (obj.$component.output)
 						obj.connections[0] = [CLONE(comto)];
@@ -563,7 +572,8 @@
 					setTimeout(function() {
 						EMIT('designer.refresh');
 					}, 50);
-				}
+				} else
+					is = false;
 			}
 
 			if (duplicate) {
