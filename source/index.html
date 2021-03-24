@@ -249,7 +249,23 @@
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
 
+	@{if R.openplatform}
+	<script src="@{if CONF.cdn}@{'%cdn'}@{else}https://cdn.componentator.com@{fi}/openplatform.min@4.js"></script>
+	@{fi}
+
 	<script>
+
+		@{if R.openplatform}
+		OP.init(function() {
+			OP.send('appearance');
+			OP.on('appearance', function(opt) {
+				var type = opt.darkmode ? 'dark' : '';
+				if (common.theme !== type)
+					SET('common.theme', type);
+				CSS(':root{--color:' + opt.colorscheme + '}', 'op');
+			});
+		});
+		@{fi}
 
 		(function() {
 

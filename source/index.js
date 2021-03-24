@@ -295,6 +295,7 @@ FN.view_index = function() {
 	R.sharedfiles = OPT.sharedfiles;
 	R.limit = OPT.limit;
 	R.socket = OPT.socket;
+	R.openplatform = OPT.openplatform;
 	this.view('@flow/index');
 };
 
