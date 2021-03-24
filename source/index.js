@@ -92,7 +92,7 @@ exports.install = function(options) {
 		OPT.socket = OPT.external;
 
 	// Routes
-	if (OPT.auth === true) {
+	if (OPT.auth === true || OPT.openplatform) {
 
 		if (TYPE !== 3)
 			ROUTE(OPT.url, FN.view_index, ['authorize']);
