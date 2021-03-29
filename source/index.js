@@ -19,13 +19,13 @@ const MESSAGE_CLEARERRORS = { type: 'clearerrors' };
 const MESSAGE_COMPONENTOPTIONS = { type: 'componentoptions' };
 const MESSAGE_ONLINE = { type: 'online' };
 const MESSAGE_TEMPLATE = { type: 'template' };
-const FLOWPATH = '/flow/';
-const FILEDESIGNER = '/flow/designer.json';
-const FILEVARIABLES = '/flow/variables.txt';
 const REGPARAM = /\{[a-z0-9,-._]+\}/gi;
 const PAUSEDEVENTS = { 'data': 1, '0': 1, '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '6': 1, '7': 1, '8': 1, '9': 1, '99': 1 };
 
-var FILEINMEMORY = '/flow/repository.json';
+var FLOWPATH = '/flow/';
+var FILEDESIGNER = 'designer.json';
+var FILEVARIABLES = 'variables.txt';
+var FILEINMEMORY = 'repository.json';
 
 var COUNTER = 0;
 var OPT;
@@ -36,7 +36,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.2.1';
+exports.version = 'v6.2.2';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -69,13 +69,28 @@ exports.install = function(options) {
 	OPT.url = U.path(OPT.url || '/$flow/');
 	OPT.socket = OPT.url;
 
-	if (OPT.templates == null)
+	if (OPT.directory) {
+		FLOWPATH = OPT.directory;
+		PATH.mkdir(FLOWPATH);
+	} else
+		FLOWPATH = PATH.root(FLOWPATH);
+
+	var endpath = F.isWindows ? '\\' : '/';
+
+	if (FLOWPATH[FLOWPATH.length - 1] !== endpath)
+		FLOWPATH += endpath;
+
+	FILEDESIGNER = FLOWPATH + 'designer.json';
+	FILEVARIABLES = FLOWPATH + 'variables.txt';
+	FILEINMEMORY = FLOWPATH + 'repository.json';
+
+	if (!OPT.templates)
 		OPT.templates = 'https://cdn.totaljs.com/flow/templates/list.json';
 
-	if (OPT.components == null)
+	if (!OPT.components)
 		OPT.components = 'https://cdn.totaljs.com/flow/list.json';
 
-	if (OPT.limit == null)
+	if (!OPT.limit)
 		OPT.limit = 150;
 
 	if (OPT.dark == null)
@@ -134,7 +149,7 @@ exports.install = function(options) {
 	}
 
 	try {
-		Fs.mkdirSync(PATH.root(FLOWPATH));
+		Fs.mkdirSync(FLOWPATH);
 	} catch(e) {}
 
 	// Binds URL
@@ -217,7 +232,7 @@ exports.install = function(options) {
 };
 
 FN.listingmodification = function() {
-	U.ls2(PATH.root(FLOWPATH), function(files) {
+	U.ls2(FLOWPATH, function(files) {
 		for (var i = 0, length = files.length; i < length; i++) {
 			var file = files[i];
 			var id = file.filename.substring(file.filename.lastIndexOf('/') + 1);
@@ -266,7 +281,7 @@ FN.view_index = function() {
 			if (DDOS[this.ip] > 4)
 				this.throw401();
 			else
-				this.baa('Secured area, please sign in');
+				this.baa('Secured area, please sign-in');
 			return;
 		}
 		this.repository.baa = (user.user + ':' + user.password).hash();
@@ -1816,7 +1831,7 @@ FLOW.save3 = function() {
 // This function can be overwritten
 // returns object
 FLOW.read_designer = function(callback) {
-	Fs.readFile(PATH.root(FILEDESIGNER), function(err, data){
+	Fs.readFile(FILEDESIGNER, function(err, data){
 		if (data)
 			data = data.toString('utf8').parseJSON(true);
 		callback(data);
@@ -1829,11 +1844,11 @@ FLOW.save_designer = function(data, callback, backup) {
 
 	var json = JSON.stringify(data, (k,v) => k === '$component' || k === 'README' ? undefined : v, '\t');
 
-	Fs.writeFile(PATH.root(FILEDESIGNER), json, callback);
+	Fs.writeFile(FILEDESIGNER, json, callback);
 
 	if (backup) {
-		Fs.writeFile(PATH.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
-		Fs.writeFile(PATH.root(FILEVARIABLES.replace(/\.txt/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')),  FLOW.$variables, NOOP);
+		Fs.writeFile(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup'), json, NOOP);
+		Fs.writeFile(FILEVARIABLES.replace(/\.txt/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup'),  FLOW.$variables, NOOP);
 	}
 };
 
@@ -1841,13 +1856,13 @@ FLOW.save_designer = function(data, callback, backup) {
 // This function can be overwritten
 // returns string
 FLOW.read_variables = function(callback) {
-	Fs.readFile(PATH.root(FILEVARIABLES), callback);
+	Fs.readFile(FILEVARIABLES, callback);
 };
 
 // Saves variables to file system
 // This function can be overwritten
 FLOW.save_variables = function(data, callback) {
-	Fs.writeFile(PATH.root(FILEVARIABLES), data, callback);
+	Fs.writeFile(FILEVARIABLES, data, callback);
 };
 
 FLOW.refresh_connections = function() {
@@ -1900,7 +1915,7 @@ FLOW.clearerrors = function() {
 
 FLOW.save_inmemory = function() {
 	setTimeout2('flowinmemorysave', function() {
-		Fs.writeFile(PATH.root(FILEINMEMORY), JSON.stringify(FLOW.inmemory), F.error());
+		Fs.writeFile(FILEINMEMORY, JSON.stringify(FLOW.inmemory), F.error());
 	}, 500, 100);
 };
 
@@ -2002,7 +2017,7 @@ function reload(callback) {
 				}
 			});
 
-			Fs.readFile(PATH.root(FILEINMEMORY), function(err, indata) {
+			Fs.readFile(FILEINMEMORY, function(err, indata) {
 				indata && (FLOW.inmemory = indata.toString('utf8').parseJSON(true));
 
 				if (!FLOW.inmemory)
@@ -2036,7 +2051,7 @@ function clean_zombies(arr) {
 
 // Loads components and designer cofig when flow starts
 FLOW.load = function(callback, isreload) {
-	var path = PATH.root(FLOWPATH);
+	var path = FLOWPATH;
 	PATH.exists(path, function(e) {
 		!e && Fs.mkdirSync(path);
 		U.ls(path, function(files) {
@@ -2207,7 +2222,7 @@ FLOW.install = function(filename, body, callback) {
 
 	var u = filename.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
-		var target = PATH.root(FLOWPATH + U.getName(filename));
+		var target = FLOWPATH + U.getName(filename);
 		DOWNLOAD(filename, target, function(err) {
 			if (err) {
 				MESSAGE_ERROR.body = err.toString();
@@ -2224,9 +2239,9 @@ FLOW.install = function(filename, body, callback) {
 		}
 
 		if (filename)
-			filename = PATH.root(FLOWPATH + filename);
+			filename = FLOWPATH + filename;
 		else
-			filename = PATH.root(FLOWPATH, U.GUID(10) + '.js');
+			filename = FLOWPATH + U.GUID(10) + '.js';
 
 		Fs.writeFile(filename, body, function(err) {
 			err && F.error(err, 'FLOW.install("{0}")'.format(filename));
@@ -2271,7 +2286,7 @@ FLOW.uninstall = function(name, noSync) {
 		MESSAGE_DESIGNER.database = MESSAGE_DESIGNER.database.remove('id', name);
 
 		if (!noSync) {
-			Fs.unlink(PATH.root(FLOWPATH + com.filename), NOOP);
+			Fs.unlink(FLOWPATH + com.filename, NOOP);
 			FLOW.designer;
 			FLOW.save2();
 		}
