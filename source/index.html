@@ -235,16 +235,17 @@
 		</div>
 	</div>
 
-	<div data---="importer__common.form__if:tab;url:@{R.url}forms/form-tab.html;cleaner:5"></div>
-	<div data---="importer__common.form__if:export;url:@{R.url}forms/form-export.html;reload:export/reload;cleaner:5"></div>
-	<div data---="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload;cleaner:5"></div>
-	<div data---="importer__common.form__if:database;url:@{R.url}forms/form-database.html;cleaner:5"></div>
-	<div data---="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload;cleaner:5"></div>
-	<div data---="importer__common.form__if:help;url:@{R.url}forms/form-help.html;cleaner:5"></div>
-	<div data---="importer__common.form2__if:components;url:@{R.url}forms/form-components.html;cleaner:5"></div>
-	<div data---="importer__common.form__if:welcome;url:@{R.url}forms/intro-welcome.html;cleaner:5"></div>
-	<div data---="importer__common.form__if:imported;url:@{R.url}forms/intro-imported.html;cleaner:5"></div>
-	<div data---="importer__common.form__if:templates;url:@{R.url}forms/form-templates.html;cleaner:5"></div>
+	<div data---="importer__common.form__if:tab;url:@{R.url}forms/form-tab.html"></div>
+	<div data---="importer__common.form__if:export;url:@{R.url}forms/form-export.html;reload:export/reload"></div>
+	<div data---="importer__common.form__if:import;url:@{R.url}forms/form-import.html;reload:import/reload"></div>
+	<div data---="importer__common.form__if:database;url:@{R.url}forms/form-database.html"></div>
+	<div data---="importer__common.form__if:variables;url:@{R.url}forms/form-variables.html;reload:variables/reload"></div>
+	<div data---="importer__common.form__if:help;url:@{R.url}forms/form-help.html"></div>
+	<div data---="importer__common.form2__if:components;url:@{R.url}forms/form-components.html"></div>
+	<div data---="importer__common.form__if:welcome;url:@{R.url}forms/intro-welcome.html"></div>
+	<div data---="importer__common.form__if:imported;url:@{R.url}forms/intro-imported.html"></div>
+	<div data---="importer__common.form__if:templates;url:@{R.url}forms/form-templates.html"></div>
+	<div data---="importer__common.form__if:tms;url:@{R.url}forms/form-tms.html"></div>
 
 	<div id="flowsettings"></div>
 	<div id="tmpclone"></div>
@@ -1800,6 +1801,7 @@
 					case 'variables':
 					case 'import':
 					case 'templates':
+					case 'tms':
 						SET('common.form', value);
 						return;
 					case 'export':

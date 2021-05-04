@@ -848,7 +848,7 @@ i.ui-intro-button { margin: 14px 3px 0; cursor: pointer; color: silver; font-siz
 
 .ui-message { background-color: rgba(50,50,50,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 1010; width: 100%; display: table; height: 100%; transition: 0.3s all; opacity: 0; }
 .ui-message > div { display: table-cell; vertical-align: middle; text-align: center; padding: 15px; }
-.ui-message-body { padding: 30px 25px 20px; position: relative; display: inline-block; color: #000000; border-radius: var(--radius); max-width: 500px; text-align: left; transform: scale(1.5); transition: 0.2s all; box-shadow: 0 5px 20px rgba(0,0,0,0.1); background-color: #FFF; border-width: 3px; border-style: solid; word-break: break-all; }
+.ui-message-body { padding: 30px 25px 20px; position: relative; display: inline-block; color: #000000; border-radius: var(--radius); max-width: 500px; text-align: left; transform: scale(1.5); transition: 0.2s all; box-shadow: 0 5px 20px rgba(0,0,0,0.1); background-color: #FFF; border-width: 3px; border-style: solid; }
 .ui-message-warning .ui-message-body { border-color: #DA4453; min-width: 300px; }
 .ui-message-success .ui-message-body { border-color: #8CC152; min-width: 300px; }
 .ui-message-info .ui-message-body { border-color: #3BAFDA; min-width: 300px; }

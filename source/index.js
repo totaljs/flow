@@ -36,7 +36,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.2.2';
+exports.version = 'v6.2.3';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -183,9 +183,8 @@ exports.install = function(options) {
 					MESSAGE_TRAFFIC.counter = COUNTER;
 					FLOW.ws.send(MESSAGE_TRAFFIC);
 
-					var keys = Object.keys(FLOW.alltraffic);
-					for (var i = 0, length = keys.length; i < length; i++) {
-						var item = FLOW.alltraffic[keys[i]];
+					for (var key in FLOW.alltraffic) {
+						var item = FLOW.alltraffic[key];
 						if (item.ni)
 							item.input -= item.ni;
 						if (item.no)
@@ -751,10 +750,7 @@ Component.prototype.inputs = function() {
 	if (obj == null)
 		return arr;
 
-	var keys = Object.keys(obj);
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var id = keys[i];
+	for (var id in obj) {
 		var com = FLOW.instances[id];
 		com && arr.push(com);
 	}
@@ -770,10 +766,7 @@ Component.prototype.outputs = function() {
 	if (obj == null)
 		return arr;
 
-	var keys = Object.keys(obj);
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var id = keys[i];
+	for (var id in obj) {
 		var com = FLOW.instances[id];
 		com && arr.push(com);
 	}
@@ -799,12 +792,8 @@ Component.prototype.isDisabled = function(io, index) {
 
 Component.prototype.prev = function(name) {
 	var self = this;
-	var keys = Object.keys(FLOW.inputs[self.id]);
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var id = keys[i];
+	for (var id in FLOW.inputs[self.id]) {
 		var com = FLOW.instances[id];
-
 		if (com) {
 			if (name) {
 				if (com.component === name) {
@@ -822,12 +811,8 @@ Component.prototype.prev = function(name) {
 
 Component.prototype.next = function(name) {
 	var self = this;
-	var keys = Object.keys(FLOW.outputs[self.id]);
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var id = keys[i];
+	for (var id in FLOW.outputs[self.id]) {
 		var com = FLOW.instances[id];
-
 		if (com) {
 			if (name) {
 				if (com.component === name) {
@@ -1173,10 +1158,8 @@ Component.prototype.reconfig = function() {
 
 FLOW.arg = Component.prototype.arg = function(str) {
 	if (typeof(str) === 'object' && str) {
-		var keys = Object.keys(str);
 		var output = {};
-		for (var i = 0; i < keys.length; i++) {
-			var key = keys[i];
+		for (var key in str) {
 			var val = str[key];
 			if (typeof(val) === 'string')
 				output[key] = this.arg(val);
@@ -1454,9 +1437,8 @@ FLOW.instance = function(id) {
 };
 
 FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
-	var keys = Object.keys(FLOW.instances);
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		instance.$events[name] && instance.emit.call(instance, name, a, b, c, d, e, f, g);
 	}
 	return FLOW;
@@ -1464,11 +1446,10 @@ FLOW.emit2 = function(name, a, b, c, d, e, f, g) {
 
 FLOW.clearInstances = function(isdesigner) {
 
-	var keys = Object.keys(FLOW.instances);
 	var arr = [];
 
-	for (var i = 0; i < keys.length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 
 		var obj = {
 			id: instance.id,
@@ -1508,12 +1489,11 @@ FLOW.clearInstances = function(isdesigner) {
 };
 
 FLOW.getOptions = function() {
-	var keys = Object.keys(FLOW.instances);
 	var options = {};
-	for (var i = 0; i < keys.length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		if (instance.options)
-			options[keys[i]] = instance.options;
+			options[key] = instance.options;
 	}
 	return options;
 };
@@ -1700,11 +1680,10 @@ FLOW.refresh_variables = function(data, client) {
 		FLOW.$variables = data;
 		FLOW.variables = tmp;
 
-		var keys = Object.keys(FLOW.instances);
 		EMIT('flow.variables', FLOW.variables);
 
-		for (var i = 0, length = keys.length; i < length; i++) {
-			var instance = FLOW.instances[keys[i]];
+		for (var key in FLOW.instances) {
+			var instance = FLOW.instances[key];
 			instance.$events.variables && instance.emit('variables', FLOW.variables);
 		}
 
@@ -1787,7 +1766,7 @@ FLOW.debug = function(data) {
 // Saves new data
 FLOW.save = function(data, callback) {
 
-	for (var i = 0, length = data.components.length; i < length; i++)
+	for (var i = 0; i < data.components.length; i++)
 		data.components[i].isnew && (data.components[i].isnew = undefined);
 
 	MESSAGE_DESIGNER.tabs = data.tabs;
@@ -1866,11 +1845,12 @@ FLOW.save_variables = function(data, callback) {
 };
 
 FLOW.refresh_connections = function() {
-	var keys = Object.keys(FLOW.instances);
 	FLOW.outputs = {};
 	FLOW.inputs = {};
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var com = FLOW.instances[keys[i]];
+
+	for (var m in FLOW.instances) {
+
+		var com = FLOW.instances[m];
 
 		if (!FLOW.outputs[com.id])
 			FLOW.outputs[com.id] = {};
@@ -1878,11 +1858,10 @@ FLOW.refresh_connections = function() {
 		if (!FLOW.inputs[com.id])
 			FLOW.inputs[com.id] = {};
 
-		var con = Object.keys(com.connections);
-		for (var j = 0; j < con.length; j++) {
-			if (con[j] == '99')
+		for (var key in com.connections) {
+			if (key == '99')
 				continue;
-			var tmp = com.connections[con[j]];
+			var tmp = com.connections[key];
 			for (var b = 0; b < tmp.length; b++) {
 				var id = tmp[b].id;
 				FLOW.outputs[com.id][id] = 1;
@@ -1904,9 +1883,8 @@ FLOW.refresh_connections = function() {
 
 FLOW.clearerrors = function() {
 
-	var arr = Object.keys(FLOW.instances);
-	for (var i = 0, length = arr.length; i < length; i++)
-		FLOW.instances[arr[i]].errors = undefined;
+	for (var key in FLOW.instances)
+		FLOW.instances[key].errors = undefined;
 
 	FLOW.save3();
 	FLOW.send(MESSAGE_CLEARERRORS);
@@ -1953,10 +1931,9 @@ FLOW.execute = function(filename) {
 };
 
 FLOW.kill = function(callback) {
-	var keys = Object.keys(FLOW.instances);
 	var close = [];
-	for (var i = 0; i < keys.length; i++)
-		close.push(FLOW.instances[keys[i]]);
+	for (var key in FLOW.instances)
+		close.push(FLOW.instances[key]);
 	FLOW.reset(close, callback);
 };
 
@@ -2137,11 +2114,10 @@ FLOW.traffic = function(id, type, count, index) {
 };
 
 FLOW.trafficreset = function() {
-	var keys = Object.keys(FLOW.alltraffic);
 	FLOW.alltraffic.count = 0;
-	for (var i = 0, length = keys.length; i < length; i++) {
-		if (keys[i] !== 'count' && keys[i] !== 'pending') {
-			var item = FLOW.alltraffic[keys[i]];
+	for (var key in FLOW.alltraffic) {
+		if (key !== 'count' && key !== 'pending') {
+			var item = FLOW.alltraffic[key];
 			item.input = 0;
 			item.output = 0;
 			item.ni = 0;
@@ -2255,26 +2231,22 @@ FLOW.install = function(filename, body, callback) {
 
 // Removes removed connections
 FLOW.cleaner = function() {
-
-	var keys = Object.keys(FLOW.instances || {});
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
-		Object.keys(instance.connections).forEach(function(key) {
-			var con = instance.connections[key];
-			instance.connections[key] = con.remove(n => FLOW.instances[n.id] == null);
-			!instance.connections[key].length && (delete instance.connections[key]);
-		});
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
+		for (var subkey in instance.connections) {
+			var con = instance.connections[subkey];
+			instance.connections[subkey] = con.remove(n => FLOW.instances[n.id] == null);
+			!instance.connections[subkey].length && (delete instance.connections[subkey]);
+		}
 	}
 };
 
 FLOW.uninstall = function(name, noSync) {
 
 	var close = [];
-	var keys = Object.keys(FLOW.instances);
 
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		if (instance.component === name)
 			close.push(instance);
 	}
@@ -2301,10 +2273,8 @@ FLOW.find = function(fn) {
 		return;
 
 	var arr = [];
-	var keys = Object.keys(FLOW.instances);
-
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		fn(instance, FLOW.components[instance.component]) && arr.push(instance);
 	}
 	return arr;
@@ -2312,10 +2282,9 @@ FLOW.find = function(fn) {
 
 FLOW.findByReference = function(value) {
 	var arr = [];
-	var keys = Object.keys(FLOW.instances);
 	var is = value.test ? true : false;
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		if (is)
 			value.test(instance.reference) && arr.push(instance);
 		else
@@ -2325,10 +2294,9 @@ FLOW.findByReference = function(value) {
 
 FLOW.findByName = function(value) {
 	var arr = [];
-	var keys = Object.keys(FLOW.instances);
 	var is = value.test ? true : false;
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		if (is)
 			value.test(instance.name) && arr.push(instance);
 		else
@@ -2338,10 +2306,9 @@ FLOW.findByName = function(value) {
 
 FLOW.findByComponent = function(value) {
 	var arr = [];
-	var keys = Object.keys(FLOW.instances);
 	var is = value.test ? true : false;
-	for (var i = 0, length = keys.length; i < length; i++) {
-		var instance = FLOW.instances[keys[i]];
+	for (var key in FLOW.instances) {
+		var instance = FLOW.instances[key];
 		if (is)
 			value.test(instance.component) && arr.push(instance);
 		else
@@ -2425,10 +2392,8 @@ FlowData.prototype.rem = function(key) {
 FlowData.prototype.arg = function(str) {
 	var self = this;
 	if (typeof(str) === 'object' && str) {
-		var keys = Object.keys(str);
 		var output = {};
-		for (var i = 0; i < keys.length; i++) {
-			var key = keys[i];
+		for (var key in str) {
 			var val = str[key];
 			if (typeof(val) === 'string')
 				output[key] = self.arg(val);
