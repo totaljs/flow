@@ -910,7 +910,7 @@ Component.prototype.send = function(index, message) {
 	}
 
 	var arr = self.$connections;
-	if (!arr.length) {
+	if (!arr || !arr.length) {
 		message.completed = true;
 		return message;
 	}
