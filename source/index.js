@@ -36,7 +36,7 @@ var READY = false;
 var MODIFIED = null;
 var TYPE;
 
-exports.version = 'v6.2.3';
+exports.version = 'v6.2.4';
 
 global.FLOW = { components: {}, instances: {}, inmemory: {}, triggers: {}, alltraffic: { count: 0 }, indexer: 0, loaded: false, url: '', $events: {}, $variables: '', variables: EMPTYOBJECT, outputs: {}, inputs: {} };
 global.FLOW.version = +exports.version.replace(/[v.]/g, '');
@@ -302,13 +302,13 @@ FN.view_index = function() {
 
 	this.theme('');
 	var R = this.repository;
-	R.url = OPT.url;
+	R.url = U.link ? U.link(CONF.default_root, OPT.url) : OPT.url;
 	R.dark = OPT.dark;
 	R.version = +exports.version.replace(/\.|v/g, '');
 	R.versiontitle = exports.version;
 	R.sharedfiles = OPT.sharedfiles;
 	R.limit = OPT.limit;
-	R.socket = OPT.socket;
+	R.socket = U.link ? U.link(CONF.default_root, OPT.socket) : OPT.socket;
 	R.openplatform = OPT.openplatform;
 	this.view('@flow/index');
 };
