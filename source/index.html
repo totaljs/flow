@@ -315,8 +315,8 @@
 					x = min;
 
 				panel.css('width', x);
-				body.css('margin-right', -x);
-				noscrollbar.css('width', (x + ssw))
+				noscrollbar.css('width', (x + ssw));
+				$(W).trigger('resize');
 			};
 
 			WATCH('common.panelwidth', function(path, w) {
@@ -327,8 +327,8 @@
 					if (w > max)
 						w = max;
 					panel.width(w);
-					body.css('margin-right', -w);
 					noscrollbar.width(w + ssw);
+					$(W).trigger('resize');
 				}
 			});
 
