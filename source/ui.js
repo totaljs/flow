@@ -597,7 +597,7 @@ COMPONENT('loading', function(self) {
 	};
 });
 
-COMPONENT('repeater', function(self) {
+COMPONENT('repeater', 'hidden:true;check:true', function(self, config) {
 
 	var filter = null;
 	var recompile = false;
@@ -621,13 +621,15 @@ COMPONENT('repeater', function(self) {
 		var html = element.html();
 		element.remove();
 		self.template = Tangular.compile(html);
-		recompile = (/data-jc="|data-bind="/).test(html);
+		recompile = html.COMPILABLE();
 	};
 
 	self.setter = function(value) {
 
 		if (!value || !value.length) {
+			config.hidden && self.aclass('hidden');
 			self.empty();
+			self.cache = '';
 			return;
 		}
 
@@ -642,7 +644,16 @@ COMPONENT('repeater', function(self) {
 			}
 		}
 
-		self.html(builder.join(''));
+		var tmp = builder.join('');
+
+		if (config.check) {
+			if (tmp === self.cache)
+				return;
+			self.cache = tmp;
+		}
+
+		self.html(tmp);
+		config.hidden && self.rclass('hidden');
 		recompile && self.compile();
 	};
 });
