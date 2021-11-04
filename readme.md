@@ -6,6 +6,7 @@ __Total.js Flow 6.2__ is a visual programming interface. It's available as a pac
 
 - [__Documentation__](https://docs.totaljs.com/flow/)
 - [Website](https://www.totaljs.com/flow/)
+- [Join __Total.js Telegram__](https://t.me/totalplatform)
 - [Live chat with contributors](https://platform.totaljs.com/?open=messenger)
 - [Commercial support](https://www.totaljs.com/support/)
 
