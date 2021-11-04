@@ -9,19 +9,12 @@ __Total.js Flow 6.2__ is a visual programming interface. It's available as a pac
 - [Live chat with contributors](https://platform.totaljs.com/?open=messenger)
 - [Commercial support](https://www.totaljs.com/support/)
 
-## Contributors
+__Docker__:
 
-| Contributor | Type | E-mail |
-|-------------|------|--------|
-| [Peter Širka](https://github.com/petersirka) | author + support | <petersirka@gmail.com> |
-| [Martin Smola](https://github.com/molda) | contributor + support | <smola.martin@gmail.com> |
-| [John Graves](https://github.com/gravesjohnr) | contributor | <john.graves@oracle.com> |
-
-## Components contributors
-
-| Contributor | Type | E-mail |
-|-------------|------|--------|
-| Torlone Gianfranco | contributor | <torloneg@gmail.com> |
+```bash
+docker pull totalplatform/flow
+docker run -p 8000:8000 totalplatform/flow
+````
 
 ## Contact
 
