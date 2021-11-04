@@ -8,7 +8,7 @@ RUN mkdir -p /www/packages
 COPY index.js .
 COPY config .
 COPY package.json .
-COPY flow.package ./packages/
+COPY ./packages/flow.package ./packages/flow.package
 
 RUN npm install
 EXPOSE 8000
