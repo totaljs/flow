@@ -1,24 +1,25 @@
-# Total.js Flow
+# Total.js FlowStream
 
-[![Professional Support](https://www.totaljs.com/img/badge-support.svg)](https://www.totaljs.com/support/) [![Chat with contributors](https://www.totaljs.com/img/badge-chat.svg)](https://messenger.totaljs.com)
-
-__Total.js Flow 6.2__ is a visual programming interface. It's available as a package and can be added to any applications based on __Total.js framework__. Flow can be used to add missing or changing already implemented functionality to already existing applications without having to write any code as well as creating new applications. It can be used for connecting *Internet of Things*, home automation, etc.
-
-- [__Documentation__](https://docs.totaljs.com/flow/)
-- [Website](https://www.totaljs.com/flow/)
+- [Website](https://www.totaljs.com/flowstream/)
+- [__Documentation__](https://docs.totaljs.com/total4/5aed1001bj51c/)
+- [Chat support](https://platform.totaljs.com/?open=messenger)
 - [Join __Total.js Telegram__](https://t.me/totalplatform)
-- [Live chat with contributors](https://platform.totaljs.com/?open=messenger)
-- [Commercial support](https://www.totaljs.com/support/)
+- [Support](https://www.totaljs.com/support/)
+
+Total.js FlowStream is a new alternative to the Total.js Flow that integrates the Total.js Message Service (TMS).
+
+- [Download FlowStream components](https://github.com/totaljs/flowstreamcomponents)
+- [Documentation](https://docs.totaljs.com/)
+
+__Requirements__:
+
+- Total.js 4 - `$ npm install total4`
 
 __Docker__:
 
 ```bash
-docker pull totalplatform/flow
-docker run -p 8000:8000 totalplatform/flow
+docker pull totalplatform/flowstream
+docker run -p 8000:8000 totalplatform/flowstream
 ````
 
-## Contact
-
-- (c) 2017-2021 by Peter Širka - <petersirka@gmail.com>
-- contact form <https://www.totaljs.com/contact/>
-- <info@totaljs.com>
+![FlowStream](https://cdn.totaljs.com/images/flowstream.png)

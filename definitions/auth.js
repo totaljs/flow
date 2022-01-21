@@ -1,0 +1,4 @@
+
+AUTH(function($) {
+	$.success(EMPTYOBJECT);
+});

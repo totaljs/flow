@@ -1,0 +1,255 @@
+<div data-scope="~PATH~" class="componenteditor invisible">
+	<div data---="viewbox__null__parent:window;margin:60;scrollbar:0">
+		<div data---="codemirror__?.body__type:totaljs;parent:auto;contextmenu:?/contextmenu;$assign:EDITOR;height:0__''"></div>
+	</div>
+	<nav>
+		<div class="help" style="margin-top:25px"><a href="https://docs.totaljs.com/" target="_blank"><i class="far fa-book-spells"></i>@(Documentation)</a></div>
+		<div>
+			<button name="submit" class="exec" data-exec="?/submit"><i class="far fa-check-circle"></i>@(SUBMIT)</button>
+			<button class="exec" data-exec="?/cancel">@(Cancel)</button>
+		</div>
+	</nav>
+</div>
+
+<script>
+	PLUGIN('~PATH~', function(exports) {
+
+		var init = false;
+		var editor;
+
+		exports.reload = function() {
+			if (!init) {
+				exports.element.find('.componenteditor').rclass('invisible', 1000);
+				init = true;
+			}
+		};
+
+		exports.refresh = function() {
+		};
+
+		exports.submit = function() {
+
+			var model = GET('? @reset');
+			var id = model.id;
+
+			model.body = EDITOR.editor.getValue();
+
+			if (model.id) {
+				var com = flow.components.findItem('id', model.id);
+				com && OFF('configure_' + com.name.slug());
+				$('#settings_f' + model.id).remove();
+				FREE();
+			}
+
+			var m = model.body.match(/exports\.id(\s=).*?;/);
+			if (m) {
+				try {
+					id = new Function('exports', 'return ' + m[0])({});
+				} catch (e) {}
+			}
+
+			if (!id)
+				id = FUNC.makeid('c');
+
+			model.body = FUNC.rtrim(model.body);
+			SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: model.body, callback: ASETTER('message/response @hideloading', exports.cancel) });
+		};
+
+		exports.cancel = function() {
+			SET('common.page', 'flow');
+			setTimeout(function() {
+				EMIT('resize');
+			}, 100);
+		};
+
+		exports.appendcustom = function(fn) {
+			var cur = editor.getCursor();
+			var c = editor.getRange({ line: cur.line, ch: cur.ch - 1 }, { line: cur.line, ch: cur.ch });
+			fn(editor, cur, c);
+		};
+
+		exports.addicon = function() {
+			var opt = {};
+			opt.align = 'left';
+			opt.position = 'top';
+			opt.element = $('.CodeMirror-cursor');
+			opt.callback = function(icon) {
+				exports.appendcustom(function(editor, cur, selected) {
+
+					var selection = editor.getSelection();
+					var text = selection ? selection : editor.lineInfo(cur.line).text;
+					var prev = text.substring(cur.ch - 1, cur.ch);
+					var clean = false;
+					var reg = /(fal|far|fas|fab|fa)\s/;
+					var is = { fa: 1, far: 1, fas: 1, fab: 1, fal: 1 };
+					var space = is[text.substring(cur.ch - 2, cur.ch)] || is[text.substring(cur.ch - 3, cur.ch)];
+
+					for (var i = cur.ch; i > cur.ch - 30; i--) {
+						var fa2 = text.substring(i - 4, i);
+						var fa = text.substring(i - 3, i);
+
+						if (is[fa.trim()] || is[fa2.trim()]) {
+							icon = icon.replace(reg, '');
+							break;
+						}
+					}
+
+					if (space || (selection && selection.indexOf(' ') === -1))
+						icon = icon.replace(reg, '');
+
+					editor.replaceSelection(prev && prev !== ' ' && prev !== '"' && prev !== '\'' ? (' ' + icon) : icon);
+				});
+			};
+
+			SETTER('faicons/show', opt);
+		};
+
+		exports.contextmenu = function(e, editor) {
+			var items = [];
+			var sel = editor.getSelections();
+			var text = sel.join('');
+			var can = text.length > 0;
+			var sub = [];
+			var tools = [];
+			var tmp;
+
+			if (can) {
+
+				items.push({ name: '@(Copy)', icon: '!far fa-copy', command: 'copy' });
+
+				if (text.indexOf('<') !== -1)
+					items.push({ name: '@(Copy without tags)', icon: '!far fa-copy', value: 'copytext' });
+
+				if ((/\:(\s)?#|#\w{6}|background|border|stroke|fill|color|rgba\:/).test(text))
+					items.push({ name: '@(Transform to Dark mode)', icon: 'tint', value: 'darkmode' });
+
+				if ((/(#)?[A-F0-9]{6}/i).test(text) && text.indexOf('\n') === -1)
+					items.push({ name: '@(Convert to RGBA)', icon: 'palette', value: 'hex2rgba' });
+
+				if (((/\d+,(\s)?\d+,(\s)?\d+/i)).test(text))
+					items.push({ name: '@(Convert to HEX)', icon: 'palette', value: 'rgba2hex' });
+
+				items.push('-');
+			}
+
+			items.push({ name: '@(Insert color)', icon: 'fill-drip colorize', value: 'colorpicker' });
+			items.push({ name: '@(Insert icon)', icon: 'image blue', value: 'icon' });
+
+			SETTER('menu/showxy', e.pageX + 5, e.pageY - 15, items, function(value) {
+
+				if (value.command) {
+					editor.focus();
+					setTimeout(function() {
+						document.execCommand(value.command, true);
+					}, 100);
+					return;
+				}
+
+				if (value.value === 'toggleruler') {
+					EDITOR.toggleruler();
+					return;
+				}
+
+				if (value.value === 'hex2rgba') {
+					editor.replaceSelection(FUNC.hex2rgba(text));
+					return;
+				}
+
+				if (value.value === 'rgba2hex') {
+					editor.replaceSelection(FUNC.rgba2hex(text));
+					return;
+				}
+
+				if (value.value === 'darkmode') {
+					editor.replaceSelection(FUNC.colorize(text, '.ui-dark'));
+					return;
+				}
+
+				if (value.value === 'responsive') {
+					editor.replaceSelection(FUNC.responsive(text));
+					return;
+				}
+
+				if (value.value === 'removedarkmode') {
+					editor.replaceSelection(FUNC.removecssclass('.ui-dark', text));
+					return;
+				}
+
+				if (value.value === 'copycarbon') {
+					var cur = editor.getModeAt(editor.getCursor());
+					var t = cur.helperType || cur.name;
+
+					if (t === 'html')
+						t = 'htmlmixed';
+
+					W.open('https://carbon.now.sh/?l={0}&code={1}'.format(t, encodeURIComponent(FUNC.strim(text).replace(/\t/g, '    '))));
+					return;
+				}
+
+				if (value.value === 'copytext') {
+					SETTER('clipboard/copy', text.removeTags());
+					return;
+				}
+
+				if (value.value === 'copysyntax') {
+					var div = document.createElement('DIV');
+					var el = document.createElement('PRE');
+					div.style = 'position:absolute;left:-2000px;top:-2000px;opacity:0';
+					div.appendChild(el);
+					document.body.appendChild(div);
+					var cur = editor.getModeAt(editor.getCursor());
+					var t = cur.helperType || cur.name;
+					if (t === 'json')
+						t = 'application/ld+json';
+					CodeMirror.runMode(FUNC.strim(text).replace(/\t/g, '  '), t, el);
+					el.setAttribute('class', 'cm-s-default');
+					el.setAttribute('contenteditable', 'true');
+					el.focus();
+					document.execCommand('selectAll', false, null);
+					document.execCommand('copy', false, null);
+					setTimeout(function() {
+						document.body.removeChild(div);
+					}, 500);
+					return;
+				}
+
+				if (value.value === 'copymarkdown') {
+					var cur = editor.getModeAt(editor.getCursor());
+					var syntax = FUNC.getext(cur.helperType || cur.name);
+					SETTER('clipboard/copy', '```' + syntax + '\n' + FUNC.strim(text).replace(/\t/g, '  ').trim() + '\n```');
+					return;
+				}
+
+				if (value.value === 'formatjson') {
+					try {
+						editor.replaceSelection(JSON.stringify(JSON.parse(text), null, '\t'));
+					} catch (e) {}
+					return;
+				}
+
+				if (value.value === 'icon') {
+					exports.addicon();
+					return;
+				}
+
+				if (value.value === 'colorpicker') {
+					var opt = {};
+					opt.x = e.pageX - 10;
+					opt.y = e.pageY + 10;
+					opt.callback = function(selected) {
+						editor.replaceSelection(selected);
+					};
+					setTimeout(ASETTER('colorpicker/show', opt), 100);
+					return;
+				}
+
+			});
+		};
+
+		WAIT('EDITOR', function() {
+			editor = EDITOR.editor;
+		});
+
+	});
+
+</script>

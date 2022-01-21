@@ -1,0 +1,403 @@
+<div data---="windows__common.windows"></div>
+
+<div class="landing">
+
+	<header class="header">
+		<div>
+			<button class="exec labeled" data-exec="common/create"><i class="fa fa-plus-circle green"></i><span>@(FlowStream)</span></button>
+		</div>
+		<div>
+			<button title="@(Variables)" class="exec" data-exec="common/variables"><i class="fa fa-clipboard-list"></i></button>
+			<a href="https://docs.totaljs.com/flowstream/" title="@(Documentation: Total.js FlowStream)" target="_blank" class="special"><i class="fa fa-book"></i></a>
+		</div>
+	</header>
+	<div class="header-empty"></div>
+
+	<div data---="viewbox__null__parent:window;scrollbar:1;scrollbarshadow:1;margin:75" class="invisible">
+
+		<div data---="empty__common.groups__parent:auto" class="invisible">
+
+			<script type="text/html">
+				@(You don't have registered any Flow)
+			</script>
+
+			<div data-bind="common.groups__template" class="flowstreams">
+				<script type="text/html">
+					{{ foreach g in value }}
+						<div class="flows">
+							{{ if g.name }}<h2><span>{{ g.items.length }}</span>{{ g.name }}</h2>{{ fi }}
+							{{ foreach m in g.items }}
+							<figure class="exec exec3{{ if m.stats && m.stats.paused }} paused{{ fi }}" data-exec="common/open" data-id="{{ m.id }}" data-exec3="common/contextmenu">
+								<section{{ if m.color }} style="border-color:{{ m.color }}"{{ fi }}>
+									<div class="ispaused"><i class="fa fa-pause"></i></div>
+									{{ if m.reference }}<div class="reference">{{ m.reference }}</div>{{ fi }}
+									<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="fas fa-ellipsis-v"></i></div>
+									<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
+									<div class="meta">
+										<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
+										<div class="author">{{ m.author | empty }}</div>
+										<div class="size">{{ m.size | filesize }}</div>
+									</div>
+									<div class="stats">
+										<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>
+										<div><span>{{ m.stats.messages | format(0) }}</span><label>@(Messages)</label></div>
+										<div><span>{{ m.stats.pending | format(0) }}</span><label>@(Pending)</label></div>
+										<div><span>{{ m.stats.mm | format(0) }}</span><label>@(Per minute)</label></div>
+									</div>
+								</section>
+							</figure>
+							{{ end }}
+						</div>
+					{{ end }}
+				</script>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div data-bind="common.stats__template">
+			<script type="text/html">
+				<span><b>{{ value.memory | filesize }}</b>@(Memory)</span>
+				<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
+				<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
+				<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
+			</script>
+		</div>
+	</footer>
+</div>
+
+<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
+<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
+
+<script>
+
+	SETTER(true, 'loading/hide', 500);
+	W.OP && W.OP.jcomponent();
+
+	$(document).on('mouseenter mouseleave', '.tooltip', function(e) {
+		if (e.type === 'mouseenter') {
+			var el = $(this);
+			var opt = {};
+			opt.element = el;
+			opt.html = el.attr('tooltip');
+			opt.align = 'bottom';
+			opt.timeout = 3000;
+			SETTER('tooltip/show', opt);
+		} else
+			SETTER('tooltip/hide');
+	});
+
+	PLUGIN('common', function(exports) {
+
+		var checksum;
+
+		exports.refresh = function() {
+
+			exports.scope();
+
+			DAPI('streams', ERROR(function(response) {
+
+				var groups = {};
+				for (var item of response) {
+
+					if (!item.group)
+						item.group = '#';
+
+					if (groups[item.group])
+						groups[item.group].items.push(item);
+					else
+						groups[item.group] = { name: item.name, items: [item] };
+				}
+
+				var arr = [];
+
+				for (var key in groups) {
+					arr.push({ name: key === '#' ? '' : key, items: groups[key].items });
+					groups[key].items.quicksort('name');
+				}
+
+				arr.quicksort('name');
+				SET('?.groups', arr);
+				SET('?.items', response);
+			}));
+		};
+
+		exports.open = function(el) {
+			var model = GET('?');
+			var id = el instanceof jQuery ? el.attrd2('id') : el;
+			var item = model.items.findItem('id', id);
+			if (item) {
+				if (model.windows.findItem('id', id)) {
+					SETTER('windows/focus', id);
+				} else {
+					var w = (WW / 1.4) >> 0;
+					var h = (WH / 1.4) >> 0;
+					var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/?openplatform={1}'.format(id, encodeURIComponent(NAV.query.openplatform || ''));
+					PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + location.origin + '/$designer/?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
+				}
+			}
+		};
+
+		exports.contextmenu = function(el, e) {
+
+			var id = el.attrd2('id');
+			var opt = {};
+
+			if (el.hclass('exec3')) {
+				opt.x = e.pageX;
+				opt.y = e.pageY;
+			} else {
+				opt.element = el;
+			}
+
+			var item = GET('?.items').findItem('id', id);
+			var paused = false;
+			var parent = el.closest('.flowstreams');
+
+			opt.items = [];
+			opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'fa fa-clipboard-list', classname: 'b' });
+
+			if (common.totalversion > 4045 && item.stats) {
+				if (item.stats.paused) {
+					opt.items.push({ id: 'play', name: '@(Play)', icon: 'fa fa-play green' });
+					paused = true;
+				} else
+					opt.items.push({ id: 'pause', name: '@(Pause)', icon: 'fa fa-pause red' });
+			}
+
+			opt.items.push('-');
+
+			if (top === W)
+				opt.items.push({ id: 'newtab', name: '@(Open in new tab)', icon: 'far fa-window-restore' });
+
+			opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fa fa-pencil' });
+			opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
+			opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+			opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'far fa-copy' });
+
+			if (common.workers)
+				opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'fa fa-sync' });
+
+			opt.items.push('-');
+			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
+
+			opt.callback = function(opt) {
+				switch (opt.id) {
+					case 'newtab':
+						var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+						console.log(location.origin + '/$designer/');
+						W.open(location.origin + '/$designer/?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')));
+						break;
+					case 'pause':
+					case 'play':
+						DAPI(QUERIFY('streams_pause/' + id, { is: paused ? 0 : 1 }), function() {
+
+							parent.find('figure[data-id="{0}"]'.format(id)).tclass('paused', !paused);
+
+							if (item.stats)
+								item.stats.paused = !paused;
+						});
+						break;
+					case 'restart':
+						SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"fa fa-sync" @(Restart)', function() {
+							DAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notifybar/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
+						});
+						break;
+					case 'variables':
+						DAPI('variables?id=' + id, ASETTER('message/response', function(response) {
+							var model = {};
+							model.variables = response;
+							model.callback = function(model) {
+								DAPI('variables_save', { id: id, data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+							};
+							SET('variablesform @reset', model);
+							SET('common.form', 'variablesform');
+						}));
+						break;
+					case 'copy':
+					case 'copy2':
+					case 'clone':
+						DAPI('clipboard_export/' + id, ASETTER('message/response', function(response) {
+							if (opt.id === 'copy' || opt.id === 'copy2') {
+								SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : response.value);
+								SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
+							} else {
+								DAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {
+									exports.refresh();
+									setTimeout(function() {
+										DAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+											SET('streamform @reset', response);
+											SET('common.form', 'streamform');
+										}));
+									}, 1000);
+								}));
+							}
+						}));
+						break;
+					case 'edit':
+						DAPI('streams_read/{0} @showloading'.format(id), ASETTER('message/response', function(response) {
+							SET('streamform @reset', response);
+							SET('common.form @hideloading', 'streamform');
+						}));
+						break;
+					case 'remove':
+						SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"far fa-trash-alt" @(Remove)', function() {
+							DAPI('streams_remove/' + id, ASETTER('message/response', exports.refresh));
+						});
+						break;
+				}
+			};
+			SETTER('menu/show', opt);
+		};
+
+		exports.create = function(el) {
+
+			var opt = {};
+			opt.element = el;
+			opt.items = [];
+			opt.items.push({ id: 'create', name: '@(Create new)', icon: 'far fa-object-ungroup' });
+			opt.items.push({ id: 'import', name: '@(Import FlowStream)', icon: 'fas fa-file-import' });
+			// opt.items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
+
+			if (common.marketplace) {
+				opt.items.push('-');
+				opt.items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
+			}
+
+			opt.callback = function(item) {
+
+				switch (item.id) {
+
+					case 'import':
+						FUNC.import(function(data, hide) {
+							data = data.trim();
+							if (data.substring(0, 4) === 'flow' || data.charAt(0) === '{') {
+								if (data.charAt(0) !== '{') {
+									data = DECRYPT(data, common.secret, 'flow');
+									if (!data) {
+										SETTER('message/warning', '@(Invalid data)');
+										return;
+									}
+									data = STRINGIFY(data);
+								}
+								DAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
+									exports.refresh();
+									setTimeout(function() {
+										DAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+											SET('streamform @reset', response);
+											SET('common.form', 'streamform');
+										}));
+									}, 1000);
+								}));
+								hide();
+							} else
+								SETTER('message/warning', '@(Invalid data)');
+						});
+						break;
+
+					case 'create':
+						SET('streamform @default', {});
+						SET('common.form', 'streamform');
+						break;
+					case 'opensource':
+						SET('common.form', 'templatesform');
+						break;
+					case 'marketplace':
+						exports.marketplace();
+						break;
+				}
+
+			};
+
+			SETTER('menu/show', opt);
+		};
+
+		exports.variables = function() {
+			DAPI('variables', function(response) {
+				var model = {};
+				model.variables = response;
+				model.callback = function(model) {
+					DAPI('variables_save', { data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+				};
+				SET('variablesform @reset', model);
+				SET('common.form', 'variablesform');
+			});
+		};
+
+		exports.marketplace = function() {
+			IMPORT('ONCE ' + common.marketplace + '/open/', AEXEC('marketplace/open', 'flowstream', function(response, data) {
+				// SET('pagestemplate', { type: 'page', body: response, name: data.name });
+			}, true));
+		};
+
+		exports.refresh();
+
+		exports.stats = function() {
+			DAPI('streams_stats', 'common.stats');
+		};
+
+		ON('ready', exports.stats);
+
+		setInterval(function() {
+			exports.stats();
+			exports.refresh();
+		}, 10000);
+
+		$(W).on('message', function(e) {
+			var data = e.originalEvent.data;
+			if (data)
+				data = PARSE(data);
+
+			if (data && data.SOURCE === 'flow') {
+				switch (data.TYPE) {
+					case 'open':
+						if (data.id.charAt(0) === '@')
+							data.id = common.items.findValue('reference', data.id.substring(1), 'id');
+						data.id && exports.open(data.id);
+						SETTER('!menu/hide');
+						SETTER('!datepicker/hide');
+						break;
+					case 'focus':
+						var win = common.windows.findItem('url', data.socket);
+						if (win) {
+							SETTER('!menu/hide');
+							SETTER('!datepicker/hide');
+							SETTER('windows/focus', win.id);
+						}
+						break;
+					case 'edit':
+						DAPI('streams_read/{id} @showloading'.arg(data), ASETTER('message/response', function(response) {
+							SET('streamform @reset', response);
+							SET('common.form @hideloading', 'streamform');
+						}));
+						break;
+				}
+			}
+		});
+
+		ON('paste', function(text) {
+			var data;
+			if (!common.form && text.substring(0, 4) === 'flow') {
+				data = DECRYPT(text, common.secret, 'flow');
+				if (data) {
+					SETTER('approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
+						DAPI('clipboard_import @showloading', { data: STRINGIFY(data) }, ASETTER('message/response @hideloading', function(response) {
+
+							if (response.error)
+								SETTER('message/warning', response.error);
+
+							EXEC('common/refresh');
+							setTimeout(function() {
+								DAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+									SET('streamform @reset', response);
+									SET('common.form', 'streamform');
+								}));
+							}, 1000);
+						}));
+					});
+				}
+			}
+		});
+
+	});
+
+</script>

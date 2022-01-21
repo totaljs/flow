@@ -1,0 +1,88 @@
+<div data---="largeform__common.form__if:~PATH~;title:@(TMS sources);icon:fa fa-code-branch;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+	<div>
+		<div class="search">
+			<div data---="searchinput__%sourcessearch__placeholder:@(Search apps)"></div>
+		</div>
+		<div data---="viewbox__common.form__parent:.ui-largeform-body;margin:30;scrollbar:1" class="invisible">
+			<div data---="empty__?.items__parent:auto" class="invisible">
+
+				<script type="text/html">
+					@(You don't have any external TMS sources)
+				</script>
+
+				<div data---="search__%sourcessearch__selector:.search" data-bind="?.items__template">
+					<script type="text/html">
+						{{ foreach m in value }}
+							<div class="sources-item search" data-search="{{ m.url }}" data-id="{{ m.id }}">
+								<div class="controls">
+									<button title="@(Edit)" class="exec" data-exec="?/edit"><i class="fas fa-pencil"></i></button>
+									<button class="red exec" data-exec="?/remove" title="@(Remove)"><i class="far fa-trash-alt"></i></button>
+								</div>
+								{{ if m.error }}<div class="code">Error code: <b>{{ m.error }}</b></div>{{ fi }}
+								<div class="name"><i class="fa fa-circle {{ if m.online }}green{{ else }}red{{ fi }}"></i> {{ m.name }} <b>{{ m.url | url }}</b></div>
+							</div>
+						{{ end }}
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav data---="validation__?">
+		<button name="cancel" style="width:100%">@(Cancel)</button>
+	</nav>
+</div>
+
+<script>
+
+	PLUGIN('~PATH~', function(exports) {
+
+		exports.reload = function(com) {
+
+			if (!com.updated) {
+				com.updated = true;
+				var el = com.element.find('.ui-largeform-title');
+				el.append('<button class="ui-largeform-options exec b" data-exec="?/add"><i class="fa fa-plus green"></i>@(Add source)</button>');
+			}
+
+			exports.refresh();
+		};
+
+		exports.add = function() {
+			SET('sourceform @default', {});
+			SET('common.form2', 'sourceform');
+		};
+
+		exports.refresh = function() {
+			FUNC.send({ TYPE: 'sources' }, function(response) {
+				var arr = [];
+				for (var key in response.data) {
+					var item = response.data[key];
+					item.id = key;
+					arr.push(item);
+				}
+				arr.quicksort('url');
+				exports.scope();
+				SET('?.items @hideloading', arr);
+			}, true);
+		};
+
+		exports.edit = function(el) {
+			var id = el.attrd2('id');
+			FUNC.send({ TYPE: 'source_read', id: id }, ASETTER('message/response', function(response) {
+				SET('sourceform @reset @hideloading', response.data);
+				SET('common.form2', 'sourceform');
+			}));
+		};
+
+		exports.remove = function(el) {
+			var id = el.attrd2('id');
+			SETTER('approve/show', '@(Are you sure you want to remove selected source?)', '"trash-o" @(Remove)', function() {
+				FUNC.send({ TYPE: 'source_remove', id: id }, ASETTER('message/response', function(response) {
+					exports.refresh();
+				}));
+			});
+		};
+
+	});
+
+</script>

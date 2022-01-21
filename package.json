@@ -1,0 +1,23 @@
+{
+  "name": "flow",
+  "version": "10.0.0",
+  "main": "index.js",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/totaljs/flow"
+  },
+  "dependencies": {
+    "total4": "latest"
+  },
+  "scripts": {
+    "start": "node index.js 8000"
+  },
+  "keywords": [
+    "flow",
+    "flowstream",
+    "iot"
+  ],
+  "author": "Total.js",
+  "contributors": ["Peter Širka", "Martin Smola"],
+  "license":"MIT"
+}

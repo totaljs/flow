@@ -1,0 +1,23 @@
+<div data---="form__common.form__if:~PATH~;title:@(Variables);icon:fa fa-clipboard-list;autofocus:true;scrollbar:1;submit:?/submit;width:700" class="hidden" data-scope="~PATH~">
+	<div class="padding">
+		<div data---="keyvalue__?.variables__placeholderkey:@(Type a key);placeholdervalue:@(Type a value and press enter)"></div>
+	</div>
+	<nav>
+		<button name="submit"><i class="fa fa-check-circle"></i>@(SUBMIT)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
+</div>
+
+<script>
+
+	PLUGIN('~PATH~', function(exports) {
+
+		exports.submit = function(hide) {
+			var model = GET('?');
+			model.callback && model.callback(model.variables);
+			hide();
+		};
+
+	});
+
+</script>

@@ -1,0 +1,1334 @@
+<div class="flow" data-scope="flow">
+
+	<header class="header">
+		<div class="pull-right hidden" data-bind="?.head.version__show:value>11">
+			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="fa fa-info-circle color"></i></button>
+		</div>
+		<div class="apply-button">
+			<button class="exec apply" data-exec="?/submit" data-bind="?.changed__.highlight"><i class="fas fa-play"></i><span>@(APPLY)</span></button>
+		</div>
+		<div>
+			<button title="@(Pause)" class="exec hidden" data-exec="?/pause" data-bind="?.stats.paused__.paused__|__?.head.total__show:value>4045"><i class="fas fa-pause"></i><span></span></button>
+			<button title="@(Add)" class="exec green" data-exec="?/add"><i class="fa fa-plus-circle"></i></button>
+			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
+			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
+			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
+			<button title="@(Sources)" class="exec" data-exec="?/sources"><i class="fa fa-code-branch"></i></button>
+			<a href="https://docs.totaljs.com/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
+		</div>
+		<div>
+			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
+			<button disabled title="@(Redo)" data-bind="?.redo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="redo"><i class="fa fa-redo"></i></button>
+			<button title="@(Zoom in)" class="exec" data-exec="?/operation" data-type="in"><i class="fa fa-search-plus"></i></button>
+			<button title="@(Zoom out)" class="exec" data-exec="?/operation" data-type="out"><i class="fa fa-search-minus"></i></button>
+			<button title="@(Zoom out/Zoom reset)" class="exec" data-exec="?/operation" data-type="out2"><i class="fas fa-search-location"></i></button>
+		</div>
+		<div>
+			<button title="@(Options)" class="exec" data-exec="?/options"><i class="fa fa-cog"></i></button>
+		</div>
+		<div style="border-right:0">
+			<div class="help" data-bind="?.selected__show:value&&value.component__template">
+				<script type="text/html">
+					<div>{{ value.name }} ({{ value.component | instancecount }})</div>
+					<div>@(ID): <b class="monospace">{{ value.id }}</b></div>
+				</script>
+			</div>
+		</div>
+	</header>
+	<div class="header-empty"></div>
+
+	<div data---="layout__?.layout__margin:45">
+
+		<script type="text/plain">
+			{
+				left: { size: 235, minsize: 200, resize: true },
+				bottom: { size: 30 },
+				main: {}
+			}
+		</script>
+
+		<section data-type="left">
+			<div data-import="url:/panels/flow.html"></div>
+		</section>
+
+		<section data-type="main">
+			<div data---="viewbox__null__parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:0;scrollbarshadow:0;$id:flowviewbox">
+				<div data---="flow__?.data__width:10000;height:10000;grid:16;horizontal:1;snapping:5;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></div>
+			</div>
+		</section>
+
+		<section data-type="bottom">
+			<div class="stats">
+				<div class="realtime" title="@(Total messages)">
+					<i class="fa fa-calculator"></i>@(Messages): <b data-bind="?.stats.messages__text__empty__format:0"></b>
+				</div>
+				<div class="realtime" title="@(Pending messages)">
+					<i class="fa fa-refresh fa-spin"></i>@(Pending): <span class="gray" data-bind="?.stats.pending__text__empty__format:0"></span>
+				</div>
+				<div class="realtime" title="@(Messages per minute)">
+					<i class="far fa-clock"></i>@(Per minute): <span class="gray" data-bind="?.stats.mm__text__empty__format:0"></span>
+				</div>
+				<div class="realtime" title="@(Used nodes)">
+					<i class="fas fa-code-branch"></i>@(Nodes): <span class="gray" data-bind="?.connected__text__empty__format:0"></span>
+				</div>
+				<div class="realtime" title="@(Memory usage)">
+					<i class="fas fa-microchip"></i>@(Memory): <span class="gray" data-bind="?.stats.memory__text:Thelpers.filesize(value||0)"></span>
+				</div>
+			</div>
+		</section>
+
+	</div>
+</div>
+
+<script id="template_flowsettings" type="text/html">
+	<div data-scope="flow.settings.@NAME@" id="@NAME@">
+		@BODY@
+	</div>
+</script>
+
+<div data---="largeform__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
+	<div id="flow_settings"></div>
+	<nav data---="validation__settings__$id:settingsvalidation">
+		<button name="submit"><i class="far fa-check-circle"></i>@(APPLY)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
+</div>
+
+<div data---="panel__common.panel__if:readme;width:500;title:@(Read me);zindex:10;$id:readme">
+	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
+</div>
+
+<!-- A temporary repository for components settings -->
+<div id="flow_repo" class="hidden"></div>
+<div data---="importer__common.form__if:groupform;url:/forms/group.html"></div>
+
+<script>
+
+	if (!W.flow)
+		W.flow = { data: {}, note: {}, config: {}, variables: {}, variables2: {}, status: {}, errors: {}, calls: {}, callbacks: {}, head: {} };
+
+	Thelpers.instancecount = function(id) {
+		var count = 0;
+		for (var key in flow.data) {
+			var instance = flow.data[key];
+			if (instance.component === id)
+				count++;
+		}
+		return count;
+	};
+
+	// Reads flow statuses
+	SETTER(true, 'websocket/send', { TYPE: 'flow' });
+
+	FIND('websocket', function(com) {
+		com.send2 = com.send;
+		com.send = function(data) {
+			if (data.callback) {
+				data.callbackid = GUID(10);
+				flow.callbacks[data.callbackid] = { timeout: Date.now(), callback: data.callback };
+				data.callback = undefined;
+			}
+			com.send2(data);
+		}
+	});
+
+	PLUGIN('flow', function(exports) {
+
+		var TYPES = { pub: 1, sub: 1 };
+		var initialized_settings = {};
+		var checksums = {};
+		var settings_current;
+		var settings_data;
+		var flowstreamid;
+
+		exports.init = function() {
+			ADD('websocket__null__url:{0}'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) + ';encoder:false');
+		};
+
+		exports.reload = function() {
+		};
+
+		exports.refreshinfo = function(data) {
+			var model = GET('?');
+			if (model.selected !== data.selected)
+				SET('?.selected', data.selected);
+			SET('?.info', data);
+		};
+
+		exports.call = function(id, data, callback) {
+			var callbackid = GUID(10);
+			if (typeof(data) === 'function') {
+				callback = data;
+				data = null;
+			}
+			flow.calls[callbackid] = callback;
+			SETTER('websocket/send', { TYPE: 'call', id: id, data: data, callbackid: callbackid });
+		};
+
+		exports.add = function(el) {
+
+			var opt = {};
+			opt.element = el;
+			opt.items = [];
+
+			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'fa fa-code' });
+			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'fa fa-code-branch' });
+			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'fa fa-cloud-download' });
+
+			if (common.marketplace) {
+				opt.items.push('-');
+				opt.items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
+			}
+
+			opt.callback = function(item) {
+
+				switch (item.id) {
+					case 'create':
+						AJAX('GET /component.txt @showloading', function(response) {
+							SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
+							SET('common.page @hideloading', 'componenteditor');
+						});
+						break;
+					case 'opensource':
+						exports.components();
+						break;
+					case 'marketplace':
+						exports.marketplace();
+						break;
+					case 'sources':
+						exports.sources();
+						break;
+				}
+
+			};
+
+			SETTER('menu/show', opt);
+		};
+
+		exports.components = function() {
+			SET('common.form', 'componentsform');
+		};
+
+		exports.clear = function() {
+			SETTER('approve/show', '@(Are you sure you want to clear the current Flow?)', '"trash-o" @(Clear)', function() {
+				SET('?.data', {});
+			});
+		};
+
+		exports.reset = function() {
+			SETTER('approve/show', '@(Are you sure you want to reset errors?)', '"broom" @(Reset)', ASETTER('websocket/send', { TYPE: 'reset' }));
+		};
+
+		exports.marketplace = function() {
+			IMPORT('ONCE ' + common.marketplace + '/open/', AEXEC('marketplace/open', 'flowstream_component', function(response, data) {
+				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
+				SET('common.page @hideloading', 'componenteditor');
+			}, true));
+		};
+
+		exports.operation = function(el) {
+			var type = el.attrd('type');
+			var name = type === 'in' || type === 'out' || type === 'reset' || type === 'out2' ? 'zoom' : type;
+			var val;
+
+			if (type === 'out2') {
+				if (GET('?').info.zoom !== 100) {
+					type = 'reset';
+				} else {
+					val = 60;
+					type = 'out';
+				}
+			}
+
+			if (name !== 'zoom')
+				type = '';
+
+			CMD('flow.' + name, type, val);
+		};
+
+		exports.contextmenu = function(e, type, meta) {
+
+			var info = GET('?.info');
+			var item = info.selected;
+			if (!item)
+				return;
+
+			var type = info.type;
+			var component = item.isconnection ? null : flow.components.findItem('id', item.component);
+
+			var opt = {};
+			opt.x = e.pageX;
+			opt.y = e.pageY;
+			opt.items = [];
+
+			if (component) {
+
+				opt.items.push(component.name);
+				component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
+				opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'far fa-file-alt' });
+
+				if (!TYPES[component.type]) {
+					if (component.settings) {
+						opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
+						opt.items.push('-');
+					}
+					opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
+					opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
+					opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+					opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
+					opt.items.push('-');
+				}
+			} else if (info.type === 'group') {
+				opt.items.push(item.name);
+				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
+			}
+
+			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
+
+			opt.callback = function(opt) {
+				switch (opt.id) {
+
+					case 'readme':
+						exports.scope();
+						exports.readme(item.component);
+						break;
+
+					case 'copy':
+					case 'copy2':
+						SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
+							SETTER('clipboard/copy', opt.id === 'copy2' ? response.data : ENCRYPT({ body: response.data }, common.secret, 'component'));
+							SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
+						})});
+						break;
+
+					case 'note':
+						var input = {};
+						input.icon = opt.icon;
+						input.element = $(e.target);
+						input.summary = '@(Type a custom note for this instance.)';
+						input.placeholder = '@(Your note)';
+						input.value = flow.note[item.id] || '';
+						input.maxlength = 10000;
+						input.callback = function(value) {
+							SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
+						};
+						SETTER('floatinginput/show', input);
+						break;
+
+					case 'settings':
+						if (info.type === 'group')
+							exports.groupedit(item);
+						else
+							exports.settings(item);
+						break;
+
+					case 'edit':
+						SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
+							response.body = response.data;
+							response.data = null;
+							SET('componenteditor @reset', response);
+							SET('common.page @hideloading', 'componenteditor');
+						})});
+						break;
+
+					case 'remove':
+
+						CMD('flow.selected.clear');
+
+						if (type === 'group')
+							SETTER('websocket/send', { TYPE: 'groups', data: flow.data.groups });
+						else
+							SET('flow.changed', true);
+
+						break;
+
+					case 'clone':
+						exports.clone();
+						break;
+				}
+			};
+			SETTER('menu/show', opt);
+		};
+
+		exports.settings = function(instance, e) {
+
+			if (e && e.target && (e.target.tagName === 'BUTTON' || e.target.tagName === 'A'))
+				return;
+
+			var component = flow.components.findItem('id', instance.component);
+			if (!component || !component.settings)
+				return;
+
+			var id = 'settings_f' + component.id;
+			var dom = $('#flow_settings')[0];
+			var domrepo = $('#flow_repo')[0];
+			var domsettings = $('#' + id)[0];
+			var move = false;
+
+			if (!domsettings && initialized_settings[id])
+				delete initialized_settings[id];
+
+			if (dom.children[0] && dom.children[0] !== domsettings) {
+				domrepo.appendChild(dom.children[0]);
+				move = true;
+			} else if (!dom.children[0])
+				move = true;
+
+			RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name });
+
+			if (initialized_settings[id]) {
+				move && dom.appendChild(domsettings);
+			} else {
+				initialized_settings[id] = 1;
+				$('#flow_settings').aclass('invisible').append($('#template_flowsettings').html().replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings));
+				COMPILE();
+			}
+
+			var config = CLONE(instance.config);
+			var path = 'flow.settings.' + id;
+			var name = component.name.slug().replace(/\-/g, '');
+			var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
+
+			eventdata.call = function(data, callback) {
+				exports.call(this.id, data, callback);
+			};
+
+			W.flowinstances.exec(instance.id, 'settings', eventdata);
+			EMIT('configure_' + name, eventdata);
+			EMIT('configure_read_' + name, eventdata);
+
+			settings_data = eventdata;
+			settings_current = instance;
+			setTimeout(() => $('#flow_settings').rclass('invisible'), 1000);
+			SETTER('#settingsvalidation/setPath', path);
+			SET('flow.settings.{0} @reset'.format(id), config);
+			SET('common.form', 'settings');
+		};
+
+		exports.settings_submit = function() {
+			var model = GET(FIND('#settingsvalidation').path + ' @clone');
+			settings_data.config = model;
+			EMIT('configure_save_' + settings_data.name, settings_data);
+			settings_current.config = settings_data.config;
+			FUNC.reconfigure(settings_current.id, model);
+			NUL('common.form');
+		};
+
+		exports.exporttocomponent = function() {
+			SETTER('approve/show', '@(Are you sure you want to create a component from this FlowStream to the clipboard?)', '"fas fa-file-export" @(Export)', function() {
+				SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
+
+					var flow = response.data;
+					var inputs = [];
+					var outputs = [];
+
+					for (var key in flow.design) {
+						var fi = flow.design[key];
+						var template = fi.template || fi.meta; // due to backward compatibility
+						if (template.type === 'input')
+							inputs.push({ id: fi.id, name: fi.config.name });
+						else if (template.type === 'output')
+							outputs.push({ id: fi.id, name: fi.config.name });
+					}
+
+					var make = `function(instance, config) {
+
+		var schema = CLONE(instance.module.flowstreamschema);
+		schema.variables = config;
+		schema.id = instance.id;
+
+		var stream;
+
+		// Backward compatibility
+		stream = instance.newflowstream(schema, true, function(err, worker) {
+			stream = worker;
+			if (stream) {
+				stream.output = function(fid, data, tfsid, tid) {
+					instance.send(fid, data);
+				};
+			}
+		});
+
+		// Backward compatibility
+		if (stream) {
+			stream.output = function(fid, data, tfsid, tid) {
+				instance.send(fid, data);
+			};
+		}
+
+		instance.message = function($) {
+			stream && stream.input(null, null, $.toindex, $.data);
+			$.destroy();
+		};
+
+		instance.configure = function() {
+			stream && stream.variables(config);
+		};
+
+		instance.close = function() {
+			stream && stream.destroy();
+		};
+
+	};`;
+
+					var builder = [];
+					builder.push('<scri' + 'pt total>');
+					builder.push('\texports.name = \'{0}\';'.format(flow.name));
+					builder.push('\texports.icon = \'{0}\';'.format(flow.icon));
+					builder.push('\texports.group = \'Encapsulated\';');
+					builder.push('\texports.reference = \'{0}\';'.format(flow.reference));
+					builder.push('\texports.config = {0};'.format(JSON.stringify(flow.variables)));
+					builder.push('\texports.inputs = {0};'.format(inputs.length ? JSON.stringify(inputs) : 'null'));
+					builder.push('\texports.outputs = {0};'.format(outputs.length ? JSON.stringify(outputs) : 'null'));
+					builder.push('\texports.version = \'{0}\';'.format(flow.version));
+					builder.push('\texports.flowstreamschema = decodeURIComponent(Buffer.from(\'{0}\', \'base64\').toString(\'utf8\')).parseJSON(true);'.format(btoa(encodeURIComponent(JSON.stringify(flow)))));
+					builder.push('\texports.make = ' + make);
+					builder.push('</sc' + 'ript>');
+					builder.push('');
+					builder.push(`<body>
+	<header>
+		<i class="{0}"></i>{1}
+	</header>
+</body>`.format(flow.icon, flow.name));
+					builder.push('\n<readme>' + flow.readme + '</readme>');
+					SETTER('clipboard/copy', builder.join('\n'));
+					SETTER('notifybar/success', '@(The component has been created into the clipboard)');
+				})});
+			});
+		};
+
+		exports.readme = function(el) {
+			var id = el instanceof jQuery ? el.attrd2('id') : el;
+			var model = GET('?');
+			var item = model.components.findItem('id', id);
+			if (item && item.readme) {
+				RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
+				SET('common.readme', FUNC.strim(item.readme));
+				SET('common.panel', 'readme');
+			}
+		};
+
+		var checkio = function(a, b) {
+			if (!a)
+				return;
+			if (!b)
+				return a;
+			if (a.length !== b.length)
+				return a;
+			for (var i = 0; i < a.length; i++) {
+				if (a[i].id !== b[i].id || a[i].name !== b[i].name)
+					return a;
+			}
+		};
+
+		exports.submit = function() {
+
+			SETTER('approve/show', '@(Are you sure you want to save and apply Flow?)', '"far fa-check-circle" @(Continue)', function() {
+
+				if (BLOCKED('save', 2000))
+					return;
+
+				var model = flow.data;
+				var output = {};
+				var keys = Object.keys(model);
+
+				for (var i = 0; i < keys.length; i++) {
+					var key = keys[i];
+					var com = model[key];
+
+					if (key === 'paused' || key === 'groups' || key === 'tabs') {
+						output[key] = com;
+						continue;
+					}
+
+					var item = {};
+
+					item.id = com.id;
+					item.connections = com.connections;
+					item.config = com.config;
+					item.component = com.component;
+
+					// Check if the component exists
+					var c = flow.components.findItem('id', com.component);
+					if (!c)
+						continue;
+
+					if (com.outputs)
+						item.outputs = checkio(com.outputs, c.outputs);
+
+					if (com.inputs)
+						item.inputs = checkio(com.inputs, c.inputs);
+
+					item.x = com.x;
+					item.y = com.y;
+					item.note = com.note;
+					item.tab = com.tab;
+					item.connected = true;
+					com.changes = null;
+					com.connected = true;
+					output[item.id] = item;
+				}
+
+				$('.isnewbie').rclass('isnewbie');
+				SET('?.changed', false);
+				SETTER('websocket/send', { TYPE: 'save', data: output });
+				CMD('flow.reset');
+			});
+
+		};
+
+		exports.clone = function() {
+
+			exports.scope();
+
+			var model = GET('?.data');
+			var selected = FIND('flow').selected();
+			var add = [];
+			var cloned = {};
+			var now = Date.now();
+
+			for (var item of selected.components) {
+				var instance = model[item.id];
+				var newbie = {};
+				newbie.id = 'i' + now.toString(36);
+				newbie.x = instance.x + 50;
+				newbie.y = instance.y + 50;
+				newbie.name = instance.name;
+				newbie.component = instance.component;
+				newbie.config = CLONE(instance.config);
+				newbie.connected = false;
+				newbie.connections = CLONE(instance.connections);
+				newbie.name = instance.name.slug().replace(/\-/g, '');
+				newbie.html = instance.html;
+				newbie.$outputs = instance.$outputs;
+				newbie.outputs = instance.outputs ? CLONE(instance.outputs) : undefined;
+				newbie.$inputs = newbie.$inputs;
+				newbie.inputs = instance.inputs ? CLONE(instance.inputs) : undefined;
+				newbie.template = instance.template;
+				newbie.onmake = onmake;
+				newbie.onremove = onremove;
+				newbie.tab = instance.tab;
+				cloned[instance.id] = newbie.id;
+				add.push(newbie);
+				now++;
+			}
+
+			for (var item of add) {
+				for (var key in item.connections) {
+					for (var output of item.connections[key]) {
+						if (cloned[output.id])
+							output.id = cloned[output.id];
+					}
+				}
+				model[item.id] = item;
+			}
+
+			Designer.find('.component-focused').rclass('component-focused');
+			Designer.op.unselect();
+
+			UPD('?.data', 'update');
+			SET('?.changed', true);
+
+			setTimeout(function(add) {
+				for (var item of add)
+					Designer.op.select(item.id, true);
+			}, 500, add);
+		};
+
+		exports.sources = function() {
+			SET('common.form', 'sourcesform');
+		};
+
+		exports.drop = function(e, grid) {
+
+			var id = e.el.attrd('id');
+
+			if (id === 'group') {
+				var obj = {};
+				obj.id = 'g' + Date.now().toString(36);
+				obj.x = e.offsetX;
+				obj.y = e.offsetY;
+				obj.width = 400;
+				obj.height = 400;
+				obj.name = '@(Group)';
+				obj.tab = flow.tab;
+				CMD('flow.groups.add', obj);
+				SETTER('websocket/send', { TYPE: 'groups', data: flow.data.groups });
+			} else {
+				var com = flow.components.findItem('id', id);
+				var obj = {};
+				obj.id = 'i' + Date.now().toString(36);
+				obj.component = id;
+				obj.x = e.offsetX;
+				obj.y = e.offsetY;
+				obj.name = com.name.slug().replace(/\-/g, '');
+				obj.outputs = com.outputs ? CLONE(com.outputs) : null;
+				obj.inputs = com.inputs ? CLONE(com.inputs) : null;
+				obj.config = CLONE(com.config);
+				obj.html = '<figure>' + com.html.format(obj.id) + '</figure>';
+				obj.template = com.template ? Tangular.compile(com.template) : null;
+				obj.onmake = onmake;
+				obj.onremove = onremove;
+				obj.tab = flow.tab;
+				SET('?.changed', true);
+				SET('?.config.' + obj.id, obj.config);
+				CMD('flow.components.add', obj);
+			}
+
+		};
+
+		var loadflow = function(response) {
+
+			var uninitializedcount = 0;
+			var count = 0;
+			var blacklist = { tabs: 1, paused: 1, groups: 1 };
+
+			SET('?.ready', false);
+
+			for (var key in response) {
+				if (key !== 'paused' && key !== 'groups' && key !== 'tabs')
+					response[key].connected = true;
+			}
+
+			for (var key in flow.data) {
+				if (!blacklist[key]) {
+					var instance = flow.data[key];
+					if (instance.changes && instance.changes.newbie) {
+						var item = {};
+						item.id = key;
+						item.connections = instance.connections;
+						item.config = instance.config;
+						item.component = instance.component;
+						item.x = instance.x;
+						item.y = instance.y;
+						item.note = instance.note;
+						item.tab = instance.tab;
+						item.connected = false;
+						response[key] = item;
+						uninitializedcount++;
+					}
+				}
+			}
+
+			for (var key in response) {
+
+				if (blacklist[key])
+					continue;
+
+				var obj = response[key];
+				var com = flow.components.findItem('id', obj.component);
+
+				if (com == null) {
+					// component not found
+					WARN('Component "{0}" not found'.format(obj.component));
+					delete response[key];
+					continue;
+				}
+
+				obj.name = com.name.slug().replace(/\-/g, '');
+				obj.html = '<figure>' + com.html.format(key) + '</figure>';
+				obj.$outputs = !!obj.outputs;
+				obj.outputs = obj.outputs || (com.outputs ? CLONE(com.outputs) : null);
+				obj.$inputs = !!obj.outputs;
+				obj.inputs = obj.inputs || (com.inputs ? CLONE(com.inputs) : null);
+				obj.template = com.template ? Tangular.compile(com.template) : null;
+				obj.onmake = onmake;
+				obj.onremove = onremove;
+
+				if (obj.connected !== false) {
+					obj.connected = true;
+					count++;
+				}
+
+				flow.note[obj.id] = obj.note;
+				flow.config[obj.id] = obj.config;
+			}
+
+			exports.scope();
+			SET('?.connected', count);
+			SET('?.data', response);
+			SET('?.changed', uninitializedcount > 0);
+			SET('?.ready', true, 500);
+			CMD('flow.refresh');
+		};
+
+		var onremove = function() {
+			W.flowinstances.remove(this.id);
+		};
+
+		var onmake = function(el) {
+
+			var self = this;
+			var footer = el.find('footer');
+			var content;
+			if (footer.length) {
+				var area = footer.closest('.area');
+				var span = area.find('.meta').find('span');
+				area[0].appendChild(footer[0]);
+				area.parent();
+				content = area.find('.content');;
+			} else
+				content = el.find('.content');
+
+			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html"></summ' + 'ary>');
+			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
+			var com = flow.components.findItem('id', self.component);
+			if (com) {
+				if (com.type === 'pub' || com.type === 'sub' || com.type === 'call' || com.type === 'input2' || com.type === 'output2' || com.type === 'input' || com.type === 'output') {
+					var span = el.find('.meta').find('span');
+					if (span.length)
+						span.css('background-color', Thelpers.color(span.html()));
+					var arr = el.find('.schema span');
+					var type = com.type === 'input2' || com.type === 'input' ? 'pub' : com.type === 'output2' || com.type === 'output' ? 'sub' : com.type;
+					for (var i = 0; i < arr.length; i++)
+						$(arr[i]).css('background-color', Thelpers.color(arr[i].innerHTML));
+					target.aclass('tms-' + type);
+				}
+				target.aclass('f-' + self.name);
+			}
+			W.flowinstances.init(self.name, self, el);
+		};
+
+		var loadcomponents = function(response) {
+
+			var js = [];
+			var css = [];
+			var groups = {};
+			var checksums_tmp = {};
+			var regname = /NAME/g;
+			var regreplace = /CLASS/g;
+			var regstatus = /STATUS/g;
+			var regicon = /ICON/g;
+			var regconfig = /CONFIG/g;
+			var regid = /ID/g;
+			var reguid = /UID/g;
+
+			for (var i = 0; i < response.length; i++) {
+				var com = response[i];
+				var name = com.name.slug().replace(/\-/g, '');
+				checksums_tmp[com.id] = HASH(com.html);
+
+				com.html = (com.html || '').replace(reguid, '{0}').replace(regid, com.id).replace(regicon, com.icon).replace(regname, com.name).replace(regstatus, 'flow.status.{0}').replace(regconfig, 'flow.config.{0}').replace(regreplace, 'f-' + name);
+
+				if (com.js) {
+					var tmp = com.js.replace(regid, com.id).replace(regreplace, name).replace(regicon, com.icon).replace(regname, com.name);
+					js.push('W.flowinstances.current=\'' + name + '\';W.flowinstances.checksum=\'' + HASH(tmp).toString(36) + '\';' + tmp);
+				}
+
+				com.css && css.push(com.css.replace(regid, com.id).replace(regreplace, 'f-' + name));
+				var g = com.group || 'Common';
+				if (groups[g])
+					groups[g].push(com);
+				else
+					groups[g] = [com];
+			}
+
+			if (js.length) {
+				new Function(js.join('\n'))();
+				W.flowinstances.current = '';
+			}
+
+			var arr = [];
+			for (var key in groups) {
+				groups[key].quicksort('name');
+				arr.push({ name: key, items: groups[key] });
+			}
+
+			arr.quicksort('name');
+			CSS(css.join(''), 'flowcomponents');
+
+			exports.scope();
+			SET('?.components', response);
+
+			exports.scope();
+			SET('?.components2', arr);
+
+			var model = GET('?');
+			if (model.data) {
+				var rebuild = false;
+				for (var key in model.data) {
+					var instance = model.data[key];
+					var com = response.findItem('id', instance.component);
+					if (com) {
+						var a = checksums_tmp[com.id];
+						var b = checksums[com.id];
+						var parent = instance.element ? instance.element.closest('.component') : null;
+
+						if (a !== b) {
+							instance.html = com.html.format(key);
+							rebuild = true;
+						}
+
+						if (parent) {
+							parent.rclass('f-' + instance.name);
+							instance.name = com.name.slug().replace(/\-/g, '');
+							parent.aclass('f-' + instance.name);
+						}
+					}
+				}
+			}
+
+			checksums = checksums_tmp;
+
+			if (rebuild) {
+				UPD('?.data', 'update');
+				setTimeout(ASETTER('websocket/send', { TYPE: 'refresh' }), 1000);
+			}
+		};
+
+		exports.pause = function() {
+			var is = GET('?.stats.paused');
+			SETTER('loading/show');
+			SETTER('websocket/send', { TYPE: 'pause', is: is === true ? false : true });
+			SETTER('loading/hide', 3000);
+		};
+
+		exports.onconnect = function(meta) {
+			if (flow.ready && !meta.init)
+				SET('flow.changed', true);
+		};
+
+		exports.onpause = function(key, is) {
+			var id = key.split('__')[1];
+			if (flow.data[id] && (!flow.data[id].changes || !flow.data[id].changes.newbie))
+				SETTER('websocket/send', { TYPE: 'pause', id: key, is: is });
+		};
+
+		exports.onmove = function(el, item, type) {
+			if (type === 'group')
+				SETTER('websocket/send', { TYPE: 'groups', data: flow.data.groups });
+			else if (item.connected)
+				SETTER('websocket/send', { TYPE: 'move', id: item.id, data: { x: item.x, y: item.y }});
+		};
+
+		exports.groupedit = function(item) {
+			SET('groupform @reset', CLONE(item));
+			SET('common.form', 'groupform');
+		};
+
+		exports.options = function(el) {
+
+			var model = GET('?');
+			var opt = {};
+			opt.element = el;
+			opt.items = [];
+			opt.items.push({ id: 'export', name: '@(Export to the clipboard)', icon: 'fa fa-clipboard-check' });
+			opt.items.push({ id: 'exportcomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
+
+			opt.items.push('-');
+			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'fas fa-bezier-curve', selected: common.curvedlines == true });
+
+			if (model.head.version >= 8)
+				opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'fas fa-chart-line' });
+
+			opt.items.push('-');
+			opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'far fa-trash-alt red' });
+
+			opt.callback = function(item) {
+
+				switch (item.id) {
+					case 'curvedlines':
+						TOGGLE('common.curvedlines');
+						break;
+					case 'reset_stats':
+						SETTER('websocket/send', { TYPE: 'reset_stats' });
+						break;
+					case 'exportcomponent':
+						exports.exporttocomponent();
+						break;
+					case 'export':
+						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
+							SETTER('clipboard/copy', JSON.stringify(response.data));
+							SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
+						})});
+						break;
+					case 'clear':
+						exports.clear();
+						break;
+				}
+
+			};
+
+			SETTER('menu/show', opt);
+		};
+
+		// WebSocket messages
+		ON('message', function(msg) {
+
+			if (msg.callbackid) {
+				var cb = flow.callbacks[msg.callbackid];
+				if (cb) {
+					delete flow.callbacks[msg.callbackid];
+					if (msg.error)
+						cb.callback([{ error: msg.error }]);
+					else
+						cb.callback(msg);
+				}
+			}
+
+			switch (msg.TYPE) {
+
+				case 'flow/flowstream':
+
+					if (msg.name)
+						document.title = msg.name;
+
+					SET('flow.head', msg);
+					SET('flow.stats.paused', msg.paused == true);
+					if (NAV.query.socket) {
+						var socket = NAV.query.socket.replace(/^ws/, 'http');
+						var index = socket.indexOf('/', 9);
+						var origin = index === -1 ? socket : socket.substring(0, index);
+						if (origin && msg.origin !== origin)
+							SETTER('websocket/send', { TYPE: 'origin', body: origin });
+					}
+					break;
+
+				case 'flow/stats':
+
+					if (common.page !== 'flow')
+						return;
+
+					SET('flow.stats', { messages: msg.messages, mm: msg.mm, pending: msg.pending, memory: msg.memory, paused: msg.paused });
+
+					msg.traffic.priority.wait(function(key, next) {
+						var sleep = 500;
+						if (common.page === 'flow')
+							CMD('flow.traffic', key, { delay: 100, count: msg.traffic[key], speed: 3, limit: 30 });
+						setTimeout(next, sleep);
+					});
+
+					break;
+
+				case 'flow/error':
+					if (!common.console)
+						SET('common.console', true);
+					var com = msg.id ? flow.data[msg.id] : null;
+					if (com) {
+						if (flow.errors[msg.id])
+							flow.errors[msg.id].push(msg);
+						else
+							flow.errors[msg.id] = [msg];
+						UPD('flow.errors');
+						W.flowinstances.exec(msg.id, 'error', msg);
+					}
+
+					PUSH('^common.logs.errors.items', { type: 'error', body: msg.ts.format('[ts]') + ' - ' + Thelpers.encode(msg.error) + (com ? ' <b>(' + com.name + ' component)</b>' : ''), id: msg.id });
+
+					if (common.logs.errors.items.length > 50)
+						common.logs.errors.items.pop();
+
+					break;
+
+				case 'flow/call':
+					var fn = flow.calls[msg.id];
+					if (fn) {
+						fn(msg.data);
+						delete flow.calls[msg.id];
+					}
+					break;
+
+				case 'flow/status':
+					SET('flow.status.' + msg.id, msg.data);
+					W.flowinstances.exec(msg.id, 'status', msg.data);
+					break;
+
+				case 'flow/redraw':
+					var com = flow.components.findItem('id', flow.data[msg.id].component);
+
+					if (!msg.data.outputs && com)
+						msg.data.outputs = com.outputs ? CLONE(com.outputs) : null;
+
+					if (!msg.data.inputs && com)
+						msg.data.inputs = com.inputs ? CLONE(com.inputs) : null;
+
+					COPY(msg.data, flow.data[msg.id]);
+					flow.config[msg.id] = msg.data.config;
+					UPD('flow.data', 'update');
+					UPD('flow.config.' + msg.id);
+					CMD('flow.refresh');
+					break;
+
+				case 'flow/note':
+					flow.data[msg.id].note = msg.data;
+					SET('flow.note.' + msg.id, msg.data);
+					if (common.page === 'flow')
+						CMD('flow.refresh');
+					W.flowinstances.exec(msg.id, 'note', msg.data);
+					break;
+
+				case 'flow/reset':
+					SET('flow.errors', {});
+					SET('common.logs.errors.items', []);
+					$('.iserror').rclass('iserror');
+					break;
+
+				case 'flow/errors':
+
+					for (var i = 0; i < msg.data.length; i++) {
+						var err = msg.data[i];
+						var com = err.id ? flow.data[err.id] : null;
+						err.type = 'error';
+						err.body = err.ts.format('[ts]') + ' - ' + Thelpers.encode(err.error) + (com ? ' <b>(' + com.name + ' component)</b>' : '');
+						if (com) {
+							if (flow.errors[err.id])
+								flow.errors[err.id].push(err);
+							else
+								flow.errors[err.id] = [err];
+							W.flowinstances.exec(err.id, 'error', err);
+						}
+					}
+
+					UPD('flow.errors');
+					SET('common.logs.errors.items', msg.data);
+					break;
+
+				case 'flow/design':
+					loadflow(msg.data);
+					break;
+
+				case 'flow/pause':
+					var is = false;
+					if (msg.is) {
+						if (!flow.data.paused)
+							flow.data.paused = {};
+						flow.data.paused[msg.id] = 1;
+						is = true;
+					} else if (flow.data.paused) {
+						delete flow.data.paused[msg.id];
+						is = true;
+					}
+
+					is && UPD('flow.data', 1);
+					break;
+
+				case 'flow/move':
+					var item = flow.data[msg.id];
+					item.x = msg.data.x;
+					item.y = msg.data.y;
+					item.element.closest('.component').css({ left: item.x, top: item.y });
+					W.flowinstances.exec(msg.id, 'move', msg.data);
+					CMD('flow.refresh');
+					break;
+
+				case 'flow/groups':
+					flow.data.groups = msg.data;
+					CMD('flow.refresh');
+					break;
+
+				case 'flow/variables':
+					SET('flow.variables', msg.data);
+					W.flowinstances.exec('*', 'variables', msg.data);
+					CMD('flow.refresh');
+					break;
+
+				case 'flow/variables2':
+					SET('flow.variables2', msg.data);
+					W.flowinstances.exec('*', 'variables2', msg.data);
+					CMD('flow.refresh');
+					break;
+
+				case 'flow/components':
+					loadcomponents(msg.data);
+					break;
+				case 'flow/config':
+					if (msg.id && msg.data) {
+						SET('flow.data.' + msg.id + '.config', msg.data);
+						SET('flow.config.' + msg.id, msg.data);
+						W.flowinstances.exec(msg.id, 'configure', msg.data);
+					}
+					break;
+			}
+
+		});
+
+		exports.console = function() {
+			TOGGLE('common.console');
+		};
+
+		ON('online', function(is) {
+			if (is)
+				SETTER('loading/hide', 1000);
+			else
+				SETTER('loading/show', '@(Connecting to the server...)');
+		});
+
+		exports.variables = function() {
+			var model = {};
+			model.variables = CLONE(flow.variables);
+			model.callback = function(model) {
+				SETTER('websocket/send', { TYPE: 'variables', data: model });
+			};
+			SET('variablesform @reset', model);
+			SET('common.form', 'variablesform');
+		};
+
+		exports.component_contextmenu = function(el, e) {
+
+			var id = el.attrd2('id');
+
+			var component = flow.components.findItem('id', id);
+			if (TYPES[component.type])
+				return;
+
+			var opt = {};
+			opt.x = e.pageX;
+			opt.y = e.pageY;
+			opt.items = [];
+			opt.items.push(component.name);
+			component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
+			opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
+			opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
+			opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+			opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
+			opt.items.push('-');
+			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-o red' });
+			opt.callback = function(item) {
+				switch (item.id) {
+					case 'readme':
+						exports.scope();
+						exports.readme(id);
+						break;
+					case 'edit':
+					case 'clone':
+					case 'copy':
+					case 'copy2':
+						SETTER('websocket/send', { TYPE: 'component_read', id: id, callback: ASETTER('message/response', function(response) {
+
+							response.body = response.data;
+							response.data = null;
+
+							if (item.id === 'copy' || item.id === 'copy2') {
+								SETTER('clipboard/copy', item.id === 'copy2' ? response.body : ENCRYPT({ body: response.body }, common.secret, 'component'));
+								SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
+								return;
+							}
+
+							if (item.id === 'clone')
+								delete response.id;
+
+							response.flowstreamid = flowstreamid;
+							SET('componenteditor @reset', response);
+							SET('common.page @hideloading', 'componenteditor');
+						})});
+
+						break;
+					case 'remove':
+						var com = GET('?.components').findItem('id', id);
+						SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"trash-o" @(Remove)', ASETTER('websocket/send', { TYPE: 'component_remove', id: id }));
+						break;
+				}
+			};
+			SETTER('menu/show', opt);
+		};
+
+		exports.info = function() {
+			var head = GET('?.head');
+			RECONFIGURE('#readme', { title: head.name, icon: head.icon || 'fas fa-question-circle' });
+			var body = '';
+
+			if (head.version)
+				body += '| @(Version) | __' + head.version2 + '__ |\n';
+
+			if (head.author)
+				body += '| @(Author) | __' + head.author + '__ |\n';
+
+			if (head.url)
+				body += '| @(Website) | <' + head.url + '> |\n';
+
+			body += (body ? '\n' : '') + (head.readme || '');
+
+			SET('common.readme', FUNC.strim(body));
+			SET('common.panel', 'readme');
+		};
+
+		ON('paste', function(text) {
+			var data;
+			if (!common.form && !common.form2 && common.page === 'flow' && text.substring(0, 9) === 'component') {
+				data = DECRYPT(text, common.secret, 'component');
+				if (data) {
+					data.id = '';
+					data.flowstreamid = flowstreamid;
+					SET('componenteditor @reset', data);
+					SET('common.page @hideloading', 'componenteditor');
+				}
+			}
+		});
+
+		FIND('flow', function(com) {
+			var zoom = FUNC.pref_read('zoom');
+			CMD('flow.zoom', zoom);
+		});
+
+		FIND('#flowviewbox', function(com) {
+			com.scrollbar.options.onidle = function() {
+				FUNC.pref_save('scroll', { x: com.scrollbar.scrollLeft(), y: com.scrollbar.scrollTop() });
+			};
+			var scroll = FUNC.pref_read('scroll');
+			scroll && com.scrollbar.scroll(scroll.x, scroll.y);
+		});
+
+		WATCH('?.info', function(path, value) {
+			FUNC.pref_save('zoom', (value.zoom || 100).toFixed(1).parseFloat());
+		});
+
+		exports.init();
+	});
+
+	function htmldecode(text) {
+		switch (text) {
+			case '&gt;':
+				return '>';
+			case '&lt;':
+				return '<';
+			case '&amp;':
+				return '&';
+			case '&quot;':
+				return '"';
+			case '&#39;':
+				return '\'';
+		}
+		return text;
+	}
+
+	FUNC.reconfigure = function(el, config) {
+		var id = (el instanceof jQuery ? el.attrd2('id') : el) || '';
+		var instance = flow.data[id];
+		if (instance) {
+			if (instance.connected) {
+				SETTER('websocket/send', { TYPE: 'reconfigure', id: id, data: config });
+				SETTER('notify/success', '@(The configuration has been applied successfully)');
+			} else {
+				instance.config = config;
+				UPD('flow.data.' + id + '.config');
+				SET('flow.config.' + id, config);
+				W.flowinstances.exec(instance.id, 'configure', config);
+				CMD('flow.refresh');
+			}
+		}
+	};
+
+	ON('markdown', function(el) {
+		el.find('pre code').each(function() {
+			var el = $(this);
+			var type = 'application/ld+json';
+
+			if (el.hclass('lang-js'))
+				type = 'text/javascript';
+			else if (el.hclass('lang-html'))
+				type = 'text/html';
+			else if (el.hclass('lang-sql'))
+				type = 'text/x-sql';
+
+			el.aclass('cm-s-default');
+			var code = FUNC.strim(el.html()).trim().replace(/&gt;|&lt;|&quot;|&#39;/g, htmldecode);
+			CodeMirror.runMode(code.replace(/\t/g, '  '), type, el[0]);
+		});
+	});
+
+	Thelpers.url = function(val) {
+		var index = val.indexOf('/', 10);
+		return index === -1 ? val : val.substring(0, index);
+	};
+
+</script>
