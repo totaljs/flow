@@ -30,8 +30,12 @@ NEWSCHEMA('Auth', function(schema) {
 
 	schema.addWorkflow('exec', function($, model) {
 
-		var user = PREF.user;
+		if (BLOCKED($, 10)) {
+			$.invalid('@(Invalid credentials)');
+			return;
+		}
 
+		var user = PREF.user;
 		if (user.login !== model.login || user.password !== model.password.sha256(CONF.cookie_secret)) {
 			$.invalid('@(Invalid credentials)');
 			return;
