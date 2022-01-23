@@ -1,10 +1,19 @@
-<div data---="largeform__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+	<nav>
+		<button class="exec hidden" data-bind="?.newupdates__show" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
+	</nav>
 	<div>
 		<div class="search">
 			<div data---="searchinput__?.search__placeholder:@(Search components)"></div>
 		</div>
 		<div data---="viewbox__common.form__parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
 			<div class="padding">
+				<div style="margin:0 0 15px 8px">
+					<div class="pull-right">
+						<span class="link fs12 exec" data-exec="flow/create"><i class="fa fa-plus-circle green mr5"></i>@(Create component)</span>
+					</div>
+					<div data---="checkbox__?.approve__null__true">@(Warn on component installation)</div>
+				</div>
 				<div data-bind="?.items__template" data---="search__?.search__selector:figure" id="flowstreamcomponents">
 					<script type="text/html">
 						{{ foreach n in value }}
@@ -14,9 +23,9 @@
 								<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
 									<section>
 										<!--{{ if m.version }}<div class="version">@(Version:) {{ m.version }}</div>{{ fi }}-->
-										<div class="icon"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-										<div class="name">{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(new update)</span>{{ fi }}{{ m.name }}</div>
-										<div class="author">@(Version:) {{ m.version | empty }}</div>
+										<div class="icon" style="background:{{ m.groupcolor }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
+										<div class="name"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(new update)</span>{{ fi }}{{ m.name }}</div>
+										<!--div class="author">@(Version:) {{ m.version | empty }}</div>-->
 									</section>
 								</figure>
 								{{ end }}
@@ -26,7 +35,7 @@
 						{{ end }}
 					</script>
 				</div>
-				<div class="help center m nmt"><i class="far fa-question-circle"></i>@(All these components are open-source, repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
+				<div class="help center m nmt"><i class="far fa-question-circle"></i>@(Official GitHub repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
 			</div>
 		</div>
 	</div>
@@ -39,15 +48,11 @@
 
 	PLUGIN('~PATH~', function(exports) {
 
-		var notify = false;
-
-		var refresh = function(url, opt, next) {
+		var refresh = function(url, opt, callback) {
 			AJAX('GET ' + url, function(response) {
 
-				if (!(response instanceof Array)) {
-					next();
+				if (!(response instanceof Array))
 					return;
-				}
 
 				for (var item of response) {
 
@@ -61,32 +66,24 @@
 					if (opt.groups[item.group])
 						opt.groups[item.group].items.push(item);
 					else
-						opt.groups[item.group] = { name: item.group, items: [item] };
+						opt.groups[item.group] = { name: item.group, color: Thelpers.color(item.group), items: [item] };
 
+					item.groupcolor = opt.groups[item.group].color;
 					item.download = '';
 					opt.components.push(item);
 				}
 
-				next();
+				callback();
 			});
 		};
 
-		exports.reload = function(com) {
-
-			if (!com.updated) {
-				com.updated = true;
-				var el = com.element.find('.ui-largeform-title');
-				el.append('<button class="ui-largeform-options exec hidden" data-bind="?.newupdates__show" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>');
-			}
-
-			notify = false;
+		exports.reload = function() {
 
 			var opt = {};
 			opt.updates = 0;
 			opt.groups = {};
 			opt.components = [];
-
-			var done = function() {
+			refresh(common.components, opt, function() {
 
 				var arr = [];
 				for (var key in opt.groups) {
@@ -97,28 +94,11 @@
 				SET('?.newupdates', opt.updates);
 				SET('?.components', opt.components);
 				SET('?.items', arr);
-			};
-
-			var queue = [];
-
-			if (common.cdn) {
-				queue.push(function(next) {
-					refresh('{0}components/db.json'.format(common.cdn), opt, next);
-				});
-			}
-
-			if (common.components) {
-				queue.push(function(next) {
-					refresh(common.components, opt, next);
-				});
-			}
-
-			queue.async(done);
+			});
 		};
 
 		exports.check = function() {
-			exports.scope();
-			var components = GET('?.components');
+			var components = exports.data.components;
 			if (components) {
 				var container = $('#flowstreamcomponents');
 				var updates = 0;
@@ -136,8 +116,16 @@
 			}
 		};
 
+		exports.readme = function(el) {
+			var id = ATTRD(el);
+			var item = exports.data.components.findItem('id', id);
+			RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
+			SET('common.readme', FUNC.strim(item.readme || ''));
+			SET('common.panel', 'readme');
+		};
+
 		exports.update = function() {
-			var model = GET('?');
+			var model = exports.data;
 			SETTER('approve/show', '@(Are you sure you want to apply all new updates ({0}x)?)'.format(model.newupdates), '"fas fa-sync" @(Update)', function() {
 				model.components.wait(function(item, next) {
 					if (item.newupdate) {
@@ -148,7 +136,6 @@
 
 						AJAX('GET ' + (item.url || ('{0}components/{1}.html').format(common.cdn, item.id)), function(response) {
 							if (typeof(response) === 'string') {
-								notify = false;
 								var model = {};
 								model.id = com ? com.id : '';
 								model.body = response.trim();
@@ -181,7 +168,6 @@
 			var download = function() {
 				AJAX('GET ' + (url || '{0}components/{1}.html'.format(common.cdn, id)), function(response) {
 					if (typeof(response) === 'string') {
-						notify = false;
 						var model = {};
 						model.id = com ? com.id : '';
 						model.body = response.trim();
@@ -191,10 +177,10 @@
 				});
 			};
 
-			if (notify)
-				download();
+			if (exports.data.approve)
+				SETTER('approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
 			else
-				SETTER('approve/show', '@(Are you sure you want to import selected component "{0}"?)'.format(id), '"fas fa-cloud-download" @(Import)', download);
+				download();
 
 		};
 

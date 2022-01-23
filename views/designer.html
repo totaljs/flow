@@ -8,11 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	<script src="/js/spa.min@19.js"></script>
-	<link href="/css/spa.min@19.css" rel="stylesheet" />
-	<script src="/js/editor.min@1.js"></script>
-	<link href="/css/editor.min@1.css" rel="stylesheet" />
-	@{import('meta', 'head', 'ui.css + editor.css + designer.css', 'ui.js + designer_func.js + editor.js + default.js', 'favicon.png')}
+	@{import('meta', 'head', 'spa.min@19.css + editor.min@1.css + ui.css + editor.css + designer.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + func.js + editor.js', 'favicon.png')}
 </head>
 <body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
@@ -30,6 +26,7 @@
 	<div data---="LAZY colorpicker"></div>
 	<div data---="LAZY floatinginput"></div>
 	<div data---="LAZY tooltip"></div>
+	<div data---="LAZY edit"></div>
 
 	<div data---="markdown"></div>
 	<div data---="paste"></div>
@@ -50,16 +47,17 @@
 
 		var common = {};
 
+		ENVIRONMENT('designer');
+
 		common.secret = 'flowstream';
-		common.marketplace = '@{CONF.marketplace}';
-		common.cdn = '@{CONF.cdn_components}';
+		common.marketplace = 'https://marketplace.totaljs.com';
+		common.components = '@{PREF.components}';
 		common.page = '';
-		common.tms = '@{query.tms}' === '1';
+		// common.tms = '@{query.tms}' === '1';
 		common.socket = '@{query.socket}';
 		common.logs = {};
 		common.logs.errors = { icon: 'fas fa-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
-		common.components = '@{query.components}';
 
 		if (!common.page)
 			location.href = 'https://www.totaljs.com/flowstream/';
@@ -77,6 +75,26 @@
 
 		ON('@flag hideloading', function() {
 			SETTER('loading/hide', 1000);
+		});
+
+		$(W).on('message', function(e) {
+			var data = e.originalEvent.data;
+			if (data) {
+				var msg = PARSE(data);
+				if (msg && msg.TYPE) {
+					switch (msg.TYPE) {
+						case 'shortcut':
+							SETTER('shortcuts/exec', msg.key);
+							break;
+						case 'darkmode':
+							$('body').tclass('ui-dark', msg.value === true);
+							break;
+						case 'components':
+							common.components = msg.value;
+							break;
+					}
+				}
+			}
 		});
 
 		function saveshortcut(e) {

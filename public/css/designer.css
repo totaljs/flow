@@ -13,6 +13,7 @@ body.ui-dark { background-color: #202020 !important; }
 }
 
 .color { color: var(--color); }
+.ui-dark a, .ui-dark .link { color: #6E81A0; }
 .ui-dockable-layout { z-index: 1; }
 
 .header { background-color: #FFF; height: 45px; border-bottom: 1px solid #E0E0E0; padding-left: 8px; position: absolute; z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); left: 0; right: 0; }
@@ -39,11 +40,12 @@ body.ui-dark { background-color: #202020 !important; }
 .header .apply-button { margin-left: 0; }
 
 .ui-dark .header { background-color: #202020; border-bottom-color: #404040; }
-.ui-dark .header button, .ui-dark header a { background-color: transparent; color: #FFF; }
+.ui-dark .header button, .ui-dark header a { background-color: transparent; color: #D0D0D0; }
 .ui-dark .header button.apply i { color: #68B25B; }
 .ui-dark .header button.changed { color: #FFF !important; background: #68B25B !important; }
 .ui-dark .header button.changed i { color: #FFF; }
-.ui-dark .header button:hover, .ui-dark header a:hover { background-color: #333; }
+.ui-dark .header button:disabled { color: #777 !important; }
+.ui-dark .header button:hover, .ui-dark header a:hover { background-color: #333; color: #FFF; }
 .ui-dark .header button.selected { background-color: #333; }
 .ui-dark .header button.special, .ui-dark header a.special { color: #99982F; }
 .ui-dark .header > div { border-right-color: #404040; }
@@ -125,8 +127,8 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .flow .stats .realtime { border-left-color: #404040; }
 
 .ui-flow header { padding: 8px; }
-.ui-flow header i { color: var(--color); margin-right: 5px; }
-.ui-flow .component { box-shadow: 2px 2px 10px rgba(0,0,0,0.1); border-width: 2px; max-width: 450px; }
+.ui-flow header i { color: #FFF; margin-right: 5px; width: 22px; height: 22px; line-height: 22px; border-radius: 3px; text-align: center; font-size: 12px; vertical-align: middle; }
+.ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.15); border-width: 2px; max-width: 450px; }
 .ui-flow .component.isnewbie { border-color: #68B25B; }
 .ui-flow .component.iserror { border-color: red; }
 .ui-flow .component-selected { border-color: var(--color) !important; }
@@ -143,6 +145,7 @@ body.ui-dark { background-color: #202020 !important; }
 
 .ui-dark .ui-flow footer { border-top-color: #404040; }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
+.ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
 
 .markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); }
 .ui-dark .markdown pre { background-color: #272727; }
@@ -281,18 +284,21 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .componenteditor > nav button:disabled { background-color: #292929 !important; border-color: #353535 !important; color: silver !important; }
 .ui-dark .componenteditor > nav button[name='submit'] { background-color: var(--color); color: #FFF; }
 
-.ui-largeform .search { height: 30px; }
-.ui-largeform .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 10px; }
-.ui-dark .ui-largeform .search .ui-searchinput { border-color: #404040; }
+.ui-box .search { height: 30px; }
+.ui-box .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 10px; }
+.ui-dark .ui-box .search .ui-searchinput { border-color: #404040; }
 
 .listing-caption { padding: 0 8px 5px; font-size: 12px; color: #777; }
 .listing-download figure { width: 33.33%; float: left; padding: 5px 8px; }
 .listing-download section { border: 1px solid #E0E0E0; background-color: #F8F8F8; padding: 5px; border-radius: var(--radius); cursor: pointer; }
-.listing-download .installed section { border-color: var(--color); background-color: #FFF; }
-.listing-download .icon { float: left; width: 30px; height: 32px; line-height: 32px; font-size: 20px; text-align: center; margin-right: 10px; }
+.listing-download section:hover { opacity: 0.8; }
+.listing-download .installed section { border-color: var(--color); background-color: #F0F0F0; font-weight: bold; }
+.listing-download .icon { float: left; width: 18px; height: 18px; line-height: 18px; font-size: 11px; text-align: center; margin-right: 5px; color: #FFF; border-radius: 3px; }
 .listing-download .author { font-size: 11px; color: #777; }
 .listing-download .version { float: right; font-size: 11px; color: #777; margin: 10px 0 0; }
-.listing-download .name { font-weight: bold; font-size: 13px; }
+.listing-download .name { font-size: 12px; }
+.listing-download .readme { font-size: 11px; float: right; cursor: pointer; color: #777; font-weight: normal; margin-top: 1px; }
+.listing-download .readme:hover { text-decoration: underline; }
 
 .ui-dark .listing-download section { border-color: #404040; background-color: #303030; }
 .ui-dark .listing-download .installed section { border-color: var(--color); background-color: #202020; }

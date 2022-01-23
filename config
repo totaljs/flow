@@ -1,18 +1,15 @@
-name                    : Flow v10
-allow_custom_titles     : true
-flowstream_designer     : /$designer
-backup                  : false
-flowstream_worker       : true
+name                        : Total.js Flow v10
+allow_custom_titles         : true
+cookie          (generate)  : 6
+cookie_secret   (generate)  : 10
 
-marketplace             : https://marketplace.totaljs.com
-cdn_components          : https://cdn.totaljs.com/flowstream/
-cdn                     : https://cdn.componentator.com
+flowstream_worker           : true
 
 // Disables: Worker/Fork
-// flowstream_worker       : false
+// flowstream_worker        : false
 
 // Replaces WorkerThread for the ChildProcess/Fork
-// flowstream_worker       : fork
+// flowstream_worker        : fork
 
-// Own list of components and the structure must be the same as https://cdn.totaljs.com/flowstream/components/db.json
-// flowstream_components   : https://website.com/components.json
+// Flow directory
+// directory                   : /absolute/path/to/flow/database/

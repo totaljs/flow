@@ -1,9 +1,12 @@
-<div data---="largeform__common.form__if:~PATH~;title:@(TMS sources);icon:fa fa-code-branch;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;title:@(TMS sources);icon:fa fa-code-branch;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+	<nav>
+		<button class="exec" data-exec="?/add"><i class="fa fa-plus green"></i>@(Add source)</button>
+	</nav>
 	<div>
 		<div class="search">
 			<div data---="searchinput__%sourcessearch__placeholder:@(Search apps)"></div>
 		</div>
-		<div data---="viewbox__common.form__parent:.ui-largeform-body;margin:30;scrollbar:1" class="invisible">
+		<div data---="viewbox__common.form__parent:auto;margin:30;scrollbar:1" class="invisible">
 			<div data---="empty__?.items__parent:auto" class="invisible">
 
 				<script type="text/html">
@@ -37,13 +40,6 @@
 	PLUGIN('~PATH~', function(exports) {
 
 		exports.reload = function(com) {
-
-			if (!com.updated) {
-				com.updated = true;
-				var el = com.element.find('.ui-largeform-title');
-				el.append('<button class="ui-largeform-options exec b" data-exec="?/add"><i class="fa fa-plus green"></i>@(Add source)</button>');
-			}
-
 			exports.refresh();
 		};
 

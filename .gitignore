@@ -5,3 +5,6 @@ tmp/
 logs/
 index.js.json
 index.pid
+flowstream/
+logs/
+databases/

@@ -1,0 +1,123 @@
+<script total>
+
+	exports.name = 'NAME';
+	exports.icon = 'fa fa-code';
+	exports.author = 'Total Avengers';
+	exports.version = '1';
+	exports.config = {};
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }];
+
+	// exports.npm = ['npm_module_1', 'npm_module_2@version'];
+
+	exports.make = function(instance, config) {
+
+		// instance.main.variables {Object}
+		// instance.main.variables2 {Object}
+		// instance.save();
+		// instance.replace(str); // replaces {variable_name} for values from "variables" and "variables2"
+
+		instance.message = function($) {
+			var data = $.data;
+			$.send('output', data);
+			// or $.destroy();
+		};
+
+		instance.configure = function() {
+			// "config" is changed
+		};
+
+		instance.close = function() {
+			// this instance is closed
+		};
+
+		instance.variables = function(variables) {
+			// FlowStream variables are changed
+		};
+
+		instance.variables2 = function(variables) {
+			// Global variables are changed
+		};
+
+		instance.configure();
+
+	};
+
+</script>
+
+<readme>
+Markdown readme
+
+```js
+var total = 'Hello world!';
+```
+</readme>
+
+<settings>
+	<div class="padding">
+		SETTINGS for this component (optional)
+	</div>
+</settings>
+
+<style>
+	.CLASS footer { padding: 10px; font-size: 12px; }
+</style>
+
+<script>
+
+	// Client-side script
+	// Optional, you can remove it
+
+	// A custom helper for the component instances
+	// The method below captures each instance of this component
+	TOUCH(function(exports, reinit) {
+
+		var name = exports.name + ' --> ' + exports.id;
+
+		console.log(name, 'initialized' + (reinit ? ' : UPDATE' : ''));
+
+		exports.settings = function(meta) {
+			// Triggered when the user opens settings
+			console.log(name, 'settings', meta);
+		};
+
+		exports.configure = function(config, isinit) {
+			// Triggered when the config is changed
+			console.log(name, 'configure', config);
+		};
+
+		exports.status = function(status, isinit) {
+			// Triggered when the status is changed
+			console.log(name, 'status', status);
+		};
+
+		exports.note = function(note, isinit) {
+			// Triggered when the note is changed
+			console.log(name, 'note', note);
+		};
+
+		exports.variables = function(variables) {
+			// Triggered when the variables are changed
+			console.log(name, 'variables', variables);
+		};
+
+		exports.variables2 = function(variables) {
+			// Triggered when the variables2 are changed
+			console.log(name, 'variables2', variables);
+		};
+
+		exports.close = function() {
+			// Triggered when the instance is closing due to some reasons
+			console.log(name, 'close');
+		};
+
+	});
+
+</script>
+
+<body>
+	<header>
+		<i class="ICON"></i>NAME
+	</header>
+	<footer>Learn from existing components</footer>
+</body>

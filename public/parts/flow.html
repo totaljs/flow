@@ -8,13 +8,13 @@
 			<button class="exec apply" data-exec="?/submit" data-bind="?.changed__.highlight"><i class="fas fa-play"></i><span>@(APPLY)</span></button>
 		</div>
 		<div>
-			<button title="@(Pause)" class="exec hidden" data-exec="?/pause" data-bind="?.stats.paused__.paused__|__?.head.total__show:value>4045"><i class="fas fa-pause"></i><span></span></button>
+			<button title="@(Pause)" class="exec" data-exec="?/pause" data-bind="?.stats.paused__.paused"><i class="fas fa-pause"></i><span></span></button>
 			<button title="@(Add)" class="exec green" data-exec="?/add"><i class="fa fa-plus-circle"></i></button>
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
 			<button title="@(Sources)" class="exec" data-exec="?/sources"><i class="fa fa-code-branch"></i></button>
-			<a href="https://docs.totaljs.com/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
+			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 		</div>
 		<div>
 			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
@@ -86,7 +86,7 @@
 	</div>
 </script>
 
-<div data---="largeform__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
+<div data---="box__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
 	<div id="flow_settings"></div>
 	<nav data---="validation__settings__$id:settingsvalidation">
 		<button name="submit"><i class="far fa-check-circle"></i>@(APPLY)</button>
@@ -94,13 +94,14 @@
 	</nav>
 </div>
 
-<div data---="panel__common.panel__if:readme;width:500;title:@(Read me);zindex:10;$id:readme">
+<div data---="box__common.panel__if:readme;width:500;title:@(Read me);zindex:10;$id:readme;align:right;closeoutside:1;closeesc:1">
 	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
 </div>
 
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
 <div data---="importer__common.form__if:groupform;url:/forms/group.html"></div>
+<div data---="importer__common.form__if:newflow;url:/forms/new.html"></div>
 
 <script>
 
@@ -132,6 +133,11 @@
 		}
 	});
 
+	CACHEPATH('common.curvedlines', '1 year');
+
+	if (common.curvedlines == null)
+		common.curvedlines = true;
+
 	PLUGIN('flow', function(exports) {
 
 		var TYPES = { pub: 1, sub: 1 };
@@ -140,6 +146,7 @@
 		var settings_current;
 		var settings_data;
 		var flowstreamid;
+		var init = false;
 
 		exports.init = function() {
 			ADD('websocket__null__url:{0}'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) + ';encoder:false');
@@ -184,10 +191,7 @@
 
 				switch (item.id) {
 					case 'create':
-						AJAX('GET /component.txt @showloading', function(response) {
-							SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
-							SET('common.page @hideloading', 'componenteditor');
-						});
+						exports.create();
 						break;
 					case 'opensource':
 						exports.components();
@@ -203,6 +207,14 @@
 			};
 
 			SETTER('menu/show', opt);
+		};
+
+		exports.create = function() {
+			common.form && NUL('common.form');
+			AJAX('GET /component.txt @showloading', function(response) {
+				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
+				SET('common.page @hideloading', 'componenteditor');
+			});
 		};
 
 		exports.components = function() {
@@ -774,6 +786,9 @@
 			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
+
+				el.aclass(com.groupclass);
+
 				if (com.type === 'pub' || com.type === 'sub' || com.type === 'call' || com.type === 'input2' || com.type === 'output2' || com.type === 'input' || com.type === 'output') {
 					var span = el.find('.meta').find('span');
 					if (span.length)
@@ -802,6 +817,7 @@
 			var regconfig = /CONFIG/g;
 			var regid = /ID/g;
 			var reguid = /UID/g;
+			var colors = {};
 
 			for (var i = 0; i < response.length; i++) {
 				var com = response[i];
@@ -817,6 +833,12 @@
 
 				com.css && css.push(com.css.replace(regid, com.id).replace(regreplace, 'f-' + name));
 				var g = com.group || 'Common';
+
+				com.groupclass = 'group_' + HASH(g).toString(36);
+
+				if (!colors[com.groupclass])
+					colors[com.groupclass] = Thelpers.color(g);
+
 				if (groups[g])
 					groups[g].push(com);
 				else
@@ -833,6 +855,9 @@
 				groups[key].quicksort('name');
 				arr.push({ name: key, items: groups[key] });
 			}
+
+			for (var key in colors)
+				css.push('.' + key + ' header i{background:' + colors[key] + '}');
 
 			arr.quicksort('name');
 			CSS(css.join(''), 'flowcomponents');
@@ -874,6 +899,13 @@
 				UPD('?.data', 'update');
 				setTimeout(ASETTER('websocket/send', { TYPE: 'refresh' }), 1000);
 			}
+
+			if (!init) {
+				init = true;
+				if (!response.length)
+					SET('common.form', 'newflow');
+			}
+
 		};
 
 		exports.pause = function() {

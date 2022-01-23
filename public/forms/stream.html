@@ -53,7 +53,7 @@
 
 		exports.submit = function(hide) {
 			var model = GET('? @reset');
-			DAPI('streams_save', model, ASETTER('message/response', function() {
+			WAPI('streams_save', model, ASETTER('message/response', function() {
 				EXEC('common/refresh');
 				hide();
 			}));
