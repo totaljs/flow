@@ -211,7 +211,7 @@
 						var w = (WW / 1.4) >> 0;
 						var h = (WH / 1.4) >> 0;
 						var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
-						PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + common.designer + '/?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
+						PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
 					}
 				}
 			};
