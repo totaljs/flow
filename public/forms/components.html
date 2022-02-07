@@ -1,6 +1,7 @@
 <div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
 	<nav>
-		<button class="exec hidden" data-bind="?.newupdates__show" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
+		<button class="exec" data-exec="?/marketplace"><i class="fas fa-shopping-basket"></i>@(Marketplace)</button>
+		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
 	</nav>
 	<div>
 		<div class="search">
@@ -75,6 +76,11 @@
 
 				callback();
 			});
+		};
+
+		exports.marketplace = function() {
+			NULL('common.form');
+			EXEC('flow/marketplace');
 		};
 
 		exports.reload = function() {
