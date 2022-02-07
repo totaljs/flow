@@ -2,6 +2,8 @@
 
 	<header class="header">
 		<div class="pull-right hidden" data-bind="?.head.version__show:value>11">
+			<button title="@(Marketplace)" data-bind="common.marketplace__show" class="exec red px8" data-exec="?/marketplace" style="font-size:13px"><i class="fa fa-shopping-basket mr5"></i><span>Marketplace</span></button>
+			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="fa fa-info-circle color"></i></button>
 		</div>
 		<div class="apply-button">
@@ -13,7 +15,6 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
-			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 		</div>
 		<div>
 			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
@@ -32,8 +33,6 @@
 					<div>@(ID): <b class="monospace">{{ value.id }}</b></div>
 				</script>
 			</div>
-			<button title="@(Configure)" class="exec" data-exec="?/selected_settings" data-bind="?.info__show:value&&(value.type==='group'||value.type==='component')"><i class="fa fa-wrench"></i></button>
-			<button title="@(Remove selected)" class="exec red" data-exec="?/selected_remove" data-bind="?.selected__show:value"><i class="fas fa-trash-alt"></i></button>
 		</div>
 	</header>
 	<div class="header-empty"></div>
@@ -183,10 +182,10 @@
 			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'fa fa-code-branch' });
 			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'fa fa-cloud-download' });
 
-			if (common.marketplace) {
+			/*if (common.marketplace) {
 				opt.items.push('-');
 				opt.items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
-			}
+			}*/
 
 			opt.callback = function(item) {
 
@@ -263,10 +262,11 @@
 
 			var info = GET('?.info');
 			var item = info.selected;
+
 			if (!item)
 				return;
 
-			var type = info.type;
+			type = info.type;
 			var component = item.isconnection ? null : flow.components.findItem('id', item.component);
 
 			var opt = {};
@@ -1198,8 +1198,7 @@
 
 		exports.component_contextmenu = function(el, e) {
 
-			var id = el.attrd2('id');
-
+			var id = ATTRD(el);
 			var component = flow.components.findItem('id', id);
 			if (TYPES[component.type])
 				return;
@@ -1378,6 +1377,27 @@
 			CodeMirror.runMode(code.replace(/\t/g, '  '), type, el[0]);
 		});
 	});
+
+	isTOUCH && (function() {
+
+		var delay;
+
+		$(document).on('touchstart touchmove touchend', '.component,.connection,.ui-flow-group', function(e) {
+
+			if (e.type === 'touchstart') {
+				delay && clearTimeout(delay);
+				delay = setTimeout(function(touch) {
+					delay = null;
+					EXEC('flow/contextmenu', { pageX: touch.pageX, pageY: touch.pageY });
+				}, 2000, e.touches[0]);
+				return;
+			}
+
+			delay && clearTimeout(delay);
+			delay = null;
+		});
+
+	})();
 
 	Thelpers.url = function(val) {
 		var index = val.indexOf('/', 10);
