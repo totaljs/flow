@@ -13,7 +13,6 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
-			<button title="@(Sources)" class="exec" data-exec="?/sources"><i class="fa fa-code-branch"></i></button>
 			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 		</div>
 		<div>
@@ -27,12 +26,14 @@
 			<button title="@(Options)" class="exec" data-exec="?/options"><i class="fa fa-cog"></i></button>
 		</div>
 		<div style="border-right:0">
-			<div class="help" data-bind="?.selected__show:value&&value.component__template">
+			<div class="help pull-left mr10" data-bind="?.selected__show:value&&value.component__template">
 				<script type="text/html">
 					<div>{{ value.name }} ({{ value.component | instancecount }})</div>
 					<div>@(ID): <b class="monospace">{{ value.id }}</b></div>
 				</script>
 			</div>
+			<button title="@(Configure)" class="exec" data-exec="?/selected_settings" data-bind="?.info__show:value&&(value.type==='group'||value.type==='component')"><i class="fa fa-wrench"></i></button>
+			<button title="@(Remove selected)" class="exec red" data-exec="?/selected_remove" data-bind="?.selected__show:value"><i class="fas fa-trash-alt"></i></button>
 		</div>
 	</header>
 	<div class="header-empty"></div>
@@ -94,7 +95,7 @@
 	</nav>
 </div>
 
-<div data---="box__common.panel__if:readme;width:500;title:@(Read me);zindex:10;$id:readme;align:right;closeoutside:1;closeesc:1">
+<div data---="box__common.panel__if:readme;width:620;title:@(Read me);zindex:10;$id:readme;closeoutside:1;closeesc:1">
 	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
 </div>
 
@@ -510,7 +511,7 @@
 		};
 
 		exports.readme = function(el) {
-			var id = el instanceof jQuery ? el.attrd2('id') : el;
+			var id = ATTRD(el);
 			var model = GET('?');
 			var item = model.components.findItem('id', id);
 			if (item && item.readme) {
@@ -653,7 +654,7 @@
 
 		exports.drop = function(e, grid) {
 
-			var id = e.el.attrd('id');
+			var id = ATTRD(e.el);
 
 			if (id === 'group') {
 				var obj = {};
@@ -1254,8 +1255,28 @@
 			SETTER('menu/show', opt);
 		};
 
+		exports.selected_settings = function() {
+			var info = exports.data.info;
+			if (info.type === 'group')
+				exports.groupedit(info.selected);
+			else
+				exports.settings(info.selected);
+		};
+
+		exports.selected_remove = function() {
+			CMD('flow.selected.clear');
+		};
+
 		exports.info = function() {
-			var head = GET('?.head');
+
+			var model = exports.data;
+
+			if (model.info.type === 'component') {
+				exports.readme(model.info.selected.component);
+				return;
+			}
+
+			var head = model.head;
 			RECONFIGURE('#readme', { title: head.name, icon: head.icon || 'fas fa-question-circle' });
 			var body = '';
 
