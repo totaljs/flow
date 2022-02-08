@@ -185,8 +185,10 @@ FUNC.strim = function(value) {
 
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
-		if (line.length > count)
-			lines[i] = line.substring(count);
+		if (line.length > count) {
+			if ((/^[\s\t]+$/g).test(line.substring(0, count)))
+				lines[i] = line.substring(count);
+		}
 	}
 
 	return lines.join('\n');
