@@ -60,7 +60,7 @@
 		common.page = common.socket ? 'flow' : '';
 
 		if (!common.page)
-			location.href = 'https://www.totaljs.com/flowstream/';
+			location.href = 'https://www.totaljs.com/flow/';
 
 		$(document).on('click', function() {
 			W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket }), '*');
