@@ -1,7 +1,7 @@
 name                        : Total.js Flow v10
-allow_custom_titles         : true
 cookie          (generate)  : 6
 cookie_secret   (generate)  : 10
+allow_custom_titles         : true
 
 flowstream_worker           : true
 

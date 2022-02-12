@@ -28,6 +28,9 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 			clearTimeout(meta.pending[t.id]);
 			delete meta.pending[t.id];
 		}
+		el.on('click', 'button,.clickable', function() {
+			t.click && t.click($(this));
+		});
 	}
 
 	Instance.prototype = {
@@ -40,6 +43,10 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 			this.instance.config = flow.config[this.instance.id] = val;
 			UPD('flow.config.' + this.instance.id);
 		}
+	};
+
+	Instance.prototype.rebind = function(type) {
+		type && UPD('flow.' + type + '.' + this.instance.id);
 	};
 
 	Instance.prototype.reconfigure = function(val) {

@@ -7,6 +7,7 @@ body.ui-dark { background-color: #202020 !important; }
 .markdown-small { font-size: 14px; }
 .ml5 { margin-left: 5px; }
 .ml10 { margin-left: 10px; }
+.px8 { padding-left: 8px !important; padding-right: 8px !important; }
 
 :root {
 	--monospace: Menlo, Consolas, monospace;
@@ -60,6 +61,7 @@ body.ui-dark { background-color: #202020 !important; }
 
 .flowcomponents { padding: 0 5px 0; }
 .flowcomponents figure { height: 32px; font-size: 11px; padding: 0 10px; margin: 0 10px 5px; border-radius: var(--radius); cursor: grab; line-height: 15px; background-color: #F8F8F8; border: 1px solid transparent; }
+.flowcomponents .caption i { float: left; font-size: 11px; margin: 2px 5px 0 0; }
 
 .type-pub, .type-input2, .type-input { background-color: #EDF7FF !important; }
 .type-sub, .type-output2, .type-output { background-color: #FFEDF8 !important; }
@@ -340,3 +342,4 @@ body.ui-dark { background-color: #202020 !important; }
 
 .ui-flow-grid { stroke: #E9E9E9; }
 .ui-dark .ui-flow-grid { stroke: #2D2D2D; }
+.clickable { cursor: pointer; }

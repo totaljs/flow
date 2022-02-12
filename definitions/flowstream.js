@@ -2,6 +2,7 @@ const DB_FILE = 'database.json';
 const DIRECTORY = CONF.directory || PATH.root('flowstream');
 
 PATH.mkdir(DIRECTORY);
+PATH.mkdir(PATH.private());
 
 var FS = {};
 

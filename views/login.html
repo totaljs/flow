@@ -9,7 +9,7 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.js + ui.js', 'spa.min@19.css + ui.css', 'favicon.png')}
+	@{import('meta', 'head', 'spa.min@19.js + ui.js', 'spa.min@19.css + ui.css', 'favicon.ico')}
 	<style>
 
 		body { background-color: #F2F5FE; }
@@ -53,19 +53,22 @@
 						<div class="key">@(Password)</div>
 						<div class="value b">@{PREF.user.raw}</div>
 					</div>
+					<button name="submit" class="button exec mt10" data-exec="?/fill">@(Fill in the form)</button>
 				</div>
 				@{fi}
 
 				<h2><i class="far fa-object-group mr5"></i>@{'%name'}</h2>
-				<div data---="input__?.login__required:1;autofocus:1__''" class="m">@(User name)</div>
-				<div data---="input__?.password__required:1;type:password__''" class="m">@(Password)</div>
-				<div data-bind="%error__show__template" class="error">
-					<script type="text/html">
-						<i class="fas fa-exclamation-triangle"></i> {{ value }}
-					</script>
-				</div>
-				<div data---="validate__?" style="margin-top:20px">
-					<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
+				<div data---="enter__?">
+					<div data---="input__?.login__required:1;autofocus:1__''" class="m">@(User name)</div>
+					<div data---="input__?.password__required:1;type:password__''" class="m">@(Password)</div>
+					<div data-bind="%error__show__template" class="error">
+						<script type="text/html">
+							<i class="fas fa-exclamation-triangle"></i> {{ value }}
+						</script>
+					</div>
+					<div data---="validate__?" style="margin-top:20px">
+						<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
+					</div>
 				</div>
 			</figure>
 			<br />
@@ -77,12 +80,18 @@
 	<script>
 
 		PLUGIN('signinform', function(exports) {
+
 			exports.submit = function() {
 				AJAX('POST /auth/', exports.form, ERROR(function(response) {
 					location.href = '/' + ($('.alert').length ? '?welcome=1' : '');
 				}, function(response) {
 					SET('%error', response[0].error);
 				}));
+			};
+
+			exports.fill = function() {
+				SET('signinform', { login: '@{PREF.user.login}', password: '@{PREF.user.raw}' });
+				UPD('signinform @change');
 			};
 		});
 

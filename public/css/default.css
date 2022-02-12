@@ -3,6 +3,7 @@ body { background-color: #FFF; }
 body.ui-dark { background-color: #202020 !important; }
 p { font-size: 13px; line-height: 16px; }
 .monospace { font-family: Menlo, Consolas, monospace; }
+.color { color: var(--color); }
 
 .ml5 { margin-left: 5px; }
 .ml10 { margin-left: 10px; }
@@ -15,6 +16,11 @@ p { font-size: 13px; line-height: 16px; }
 .ui-dark .mainmenu { background-color: #404040; }
 .ui-dark .mainmenu:hover { background-color: #484848; }
 
+header > .tabs { float: left; font-size: 13px; margin: 10px 0 0 5px; line-height: 34px; user-select: none; }
+header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
+header > .tabs > div i { margin-right: 7px; color: #999; }
+header > .tabs > div .fa-times:hover { color: #E73323 !important; }
+header > .tabs > div.selected { background-color: #E9E9E9; color: #000; }
 header { height: 58px !important; line-height: 56px !important; background-color: #FFF; border: 0; border-bottom: 1px solid #EBEBEB; border-radius: 0; padding-left: 15px; padding-right: 15px; }
 header .ui-searchinput { line-height: 24px; height: 26px; border-radius: var(--radius); width: 180px; float: right; margin: 12px 0 0 10px; background-color: #F8F8F8; border: 1px solid #E0E0E0 !important; }
 header .ui-searchinput input { line-height: 24px; height: 24px; }
@@ -34,6 +40,10 @@ header .toolbar { margin: 16px 0 0 !important; float: right; }
 header label { float: left; font-size: 15px; font-weight: bold; line-height: 16px; margin: 12px 0 0; }
 header label i { margin-right: 5px; }
 header label span { display: block; color: #999; font-size: 11px; font-weight: normal; }
+
+.ui-dark header > .tabs > div { background-color: #292929; color: #777; }
+.ui-dark header > .tabs > div i { color: #999; }
+.ui-dark header > .tabs > div.selected { background-color: #404040; color: #FFF; }
 
 .ui-dark header { background-color: #202020; border-bottom-color: #404040; }
 .ui-dark header .ui-searchinput { background-color: #333; border-color: #404040; }
@@ -166,10 +176,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .badge-medium { font-size: 11px; padding: 2px 6px; }
 .badge-medium i { margin-right: 5px; }
 
-.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.25); }
-.ui-windows-body { overflow: hidden; }
-.ui-windows-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
-.ui-dark .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.5); }
+.ui-parts-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
 
 .landing .listing .icon { float: left; width: 50px; height: 50px; font-size: 25px; }
 .landing footer { height: 30px; background-color: #FFF; line-height: 30px; padding: 0; font-size: 11px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; border-top: 1px solid #E0E0E0; }
@@ -231,10 +238,6 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 @media (min-width:1200px) {
 	.flows figure { width: 25%; }
 }
-
-.ui-windows-item { z-index: 15; }
-.ui-windows-focused { z-index: 16; }
-.ui-windows-resizer { z-index: 17; }
 
 .ui-largeform .search { height: 30px; }
 .ui-largeform .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; }

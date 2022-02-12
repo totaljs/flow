@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.css + editor.min@1.css + ui.css + editor.css + designer.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + func.js + editor.js', 'favicon.png')}
+	@{import('meta', 'head', 'spa.min@19.css + editor.min@1.css + ui.css + editor.css + designer.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + func.js + editor.js', 'favicon.ico')}
 </head>
 <body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
@@ -26,8 +26,8 @@
 	<div data---="LAZY colorpicker"></div>
 	<div data---="LAZY floatinginput"></div>
 	<div data---="LAZY tooltip"></div>
-	<div data---="LAZY edit"></div>
 
+	<div data---="edit"></div>
 	<div data---="markdown"></div>
 	<div data---="paste"></div>
 	<div data---="shortcuts"></div>

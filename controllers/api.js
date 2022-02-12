@@ -4,6 +4,7 @@ exports.install = function() {
 	ROUTE('-POST    /auth/        *Auth       --> exec');
 	ROUTE('+GET     /logout/      *Auth       --> logout');
 	ROUTE('+POST    /password/    *Auth       --> save');
+	ROUTE('GET      /private/',   privatefiles);
 
 	// FlowStream
 	ROUTE('+API    @api    -streams                          *Streams      --> query');
@@ -32,10 +33,68 @@ exports.install = function() {
 	// Socket
 	ROUTE('+SOCKET  /api/  @api', 1024 * 8); // max. 8 MB
 	ROUTE('+SOCKET  /flows/{id}/', socket, 1024 * 8); // max. 8 MB
-
 };
 
 function socket(id) {
 	var self = this;
 	MODULE('flowstream').socket(id, self);
+}
+
+function privatefiles() {
+	var $ = this;
+
+	if (!PREF.token) {
+		$.invalid(401);
+		return;
+	}
+
+	if (BLOCKED($, 10, '15 minutes'))
+		return;
+
+	if ($.query.token !== PREF.token) {
+		$.invalid(401);
+		return;
+	}
+
+	BLOCKED($, -1);
+
+	var filename = $.query.filename;
+	if (filename) {
+
+		filename = filename.replace(/\.{2,}|~|\+|\/|\\/g, '');
+		$.nocache();
+
+		var path = PATH.private(filename);
+
+		F.Fs.lstat(path, function(err, stat) {
+
+			if (err) {
+				$.throw404();
+				return;
+			}
+
+			var offset = $.query.offset;
+			var opt = {};
+
+			if (offset) {
+				offset = U.parseInt(offset);
+				opt.start = offset;
+			}
+
+			var stream = F.Fs.createReadStream(path, opt);
+			$.stream(stream, U.getContentType(U.getExtension(path)), filename, { 'x-size': stat.size, 'last-modified': stat.mtime.toUTCString() });
+
+		});
+
+		return;
+	}
+
+	var q = $.query.q;
+
+	U.ls2(PATH.private(), function(files) {
+		var arr = [];
+		for (var file of files)
+			arr.push({ name: file.filename.substring(file.filename.lastIndexOf('/') + 1), size: file.stats.size, modified: file.stats.mtime });
+		$.json(arr);
+	}, q);
 }

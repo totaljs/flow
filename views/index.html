@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css', 'spa.min@19.js + filesaver.min.js + ui.js', 'favicon.png')}
+	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css', 'spa.min@19.js + filesaver.min.js + ui.js', 'favicon.ico')}
 </head>
 <body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
 
@@ -23,83 +23,36 @@
 	<div data---="LAZY directory__null__placeholder:@(Search)"></div>
 	<div data---="LAZY colorpicker"></div>
 
-	<div data---="shortcuts"></div>
-	<div data---="windows__common.windows"></div>
 	<div data---="paste"></div>
 	<div data---="shortcuts"></div>
-	<div data---="loading"></div>
+	<div data---="loading__null__style:2"></div>
 
 	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
 
 	<header>
+		<!--
 		<div class="tools">
 			<a href="https://docs.totaljs.com/flow10/" target="_blank" title="@(Documentation)"><i class="fas fa-book"></i></a>
-		</div>
+		</div>-->
 		<span class="mainmenu exec" data-exec="common/menu"><i class="fa fa-th"></i></span>
+		<!--
 		<label>
 			@(Visual Programming Interface)
 			<span>Total.js Flow</span>
-		</label>
+		</label>-->
+		<div class="tabs" data-bind="common.tabs__template:div">
+			<script type="text/html">
+				{{ foreach m in value }}
+					<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="fas fa-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>
+				{{ end }}
+			</script>
+		</div>
 		<div data---="virtualwire__common.page"></div>
 	</header>
 	<div>
 
 		<div class="landing">
-
-			<div data---="viewbox__null__parent:window;scrollbar:1;scrollbarshadow:1;margin:75" class="invisible">
-
-				<div data---="empty__common.groups__parent:auto" class="invisible">
-
-					<script type="text/html">
-						<div>@(This Total.js Flow application doesn't contain any Flow)</div>
-						<div class="m b">@(Create something awesome)</div>
-						<div style="max-width:220px;margin:0 auto;width:100%;padding:5px">
-							<button class="exec button b" data-exec="common/create"><i class="fa fa-plus-circle mr5"></i>@(Create Flow)</button>
-						</div>
-					</script>
-
-					<div data-bind="common.groups__template" class="flowstreams">
-						<script type="text/html">
-							{{ foreach g in value }}
-								<div class="flows">
-									{{ if g.name }}<h2>{{ g.name }}</h2>{{ fi }}
-									{{ foreach m in g.items }}
-									<figure class="exec exec3{{ if m.stats && m.stats.paused }} paused{{ fi }}" data-exec="common/open" data-id="{{ m.id }}" data-exec3="common/contextmenu">
-										<section{{ if m.color }} style="border-color:{{ m.color }}"{{ fi }}>
-											<div class="ispaused"><i class="fa fa-pause"></i></div>
-											{{ if m.reference }}<div class="reference">{{ m.reference }}</div>{{ fi }}
-											<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="fas fa-ellipsis-v"></i></div>
-											<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
-											<div class="meta">
-												<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
-												<div class="author">{{ m.author | empty }}</div>
-												<div class="size">{{ m.size | filesize }}</div>
-											</div>
-											<div class="stats">
-												<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>
-												<div><span>{{ m.stats.messages | format(0) }}</span><label>@(Messages)</label></div>
-												<div><span>{{ m.stats.pending | format(0) }}</span><label>@(Pending)</label></div>
-												<div><span>{{ m.stats.mm | format(0) }}</span><label>@(Per minute)</label></div>
-											</div>
-										</section>
-									</figure>
-									{{ end }}
-								</div>
-							{{ end }}
-						</script>
-					</div>
-				</div>
-			</div>
-			<footer>
-				<div data-bind="common.stats__template">
-					<script type="text/html">
-						<span><b>{{ value.memory | filesize }}</b>@(Memory)</span>
-						<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
-						<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
-						<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
-					</script>
-				</div>
-			</footer>
+			<div data---="parts__common.tabs__parent:window;margin:60"></div>
 		</div>
 
 		<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
@@ -114,6 +67,7 @@
 
 		var common = {};
 
+		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'fa fa-home', noclose: true, import: '@{#}/parts/flows.html' }];
 		common.secret = 'flowstream';
 		common.layout = '';
 		common.windows = [];
@@ -137,7 +91,7 @@
 
 		function shortcutsprocess(type) {
 			return function() {
-				var win = $('.ui-windows-focused');
+				var win = $('.ui-parts-focused');
 				if (win.length) {
 					var w = win.find('iframe')[0].contentWindow;
 					w.postMessage(STRINGIFY({ TYPE: 'shortcut', key: type }), '*');
@@ -149,6 +103,13 @@
 			com.register('CMD+ENTER, CTRL+ENTER', shortcutsprocess('CMD+ENTER'));
 			com.register('CMD+D, CTRL+D', shortcutsprocess('CMD+D'), true);
 			com.register('CMD+F, CTRL+F', shortcutsprocess('CMD+F'), true);
+			com.register('CMD+TAB, ALT+TAB', function() {
+				var index = common.tabs.findIndex('focused', true) + 1;
+				if (common.tabs[index])
+					SETTER('parts/focus', common.tabs[index].id);
+				else
+					SETTER('parts/focus', common.tabs[0].id);
+			}, true);
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
 		});
@@ -200,7 +161,41 @@
 				}));
 			};
 
+			exports.focus = function(el) {
+				SETTER('parts/focus', ATTRD(el));
+			};
+
+			exports.close = function(el, e) {
+				e.stopPropagation();
+				e.preventDefault();
+				SETTER('parts/close', ATTRD(el));
+			};
+
 			exports.open = function(el) {
+
+				var id = ATTRD(el);
+				var model = exports.model;
+				var item = model.tabs.findItem('id', id);
+
+				if (item) {
+					if (!item.focused)
+						SETTER('parts/focus', item.id);
+					return;
+				}
+
+				var flow = model.items.findItem('id', id);
+				var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+
+				item = {};
+				item.id = id;
+				item.name = flow.name;
+				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || ''));
+
+				SETTER('loading/show');
+				SETTER('loading/hide', 2000);
+				PUSH('?.tabs', item);
+
+				/*
 				var model = GET('?');
 				var id = el instanceof jQuery ? el.attrd2('id') : el;
 				var item = model.items.findItem('id', id);
@@ -213,7 +208,7 @@
 						var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
 						PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
 					}
-				}
+				}*/
 			};
 
 			exports.contextmenu = function(el, e) {

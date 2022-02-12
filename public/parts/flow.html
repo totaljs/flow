@@ -2,7 +2,8 @@
 
 	<header class="header">
 		<div class="pull-right hidden" data-bind="?.head.version__show:value>11">
-			<button title="@(Marketplace)" data-bind="common.marketplace__show" class="exec red px8" data-exec="?/marketplace" style="font-size:13px"><i class="fa fa-shopping-basket mr5"></i><span>Marketplace</span></button>
+			<!--
+			<button title="@(Marketplace)" data-bind="common.marketplace__show" class="exec red px8" data-exec="?/marketplace" style="font-size:13px"><i class="fa fa-shopping-basket mr5"></i><span>Marketplace</span></button>-->
 			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="fa fa-info-circle color"></i></button>
 		</div>
@@ -94,7 +95,7 @@
 	</nav>
 </div>
 
-<div data---="box__common.panel__if:readme;width:620;title:@(Read me);zindex:10;$id:readme;closeoutside:1;closeesc:1">
+<div data---="box__common.panel__if:readme;width:620;title:@(Read me);zindex:10;$id:readme;closeoutside:1;closeesc:1;background:false;transparent:true;align:right">
 	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
 </div>
 
@@ -329,8 +330,14 @@
 						input.value = flow.note[item.id] || '';
 						input.maxlength = 10000;
 						input.callback = function(value) {
-							SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
+							if (item.connected) {
+								SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
+							} else {
+								item.note = value;
+								SET('flow.note.' + item.id, value);
+							}
 						};
+
 						SETTER('floatinginput/show', input);
 						break;
 
@@ -661,12 +668,14 @@
 		exports.drop = function(e, grid) {
 
 			var id = ATTRD(e.el);
+			var offsetX = e.clickX || 0;
+			var offsetY = e.clickY || 0;
 
 			if (id === 'group') {
 				var obj = {};
 				obj.id = 'g' + Date.now().toString(36);
-				obj.x = e.offsetX;
-				obj.y = e.offsetY;
+				obj.x = e.offsetX + offsetX;
+				obj.y = e.offsetY + offsetY;
 				obj.width = 400;
 				obj.height = 400;
 				obj.name = '@(Group)';
@@ -678,8 +687,8 @@
 				var obj = {};
 				obj.id = 'i' + Date.now().toString(36);
 				obj.component = id;
-				obj.x = e.offsetX;
-				obj.y = e.offsetY;
+				obj.x = e.offsetX - offsetX;
+				obj.y = e.offsetY - offsetY;
 				obj.name = com.name.slug().replace(/\-/g, '');
 				obj.outputs = com.outputs ? CLONE(com.outputs) : null;
 				obj.inputs = com.inputs ? CLONE(com.inputs) : null;
@@ -822,6 +831,7 @@
 			var regstatus = /STATUS/g;
 			var regicon = /ICON/g;
 			var regconfig = /CONFIG/g;
+			var regtouch = /TOUCH/g;
 			var regid = /ID/g;
 			var reguid = /UID/g;
 			var colors = {};
@@ -831,7 +841,7 @@
 				var name = com.name.slug().replace(/\-/g, '');
 				checksums_tmp[com.id] = HASH(com.html);
 
-				com.html = (com.html || '').replace(reguid, '{0}').replace(regid, com.id).replace(regicon, com.icon).replace(regname, com.name).replace(regstatus, 'flow.status.{0}').replace(regconfig, 'flow.config.{0}').replace(regreplace, 'f-' + name);
+				com.html = (com.html || '').replace(reguid, '{0}').replace(regid, com.id).replace(regicon, com.icon).replace(regname, com.name).replace(regtouch, 'flowinstances.instances.{0}').replace(regstatus, 'flow.status.{0}').replace(regconfig, 'flow.config.{0}').replace(regreplace, 'f-' + name);
 
 				if (com.js) {
 					var tmp = com.js.replace(regid, com.id).replace(regreplace, name).replace(regicon, com.icon).replace(regname, com.name);
@@ -860,7 +870,7 @@
 			var arr = [];
 			for (var key in groups) {
 				groups[key].quicksort('name');
-				arr.push({ name: key, items: groups[key] });
+				arr.push({ name: key, color: Thelpers.color(key), items: groups[key] });
 			}
 
 			for (var key in colors)
@@ -1066,6 +1076,7 @@
 				case 'flow/status':
 					SET('flow.status.' + msg.id, msg.data);
 					W.flowinstances.exec(msg.id, 'status', msg.data);
+					setTimeout2('flow.refresh', ACMD('flow.refresh'), 500, 2 * 8);
 					break;
 
 				case 'flow/redraw':

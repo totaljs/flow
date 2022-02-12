@@ -24,11 +24,11 @@
 						<div class="name"><div>@(Group)</div></div>
 					</figure>
 					<div>
-						<span class="exec link fs11" style="margin:13px 0 0 10px" data-exec="flow/components"><i class="fas fa-cloud-download mr5"></i>@(Download components)</span>
+						<span class="exec link fs11" style="margin:13px 0 0 10px" data-exec="flow/components">@(Download components)</span>
 					</div>
 				</div>
 				{{ foreach g in value }}
-					<div class="caption">{{ g.name }}</div>
+					<div class="caption"><i class="fa fa-folder" style="color:{{ g.color }}"></i>{{ g.name }}</div>
 					<div>
 					{{ foreach m in g.items }}
 						<figure class="exec exec3{{ if m.type }} type-{{ m.type }}{{ fi }}" data-exec3="flow/component_contextmenu" data-id="{{ m.id }}" draggable="true" data-search="{{ m.name }}{{ if m.schema }} {{ m.schema }}{{ fi }}" data-exec="flow/readme" title="{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}">

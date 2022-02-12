@@ -2,6 +2,7 @@ NEWSCHEMA('Settings', function(schema) {
 
 	schema.define('name', String, true);
 	schema.define('components', String, true);
+	schema.define('token', String);
 	schema.define('darkmode', Boolean);
 	schema.define('backup', Boolean);
 
@@ -30,3 +31,6 @@ if (PREF.backup)
 
 if (!PREF.components)
 	PREF.components = 'https://cdn.totaljs.com/flowstream/components/db.json';
+
+if (!PREF.token)
+	PREF.token = GUID(30);
