@@ -78,6 +78,15 @@ NEWSCHEMA('Streams', function(schema) {
 		var id = $.id;
 		var item = MAIN.flowstream.db[id];
 		if (item) {
+
+			var path = CONF.directory ? CONF.directory : ('~' + PATH.root('flowstream'));
+			if (path[0] === '~')
+				path = path.substring(1);
+			else
+				path = PATH.root(CONF.directory);
+
+			F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
+
 			delete MAIN.flowstream.db[id];
 			MAIN.flowstream.instances[id].destroy();
 			MAIN.flowstream.save();
