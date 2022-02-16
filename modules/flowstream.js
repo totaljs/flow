@@ -7,8 +7,9 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 12;
+const VERSION = 13;
 
+var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
 var CALLBACKS = {};
 var FLOWS = {};
@@ -723,6 +724,10 @@ function httprequest(self, opt, callback) {
 }
 
 function init_current(meta, callback) {
+
+	// Due to C/C++ modules
+	if (isFLOWSTREAMWORKER)
+		CONF.node_modules = '~' + PATH.join(meta.directory, meta.id, 'node_modules');
 
 	var flow = MAKEFLOWSTREAM(meta);
 	FLOWS[meta.id] = flow;
@@ -2606,6 +2611,8 @@ TMS.synchronize = function(fs) {
 TMS.refresh2 = function(fs) {
 	setTimeout2('tms_refresh_' + fs.name, fs => TMS.refresh(fs), 500, null, fs);
 };
+
+isFLOWSTREAMWORKER = W.workerData || process.argv.indexOf('--fork') !== -1;
 
 // Runs the worker
 if (W.workerData) {

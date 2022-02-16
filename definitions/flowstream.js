@@ -40,6 +40,7 @@ FS.init = function(id, next) {
 	var flow = FS.db[id];
 
 	flow.variables2 = FS.db.variables || {};
+	flow.directory = CONF.directory || PATH.root('/flowstream/');
 
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 		instance.httprouting();
