@@ -949,6 +949,9 @@ function init_current(meta, callback) {
 				} else if (source === 'instance_close') {
 					instanceid = instance.id;
 					componentid = instance.component;
+				} else if (source === 'instance_make') {
+					instanceid = instance.id;
+					componentid = instance.component;
 				} else if (source === 'register') {
 					instanceid = '';
 					componentid = instance;
@@ -1033,6 +1036,9 @@ function init_current(meta, callback) {
 					instanceid = instance.instance.id;
 					componentid = instance.instance.component;
 				} else if (source === 'instance_close') {
+					instanceid = instance.id;
+					componentid = instance.component;
+				} else if (source === 'instance_make') {
 					instanceid = instance.id;
 					componentid = instance.component;
 				} else if (source === 'register') {
