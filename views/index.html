@@ -34,7 +34,7 @@
 		<div class="tools">
 			<a href="https://docs.totaljs.com/flow10/" target="_blank" title="@(Documentation)"><i class="fas fa-book"></i></a>
 		</div>-->
-		<span class="mainmenu exec" data-exec="common/menu"><i class="fa fa-th"></i></span>
+		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
 		<!--
 		<label>
 			@(Visual Programming Interface)
@@ -43,7 +43,7 @@
 		<div class="tabs" data-bind="common.tabs__template:div">
 			<script type="text/html">
 				{{ foreach m in value }}
-					<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="fas fa-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>
+					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="fas fa-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
 				{{ end }}
 			</script>
 		</div>
@@ -221,6 +221,7 @@
 					opt.y = e.pageY;
 				} else {
 					opt.element = el;
+					opt.align = 'right';
 				}
 
 				var item = GET('?.items').findItem('id', id);
@@ -336,77 +337,72 @@
 				}));
 			};
 
+			exports.mainmenu = function() {
+				var items = [];
+				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
+				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-upload' });
+				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
+				items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
+				items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
+				items.push('-');
+				items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
+				items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
+				items.push('-');
+				items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+				SET('?.menu', items);
+			};
+
 			exports.menu = function(el) {
+				var id = ATTRD(el);
+				switch (id) {
 
-				var opt = {};
-				opt.element = el;
-				opt.items = [];
-				opt.items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
-				opt.items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-upload' });
-				// opt.items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
-				opt.items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
-				opt.items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
-				opt.items.push('-');
-				opt.items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
-				opt.items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
-				opt.items.push('-');
-				opt.items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+					case 'support':
+						W.open('https://www.totaljs.com/contact/');
+						break;
 
-				opt.callback = function(item) {
+					case 'logout':
+						AJAX('GET /logout/ @showloading', function() {
+							location.href = '/';
+						});
+						break;
 
-					switch (item.id) {
-
-						case 'support':
-							W.open('https://www.totaljs.com/contact/');
-							break;
-
-						case 'logout':
-							AJAX('GET /logout/ @showloading', function() {
-								location.href = '/';
-							});
-							break;
-
-						case 'import':
-							FUNC.import(function(data, hide) {
-								data = data.trim();
-								if (data.substring(0, 4) === 'flow' || data.charAt(0) === '{') {
-									if (data.charAt(0) !== '{') {
-										data = DECRYPT(data, common.secret, 'flow');
-										if (!data) {
-											SETTER('message/warning', '@(Invalid data)');
-											return;
-										}
-										data = STRINGIFY(data);
+					case 'import':
+						FUNC.import(function(data, hide) {
+							data = data.trim();
+							if (data.substring(0, 4) === 'flow' || data.charAt(0) === '{') {
+								if (data.charAt(0) !== '{') {
+									data = DECRYPT(data, common.secret, 'flow');
+									if (!data) {
+										SETTER('message/warning', '@(Invalid data)');
+										return;
 									}
-									WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
-										exports.scope();
-										exports.refresh();
-										setTimeout(function() {
-											WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
-												SET('streamform @reset', response);
-												SET('common.form', 'streamform');
-											}));
-										}, 1000);
-									}));
-									hide();
-								} else
-									SETTER('message/warning', '@(Invalid data)');
-							});
-							break;
-						case 'opensource':
-							SET('common.form', 'templatesform');
-							break;
-						case 'create':
-						case 'settings':
-						case 'marketplace':
-						case 'password':
-							exports[item.id]();
-							break;
-					}
-
-				};
-
-				SETTER('menu/show', opt);
+									data = STRINGIFY(data);
+								}
+								WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
+									exports.scope();
+									exports.refresh();
+									setTimeout(function() {
+										WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+											SET('streamform @reset', response);
+											SET('common.form', 'streamform');
+										}));
+									}, 1000);
+								}));
+								hide();
+							} else
+								SETTER('message/warning', '@(Invalid data)');
+						});
+						break;
+					case 'opensource':
+						SET('common.form', 'templatesform');
+						break;
+					case 'create':
+					case 'settings':
+					case 'marketplace':
+					case 'password':
+						exports[id]();
+						break;
+				}
 			};
 
 			exports.create = function() {
@@ -522,6 +518,7 @@
 			});
 
 			NAV.query.welcome && SET('common.form', 'welcomeform');
+			exports.mainmenu();
 
 		});
 

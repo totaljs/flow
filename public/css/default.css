@@ -10,14 +10,14 @@ p { font-size: 13px; line-height: 16px; }
 
 .ui-dockable-layout { z-index: 1; }
 
-.mainmenu { width: 34px; height: 34px; float: left; font-size: 18px; line-height: 34px; text-align: center; margin: 10px 12px 0 0; cursor: pointer; background-color: #F0F0F0; border-radius: var(--radius); }
+.mainmenu { width: 34px; height: 34px; float: left; font-size: 18px; line-height: 34px; text-align: center; margin: 11px 12px 0 0; cursor: pointer; background-color: #F0F0F0; border-radius: var(--radius); }
 .mainmenu:hover { background-color: #F5F5F5; }
 
 .ui-dark .mainmenu { background-color: #404040; }
 .ui-dark .mainmenu:hover { background-color: #484848; }
 
-header > .tabs { float: left; font-size: 13px; margin: 10px 0 0 5px; line-height: 34px; user-select: none; }
-header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
+header > .tabs { float: left; font-size: 13px; margin: 11px 0 0 2px; line-height: 0; user-select: none; }
+header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 34px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
 header > .tabs > div i { margin-right: 7px; color: #999; }
 header > .tabs > div .fa-times:hover { color: #E73323 !important; }
 header > .tabs > div.selected { background-color: #E9E9E9; color: #000; }
@@ -179,7 +179,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-parts-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
 
 .landing .listing .icon { float: left; width: 50px; height: 50px; font-size: 25px; }
-.landing footer { height: 30px; background-color: #FFF; line-height: 30px; padding: 0; font-size: 11px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; border-top: 1px solid #E0E0E0; }
+.landing footer { height: 30px; background-color: #FFF; line-height: 30px; padding: 0; font-size: 11px; border-top: 1px solid #E0E0E0; }
 .landing footer span { float: left; padding: 0 0 0 10px; width: 25%; }
 .landing footer span b { float: right; border-right: 1px solid #E0E0E0; padding-right: 10px; }
 .landing footer span:last-child b { border-right: 0; }
@@ -272,3 +272,12 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .message-error { border-color: #D63A32; color: #DC7772; }
 .ui-dark .message-alert { border-color: #DEBA31; color: #D2BA62; }
 .ui-dark .message-success { border-color: #68B25B; color: #6DAD63; }
+
+.appmenu { width: 65px; border-right: 1px solid #E0E0E0; float: left; padding: 5px 0 0; background-color: #FFF; color: #777; }
+.appmenu .exec { height: 34px; width: 34px; font-size: 18px; line-height: 34px; text-align: center; margin: 11px 15px 0 15px; cursor: pointer; border-radius: var(--radius); }
+.appmenu .selected, .appmenu .exec:hover { background-color: #F0F0F0; color: #000; }
+.appmenu hr { margin: 10px 10px; }
+.appmain { margin-left: 65px; }
+
+.ui-dark .appmenu { border-right-color: #404040; background-color: #222; color: #777; }
+.ui-dark .appmenu .selected, .ui-dark .appmenu .exec:hover  { background-color: #303030; color: #FFF; }

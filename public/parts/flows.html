@@ -1,54 +1,72 @@
-<div data---="viewbox__null__parent:window;scrollbar:1;scrollbarshadow:1;margin:75" class="invisible">
-
-	<div data---="empty__common.groups__parent:auto" class="invisible">
-
-		<script type="text/html">
-			<div>@(This Total.js Flow application doesn't contain any Flow)</div>
-			<div class="m b">@(Create something awesome)</div>
-			<div style="max-width:220px;margin:0 auto;width:100%;padding:5px">
-				<button class="exec button b" data-exec="common/create"><i class="fa fa-plus-circle mr5"></i>@(Create Flow)</button>
-			</div>
-		</script>
-
-		<div data-bind="common.groups__template" class="flowstreams">
+<div class="appmenu">
+	<div data---="noscrollbar__null__parent:window;margin:60" class="invisible">
+		<div data-bind="common.menu__template">
 			<script type="text/html">
-				{{ foreach g in value }}
-					<div class="flows">
-						{{ if g.name }}<h2>{{ g.name }}</h2>{{ fi }}
-						{{ foreach m in g.items }}
-						<figure class="exec exec3{{ if m.stats && m.stats.paused }} paused{{ fi }}" data-exec="common/open" data-id="{{ m.id }}" data-exec3="common/contextmenu">
-							<section{{ if m.color }} style="border-color:{{ m.color }}"{{ fi }}>
-								<div class="ispaused"><i class="fa fa-pause"></i></div>
-								{{ if m.reference }}<div class="reference">{{ m.reference }}</div>{{ fi }}
-								<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="fas fa-ellipsis-v"></i></div>
-								<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
-								<div class="meta">
-									<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
-									<div class="author">{{ m.author | empty }}</div>
-									<div class="size">{{ m.size | filesize }}</div>
-								</div>
-								<div class="stats">
-									<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>
-									<div><span>{{ m.stats.messages | format(0) }}</span><label>@(Messages)</label></div>
-									<div><span>{{ m.stats.pending | format(0) }}</span><label>@(Pending)</label></div>
-									<div><span>{{ m.stats.mm | format(0) }}</span><label>@(Per minute)</label></div>
-								</div>
-							</section>
-						</figure>
-						{{ end }}
-					</div>
+				{{ foreach m in value }}
+					{{ if m === '-' }}
+					<hr />
+					{{ else }}
+					<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
+					{{ fi }}
 				{{ end }}
 			</script>
 		</div>
 	</div>
 </div>
-<footer>
-	<div data-bind="common.stats__template">
-		<script type="text/html">
-			<span><b>{{ value.memory | filesize }}</b>@(Memory)</span>
-			<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
-			<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
-			<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
-		</script>
+
+<div class="appmain">
+	<div data---="viewbox__null__parent:window;scrollbar:1;scrollbarshadow:1;margin:90" class="invisible">
+
+		<div data---="empty__common.groups__parent:auto" class="invisible">
+
+			<script type="text/html">
+				<div>@(This Total.js Flow application doesn't contain any Flow)</div>
+				<div class="m b">@(Create something awesome)</div>
+				<div style="max-width:220px;margin:0 auto;width:100%;padding:5px">
+					<button class="exec button b" data-exec="common/create"><i class="fa fa-plus-circle mr5"></i>@(Create Flow)</button>
+				</div>
+			</script>
+
+			<div data-bind="common.groups__template" class="flowstreams">
+				<script type="text/html">
+					{{ foreach g in value }}
+						<div class="flows">
+							{{ if g.name }}<h2>{{ g.name }}</h2>{{ fi }}
+							{{ foreach m in g.items }}
+							<figure class="exec exec3{{ if m.stats && m.stats.paused }} paused{{ fi }}" data-exec="common/open" data-id="{{ m.id }}" data-exec3="common/contextmenu">
+								<section{{ if m.color }} style="border-color:{{ m.color }}"{{ fi }}>
+									<div class="ispaused"><i class="fa fa-pause"></i></div>
+									{{ if m.reference }}<div class="reference">{{ m.reference }}</div>{{ fi }}
+									<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="fas fa-ellipsis-v"></i></div>
+									<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
+									<div class="meta">
+										<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
+										<div class="author">{{ m.author | empty }}</div>
+										<div class="size">{{ m.size | filesize }}</div>
+									</div>
+									<div class="stats">
+										<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>
+										<div><span>{{ m.stats.messages | format(0) }}</span><label>@(Messages)</label></div>
+										<div><span>{{ m.stats.pending | format(0) }}</span><label>@(Pending)</label></div>
+										<div><span>{{ m.stats.mm | format(0) }}</span><label>@(Per minute)</label></div>
+									</div>
+								</section>
+							</figure>
+							{{ end }}
+						</div>
+					{{ end }}
+				</script>
+			</div>
+		</div>
 	</div>
-</footer>
+	<footer>
+		<div data-bind="common.stats__template__show" class="hidden">
+			<script type="text/html">
+				<span><b>{{ value.memory | filesize }}</b>@(Memory)</span>
+				<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
+				<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
+				<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
+			</script>
+		</div>
+	</footer>
+</div>

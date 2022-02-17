@@ -213,3 +213,9 @@
 /* Updated: 2022-02-12 13:07 */
 .ui-parts-item{display:none}.ui-parts-focused{display:block}
 /* End: j-Parts */
+
+/* Component: j-NoScrollbar */
+/* Version: 1 */
+/* Updated: 2022-01-14 21:43 */
+.ui-viewbox{overflow:hidden;-ms-overflow-style:none;box-sizing:content-box}.ui-viewbox-disabled{z-index:5;position:absolute;background-color:rgba(255,255,255,0.8)}.ui-viewbox-hidden{visibility:hidden}.ui-viewbox-centered-table{display:table;width:100%;height:100%}.ui-viewbox-centered-cell{display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center}
+/* End: j-NoScrollbar */
