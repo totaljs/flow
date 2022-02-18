@@ -11,5 +11,8 @@ flowstream_worker           : true
 // Replaces WorkerThread for the ChildProcess/Fork
 // flowstream_worker        : fork
 
+// Enables sandbox for NPM dependencies (we recommend to use it for "worker" mode only)
+// flowstream_sandbox          : true
+
 // Flow directory
 // directory                   : /absolute/path/to/flow/database/

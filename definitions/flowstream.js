@@ -41,6 +41,7 @@ FS.init = function(id, next) {
 
 	flow.variables2 = FS.db.variables || {};
 	flow.directory = CONF.directory || PATH.root('/flowstream/');
+	flow.sandbox = CONF.flowstream_sandbox == true;
 
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 		instance.httprouting();
@@ -50,6 +51,7 @@ FS.init = function(id, next) {
 			var output = '';
 			output += '|------------- FlowError: ' + new Date().format('yyyy-MM-dd HH:mm:ss') + '\n';
 			output += '| ' + err.toString() + '\n';
+			output += '| Name: ' + flow.name + '\n';
 			output += '| Source: ' + (source || empty) + '\n';
 			output += '| Instance ID: ' + (id || empty) + '\n';
 			output += '| Component ID: ' + (component || empty);

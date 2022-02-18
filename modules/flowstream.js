@@ -726,7 +726,7 @@ function httprequest(self, opt, callback) {
 function init_current(meta, callback) {
 
 	// Due to C/C++ modules
-	if (isFLOWSTREAMWORKER)
+	if (isFLOWSTREAMWORKER && meta.sandbox)
 		CONF.node_modules = '~' + PATH.join(meta.directory, meta.id, 'node_modules');
 
 	var flow = MAKEFLOWSTREAM(meta);
