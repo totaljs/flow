@@ -262,7 +262,7 @@
 			var info = GET('?.info');
 			var item = info.selected;
 
-			if (!item)
+			if (!item || (type === 'map' && info.type !== 'group'))
 				return;
 
 			type = info.type;
@@ -413,8 +413,16 @@
 			var name = component.name.slug().replace(/\-/g, '');
 			var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
 
-			eventdata.call = function(data, callback) {
-				exports.call(this.id, data, callback);
+			eventdata.call = function(data, callback, globalcall) {
+
+				if (typeof(data) === 'function') {
+					globalcall = callback;
+					callback = data;
+					data = null;
+				}
+
+				exports.call(globalcall ? ('@' + this.component.id) : this.id, data, callback);
+
 			};
 
 			W.flowinstances.exec(instance.id, 'settings', eventdata);
@@ -626,7 +634,7 @@
 				newbie.html = instance.html;
 				newbie.$outputs = instance.$outputs;
 				newbie.outputs = instance.outputs ? CLONE(instance.outputs) : undefined;
-				newbie.$inputs = newbie.$inputs;
+				newbie.$inputs = instance.$inputs;
 				newbie.inputs = instance.inputs ? CLONE(instance.inputs) : undefined;
 				newbie.template = instance.template;
 				newbie.onmake = onmake;
