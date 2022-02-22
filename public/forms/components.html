@@ -78,6 +78,18 @@
 			});
 		};
 
+		var checkhtml = function(html) {
+			var m = html.match(/exports\..*?;/g);
+			if (m) {
+				var opt = {};
+				try {
+					new Function('exports', m.join('\n'))(opt);
+					if (opt.name && opt.version && opt.icon)
+						return true;
+				} catch (e) {}
+			}
+		};
+
 		exports.marketplace = function() {
 			NULL('common.form');
 			EXEC('flow/marketplace');
@@ -89,7 +101,22 @@
 			opt.updates = 0;
 			opt.groups = {};
 			opt.components = [];
-			refresh(common.components, opt, function() {
+
+			var queue = [];
+
+			if (common.cdn) {
+				queue.push(function(next) {
+					refresh('{0}components/db.json'.format(common.cdn), opt, next);
+				});
+			}
+
+			if (common.components) {
+				queue.push(function(next) {
+					refresh(common.components, opt, next);
+				});
+			}
+
+			queue.async(function() {
 
 				var arr = [];
 				for (var key in opt.groups) {
@@ -142,10 +169,13 @@
 
 						AJAX('GET ' + (item.url || ('{0}components/{1}.html').format(common.cdn, item.id)), function(response) {
 							if (typeof(response) === 'string') {
-								var model = {};
-								model.id = com ? com.id : '';
-								model.body = response.trim();
-								SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+								if (checkhtml(response)) {
+									var model = {};
+									model.id = com ? com.id : '';
+									model.body = response.trim();
+									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+								} else
+									SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(item.name.encode()));
 							}
 							setTimeout(next, 100);
 						});
@@ -163,7 +193,8 @@
 		exports.install = function(el) {
 
 			var id = el.attrd2('id');
-			var com = flow.components.findItem('name', el.attrd2('name'));
+			var name = el.attrd2('name');
+			var com = flow.components.findItem('name', name);
 
 			if (com) {
 				$('#settings_f' + com.id).remove();
@@ -174,11 +205,14 @@
 			var download = function() {
 				AJAX('GET ' + (url || '{0}components/{1}.html'.format(common.cdn, id)), function(response) {
 					if (typeof(response) === 'string') {
-						var model = {};
-						model.id = com ? com.id : '';
-						model.body = response.trim();
-						SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
-						el.aclass('installed');
+						if (checkhtml(response)) {
+							var model = {};
+							model.id = com ? com.id : '';
+							model.body = response.trim();
+							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+							el.aclass('installed');
+						} else
+							SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
 					}
 				});
 			};
