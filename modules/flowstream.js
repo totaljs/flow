@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 13;
+const VERSION = 14;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -726,7 +726,7 @@ function httprequest(self, opt, callback) {
 function init_current(meta, callback) {
 
 	// Due to C/C++ modules
-	if (isFLOWSTREAMWORKER && meta.sandbox)
+	if (isFLOWSTREAMWORKER)
 		CONF.node_modules = '~' + PATH.join(meta.directory, meta.id, 'node_modules');
 
 	var flow = MAKEFLOWSTREAM(meta);
@@ -1495,7 +1495,25 @@ function MAKEFLOWSTREAM(meta) {
 		switch (msg.TYPE) {
 
 			case 'call':
-				var instance = flow.meta.flow[msg.id];
+
+				var instance;
+
+				// Executes "exports.call"
+				if (msg.id[0] === '@') {
+					instance = flow.meta.components[msg.id.substring(1)];
+					if (instance && instance.call) {
+						msg.id = msg.callbackid;
+						msg.TYPE = 'flow/call';
+						instance.call.call(flow, msg.data, function(data) {
+							msg.data = data;
+							flow.proxy.online && flow.proxy.send(msg, 1, clientid);
+							callback && callback(msg);
+						});
+					}
+					return;
+				}
+
+				instance = flow.meta.flow[msg.id];
 				if (instance && instance.call) {
 					msg.id = msg.callbackid;
 					msg.TYPE = 'flow/call';
@@ -1960,6 +1978,10 @@ function MAKEFLOWSTREAM(meta) {
 		instance.reconfigure = function(config) {
 			instance.main.reconfigure(instance.id, config);
 		};
+	};
+
+	flow.io = function(flowstreamid, id, callback) {
+		flow.proxy.io(flowstreamid, id, callback);
 	};
 
 	flow.onreconfigure = function(instance, init) {
@@ -2641,4 +2663,16 @@ if (process.argv.indexOf('--fork') !== -1) {
 ON('service', function() {
 	if (CALLBACKID > 999999999)
 		CALLBACKID = 1;
+});
+
+ON('exit', function() {
+	for (var key in FLOWS) {
+		var flow = FLOWS[key];
+		if (flow.terminate || flow.kill) {
+			if (flow.terminate)
+				flow.terminate();
+			else
+				flow.kill(9);
+		}
+	}
 });
