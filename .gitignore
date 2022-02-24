@@ -8,3 +8,6 @@ index.pid
 flowstream/
 logs/
 databases/
+index.js.overload
+.vscode/launch.json
+package-lock.json
