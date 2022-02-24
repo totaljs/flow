@@ -151,6 +151,7 @@
 		var settings_data;
 		var flowstreamid = common.socket.split('/').trim()[3];
 		var init = false;
+		var sourcecache = {};
 
 		exports.init = function() {
 			ADD('websocket__null__url:{0}'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) + ';encoder:false');
@@ -639,7 +640,7 @@
 			exports.scope();
 
 			var model = GET('?.data');
-			var selected = FIND('flow').selected();
+			var selected = Designer.selected();
 			var add = [];
 			var cloned = {};
 			var now = Date.now();
@@ -1306,12 +1307,14 @@
 			SETTER('menu/show', opt);
 		};
 
-		exports.clear_sourcecache = (id) => { delete exports.sourcecache[id]; };
-		exports.sourcecache = {};
+
+		exports.clear_sourcecache = function(id) { 
+			delete sourcecache[id]; 
+		};
 
 		exports.copy_components = function() {
 
-			let selected = FIND('flow').selected();
+			let selected = Designer.selected();
 			if (!selected.components.length)
 				return;
 
@@ -1319,22 +1322,24 @@
 
 			for (let com of selected.components) {
 				const { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
-				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs, source: exports.sourcecache[id] });
+				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs, source: sourcecache[id] });
 			}
 
 			SETTER('loading/show', '@(Loading source(s) from server)');
 
 			data.items.wait(function(item, next){
-				if (item.source)
-					return next();
+				if (item.source) {
+					next();
+					return;
+				}
 				SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
 					item.source = response.data;
-					exports.sourcecache[item.id] = item.source;
+					sourcecache[item.id] = item.source;
 					next();
 				})});
 			}, function done(){
 				SETTER('loading/hide', 500);
-				SETTER('notify/info', `Selected components(${data.items.length}) copied into the clipboard.`);
+				SETTER('notify/success', 'Selected components({0}) copied into the clipboard.'.format(data.items.length));
 				navigator.clipboard.writeText(JSON.stringify(data))
 				.catch((err) => console.error(er));
 			});
@@ -1344,9 +1349,7 @@
 
 			navigator.clipboard.readText()
 			.then((text) => {
-				var data;
-				try { data = JSON.parse(text); } catch(e){}
-
+				var data = PARSE(text);
 				if (data && data.type === 'components') {
 					if (data.flowstreamid === flowstreamid) { // local copy&paste
 						paste_components(data.items, pos);
@@ -1379,7 +1382,7 @@
 			.catch((err) => console.error(err));
 		};
 
-		function fixPositions(arr, pos) {
+		function fix_positions(arr, pos) {
 			let minx, miny;
 			// find minx,miny and set it as zero point offset
 			for (let item of arr) {
@@ -1402,7 +1405,7 @@
 			var cloned = {};
 			var now = Date.now();
 
-			fixPositions(components, pos);
+			fix_positions(components, pos);
 
 			for (var item of components) {;
 				var newbie = {};
@@ -1517,11 +1520,10 @@
 		exports.pasteconfig = function(el) {
 			navigator.clipboard.readText()
 			.then((text) => {
-				var data;
-				try { data = JSON.parse(text); } catch(e){}
+				var data = PARSE(text);
 				if (data && data.type === 'config' && flow.selected.name === data.componentname) {
-					SET('flow.settings.settings_f' + flow.selected.component, data.data);
-					CHANGE('flow.settings.settings_f' + flow.selected.component + '.*', true);
+					SET('?.settings.settings_f' + flow.selected.component, data.data);
+					CHANGE('?.settings.settings_f' + flow.selected.component + '.*', true);
 					SETTER('notify/success', '@(Config pasted from clipboard.)');
 				} else {
 					SETTER('notify/warning', '@(Incompatible config)');
@@ -1531,8 +1533,8 @@
 		};
 
 		exports.resetconfig = function(el) {
-			SET('flow.settings.settings_f' + flow.selected.component, {});
-			CHANGE('flow.settings.settings_f' + flow.selected.component + '.*', true);
+			SET('?.settings.settings_f' + flow.selected.component, {});
+			CHANGE('?.settings.settings_f' + flow.selected.component + '.*', true);
 			SETTER('notify/success', '@(Config reset.)');
 		};
 
