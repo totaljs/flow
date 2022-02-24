@@ -139,6 +139,35 @@
 
 		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
 
+		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				e.preventDefault();
+				var designer = FIND('flow');
+				var selected = designer.selected();
+				if (!selected.components.length) {
+					Object.keys(flow.data).forEach(c => {
+						if (c !== 'groups' && c !== 'paused')
+							designer.op.select(c, true);
+					});
+				} else if (selected.components.length === 1) {
+					select_connected(flow.selected);
+				}
+			}
+		});
+
+		function select_connected(comp) {
+			var conns = comp.connections;
+			if (!conns)
+				return;
+			var designer = FIND('flow');
+			Object.keys(conns).forEach(output => {
+				for (let com of conns[output]) {
+					designer.op.select(com.id, true);
+					select_connected(flow.data[com.id]);
+				}
+			});
+		};
+
 	</script>
 
 </body>
