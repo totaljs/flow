@@ -129,6 +129,22 @@
 			}
 		}, true);
 
+		SETTER(true, 'shortcuts/register', 'CMD+C, CTRL+C', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/copy_components');
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}, true);
+
+		SETTER(true, 'shortcuts/register', 'CMD+V, CTRL+V', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/paste_components', { x: 0, y: 0 });
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}, true);
+
 		SETTER(true, 'shortcuts/register', 'remove', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				CMD('flow.selected.clear');
