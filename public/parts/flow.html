@@ -86,6 +86,11 @@
 </script>
 
 <div data---="box__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
+	<nav data-bind="navigator.clipboard__show">
+		<button class="exec" data-exec="flow/copyconfig" title="Copy config"><i class="fa fa-copy nmr"></i></button>
+		<button class="exec" data-exec="flow/pasteconfig" title="Paste config"><i class="fa fa-paste nmr"></i></button>
+		<button class="exec" data-exec="flow/resetconfig" title="Reset config"><i class="fa fa-refresh nmr"></i></button>
+	</nav>
 	<div id="flow_settings"></div>
 	<nav data---="validation__settings__$id:settingsvalidation">
 		<button name="submit"><i class="far fa-check-circle"></i>@(APPLY)</button>
@@ -144,7 +149,7 @@
 		var checksums = {};
 		var settings_current;
 		var settings_data;
-		var flowstreamid;
+		var flowstreamid = common.socket.split('/').trim()[3];
 		var init = false;
 
 		exports.init = function() {
@@ -262,7 +267,22 @@
 			var info = GET('?.info');
 			var item = info.selected;
 
-			if (!item || (type === 'map' && info.type !== 'group'))
+			if (type === 'map' && info.type !== 'group') {
+				var opt = {};
+				opt.x = e.pageX;
+				opt.y = e.pageY;
+				opt.items = [];
+				//opt.items.push('');
+				opt.items.push({ id: 'paste', name: '@(Paste)', icon: 'fa fa-paste' });
+				opt.callback = function(opt) {
+					Designer.op.unselect();
+					exports.paste_components({ x: e.offsetX, y: e.offsetY });
+				};
+				SETTER('menu/show', opt);
+				return;
+			}
+
+			if (!item)
 				return;
 
 			type = info.type;
@@ -291,8 +311,9 @@
 					if (!meta.readonly) {
 						opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
 						opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
-						opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
-						opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
+						//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+						//opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
+						opt.items.push({ id: 'copycomponents', name: '@(Copy)', icon: 'far fa-copy' });
 						opt.items.push('-');
 					}
 				}
@@ -369,6 +390,10 @@
 					case 'clone':
 						exports.clone();
 						break;
+					case 'copycomponents':
+						exports.copy_components();
+						break;
+
 				}
 			};
 			SETTER('menu/show', opt);
@@ -524,7 +549,7 @@
 </body>`.format(flow.icon, flow.name));
 					builder.push('\n<readme>' + flow.readme + '</readme>');
 					SETTER('clipboard/copy', builder.join('\n'));
-					SETTER('notifybar/success', '@(The component has been created into the clipboard)');
+					SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
 				})});
 			});
 		};
@@ -1234,7 +1259,7 @@
 			if (!meta.readonly) {
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
 				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-				opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+				//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
 				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
 			}
 
@@ -1274,9 +1299,171 @@
 						var com = GET('?.components').findItem('id', id);
 						SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"trash-o" @(Remove)', ASETTER('websocket/send', { TYPE: 'component_remove', id: id }));
 						break;
+					case 'copycomponent':
+						exports.copycomponents();
 				}
 			};
 			SETTER('menu/show', opt);
+		};
+
+		exports.clear_sourcecache = (id) => { delete exports.sourcecache[id]; };
+		exports.sourcecache = {};
+
+		exports.copy_components = function() {
+
+			let selected = FIND('flow').selected();
+			if (!selected.components.length)
+				return;
+
+			let data = { type: 'components', flowstreamid, items: [] };
+
+			for (let com of selected.components) {
+				const { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
+				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs, source: exports.sourcecache[id] });
+			}
+
+			SETTER('loading/show', '@(Loading source(s) from server)');
+
+			data.items.wait(function(item, next){
+				if (item.source)
+					return next();
+				SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
+					item.source = response.data;
+					exports.sourcecache[item.id] = item.source;
+					next();
+				})});
+			}, function done(){
+				SETTER('loading/hide', 500);
+				SETTER('notify/info', `Selected components(${data.items.length}) copied into the clipboard.`);
+				navigator.clipboard.writeText(JSON.stringify(data))
+				.catch((err) => console.error(er));
+			});
+		};
+
+		exports.paste_components = function(pos) {
+
+			navigator.clipboard.readText()
+			.then((text) => {
+				var data;
+				try { data = JSON.parse(text); } catch(e){}
+
+				if (data && data.type === 'components') {
+					if (data.flowstreamid === flowstreamid) { // local copy&paste
+						paste_components(data.items, pos);
+					} else { // external copy&paste
+						var non_exists = [];
+						const names = flow.components.map(c => c.name.toLowerCase());
+						data.items.wait((com, next) => {
+							// check if we know this component
+							// we could also compare the source code to make sure they are identical
+							if (names.indexOf(com.name) < 0) {
+								SETTER('notify/info', '@(Installing): ' + com.name);
+								install_component(com.source, (id) => {
+									com.component = id;
+									// wait a bit for component to install a load back
+									console.log();
+									setTimeout(next, 1000);
+								});
+							} else {
+								com.component = flow.components.findItem((c) => c.name.toLowerCase() === com.name).id;
+								next();
+							}
+						}, function() {
+							paste_components(data.items, pos);
+						});
+					}
+				} else {
+					SETTER('notify/warning', '@(Invalid data)');
+				}
+			})
+			.catch((err) => console.error(err));
+		};
+
+		function fixPositions(arr, pos) {
+			let minx, miny;
+			// find minx,miny and set it as zero point offset
+			for (let item of arr) {
+				(!minx || minx > item.x) && (minx = item.x);
+				(!miny || miny > item.y) && (miny = item.y);
+			}
+			// offset each component based on cursor position(pos)
+			for (let item of arr) {
+				item.x = item.x - minx + pos.x;
+				item.y = item.y - miny + pos.y;
+			}
+		};
+
+		function paste_components(components, pos) {
+			exports.scope();
+
+			var model = GET('?.data');
+
+			var add = [];
+			var cloned = {};
+			var now = Date.now();
+
+			fixPositions(components, pos);
+
+			for (var item of components) {;
+				var newbie = {};
+				newbie.id = 'i' + now.toString(36);
+				newbie.x = item.x;
+				newbie.y = item.y;
+				newbie.name = item.name;
+				newbie.component = item.component;
+				newbie.config = CLONE(item.config);
+				newbie.connected = false;
+				newbie.connections = CLONE(item.connections);
+				newbie.name = item.name.slug().replace(/\-/g, '');
+				newbie.html = item.html;
+				newbie.$outputs = item.$outputs;
+				newbie.outputs = item.outputs;
+				newbie.$inputs = item.$inputs;
+				newbie.inputs = item.inputs;
+				newbie.template = item.template;
+				newbie.onmake = onmake;
+				newbie.onremove = onremove;
+				newbie.tab = item.tab;
+				cloned[item.id] = newbie.id;
+				add.push(newbie);
+				now++;
+			}
+
+			for (var item of add) {
+				for (var key in item.connections) {
+					for (var output of item.connections[key]) {
+						if (cloned[output.id])
+							output.id = cloned[output.id];
+					}
+				}
+				model[item.id] = item;
+			}
+
+			Designer.find('.component-focused').rclass('component-focused');
+			Designer.op.unselect();
+
+			UPD('?.data', 'update');
+			SET('?.changed', true);
+
+			setTimeout(function(add) {
+				for (let item of add)
+					Designer.op.select(item.id, true);
+			}, 500, add);
+		};
+
+		function install_component(str, callback) {
+			var id;
+			var m = str.match(/exports\.id(\s=).*?;/);
+			if (m) {
+				try {
+					id = new Function('exports', 'return ' + m[0])({});
+				} catch (e) {}
+			}
+
+			if (!id)
+				id = FUNC.makeid('c');
+				
+			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: () => { callback(id); } });
 		};
 
 		exports.selected_settings = function() {
@@ -1319,7 +1506,37 @@
 			SET('common.panel', 'readme');
 		};
 
-		ON('paste', function(text) {
+		exports.copyconfig = function(el) {
+			navigator.clipboard.writeText(JSON.stringify({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) }))
+			.then(() => {
+				SETTER('notify/success', '@(Config copied into clipboard.)');
+			})
+			.catch((err) => console.error(er));
+		};
+
+		exports.pasteconfig = function(el) {
+			navigator.clipboard.readText()
+			.then((text) => {
+				var data;
+				try { data = JSON.parse(text); } catch(e){}
+				if (data && data.type === 'config' && flow.selected.name === data.componentname) {
+					SET('flow.settings.settings_f' + flow.selected.component, data.data);
+					CHANGE('flow.settings.settings_f' + flow.selected.component + '.*', true);
+					SETTER('notify/success', '@(Config pasted from clipboard.)');
+				} else {
+					SETTER('notify/warning', '@(Incompatible config)');
+				}
+			})
+			.catch((err) => console.error(err));
+		};
+
+		exports.resetconfig = function(el) {
+			SET('flow.settings.settings_f' + flow.selected.component, {});
+			CHANGE('flow.settings.settings_f' + flow.selected.component + '.*', true);
+			SETTER('notify/success', '@(Config reset.)');
+		};
+
+		/*ON('paste', function(text) {
 			var data;
 			if (!common.form && !common.form2 && common.page === 'flow' && text.substring(0, 9) === 'component') {
 				data = DECRYPT(text, common.secret, 'component');
@@ -1330,7 +1547,7 @@
 					SET('common.page @hideloading', 'componenteditor');
 				}
 			}
-		});
+		});*/
 
 		FIND('flow', function(com) {
 			var zoom = FUNC.pref_read('zoom');

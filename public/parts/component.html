@@ -39,6 +39,7 @@
 				com && OFF('configure_' + com.name.slug());
 				$('#settings_f' + model.id).remove();
 				FREE();
+				EXEC('flow/clear_sourcecache', model.id);
 			}
 
 			var m = model.body.match(/exports\.id(\s=).*?;/);
