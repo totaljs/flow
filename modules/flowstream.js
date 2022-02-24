@@ -91,7 +91,7 @@ Instance.prototype.httprequest = function(opt, callback) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callbackid !== -1)
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/httprequest', data: opt, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/httprequest', data: opt, callbackid: callbackid });
 	} else
 		httprequest(self.flow, opt, callback);
 
@@ -256,7 +256,7 @@ Instance.prototype.exec = function(opt, callback) {
 		var callbackid = opt.callback ? (CALLBACKID++) : -1;
 		if (callbackid !== -1)
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: opt.callback };
-		self.flow.postMessage({ TYPE: 'stream/exec', id: opt.id, uid: opt.uid, ref: opt.ref, vars: opt.vars, repo: opt.repo, data: opt.data, timeout: opt.timeout, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/exec', id: opt.id, uid: opt.uid, ref: opt.ref, vars: opt.vars, repo: opt.repo, data: opt.data, timeout: opt.timeout, callbackid: callbackid });
 	} else
 		exec(self.flow, opt);
 
@@ -268,7 +268,7 @@ Instance.prototype.trigger = function(id, data) {
 	var self = this;
 	var flow = self.flow;
 	if (flow.isworkerthread)
-		flow.postMessage({ TYPE: 'stream/trigger', id: id, data: data });
+		flow.postMessage2({ TYPE: 'stream/trigger', id: id, data: data });
 	else {
 		if (!flow.paused) {
 			if (id[0] === '@') {
@@ -300,7 +300,7 @@ Instance.prototype.pause = function(is) {
 	var self = this;
 	var flow = self.flow;
 	if (flow.isworkerthread)
-		flow.postMessage({ TYPE: 'stream/pause', is: is });
+		flow.postMessage2({ TYPE: 'stream/pause', is: is });
 	else
 		flow.pause(is == null ? !flow.paused : is);
 	return self;
@@ -319,7 +319,7 @@ Instance.prototype.eval = function(msg, callback) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callback)
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'ui/message', data: msg, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'ui/message', data: msg, callbackid: callbackid });
 	} else
 		self.flow.proxy.message(msg, -1, callback);
 	return self;
@@ -371,7 +371,7 @@ Instance.prototype.input = function(flowstreamid, fromid, toid, data) {
 	var flow = self.flow;
 
 	if (flow.isworkerthread) {
-		flow.postMessage({ TYPE: 'stream/input', flowstreamid: flowstreamid, fromid: fromid, id: toid, data: data });
+		flow.postMessage2({ TYPE: 'stream/input', flowstreamid: flowstreamid, fromid: fromid, id: toid, data: data });
 		return self;
 	}
 
@@ -407,7 +407,7 @@ Instance.prototype.add = function(id, body, callback) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callback)
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/add', id: id, data: body, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/add', id: id, data: body, callbackid: callbackid });
 	} else
 		self.flow.add(id, body, callback);
 	return self;
@@ -419,7 +419,7 @@ Instance.prototype.rem = function(id, callback) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callback)
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/rem', id: id, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/rem', id: id, callbackid: callbackid });
 	} else
 		self.flow.unregister(id, callback);
 	return self;
@@ -433,7 +433,7 @@ Instance.prototype.components = function(callback) {
 	if (self.flow.isworkerthread) {
 		var callbackid = CALLBACKID++;
 		CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/components', callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/components', callbackid: callbackid });
 	} else
 		callback(null, self.flow.components(true));
 
@@ -473,7 +473,7 @@ Instance.prototype.io = function(id, callback) {
 	if (self.flow.isworkerthread) {
 		var callbackid = CALLBACKID++;
 		CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/io', id: id, callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/io', id: id, callbackid: callbackid });
 		return self;
 	}
 
@@ -501,7 +501,7 @@ Instance.prototype.io = function(id, callback) {
 // Reconfigures a component
 Instance.prototype.reconfigure = function(id, config) {
 	if (self.flow.isworkerthread)
-		self.flow.postMessage({ TYPE: 'stream/reconfigure', id: id, data: config });
+		self.flow.postMessage2({ TYPE: 'stream/reconfigure', id: id, data: config });
 	else
 		self.flow.reconfigure(id, config);
 	return self;
@@ -511,7 +511,7 @@ Instance.prototype.refresh = function(id, type, data) {
 	var self = this;
 	var flow = self.flow;
 	if (flow.isworkerthread) {
-		flow.postMessage({ TYPE: 'stream/refresh', id: id, type: type, data: data });
+		flow.postMessage2({ TYPE: 'stream/refresh', id: id, type: type, data: data });
 	} else {
 
 		if (type === 'meta' && data) {
@@ -535,7 +535,7 @@ Instance.prototype.variables = function(variables) {
 
 	if (flow.isworkerthread) {
 		flow.$schema.variables = variables;
-		flow.postMessage({ TYPE: 'stream/variables', data: variables });
+		flow.postMessage2({ TYPE: 'stream/variables', data: variables });
 	} else {
 		flow.variables = variables;
 		for (var key in flow.meta.flow) {
@@ -556,7 +556,7 @@ Instance.prototype.variables2 = function(variables) {
 
 	if (flow.isworkerthread) {
 		flow.$schema.variables2 = variables;
-		flow.postMessage({ TYPE: 'stream/variables2', data: variables });
+		flow.postMessage2({ TYPE: 'stream/variables2', data: variables });
 	} else {
 		flow.variables2 = variables;
 		for (var key in flow.meta.flow) {
@@ -574,7 +574,7 @@ Instance.prototype.export = function(callback) {
 	if (flow.isworkerthread) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
-		self.flow.postMessage({ TYPE: 'stream/export', callbackid: callbackid });
+		self.flow.postMessage2({ TYPE: 'stream/export', callbackid: callbackid });
 	} else
 		callback(null, self.flow.export2());
 	return self;
@@ -1066,6 +1066,10 @@ function init_worker(meta, type, callback) {
 	var ischild = false;
 
 	if (!worker.postMessage) {
+		worker.postMessage2 = function(a, b) {
+			if (!worker.$terminated)
+				worker.postMessage(a, b);
+		};
 		worker.postMessage = worker.send;
 		ischild = true;
 	}
@@ -1291,7 +1295,7 @@ exports.socket = function(flow, socket, check) {
 		client.isflowstreamready = true;
 
 		if (flow.isworkerthread) {
-			flow.postMessage({ TYPE: 'ui/newclient', clientid: client.id });
+			flow.postMessage2({ TYPE: 'ui/newclient', clientid: client.id });
 		} else {
 			flow.proxy.online = true;
 			flow.proxy.newclient(client.id);
@@ -1311,7 +1315,7 @@ exports.socket = function(flow, socket, check) {
 		delete flow.$socket;
 
 		if (flow.isworkerthread)
-			flow.postMessage({ TYPE: 'ui/online', online: false });
+			flow.postMessage2({ TYPE: 'ui/online', online: false });
 		else
 			flow.proxy.online = false;
 	});
@@ -1320,7 +1324,7 @@ exports.socket = function(flow, socket, check) {
 		if (client.isflowstreamready) {
 			var is = socket.online > 0;
 			if (flow.isworkerthread)
-				flow.postMessage({ TYPE: 'ui/online', online: is });
+				flow.postMessage2({ TYPE: 'ui/online', online: is });
 			else
 				flow.proxy.online = is;
 		}
@@ -1329,7 +1333,7 @@ exports.socket = function(flow, socket, check) {
 	socket.on('message', function(client, msg) {
 		if (client.isflowstreamready) {
 			if (flow.isworkerthread)
-				flow.postMessage({ TYPE: 'ui/message', clientid: client.id, data: msg });
+				flow.postMessage2({ TYPE: 'ui/message', clientid: client.id, data: msg });
 			else
 				flow.proxy.message(msg, client.id);
 		}
