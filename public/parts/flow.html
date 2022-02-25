@@ -657,7 +657,7 @@
 				newbie.connected = false;
 				newbie.connections = CLONE(instance.connections);
 				newbie.name = instance.name.slug().replace(/\-/g, '');
-				newbie.html = instance.html;
+				newbie.html = instance.html.replace(new RegExp(instance.id, 'g'), newbie.id);
 				newbie.$outputs = instance.$outputs;
 				newbie.outputs = instance.outputs ? CLONE(instance.outputs) : undefined;
 				newbie.$inputs = instance.$inputs;
@@ -1418,7 +1418,7 @@
 				newbie.connected = false;
 				newbie.connections = CLONE(item.connections);
 				newbie.name = item.name.slug().replace(/\-/g, '');
-				newbie.html = item.html;
+				newbie.html = item.html.replace(new RegExp(instance.id, 'g'), newbie.id);;
 				newbie.$outputs = item.$outputs;
 				newbie.outputs = item.outputs;
 				newbie.$inputs = item.$inputs;
