@@ -135,7 +135,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 			}
-		}, true);
+		});
 
 		SETTER(true, 'shortcuts/register', 'CMD+V, CTRL+V', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
@@ -143,7 +143,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 			}
-		}, true);
+		});
 
 		SETTER(true, 'shortcuts/register', 'remove', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
