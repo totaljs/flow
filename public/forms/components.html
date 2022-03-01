@@ -79,7 +79,7 @@
 		};
 
 		var checkhtml = function(html) {
-			var m = html.match(/exports\..*?;/g);
+			var m = html.match(/exports\.(name|version|icon)(\s)?\=.*?;/g);
 			if (m) {
 				var opt = {};
 				try {
