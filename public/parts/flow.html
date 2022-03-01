@@ -275,6 +275,7 @@
 				opt.items = [];
 				//opt.items.push('');
 				opt.items.push({ id: 'paste', name: '@(Paste)', icon: 'fa fa-paste' });
+				opt.items.push({ id: 'import', name: '@(Import)', icon: 'fa fa-download' });
 				opt.callback = function(opt) {
 					Designer.op.unselect();
 					exports.paste_components({ x: e.offsetX, y: e.offsetY });
@@ -285,6 +286,9 @@
 
 			if (!item)
 				return;
+			
+			var count = Designer.selected().components.length;
+			var single = count === 1;
 
 			type = info.type;
 			var component = item.isconnection ? null : flow.components.findItem('id', item.component);
@@ -296,25 +300,30 @@
 
 			if (component) {
 
-				opt.items.push(component.name);
-				component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
-				opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'far fa-file-alt' });
+				if (single) {
+					opt.items.push(component.name);
+					component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
+					opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'far fa-file-alt' });
+				} else {
+					opt.items.push(count + ' @(components selected)');
+				}
 
 				if (!TYPES[component.type]) {
 
 					var meta = component.meta || EMPTYOBJECT;
 
-					if (component.settings) {
+					if (component.settings && single) {
 						opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
 						opt.items.push('-');
 					}
 
 					if (!meta.readonly) {
 						opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-						opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
+						single && opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
 						//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
 						//opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
-						opt.items.push({ id: 'copycomponents', name: '@(Copy)', icon: 'far fa-copy' });
+						opt.items.push({ id: 'copycomponents', name: '@(Copy component(s))', icon: 'far fa-copy' });
+						opt.items.push({ id: 'exportcomponents', name: '@(Export component(s))', icon: 'far fa-copy' });
 						opt.items.push('-');
 					}
 				}
@@ -387,14 +396,15 @@
 							SET('flow.changed', true);
 
 						break;
-
 					case 'clone':
 						exports.clone();
 						break;
 					case 'copycomponents':
 						exports.copy_components();
 						break;
-
+					case 'exportcomponents':
+						exports.export_components();
+						break;
 				}
 			};
 			SETTER('menu/show', opt);
@@ -481,6 +491,8 @@
 					var outputs = [];
 
 					for (var key in flow.design) {
+						if (key === 'groups')
+							continue;
 						var fi = flow.design[key];
 						var template = fi.template || fi.meta; // due to backward compatibility
 						if (template.type === 'input')
@@ -490,7 +502,6 @@
 					}
 
 					var make = `function(instance, config) {
-
 		var schema = CLONE(instance.module.flowstreamschema);
 		schema.variables = config;
 		schema.id = instance.id;
@@ -549,7 +560,9 @@
 	</header>
 </body>`.format(flow.icon, flow.name));
 					builder.push('\n<readme>' + flow.readme + '</readme>');
-					SETTER('clipboard/copy', builder.join('\n'));
+					//SETTER('clipboard/copy', builder.join('\n'));
+					navigator.clipboard.writeText(JSON.stringify({ type: 'exported_as_component', name: flow.name, component: builder.join('\n') }))
+					.catch((err) => console.error(er));
 					SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
 				})});
 			});
@@ -993,8 +1006,9 @@
 			var opt = {};
 			opt.element = el;
 			opt.items = [];
-			opt.items.push({ id: 'export', name: '@(Export to the clipboard)', icon: 'fa fa-clipboard-check' });
-			opt.items.push({ id: 'exportcomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
+			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check', note: '@(Export entire flow design)' });
+			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
+			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'fa fa-clipboard-list' });
 			opt.items.push('-');
 			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'fas fa-bezier-curve', selected: common.curvedlines == true });
 			opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'fas fa-chart-line' });
@@ -1010,12 +1024,16 @@
 					case 'reset_stats':
 						SETTER('websocket/send', { TYPE: 'reset_stats' });
 						break;
-					case 'exportcomponent':
+					case 'exportascomponent':
 						exports.exporttocomponent();
+						break;
+					case 'importascomponent':
+						exports.importascomponent();
 						break;
 					case 'export':
 						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
-							SETTER('clipboard/copy', JSON.stringify(response.data));
+							navigator.clipboard.writeText(JSON.stringify({ type: 'exportedflow', data: response.data }))
+							.catch((err) => console.error(er));
 							SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
 						break;
@@ -1027,6 +1045,25 @@
 			};
 
 			SETTER('menu/show', opt);
+		};
+
+		exports.importascomponent = function() {
+			navigator.clipboard.readText()
+			.then((text) => {
+				var data = PARSE(text);
+				if (!data || data.type !== 'exported_as_component') {
+					SETTER('notify/warning', '@(Invalid data in the clipboard)');
+					return;
+				}
+				
+				var id = FUNC.makeid('c');
+				var body = FUNC.rtrim(data.component);
+				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){
+					SETTER('loading/hide', 1000);
+					SETTER('notify/success', '@(Component "{0}" has been successfuly imported.)'.format(data.name));
+				}});
+			})
+			.catch((err) => console.error(err));
 		};
 
 		// WebSocket messages
@@ -1260,7 +1297,6 @@
 			if (!meta.readonly) {
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
 				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-				//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
 				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
 			}
 
@@ -1283,7 +1319,7 @@
 
 							if (item.id === 'copy' || item.id === 'copy2') {
 								SETTER('clipboard/copy', item.id === 'copy2' ? response.body : ENCRYPT({ body: response.body }, common.secret, 'component'));
-								SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
+								SETTER('notify/success', '@(The component has been copied into the clipboard)');
 								return;
 							}
 
@@ -1318,23 +1354,45 @@
 			if (!selected.components.length)
 				return;
 
-			let data = { type: 'components', flowstreamid, items: [] };
+			let data = { type: 'copied_components', flowstreamid, items: [] };
 
 			for (let com of selected.components) {
 				const { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
-				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs, source: sourcecache[id] });
+				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs });
+			}
+
+			SETTER('loading/hide', 500);
+			SETTER('notify/success', 'Selected components({0}) copied into the clipboard.'.format(data.items.length));
+			navigator.clipboard.writeText(JSON.stringify(data))
+			.catch((err) => console.error(er));
+
+		};
+
+		exports.export_components = function() {
+
+			const selected = Designer.selected();
+			if (!selected.components.length)
+				return;
+
+			const data = { type: 'exported_components', flowstreamid, items: [], components: {}};
+			const components = {};
+			flow.components.forEach(c => { components[c.id] = c.name.toLowerCase() });
+
+			for (let com of selected.components) {
+				const { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
+				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs });
 			}
 
 			SETTER('loading/show', '@(Loading source(s) from server)');
 
 			data.items.wait(function(item, next){
-				if (item.source) {
+				if (data.components[item.component]) {
 					next();
 					return;
 				}
 				SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
-					item.source = response.data;
-					sourcecache[item.id] = item.source;
+					data.components[item.component] = { name: components[item.component], source: response.data };
+					sourcecache[item.id] = response.data;
 					next();
 				})});
 			}, function done(){
@@ -1350,34 +1408,61 @@
 			navigator.clipboard.readText()
 			.then((text) => {
 				var data = PARSE(text);
-				if (data && data.type === 'components') {
-					if (data.flowstreamid === flowstreamid) { // local copy&paste
-						paste_components(data.items, pos);
-					} else { // external copy&paste
-						var non_exists = [];
-						const names = flow.components.map(c => c.name.toLowerCase());
-						data.items.wait((com, next) => {
-							// check if we know this component
-							// we could also compare the source code to make sure they are identical
-							if (names.indexOf(com.name) < 0) {
-								SETTER('notify/info', '@(Installing): ' + com.name);
-								install_component(com.source, (id) => {
-									com.component = id;
-									// wait a bit for component to install a load back
-									console.log();
-									setTimeout(next, 1000);
-								});
-							} else {
-								com.component = flow.components.findItem((c) => c.name.toLowerCase() === com.name).id;
-								next();
-							}
-						}, function() {
-							paste_components(data.items, pos);
-						});
-					}
-				} else {
+				if (!data) {
 					SETTER('notify/warning', '@(Invalid data)');
+					return;
 				}
+				
+				if ((data.type === 'copied_components' || data.type === 'exported_components') && data.flowstreamid === flowstreamid) { // local copy&paste
+					paste_components(data.items, pos);
+					return;
+				} if (data.type === 'copied_components' && data.flowstreamid !== flowstreamid) { // external copy & local paste
+					SETTER('notify/warning', '@(Please use "Export" menu to copy between FlowStream instances.)');
+					return;
+				} else if (data.type === 'exported_components') { // external copy&paste
+					SETTER('loading/show');
+					var non_exists = [];
+					const names = flow.components.map(c => c.name.toLowerCase());
+					Object.keys(data.components).wait((comid, next) => {
+						// check if we know this component
+						let com = data.components[comid];
+						if (names.indexOf(com.name) < 0) {
+							SETTER('loading/show', '<i class="fa fa-download"></i>@(Installing): ' + com.name);
+							install_component(com.source, (id) => {
+								com.component = id;
+								// wait a bit for the component to load back from server
+								setTimeout(next, 1000);
+							});
+						} else {
+							com.component = flow.components.findItem((c) => c.name.toLowerCase() === com.name).id;
+							for (let item of data.items) {
+								item.component = com.component;
+							}
+							next();
+						}
+					}, function() {
+						SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
+						paste_components(data.items, pos);
+						SETTER('loading/hide', 1000);
+					});
+					return;
+				} else if (data.type === 'exported_as_component' && data.component) {
+
+					SETTER('approve/show', '@(Exported flow will be imported as "{0}" component.)'.format(data.name), '"file-import" @(Import)', function(){
+						var id = FUNC.makeid('c');
+						var body = FUNC.rtrim(data.component);
+						SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){
+							SET('common.page', 'flow');
+							SETTER('loading/hide');
+							setTimeout(function() {
+								EMIT('resize');
+							}, 100);
+						}});
+					});
+					return;
+				}
+
+				SETTER('notify/warning', '@(Invalid data)');
 			})
 			.catch((err) => console.error(err));
 		};
@@ -1418,7 +1503,7 @@
 				newbie.connected = false;
 				newbie.connections = CLONE(item.connections);
 				newbie.name = item.name.slug().replace(/\-/g, '');
-				newbie.html = item.html.replace(new RegExp(instance.id, 'g'), newbie.id);;
+				newbie.html = item.html.replace(new RegExp(item.id, 'g'), newbie.id);
 				newbie.$outputs = item.$outputs;
 				newbie.outputs = item.outputs;
 				newbie.$inputs = item.$inputs;
@@ -1466,7 +1551,9 @@
 			if (!id)
 				id = FUNC.makeid('c');
 				
-			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: () => { callback(id); } });
+			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: function(){
+				callback(id);
+			}});
 		};
 
 		exports.selected_settings = function() {

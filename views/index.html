@@ -340,7 +340,7 @@
 			exports.mainmenu = function() {
 				var items = [];
 				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
-				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-upload' });
+				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-download' });
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
 				items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
 				items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
@@ -369,8 +369,12 @@
 					case 'import':
 						FUNC.import(function(data, hide) {
 							data = data.trim();
-							if (data.substring(0, 4) === 'flow' || data.charAt(0) === '{') {
-								if (data.charAt(0) !== '{') {
+							var obj = PARSE(data);
+							var is = obj && obj.type === 'exportedflow';
+							if (data.substring(0, 4) === 'flow' || is) {
+								if (is) {
+									data = STRINGIFY(obj.data);
+								} else {
 									data = DECRYPT(data, common.secret, 'flow');
 									if (!data) {
 										SETTER('message/warning', '@(Invalid data)');

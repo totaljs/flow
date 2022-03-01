@@ -41,14 +41,15 @@
 									<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
 									<div class="meta">
 										<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
-										<div class="author">{{ m.author | empty }}</div>
-										<div class="size">{{ m.size | filesize }}</div>
+										<div class="author">@(Author): {{ m.author | empty }}</div>
+										<div class="size">@(Size): {{ m.size | filesize }}</div>
 									</div>
 									<div class="stats">
 										<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>
 										<div><span>{{ m.stats.messages | format(0) }}</span><label>@(Messages)</label></div>
 										<div><span>{{ m.stats.pending | format(0) }}</span><label>@(Pending)</label></div>
 										<div><span>{{ m.stats.mm | format(0) }}</span><label>@(Per minute)</label></div>
+										<div><span>{{ m.stats.errors | format(0) }}</span><label>@(Errors)</label></div>
 									</div>
 								</section>
 							</figure>
