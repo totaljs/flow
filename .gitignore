@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+tmp/
+.src/
+logs/
+index.js.json
+index.pid
+flowstream/
+logs/
+databases/
+index.js.overload
+.vscode/launch.json
+package-lock.json

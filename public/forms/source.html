@@ -1,0 +1,39 @@
+<div data---="miniform__common.form2__if:~PATH~;icon:fa fa-globe;autofocus:true;reload:?/reload;submit:?/submit;width:450;zindex:20" class="hidden" data-scope="~PATH~">
+	<div class="padding">
+
+		<div data---="input__?.url__required:1__'https://'">@(TMS endpoint)</div>
+		<div class="help m">@(Enter absolute URL address to TMS endpoint for your app)</div>
+
+		<div data---="input__?.token__required:0;camouflage:*__''">@(Token)</div>
+		<div class="help">@(Optional, enter the security token)</div>
+
+	</div>
+	<nav data---="validation__?">
+		<button name="submit" disabled><i class="far fa-check-circle"></i>@(SUBMIT)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
+</div>
+
+<script>
+
+	PLUGIN('~PATH~', function(exports) {
+
+		exports.reload = function(com) {
+			var model = GET('?');
+			var id = model ? model.id : null;
+			com.reconfigure({ title: id ? '@(Update source)' : '@(Add source)' });
+		};
+
+		exports.submit = function(hide) {
+			var model = GET('? @reset');
+			if (!model.id)
+				model.id = FUNC.makeid('src');
+			FUNC.send({ TYPE: 'source_save', data: model }, ASETTER('message/response', function() {
+				EXEC('sourcesform/refresh');
+				hide();
+			}), true);
+		};
+
+	});
+
+</script>

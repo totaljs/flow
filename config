@@ -1,0 +1,21 @@
+name                        : Total.js Flow v10
+cookie          (generate)  : 6
+cookie_secret   (generate)  : 10
+allow_custom_titles         : true
+
+flowstream_worker           : fork
+
+// Disables: Worker/Fork
+// flowstream_worker        : false
+
+// Uses WorkerThread instead of ChildProcess/Fork
+// flowstream_worker        : true
+
+// Replaces WorkerThread for the ChildProcess/Fork
+// flowstream_worker        : fork
+
+// Enables sandbox for NPM dependencies (we recommend to use it for "worker" mode only)
+// flowstream_sandbox          : true
+
+// Flow directory
+// directory                   : /absolute/path/to/flow/database/

@@ -1,0 +1,46 @@
+<div data---="searchinput__%flowsearch__type:search;placeholder:@(Search components);autofocus:1"></div>
+<div data---="viewbox__null__scrollbar:1;visibleY:1;parent:auto;margin:28;initdelay:500;scrollbarshadow:1" class="invisible">
+
+	<div data---="empty__flow.components2__parent:auto">
+
+		<script type="text/html">
+			<div data-bind="common.tms__show" class="hidden">
+				<div style="padding:10px 20px">@(You don't have defined any Total.js Message Service sources)</div>
+				<button class="exec button button-inline" data-exec="flow/sources"><i class="fa fa-cloud-download"></i>@(Add source)</button>
+			</div>
+			<div data-bind="common.tms__hide" class="hidden">
+				<div style="padding:10px 20px">@(You don't have installed any FlowStream components)</div>
+				<button class="exec button button-inline" data-exec="flow/components"><i class="fa fa-cloud-download"></i>@(Download)</button>
+			</div>
+		</script>
+
+		<div>
+			<div data---="search__%flowsearch__selector:figure" data-bind="!flow.components2__template" class="flowcomponents">
+				<script type="text/html">
+				<div data-bind="flow.head.total__show:value>=4050" class="hidden">
+					<div class="caption">@(Designer)</div>
+					<figure data-id="group" draggable="true" data-search="@(Group)">
+						<i class="far fa-object-group"></i>
+						<div class="name"><div>@(Group)</div></div>
+					</figure>
+					<div>
+						<span class="exec link fs11" style="margin:13px 0 0 10px" data-exec="flow/components">@(Download components)</span>
+					</div>
+				</div>
+				{{ foreach g in value }}
+					<div class="caption"><i class="fa fa-folder" style="color:{{ g.color }}"></i>{{ g.name }}</div>
+					<div>
+					{{ foreach m in g.items }}
+						<figure class="exec exec3{{ if m.type }} type-{{ m.type }}{{ fi }}" data-exec3="flow/component_contextmenu" data-id="{{ m.id }}" draggable="true" data-search="{{ m.name }}{{ if m.schema }} {{ m.schema }}{{ fi }}" data-exec="flow/readme" title="{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}">
+							<i class="{{ m.icon }}"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}></i>
+							<div class="name">{{ if m.schema }}<span>{{ m.name }}</span>{{ fi }}{{ if m.version }}<span>v{{ m.version }}{{ fi }}</span><div>{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}</div></div>
+						</figure>
+					{{ end }}
+					</div>
+				{{ end }}
+				</script>
+			</div>
+			<br />
+		</div>
+	</div>
+</div>

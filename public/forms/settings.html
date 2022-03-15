@@ -1,0 +1,49 @@
+<div data---="miniform__common.form__if:~PATH~;icon:cog;title:@(Settings);autofocus:true;scrollbar:1;submit:?/submit;width:400" class="hidden" data-scope="~PATH~">
+	<div class="padding">
+		<div data---="input__?.name__required:1__document.title" class="m">@(Name)</div>
+		<div data---="input__?.components__required:1;type:url" class="m">@(Components)</div>
+		<div data---="input__?.token__camouflage:1">@(Access token)</div>
+		<div class="help m"><span class="link exec" data-exec="?/generate">@(Generate)</span></div>
+		<hr />
+		<div data---="checkbox__?.backup">@(Backup database file after each change)</div>
+		<div data---="checkbox__?.darkmode">@(Enable dark mode)</div>
+	</div>
+	<nav data---="validation__?">
+		<button name="submit" disabled><i class="fa fa-check-circle"></i>@(SUBMIT)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
+</div>
+
+<script>
+
+	PLUGIN('~PATH~', function(exports) {
+
+		exports.generate = function() {
+			SET('?.token', GUID(35), 'show');
+		};
+
+		exports.submit = function(hide) {
+			var model = exports.form;
+			WAPI('settings_save @showloading', model, ASETTER('message/response @hideloading', function() {
+
+				hide();
+				document.title = model.name;
+				$('body').tclass('ui-dark', model.darkmode == true);
+
+				var win = $('.ui-parts-item');
+				for (var i = 0; i < win.length; i++) {
+					var w = $(win[i]).find('iframe')[0];
+					if (w) {
+						w = w.contentWindow;
+						w.postMessage(STRINGIFY({ TYPE: 'darkmode', value: model.darkmode === true }), '*');
+						w.postMessage(STRINGIFY({ TYPE: 'components', value: model.components }), '*');
+					}
+				}
+				console.log('SOM TU');
+
+			}));
+		};
+
+	});
+
+</script>

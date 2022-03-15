@@ -1,0 +1,533 @@
+@{title(CONF.name)}
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="robots" content="all,follow" />
+	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css', 'spa.min@19.js + filesaver.min.js + ui.js', 'favicon.ico')}
+</head>
+<body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
+
+	<div data---="LAZY menu__null__style:2"></div>
+	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
+	<div data---="LAZY message__null__style:2"></div>
+	<div data---="LAZY notifybar"></div>
+	<div data---="LAZY fileuploader"></div>
+	<div data---="LAZY clipboard"></div>
+	<div data---="LAZY faicons"></div>
+	<div data---="LAZY datepicker"></div>
+	<div data---="LAZY directory__null__placeholder:@(Search)"></div>
+	<div data---="LAZY colorpicker"></div>
+
+	<div data---="paste"></div>
+	<div data---="shortcuts"></div>
+	<div data---="loading__null__style:2"></div>
+
+	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
+
+	<header>
+		<!--
+		<div class="tools">
+			<a href="https://docs.totaljs.com/flow10/" target="_blank" title="@(Documentation)"><i class="fas fa-book"></i></a>
+		</div>-->
+		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
+		<!--
+		<label>
+			@(Visual Programming Interface)
+			<span>Total.js Flow</span>
+		</label>-->
+		<div class="tabs" data-bind="common.tabs__template:div">
+			<script type="text/html">
+				{{ foreach m in value }}
+					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="fas fa-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
+				{{ end }}
+			</script>
+		</div>
+		<div data---="virtualwire__common.page"></div>
+	</header>
+	<div>
+
+		<div class="landing">
+			<div data---="parts__common.tabs__parent:window;margin:60"></div>
+		</div>
+
+		<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
+		<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
+		<div data---="importer__common.form__if:welcomeform;url:/forms/welcome.html"></div>
+		<div data---="importer__common.form__if:settingsform;url:/forms/settings.html"></div>
+		<div data---="importer__common.form__if:passwordform;url:/forms/password.html"></div>
+
+	</div>
+
+	<script>
+
+		var common = {};
+
+		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'fa fa-home', noclose: true, import: '@{#}/parts/flows.html' }];
+		common.secret = 'flowstream';
+		common.layout = '';
+		common.windows = [];
+		common.page = 'flows';
+		common.marketplace = 'https://marketplace.totaljs.com';
+		common.designer = '/designer/';
+		common.totalversion = +'@{F.version}';
+		common.workers = '@{CONF.flowstream_worker)' !== 'false';
+
+		WAPI({ url: '/api/' });
+		DEF.dateformat = '@(yyyy-MM-dd)';
+		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
+
+		ON('@flag showloading', function() {
+			SETTER('loading/show');
+		});
+
+		ON('@flag hideloading', function() {
+			SETTER('loading/hide', 1000);
+		});
+
+		function shortcutsprocess(type) {
+			return function() {
+				var win = $('.ui-parts-focused');
+				if (win.length) {
+					var w = win.find('iframe')[0].contentWindow;
+					w.postMessage(STRINGIFY({ TYPE: 'shortcut', key: type }), '*');
+				}
+			};
+		}
+
+		FIND('shortcuts', function(com) {
+			com.register('CMD+ENTER, CTRL+ENTER', shortcutsprocess('CMD+ENTER'));
+			com.register('CMD+D, CTRL+D', shortcutsprocess('CMD+D'), true);
+			com.register('CMD+F, CTRL+F', shortcutsprocess('CMD+F'), true);
+			com.register('CMD+TAB, ALT+TAB', function() {
+				var index = common.tabs.findIndex('focused', true) + 1;
+				if (common.tabs[index])
+					SETTER('parts/focus', common.tabs[index].id);
+				else
+					SETTER('parts/focus', common.tabs[0].id);
+			}, true);
+			com.register('remove', shortcutsprocess('remove'));
+			com.register('save', shortcutsprocess('save'), true);
+		});
+
+		SETTER(true, 'loading/hide', 500);
+
+		FUNC.import = function(callback) {
+			SET('importform @default', { callback: callback });
+			SET('common.form', 'importform');
+		};
+
+		Thelpers.url = function(val) {
+			var index = val.indexOf('/', 10);
+			return index === -1 ? val : val.substring(0, index);
+		};
+
+		PLUGIN('common', function(exports) {
+
+			var checksum;
+
+			exports.refresh = function() {
+
+				exports.scope();
+
+				WAPI('streams', ERROR(function(response) {
+
+					var groups = {};
+					for (var item of response) {
+
+						if (!item.group)
+							item.group = '#';
+
+						if (groups[item.group])
+							groups[item.group].items.push(item);
+						else
+							groups[item.group] = { name: item.name, items: [item] };
+					}
+
+					var arr = [];
+
+					for (var key in groups) {
+						arr.push({ name: key === '#' ? '' : key, items: groups[key].items });
+						groups[key].items.quicksort('name');
+					}
+
+					arr.quicksort('name');
+					SET('?.groups', arr);
+					SET('?.items', response);
+				}));
+			};
+
+			exports.focus = function(el) {
+				SETTER('parts/focus', ATTRD(el));
+			};
+
+			exports.close = function(el, e) {
+				e.stopPropagation();
+				e.preventDefault();
+				SETTER('parts/close', ATTRD(el));
+			};
+
+			exports.open = function(el) {
+
+				var id = ATTRD(el);
+				var model = exports.model;
+				var item = model.tabs.findItem('id', id);
+
+				if (item) {
+					if (!item.focused)
+						SETTER('parts/focus', item.id);
+					return;
+				}
+
+				var flow = model.items.findItem('id', id);
+				var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+
+				item = {};
+				item.id = id;
+				item.name = flow.name;
+				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || ''));
+
+				SETTER('loading/show');
+				SETTER('loading/hide', 2000);
+				PUSH('?.tabs', item);
+
+				/*
+				var model = GET('?');
+				var id = el instanceof jQuery ? el.attrd2('id') : el;
+				var item = model.items.findItem('id', id);
+				if (item) {
+					if (model.windows.findItem('id', id)) {
+						SETTER('windows/focus', id);
+					} else {
+						var w = (WW / 1.4) >> 0;
+						var h = (WH / 1.4) >> 0;
+						var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+						PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
+					}
+				}*/
+			};
+
+			exports.contextmenu = function(el, e) {
+
+				var id = el.attrd2('id');
+				var opt = {};
+
+				if (el.hclass('exec3')) {
+					opt.x = e.pageX;
+					opt.y = e.pageY;
+				} else {
+					opt.element = el;
+					opt.align = 'right';
+				}
+
+				var item = GET('?.items').findItem('id', id);
+				var paused = false;
+				var parent = el.closest('.flowstreams');
+
+				opt.items = [];
+				opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'fa fa-clipboard-list', classname: 'b' });
+
+				if (common.totalversion > 4045 && item.stats) {
+					if (item.stats.paused) {
+						opt.items.push({ id: 'play', name: '@(Play)', icon: 'fa fa-play green' });
+						paused = true;
+					} else
+						opt.items.push({ id: 'pause', name: '@(Pause)', icon: 'fa fa-pause red' });
+				}
+
+				opt.items.push('-');
+
+				if (top === W)
+					opt.items.push({ id: 'newtab', name: '@(Open in new tab)', icon: 'far fa-window-restore' });
+
+				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fa fa-pencil' });
+				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
+				opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'far fa-copy' });
+				opt.items.push({ id: 'download', name: '@(Download)', icon: 'fa fa-download' });
+
+				if (common.workers)
+					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'fa fa-sync' });
+
+				opt.items.push('-');
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
+
+				opt.callback = function(opt) {
+					switch (opt.id) {
+						case 'newtab':
+							var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')));
+							break;
+						case 'pause':
+						case 'play':
+							WAPI(QUERIFY('streams_pause/' + id, { is: paused ? 0 : 1 }), function() {
+								parent.find('figure[data-id="{0}"]'.format(id)).tclass('paused', !paused);
+								if (item.stats)
+									item.stats.paused = !paused;
+							});
+							break;
+						case 'restart':
+							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"fa fa-sync" @(Restart)', function() {
+								WAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notifybar/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
+							});
+							break;
+						case 'variables':
+							WAPI('variables?id=' + id, ASETTER('message/response', function(response) {
+								var model = {};
+								model.variables = response;
+								model.callback = function(model) {
+									WAPI('variables_save', { id: id, data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+								};
+								SET('variablesform @reset', model);
+								SET('common.form', 'variablesform');
+							}));
+							break;
+						case 'copy':
+						case 'copy2':
+						case 'clone':
+						case 'download':
+							WAPI('clipboard_export/' + id, ASETTER('message/response', function(response) {
+
+								if (opt.id === 'download') {
+									var blob = new Blob([JSON.stringify(JSON.parse(response.value), null, '\t')], { type: 'text/plain;charset=utf-8'});
+									saveAs(blob, item.name + '.json');
+									return;
+								}
+
+								if (opt.id === 'copy' || opt.id === 'copy2') {
+									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : response.value);
+									SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
+								} else {
+									WAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {
+										exports.refresh();
+										setTimeout(function() {
+											WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+												SET('streamform @reset', response);
+												SET('common.form', 'streamform');
+											}));
+										}, 1000);
+									}));
+								}
+							}));
+							break;
+						case 'edit':
+							WAPI('streams_read/{0} @showloading'.format(id), ASETTER('message/response', function(response) {
+								SET('streamform @reset', response);
+								SET('common.form @hideloading', 'streamform');
+							}));
+							break;
+						case 'remove':
+							SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"far fa-trash-alt" @(Remove)', function() {
+								WAPI('streams_remove/' + id, ASETTER('message/response', exports.refresh));
+							});
+							break;
+					}
+				};
+				SETTER('menu/show', opt);
+			};
+
+			exports.settings = function() {
+				WAPI('settings @showloading', ASETTER('message/response', function(response) {
+					SET('settingsform @reset @hideloading', response);
+					SET('common.form', 'settingsform');
+				}));
+			};
+
+			exports.mainmenu = function() {
+				var items = [];
+				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
+				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-download' });
+				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
+				items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
+				items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
+				items.push('-');
+				items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
+				items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
+				items.push('-');
+				items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+				SET('?.menu', items);
+			};
+
+			exports.menu = function(el) {
+				var id = ATTRD(el);
+				switch (id) {
+
+					case 'support':
+						W.open('https://www.totaljs.com/contact/');
+						break;
+
+					case 'logout':
+						AJAX('GET /logout/ @showloading', function() {
+							location.href = '/';
+						});
+						break;
+
+					case 'import':
+						FUNC.import(function(data, hide) {
+							data = data.trim();
+							var obj = PARSE(data);
+							var is = obj && obj.type === 'exportedflow';
+							if (data.substring(0, 4) === 'flow' || is) {
+								if (is) {
+									data = STRINGIFY(obj.data);
+								} else {
+									data = DECRYPT(data, common.secret, 'flow');
+									if (!data) {
+										SETTER('message/warning', '@(Invalid data)');
+										return;
+									}
+									data = STRINGIFY(data);
+								}
+								WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
+									exports.scope();
+									exports.refresh();
+									setTimeout(function() {
+										WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+											SET('streamform @reset', response);
+											SET('common.form', 'streamform');
+										}));
+									}, 1000);
+								}));
+								hide();
+							} else
+								SETTER('message/warning', '@(Invalid data)');
+						});
+						break;
+					case 'opensource':
+						SET('common.form', 'templatesform');
+						break;
+					case 'create':
+					case 'settings':
+					case 'marketplace':
+					case 'password':
+						exports[id]();
+						break;
+				}
+			};
+
+			exports.create = function() {
+				SET('streamform @default', {});
+				SET('common.form', 'streamform');
+			};
+
+			exports.password = function() {
+				WAPI('auth', ASETTER('message/response', function(response) {
+					SET('passwordform @reset', response);
+					SET('common.form', 'passwordform');
+				}));
+			};
+
+			exports.variables = function() {
+				WAPI('variables', function(response) {
+					var model = {};
+					model.variables = response;
+					model.callback = function(model) {
+						WAPI('variables_save', { data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+					};
+					SET('variablesform @reset', model);
+					SET('common.form', 'variablesform');
+				});
+			};
+
+			exports.marketplace = function() {
+				IMPORT('ONCE ' + common.marketplace + '/open/', AEXEC('marketplace/open', 'flowstream', function(response, data) {
+
+					if (typeof(response) === 'string')
+						response = PARSE(response);
+
+					response && WAPI('clipboard_import @showloading', { data: response }, ASETTER('message/response @hideloading', function(response) {
+						exports.scope();
+						exports.refresh();
+						setTimeout(function() {
+							WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+								SET('streamform @reset', response);
+								SET('common.form', 'streamform');
+							}));
+						}, 1000);
+					}));
+				}, true));
+			};
+
+			exports.refresh();
+
+			exports.stats = function() {
+				WAPI('streams_stats', 'common.stats');
+			};
+
+			ON('ready', exports.stats);
+
+			setInterval(function() {
+				exports.stats();
+				exports.refresh();
+			}, 10000);
+
+			$(W).on('message', function(e) {
+				var data = e.originalEvent.data;
+				if (data)
+					data = PARSE(data);
+
+				if (data && data.SOURCE === 'flow') {
+					switch (data.TYPE) {
+						case 'open':
+							if (data.id.charAt(0) === '@')
+								data.id = common.items.findValue('reference', data.id.substring(1), 'id');
+							data.id && exports.open(data.id);
+							SETTER('!menu/hide');
+							SETTER('!datepicker/hide');
+							break;
+						case 'focus':
+							var win = common.windows.findItem('url', data.socket);
+							if (win) {
+								SETTER('!menu/hide');
+								SETTER('!datepicker/hide');
+								SETTER('windows/focus', win.id);
+							}
+							break;
+						case 'edit':
+							WAPI('streams_read/{id} @showloading'.arg(data), ASETTER('mmessage/response', function(response) {
+								SET('streamform @reset', response);
+								SET('common.form @hideloading', 'streamform');
+							}));
+							break;
+					}
+				}
+			});
+
+			ON('paste', function(text) {
+				var data;
+				if (!common.form && text.substring(0, 4) === 'flow') {
+					data = DECRYPT(text, common.secret, 'flow');
+					if (data) {
+						SETTER('approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
+							WAPI('clipboard_import @showloading', { data: STRINGIFY(data) }, ASETTER('message/response @hideloading', function(response) {
+
+								if (response.error)
+									SETTER('message/warning', response.error);
+
+								EXEC('common/refresh');
+								setTimeout(function() {
+									WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+										SET('streamform @reset', response);
+										SET('common.form', 'streamform');
+									}));
+								}, 1000);
+							}));
+						});
+					}
+				}
+			});
+
+			NAV.query.welcome && SET('common.form', 'welcomeform');
+			exports.mainmenu();
+
+		});
+
+
+	</script>
+
+</body>
+</html>

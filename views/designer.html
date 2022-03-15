@@ -1,0 +1,191 @@
+@{title(CONF.name)}
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="robots" content="all,follow" />
+	@{import('meta', 'head', 'spa.min@19.css + editor.min@1.css + ui.css + editor.css + designer.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + func.js + editor.js', 'favicon.ico')}
+</head>
+<body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
+
+	<div data---="LAZY menu__null__style:2"></div>
+	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
+	<div data---="LAZY message__null__style:2"></div>
+	<div data---="LAZY notify__null__position:top right"></div>
+	<div data---="LAZY notifybar"></div>
+	<div data---="LAZY fileuploader"></div>
+	<div data---="LAZY clipboard"></div>
+	<div data---="LAZY faicons"></div>
+	<div data---="LAZY timepicker"></div>
+	<div data---="LAZY datepicker"></div>
+	<div data---="LAZY directory__null__placeholder:@(Search)"></div>
+	<div data---="LAZY colorpicker"></div>
+	<div data---="LAZY floatinginput"></div>
+	<div data---="LAZY tooltip"></div>
+
+	<div data---="edit"></div>
+	<div data---="markdown"></div>
+	<div data---="paste"></div>
+	<div data---="shortcuts"></div>
+	<div data---="loading"></div>
+	<div data---="console__common.console__datasource:common.logs"></div>
+
+	<div data---="part__common.page__if:flow;url:/parts/flow.html;loading:0" class="hidden invisible"></div>
+	<div data---="part__common.page__if:componenteditor;url:/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></div>
+
+	<div data---="importer__common.form__if:componentsform;url:/forms/components.html"></div>
+	<div data---="importer__common.form__if:sourcesform;url:/forms/sources.html"></div>
+	<div data---="importer__common.form2__if:sourceform;url:/forms/source.html"></div>
+	<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
+	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
+
+	<script>
+
+		var common = {};
+
+		ENVIRONMENT('designer');
+
+		common.secret = 'flowstream';
+		common.marketplace = 'https://marketplace.totaljs.com';
+		common.components = '@{PREF.components}';
+		common.page = '';
+		// common.tms = '@{query.tms}' === '1';
+		common.socket = '@{query.socket}';
+		common.logs = {};
+		common.logs.errors = { icon: 'fas fa-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
+		common.page = common.socket ? 'flow' : '';
+
+		if (!common.page)
+			location.href = 'https://www.totaljs.com/flow/';
+
+		$(document).on('click', function() {
+			W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket }), '*');
+		});
+
+		DEF.dateformat = '@(yyyy-MM-dd)';
+		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
+
+		ON('@flag showloading', function() {
+			SETTER('loading/show');
+		});
+
+		ON('@flag hideloading', function() {
+			SETTER('loading/hide', 1000);
+		});
+
+		$(W).on('message', function(e) {
+			var data = e.originalEvent.data;
+			if (data) {
+				var msg = PARSE(data);
+				if (msg && msg.TYPE) {
+					switch (msg.TYPE) {
+						case 'shortcut':
+							SETTER('shortcuts/exec', msg.key);
+							break;
+						case 'darkmode':
+							$('body').tclass('ui-dark', msg.value === true);
+							break;
+						case 'components':
+							common.components = msg.value;
+							break;
+					}
+				}
+			}
+		});
+
+		function saveshortcut(e) {
+			var is = false;
+			if (common.page === 'componenteditor' && !common.form && !common.form2) {
+				EXEC('componenteditor/submit');
+				is = true;
+			} else if (common.form === 'settings' && !FIND('#flowsettings').find('button[name="submit"]').prop('disabled')) {
+				EXEC('flow/settings_submit');
+				is = true;
+			} else if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/submit');
+				is = true;
+			}
+			is && e && e.preventDefault();
+		}
+
+		SETTER(true, 'shortcuts/register', 'CMD+F, CTRL+F', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				$('.ui-layout-left').find('input').focus();
+				e.preventDefault();
+			}
+		});
+
+		SETTER(true, 'shortcuts/register', 'CMD+ENTER, CTRL+ENTER', saveshortcut);
+
+		SETTER(true, 'shortcuts/register', 'CMD+D, CTRL+D', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/clone');
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}, true);
+
+		SETTER(true, 'shortcuts/register', 'CMD+C, CTRL+C', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/copy_components');
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
+		SETTER(true, 'shortcuts/register', 'CMD+V, CTRL+V', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				EXEC('flow/paste_components', { x: 0, y: 0 });
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
+		SETTER(true, 'shortcuts/register', 'remove', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				CMD('flow.selected.clear');
+				SET('flow.changed', true);
+				e.preventDefault();
+			}
+		});
+
+		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
+
+		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
+			if (common.page === 'flow' && !common.form && !common.form2) {
+				e.preventDefault();
+				e.stopPropagation();
+				var designer = FIND('flow');
+				var selected = designer.selected();
+				if (!selected.components.length) {
+					Object.keys(flow.data).forEach(c => {
+						if (c !== 'groups' && c !== 'paused')
+							designer.op.select(c, true);
+					});
+				} else if (selected.components.length === 1) {
+					select_connected(flow.selected);
+				}
+			}
+		}, true);
+
+		function select_connected(comp) {
+			var conns = comp.connections;
+			if (!conns)
+				return;
+			var designer = FIND('flow');
+			Object.keys(conns).forEach(output => {
+				for (let com of conns[output]) {
+					designer.op.select(com.id, true);
+					select_connected(flow.data[com.id]);
+				}
+			});
+		};
+
+	</script>
+
+</body>
+</html>

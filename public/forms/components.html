@@ -1,0 +1,233 @@
+<div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+	<nav>
+		<button class="exec" data-exec="?/marketplace"><i class="fas fa-shopping-basket"></i>@(Marketplace)</button>
+		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
+	</nav>
+	<div>
+		<div class="search">
+			<div data---="searchinput__?.search__placeholder:@(Search components)"></div>
+		</div>
+		<div data---="viewbox__common.form__parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
+			<div class="padding">
+				<div style="margin:0 0 15px 8px">
+					<div class="pull-right">
+						<span class="link fs12 exec" data-exec="flow/create"><i class="fa fa-plus-circle green mr5"></i>@(Create component)</span>
+					</div>
+					<div data---="checkbox__?.approve__null__true">@(Warn on component installation)</div>
+				</div>
+				<div data-bind="?.items__template" data---="search__?.search__selector:figure" id="flowstreamcomponents">
+					<script type="text/html">
+						{{ foreach n in value }}
+							<div class="listing-caption">{{ n.name }}</div>
+							<div class="listing-download">
+								{{ foreach m in n.items }}
+								<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+									<section>
+										<!--{{ if m.version }}<div class="version">@(Version:) {{ m.version }}</div>{{ fi }}-->
+										<div class="icon" style="background:{{ m.groupcolor }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
+										<div class="name"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
+										<!--div class="author">@(Version:) {{ m.version | empty }}</div>-->
+									</section>
+								</figure>
+								{{ end }}
+								<div class="clearfix"></div>
+							</div>
+							<br />
+						{{ end }}
+					</script>
+				</div>
+				<div class="help center m nmt"><i class="far fa-question-circle"></i>@(Official GitHub repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
+			</div>
+		</div>
+	</div>
+	<nav data---="validation__?">
+		<button name="cancel" style="width:100%">@(Cancel)</button>
+	</nav>
+</div>
+
+<script>
+
+	PLUGIN('~PATH~', function(exports) {
+
+		var refresh = function(url, opt, callback) {
+			AJAX('GET ' + url, function(response) {
+
+				if (!(response instanceof Array))
+					return;
+
+				for (var item of response) {
+
+					var com = flow.components.findItem('name', item.name);
+					item.newupdate = com ? com.version !== item.version : false;
+					item.installed = com != null;
+
+					if (item.newupdate)
+						opt.updates++;
+
+					if (opt.groups[item.group])
+						opt.groups[item.group].items.push(item);
+					else
+						opt.groups[item.group] = { name: item.group, color: Thelpers.color(item.group), items: [item] };
+
+					item.groupcolor = opt.groups[item.group].color;
+					item.download = '';
+					opt.components.push(item);
+				}
+
+				callback();
+			});
+		};
+
+		var checkhtml = function(html) {
+			var m = html.match(/exports\.(name|version|icon)(\s)?\=.*?;/g);
+			if (m) {
+				var opt = {};
+				try {
+					new Function('exports', m.join('\n'))(opt);
+					if (opt.name && opt.version && opt.icon)
+						return true;
+				} catch (e) {}
+			}
+		};
+
+		exports.marketplace = function() {
+			NULL('common.form');
+			EXEC('flow/marketplace');
+		};
+
+		exports.reload = function() {
+
+			var opt = {};
+			opt.updates = 0;
+			opt.groups = {};
+			opt.components = [];
+
+			var queue = [];
+
+			if (common.cdn) {
+				queue.push(function(next) {
+					refresh('{0}components/db.json'.format(common.cdn), opt, next);
+				});
+			}
+
+			if (common.components) {
+				queue.push(function(next) {
+					refresh(common.components, opt, next);
+				});
+			}
+
+			queue.async(function() {
+
+				var arr = [];
+				for (var key in opt.groups) {
+					opt.groups[key].items.quicksort('name');
+					arr.push(opt.groups[key]);
+				}
+
+				SET('?.newupdates', opt.updates);
+				SET('?.components', opt.components);
+				SET('?.items', arr);
+			});
+		};
+
+		exports.check = function() {
+			var components = exports.data.components;
+			if (components) {
+				var container = $('#flowstreamcomponents');
+				var updates = 0;
+				for (var item of components) {
+					var com = flow.components.findItem('name', item.name);
+					var is = com ? com.version !== item.version : false;
+					if (item.newupdate !== is) {
+						item.newupdate = is;
+						container.find('figure[data-id="' + item.id + '"]').find('.newupdate').remove();
+					}
+					if (item.newupdate)
+						updates++;
+				}
+				SET('?.newupdates', updates);
+			}
+		};
+
+		exports.readme = function(el) {
+			var id = ATTRD(el);
+			var item = exports.data.components.findItem('id', id);
+			RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
+			SET('common.readme', FUNC.strim(item.readme || ''));
+			SET('common.panel', 'readme');
+		};
+
+		exports.update = function() {
+			var model = exports.data;
+			SETTER('approve/show', '@(Are you sure you want to apply all new updates ({0}x)?)'.format(model.newupdates), '"fas fa-sync" @(Update)', function() {
+				model.components.wait(function(item, next) {
+					if (item.newupdate) {
+
+						var com = flow.components.findItem('name', item.name);
+						if (com)
+							$('#settings_f' + com.id).remove();
+
+						AJAX('GET ' + (item.url || ('{0}components/{1}.html').format(common.cdn, item.id)), function(response) {
+							if (typeof(response) === 'string') {
+								if (checkhtml(response)) {
+									var model = {};
+									model.id = com ? com.id : '';
+									model.body = response.trim();
+									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+								} else
+									SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(item.name.encode()));
+							}
+							setTimeout(next, 100);
+						});
+
+					} else
+						next();
+				}, function() {
+					FREE();
+					exports.scope();
+					SET('?.mewupdates', 0);
+				});
+			});
+		};
+
+		exports.install = function(el) {
+
+			var id = el.attrd2('id');
+			var name = el.attrd2('name');
+			var com = flow.components.findItem('name', name);
+
+			if (com) {
+				$('#settings_f' + com.id).remove();
+				FREE();
+			}
+
+			var url = el.attrd2('url');
+			var download = function() {
+				AJAX('GET ' + (url || '{0}components/{1}.html'.format(common.cdn, id)), function(response) {
+					if (typeof(response) === 'string') {
+						if (checkhtml(response)) {
+							var model = {};
+							model.id = com ? com.id : '';
+							model.body = response.trim();
+							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+							el.aclass('installed');
+						} else
+							SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
+					}
+				});
+			};
+
+			if (exports.data.approve)
+				SETTER('approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
+			else
+				download();
+
+		};
+
+		WATCH('flow.components', function() {
+			setTimeout(exports.check, 100);
+		});
+
+	});
+
+</script>
