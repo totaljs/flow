@@ -10,6 +10,15 @@ __Requirements__:
 
 - Total.js 4 - `$ npm install total4`
 
+__Run__:
+
+```
+npm run start
+```
+or directly using node executable (port is optional, default 8000)
+```
+node index.js <port>
+```
 __Docker__:
 
 ```bash
