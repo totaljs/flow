@@ -346,7 +346,7 @@
 					case 'copy2':
 						SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
 							SETTER('clipboard/copy', opt.id === 'copy2' ? response.data : ENCRYPT({ body: response.data }, common.secret, 'component'));
-							SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
+							SETTER('notify/success', '@(The component has been copied into the clipboard)');
 						})});
 						break;
 
@@ -501,10 +501,17 @@
 							outputs.push({ id: fi.id, name: fi.config.name });
 					}
 
-					var make = `function(instance, config) {
+					if (!inputs.length && !outputs.length)
+						SETTER('approve/show', '@(<b>Warning</b><br>The component has no inputs or outputs, so there will be no way to send/recieve data to/from the component. Are you sure you want to export?)', '"fas fa-file-export" @(Export)', exportcomponent);
+					else
+						exportcomponent();
+
+					function exportcomponent() {
+						var make = `function(instance, config) {
 		var schema = CLONE(instance.module.flowstreamschema);
 		schema.variables = config;
 		schema.id = instance.id;
+		schema.iscomponent = true;
 
 		var stream;
 
@@ -540,29 +547,30 @@
 
 	};`.format(flow.worker ? ('\'' + flow.worker + '\'') : 'false');
 
-					var builder = [];
-					builder.push('<scri' + 'pt total>');
-					builder.push('\texports.name = \'{0}\';'.format(flow.name));
-					builder.push('\texports.icon = \'{0}\';'.format(flow.icon));
-					builder.push('\texports.group = \'Encapsulated\';');
-					builder.push('\texports.reference = \'{0}\';'.format(flow.reference));
-					builder.push('\texports.config = {0};'.format(STRINGIFY(flow.variables)));
-					builder.push('\texports.inputs = {0};'.format(inputs.length ? STRINGIFY(inputs) : 'null'));
-					builder.push('\texports.outputs = {0};'.format(outputs.length ? STRINGIFY(outputs) : 'null'));
-					builder.push('\texports.version = \'{0}\';'.format(flow.version));
-					builder.push('\texports.flowstreamschema = decodeURIComponent(Buffer.from(\'{0}\', \'base64\').toString(\'utf8\')).parseJSON(true);'.format(btoa(encodeURIComponent(STRINGIFY(flow)))));
-					builder.push('\texports.make = ' + make);
-					builder.push('</sc' + 'ript>');
-					builder.push('');
-					builder.push(`<body>
-	<header>
-		<i class="{0}"></i>{1}
-	</header>
-</body>`.format(flow.icon, flow.name));
-					builder.push('\n<readme>' + flow.readme + '</readme>');
-					//SETTER('clipboard/copy', builder.join('\n'));
-					navigator.clipboard.writeText(STRINGIFY({ type: 'exported_as_component', name: flow.name, component: builder.join('\n') })).catch(err => console.error(err));
-					SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
+						var builder = [];
+						builder.push('<scri' + 'pt total>');
+						builder.push('\texports.name = \'{0}\';'.format(flow.name));
+						builder.push('\texports.icon = \'{0}\';'.format(flow.icon));
+						builder.push('\texports.group = \'Encapsulated\';');
+						builder.push('\texports.reference = \'{0}\';'.format(flow.reference));
+						builder.push('\texports.config = {0};'.format(STRINGIFY(flow.variables)));
+						builder.push('\texports.inputs = {0};'.format(inputs.length ? STRINGIFY(inputs) : 'null'));
+						builder.push('\texports.outputs = {0};'.format(outputs.length ? STRINGIFY(outputs) : 'null'));
+						builder.push('\texports.version = \'{0}\';'.format(flow.version));
+						builder.push('\texports.flowstreamschema = decodeURIComponent(Buffer.from(\'{0}\', \'base64\').toString(\'utf8\')).parseJSON(true);'.format(btoa(encodeURIComponent(STRINGIFY(flow)))));
+						builder.push('\texports.make = ' + make);
+						builder.push('</sc' + 'ript>');
+						builder.push('');
+						builder.push(`<body>
+		<header>
+			<i class="{0}"></i>{1}
+		</header>
+	</body>`.format(flow.icon, flow.name));
+						builder.push('\n<readme>' + flow.readme + '</readme>');
+						//SETTER('clipboard/copy', builder.join('\n'));
+						navigator.clipboard.writeText(STRINGIFY({ type: 'exported_as_component', name: flow.name, component: builder.join('\n') })).catch(err => console.error(err));
+						SETTER('notify/success', '@(The component has been copied into the clipboard)');
+					};
 				})});
 			});
 		};
@@ -1032,7 +1040,7 @@
 					case 'export':
 						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
 							navigator.clipboard.writeText(STRINGIFY({ type: 'exportedflow', data: response.data })).catch(err => console.error(err));
-							SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
+							SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
 						break;
 					case 'clear':
