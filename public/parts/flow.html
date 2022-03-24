@@ -286,7 +286,7 @@
 
 			if (!item)
 				return;
-			
+
 			var count = Designer.selected().components.length;
 			var single = count === 1;
 
@@ -467,7 +467,7 @@
 
 			settings_data = eventdata;
 			settings_current = instance;
-			setTimeout(() => $('#flow_settings').rclass('invisible'), 1000);
+			$('#flow_settings').rclass('invisible', 1000);
 			SETTER('#settingsvalidation/setPath', path);
 			SET('flow.settings.{0} @reset'.format(id), config);
 			SET('common.form', 'settings');
@@ -509,7 +509,7 @@
 		var stream;
 
 		// Backward compatibility
-		stream = instance.newflowstream(schema, true, function(err, worker) {
+		stream = instance.newflowstream(schema, {0}, function(err, worker) {
 			stream = worker;
 			if (stream) {
 				stream.output = function(fid, data, tfsid, tid) {
@@ -526,7 +526,7 @@
 		}
 
 		instance.message = function($) {
-			stream && stream.input(null, null, $.toindex, $.data);
+			stream && stream.input(null, null, $.input, $.data);
 			$.destroy();
 		};
 
@@ -538,7 +538,7 @@
 			stream && stream.destroy();
 		};
 
-	};`;
+	};`.format(flow.worker ? ('\'' + flow.worker + '\'') : 'false');
 
 					var builder = [];
 					builder.push('<scri' + 'pt total>');
@@ -546,11 +546,11 @@
 					builder.push('\texports.icon = \'{0}\';'.format(flow.icon));
 					builder.push('\texports.group = \'Encapsulated\';');
 					builder.push('\texports.reference = \'{0}\';'.format(flow.reference));
-					builder.push('\texports.config = {0};'.format(JSON.stringify(flow.variables)));
-					builder.push('\texports.inputs = {0};'.format(inputs.length ? JSON.stringify(inputs) : 'null'));
-					builder.push('\texports.outputs = {0};'.format(outputs.length ? JSON.stringify(outputs) : 'null'));
+					builder.push('\texports.config = {0};'.format(STRINGIFY(flow.variables)));
+					builder.push('\texports.inputs = {0};'.format(inputs.length ? STRINGIFY(inputs) : 'null'));
+					builder.push('\texports.outputs = {0};'.format(outputs.length ? STRINGIFY(outputs) : 'null'));
 					builder.push('\texports.version = \'{0}\';'.format(flow.version));
-					builder.push('\texports.flowstreamschema = decodeURIComponent(Buffer.from(\'{0}\', \'base64\').toString(\'utf8\')).parseJSON(true);'.format(btoa(encodeURIComponent(JSON.stringify(flow)))));
+					builder.push('\texports.flowstreamschema = decodeURIComponent(Buffer.from(\'{0}\', \'base64\').toString(\'utf8\')).parseJSON(true);'.format(btoa(encodeURIComponent(STRINGIFY(flow)))));
 					builder.push('\texports.make = ' + make);
 					builder.push('</sc' + 'ript>');
 					builder.push('');
@@ -561,8 +561,7 @@
 </body>`.format(flow.icon, flow.name));
 					builder.push('\n<readme>' + flow.readme + '</readme>');
 					//SETTER('clipboard/copy', builder.join('\n'));
-					navigator.clipboard.writeText(JSON.stringify({ type: 'exported_as_component', name: flow.name, component: builder.join('\n') }))
-					.catch((err) => console.error(er));
+					navigator.clipboard.writeText(STRINGIFY({ type: 'exported_as_component', name: flow.name, component: builder.join('\n') })).catch(err => console.error(err));
 					SETTER('notifybar/success', '@(The component has been copied into the clipboard)');
 				})});
 			});
@@ -1032,8 +1031,7 @@
 						break;
 					case 'export':
 						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
-							navigator.clipboard.writeText(JSON.stringify({ type: 'exportedflow', data: response.data }))
-							.catch((err) => console.error(er));
+							navigator.clipboard.writeText(STRINGIFY({ type: 'exportedflow', data: response.data })).catch(err => console.error(err));
 							SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
 						break;
@@ -1048,22 +1046,22 @@
 		};
 
 		exports.importascomponent = function() {
-			navigator.clipboard.readText()
-			.then((text) => {
+			navigator.clipboard.readText().then(function(text) {
+
 				var data = PARSE(text);
 				if (!data || data.type !== 'exported_as_component') {
 					SETTER('notify/warning', '@(Invalid data in the clipboard)');
 					return;
 				}
-				
+
 				var id = FUNC.makeid('c');
 				var body = FUNC.rtrim(data.component);
 				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){
 					SETTER('loading/hide', 1000);
 					SETTER('notify/success', '@(Component "{0}" has been successfuly imported.)'.format(data.name));
 				}});
-			})
-			.catch((err) => console.error(err));
+
+			}).catch(err => console.error(err));
 		};
 
 		// WebSocket messages
@@ -1344,8 +1342,8 @@
 		};
 
 
-		exports.clear_sourcecache = function(id) { 
-			delete sourcecache[id]; 
+		exports.clear_sourcecache = function(id) {
+			delete sourcecache[id];
 		};
 
 		exports.copy_components = function() {
@@ -1362,57 +1360,61 @@
 			}
 
 			SETTER('loading/hide', 500);
-			SETTER('notify/success', 'Selected components({0}) copied into the clipboard.'.format(data.items.length));
-			navigator.clipboard.writeText(JSON.stringify(data))
-			.catch((err) => console.error(er));
+			SETTER('notify/success', '@(Selected components({0}) copied into the clipboard.)'.format(data.items.length));
+			navigator.clipboard.writeText(STRINGIFY(data)).catch(err => console.error(er));
 
 		};
 
 		exports.export_components = function() {
 
-			const selected = Designer.selected();
+			var selected = Designer.selected();
+
 			if (!selected.components.length)
 				return;
 
-			const data = { type: 'exported_components', flowstreamid, items: [], components: {}};
-			const components = {};
-			flow.components.forEach(c => { components[c.id] = c.name.toLowerCase() });
+			var data = { type: 'exported_components', flowstreamid, items: [], components: {}};
+			var components = {};
 
-			for (let com of selected.components) {
-				const { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
+			for (var com of flow.components)
+				components[c.id] = c.name.toLowerCase();
+
+			for (var com of selected.components) {
+				var { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
 				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs });
 			}
 
 			SETTER('loading/show', '@(Loading source(s) from server)');
 
 			data.items.wait(function(item, next){
+
 				if (data.components[item.component]) {
 					next();
 					return;
 				}
+
 				SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
 					data.components[item.component] = { name: components[item.component], source: response.data };
 					sourcecache[item.id] = response.data;
 					next();
 				})});
+
 			}, function done(){
 				SETTER('loading/hide', 500);
-				SETTER('notify/success', 'Selected components({0}) copied into the clipboard.'.format(data.items.length));
-				navigator.clipboard.writeText(JSON.stringify(data))
-				.catch((err) => console.error(er));
+				SETTER('notify/success', '@(Selected components({0}) copied into the clipboard.)'.format(data.items.length));
+				navigator.clipboard.writeText(STRINGIFY(data)).catch(err => console.error(err));
 			});
 		};
 
 		exports.paste_components = function(pos) {
 
-			navigator.clipboard.readText()
-			.then((text) => {
+			navigator.clipboard.readText().then(function(text) {
+
 				var data = PARSE(text);
 				if (!data) {
 					SETTER('notify/warning', '@(Invalid data)');
 					return;
 				}
-				
+
 				if ((data.type === 'copied_components' || data.type === 'exported_components') && data.flowstreamid === flowstreamid) { // local copy&paste
 					paste_components(data.items, pos);
 					return;
@@ -1428,16 +1430,15 @@
 						let com = data.components[comid];
 						if (names.indexOf(com.name) < 0) {
 							SETTER('loading/show', '<i class="fa fa-download"></i>@(Installing): ' + com.name);
-							install_component(com.source, (id) => {
+							install_component(com.source, function(id) {
 								com.component = id;
 								// wait a bit for the component to load back from server
 								setTimeout(next, 1000);
 							});
 						} else {
-							com.component = flow.components.findItem((c) => c.name.toLowerCase() === com.name).id;
-							for (let item of data.items) {
+							com.component = flow.components.findItem(item => item.name.toLowerCase() === com.name).id;
+							for (let item of data.items)
 								item.component = com.component;
-							}
 							next();
 						}
 					}, function() {
@@ -1447,24 +1448,21 @@
 					});
 					return;
 				} else if (data.type === 'exported_as_component' && data.component) {
-
 					SETTER('approve/show', '@(Exported flow will be imported as "{0}" component.)'.format(data.name), '"file-import" @(Import)', function(){
 						var id = FUNC.makeid('c');
 						var body = FUNC.rtrim(data.component);
 						SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){
 							SET('common.page', 'flow');
 							SETTER('loading/hide');
-							setTimeout(function() {
-								EMIT('resize');
-							}, 100);
+							setTimeout(() => EMIT('resize'), 100);
 						}});
 					});
 					return;
 				}
 
 				SETTER('notify/warning', '@(Invalid data)');
-			})
-			.catch((err) => console.error(err));
+
+			}).catch(err => console.error(err));
 		};
 
 		function fix_positions(arr, pos) {
@@ -1550,7 +1548,7 @@
 
 			if (!id)
 				id = FUNC.makeid('c');
-				
+
 			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: function(){
 				callback(id);
 			}});
@@ -1597,26 +1595,21 @@
 		};
 
 		exports.copyconfig = function(el) {
-			navigator.clipboard.writeText(JSON.stringify({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) }))
-			.then(() => {
+			navigator.clipboard.writeText(STRINGIFY({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) })).then(() => {
 				SETTER('notify/success', '@(Config copied into clipboard.)');
-			})
-			.catch((err) => console.error(er));
+			}).catch(err => console.error(err));
 		};
 
 		exports.pasteconfig = function(el) {
-			navigator.clipboard.readText()
-			.then((text) => {
+			navigator.clipboard.readText().then(function(text) {
 				var data = PARSE(text);
 				if (data && data.type === 'config' && flow.selected.name === data.componentname) {
 					SET('?.settings.settings_f' + flow.selected.component, data.data);
 					CHANGE('?.settings.settings_f' + flow.selected.component + '.*', true);
 					SETTER('notify/success', '@(Config pasted from clipboard.)');
-				} else {
+				} else
 					SETTER('notify/warning', '@(Incompatible config)');
-				}
-			})
-			.catch((err) => console.error(err));
+			}).catch(err => console.error(err));
 		};
 
 		exports.resetconfig = function(el) {
@@ -1624,19 +1617,6 @@
 			CHANGE('?.settings.settings_f' + flow.selected.component + '.*', true);
 			SETTER('notify/success', '@(Config reset.)');
 		};
-
-		/*ON('paste', function(text) {
-			var data;
-			if (!common.form && !common.form2 && common.page === 'flow' && text.substring(0, 9) === 'component') {
-				data = DECRYPT(text, common.secret, 'component');
-				if (data) {
-					data.id = '';
-					data.flowstreamid = flowstreamid;
-					SET('componenteditor @reset', data);
-					SET('common.page @hideloading', 'componenteditor');
-				}
-			}
-		});*/
 
 		FIND('flow', function(com) {
 			var zoom = FUNC.pref_read('zoom');
