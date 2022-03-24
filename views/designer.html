@@ -130,7 +130,7 @@
 		}, true);
 
 		SETTER(true, 'shortcuts/register', 'CMD+C, CTRL+C', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2) {
+			if (common.page === 'flow' && !common.form && !common.form2 && flow.selected) {
 				EXEC('flow/copy_components');
 				e.preventDefault();
 				e.stopPropagation();
@@ -138,8 +138,8 @@
 		});
 
 		SETTER(true, 'shortcuts/register', 'CMD+V, CTRL+V', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2) {
-				EXEC('flow/paste_components', { x: 0, y: 0 });
+			if (common.page === 'flow' && !common.form && !common.form2 && (e.target.nodeName !== 'INPUT' && e.target.nodeName !== 'TEXTAREA')) {
+				EXEC('flow/paste_components', { x: 0, y: 0 }, true);
 				e.preventDefault();
 				e.stopPropagation();
 			}
