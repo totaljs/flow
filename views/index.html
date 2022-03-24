@@ -300,7 +300,7 @@
 
 								if (opt.id === 'copy' || opt.id === 'copy2') {
 									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : response.value);
-									SETTER('notifybar/success', '@(The FlowStream has been copied into the clipboard)');
+									SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 								} else {
 									WAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {
 										exports.refresh();
