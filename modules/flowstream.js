@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 14;
+const VERSION = 15;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -724,6 +724,8 @@ function httprequest(self, opt, callback) {
 }
 
 function init_current(meta, callback) {
+	if (!meta.directory)
+		meta.directory = PATH.root('flowstream');
 
 	// Due to C/C++ modules
 	if (isFLOWSTREAMWORKER)
@@ -743,7 +745,6 @@ function init_current(meta, callback) {
 	if (Parent) {
 
 		Parent.on('message', function(msg) {
-
 			switch (msg.TYPE) {
 
 				case 'stream/export':
@@ -842,7 +843,7 @@ function init_current(meta, callback) {
 							}
 						} else {
 							let tmp = flow.meta.flow[msg.id];
-							if (tmp.input)
+							if (tmp && tmp.input)
 								tmp.input(msg.flowstreamid, msg.fromid, msg.data);
 						}
 					} else {
@@ -959,7 +960,7 @@ function init_current(meta, callback) {
 			}
 
 			instanceid && flow.onerror(err, source, instanceid, componentid);
-			Parent.postMessage({ TYPE: 'stream/error', error: err, source: source, id: instanceid, component: componentid });
+			Parent.postMessage({ TYPE: 'stream/error', error: err.toString(), source: source, id: instanceid, component: componentid });
 		};
 
 		flow.proxy.refresh = function(type) {
@@ -1066,13 +1067,14 @@ function init_worker(meta, type, callback) {
 	var ischild = false;
 
 	if (!worker.postMessage) {
-		worker.postMessage2 = function(a, b) {
-			if (!worker.$terminated)
-				worker.postMessage(a, b);
-		};
 		worker.postMessage = worker.send;
 		ischild = true;
 	}
+
+	worker.postMessage2 = function(a, b) {
+		if (!worker.$terminated)
+			worker.postMessage(a, b);
+	};
 
 	worker.$instance = new Instance(worker, meta.id);
 	worker.$instance.isworkerthread = true;
@@ -1596,6 +1598,8 @@ function MAKEFLOWSTREAM(meta) {
 				msg.TYPE = 'flow/export';
 				if (flow.proxy.online) {
 					msg.data = flow.export2();
+					if (isFLOWSTREAMWORKER)
+						msg.data.worker = process.argv.indexOf('--fork') === -1 ? 'worker' : 'fork';
 					flow.proxy.send(msg, 1, clientid);
 					callback && callback(msg);
 				}
