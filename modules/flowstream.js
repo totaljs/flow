@@ -945,8 +945,10 @@ function init_current(meta, callback) {
 
 			if (instance) {
 				if (source === 'instance_message') {
-					instanceid = instance.instance.id;
-					componentid = instance.instance.component;
+					if (instance.instance) {
+						instanceid = instance.instance.id;
+						componentid = instance.instance.component;
+					}
 				} else if (source === 'instance_close') {
 					instanceid = instance.id;
 					componentid = instance.component;
