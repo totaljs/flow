@@ -498,14 +498,16 @@
 					}
 
 					for (var key in flow.design) {
-						if (key === 'groups')
+						if (key === 'groups' || key === 'paused' || key === 'tabs')
 							continue;
 						var fi = flow.design[key];
 						var template = fi.template || fi.meta; // due to backward compatibility
-						if (template.type === 'input')
-							inputs.push({ id: fi.id, name: fi.config.name });
-						else if (template.type === 'output')
-							outputs.push({ id: fi.id, name: fi.config.name });
+						if (template) {
+							if (template.type === 'input')
+								inputs.push({ id: fi.id, name: fi.config.name });
+							else if (template.type === 'output')
+								outputs.push({ id: fi.id, name: fi.config.name });
+						}
 					}
 
 					var make = `function(instance, config) {
