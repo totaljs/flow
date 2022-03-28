@@ -490,15 +490,24 @@
 					var inputs = [];
 					var outputs = [];
 
+					for (var key in flow.components) {
+						var tmp = flow.components[key];
+						var index = tmp.indexOf('<scr' + 'ipt total>');
+						if (index !== -1)
+							flow.components[key] = tmp.substring(index, tmp.indexOf('</sc' + 'ript>', index + 20) + 9);
+					}
+
 					for (var key in flow.design) {
-						if (key === 'groups')
+						if (key === 'groups' || key === 'paused' || key === 'tabs')
 							continue;
 						var fi = flow.design[key];
 						var template = fi.template || fi.meta; // due to backward compatibility
-						if (template.type === 'input')
-							inputs.push({ id: fi.id, name: fi.config.name });
-						else if (template.type === 'output')
-							outputs.push({ id: fi.id, name: fi.config.name });
+						if (template) {
+							if (template.type === 'input')
+								inputs.push({ id: fi.id, name: fi.config.name });
+							else if (template.type === 'output')
+								outputs.push({ id: fi.id, name: fi.config.name });
+						}
 					}
 
 					if (!inputs.length && !outputs.length)
