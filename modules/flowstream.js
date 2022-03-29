@@ -2023,16 +2023,10 @@ function MAKEFLOWSTREAM(meta) {
 	// component.status() will execute this method
 	flow.onstatus = function(status) {
 
-		var instance = this;
+		this.$status = status;
 
-		if (status == null)
-			status = instance.$status;
-		else
-			instance.$status = status;
-
-		if (status != null && flow.proxy.online)
+		if (flow.proxy.online)
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: status });
-
 	};
 
 	// component.dashboard() will execute this method

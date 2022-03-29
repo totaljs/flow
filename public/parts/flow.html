@@ -1158,7 +1158,7 @@
 					break;
 
 				case 'flow/status':
-					SET('flow.status.' + msg.id, msg.data);
+					SET('flow.status.' + msg.id, msg.data || '');
 					W.flowinstances.exec(msg.id, 'status', msg.data);
 					setTimeout2('flow.refresh', ACMD('flow.refresh'), 500, 2 * 8);
 					break;
