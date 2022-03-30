@@ -32,7 +32,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: totalplatform/flow:test
+          tags: totalplatform/flow:latest
           push: true
           secrets: |
             github_token=${{ secrets.ACCESS_TOKEN }}
