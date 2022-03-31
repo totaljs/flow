@@ -122,6 +122,11 @@
 		return count;
 	};
 
+	function cleanlogs() {
+		if (common.logs.errors.items.length > 50)
+			common.logs.errors.items.pop();
+	}
+
 	// Reads flow statuses
 	SETTER(true, 'websocket/send', { TYPE: 'flow' });
 
@@ -924,7 +929,17 @@
 			}
 
 			if (js.length) {
-				new Function(js.join('\n'))();
+				try {
+					new Function(js.join('\n'))();
+				} catch (e) {
+
+					var a = { type: 'error', body: (new Date()).format('[ts]') + ' - <b>{0} component</b>: failed client-side code execution - '.format(com.name) + Thelpers.encode(e + ''), id: com.id };
+					PUSH('^common.logs.errors.items', a);
+					cleanlogs();
+					W.console && W.console.error('Component: "' + com.name + '"', e);
+					if (!common.console)
+						SET('common.console', true);
+				}
 				W.flowinstances.current = '';
 			}
 
@@ -1143,9 +1158,7 @@
 					}
 
 					PUSH('^common.logs.errors.items', { type: 'error', body: msg.ts.format('[ts]') + ' - ' + Thelpers.encode(msg.error) + (com ? ' <b>(' + com.name + ' component)</b>' : ''), id: msg.id });
-
-					if (common.logs.errors.items.length > 50)
-						common.logs.errors.items.pop();
+					cleanlogs();
 
 					break;
 
@@ -1210,7 +1223,12 @@
 					}
 
 					UPD('flow.errors');
-					SET('common.logs.errors.items', msg.data);
+
+					if (msg.data.length) {
+						PUSH('^common.logs.errors.items', msg.data);
+						cleanlogs();
+					}
+
 					break;
 
 				case 'flow/design':
