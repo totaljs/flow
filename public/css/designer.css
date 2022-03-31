@@ -343,3 +343,17 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow-grid { stroke: #E9E9E9; }
 .ui-dark .ui-flow-grid { stroke: #2D2D2D; }
 .clickable { cursor: pointer; }
+
+.component figure > header > button { float: right; height: 20px; font-size: 11px; border: 1px solid #E0E0E0; border-radius: var(--radius); color: #000; background-color: transparent; margin: 0; padding: 0 5px; }
+.component figure > header > button:hover { background-color: #F8F8F8; }
+.component figure > header > button:active { background-color: #E0E0E0; }
+.ui-dark .component figure > header > button { border-color: #404040; color: #FFF; }
+.ui-dark .component figure > header > button:hover { background-color: #303030; }
+.ui-dark .component figure > header > button:active { background-color: #404040; }
+
+.component figure > div > button { width: 100%; height: 24px; border: 1px solid #E0E0E0; border-radius: var(--radius); color: #000; background-color: #F0F0F0; margin: 0; }
+.component figure > div > button:hover { background-color: #F8F8F8; }
+.component figure > div > button:active { background-color: #E0E0E0; }
+.ui-dark .component figure > div > button { border-color: #404040; color: #FFF; background-color: #222; }
+.ui-dark .component figure > div > button:hover { background-color: #303030; }
+.ui-dark .component figure > div > button:active { background-color: #404040; }
