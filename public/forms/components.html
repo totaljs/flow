@@ -58,7 +58,7 @@
 				for (var item of response) {
 
 					var com = flow.components.findItem('name', item.name);
-					item.newupdate = com ? com.version !== item.version : false;
+					item.newupdate = com ? item.version.localeCompare(com.version, { numeric: true }) > 0 : false;
 					item.installed = com != null;
 
 					if (item.newupdate)
