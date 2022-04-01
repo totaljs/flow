@@ -138,8 +138,8 @@ COMPONENT('message','button:OK;style:2',function(self,config,cls){var cls2='.'+c
 
 // Component: j-Clipboard
 // Version: 1
-// Updated: 2019-01-07 23:56
-COMPONENT('clipboard',function(self){var container;self.singleton();self.readonly();self.nocompile&&self.nocompile();self.copy=function(value){container.val(value);container.focus();container.select();document.execCommand('copy');container.blur()};self.make=function(){var id='clipboard'+self.id;$(document.body).append('<textarea id="{0}" class="ui-clipboard"></textarea>'.format(id));container=$('#'+id)};self.setter=function(value){value&&self.copy(value)}});
+// Updated: 2022-04-01 10:36
+COMPONENT('clipboard',function(self,config,cls){var container;self.singleton();self.readonly();self.nocompile();self.make=function(){if(navigator.clipboard&&W.isSecureContext){self.copy=function(value){navigator.clipboard.writeText(value).catch(err=>console.error(err))}}else{var id='clipboard'+self.id;$(document.body).append('<textarea id="{0}" class="{1}"></textarea>'.format(id,cls));container=$('#'+id);self.copy=function(value){container.val(value);container.focus();container.select();document.execCommand('copy');container.blur()}}};self.setter=function(value){value&&self.copy(value)}});
 // End: j-Clipboard
 
 // Component: j-TextboxList

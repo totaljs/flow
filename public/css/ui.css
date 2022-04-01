@@ -78,7 +78,7 @@
 
 /* Component: j-Clipboard */
 /* Version: 1 */
-/* Updated: 2019-01-07 23:56 */
+/* Updated: 2022-04-01 10:36 */
 .ui-clipboard{position:absolute;left:-100px;top:-100px;height:1px;width:1px}
 /* End: j-Clipboard */
 
@@ -219,3 +219,32 @@
 /* Updated: 2022-01-14 21:43 */
 .ui-viewbox{overflow:hidden;-ms-overflow-style:none;box-sizing:content-box}.ui-viewbox-disabled{z-index:5;position:absolute;background-color:rgba(255,255,255,0.8)}.ui-viewbox-hidden{visibility:hidden}.ui-viewbox-centered-table{display:table;width:100%;height:100%}.ui-viewbox-centered-cell{display:table-cell;width:100%;height:100%;vertical-align:middle;text-align:center}
 /* End: j-NoScrollbar */
+
+/* Component: j-ObjectTree */
+/* Version: 1 */
+/* Updated: 2022-03-09 17:31 */
+.ui-objecttree { font-family: Menlo, Consolas, monospace; font-size: 10px; color: #000; overflow: hidden; white-space: pre-wrap; }
+.ui-objecttree-item { margin-left: 16px; position: relative; }
+.ui-objecttree-item-key:hover { background-color: #f6f6f6; }
+.ui-objecttree-key { color: #1A8B95; }
+.ui-objecttree-number { color: #6d49ff; }
+.ui-objecttree-boolean { color: #1B7F16; }
+.ui-objecttree-null { color: #777; font-style: italic; }
+.ui-objecttree-string { color: #ff6e6e; }
+.ui-objecttree-date { color: #acacac; }
+.ui-objecttree-item > div:not(.ui-objecttree-item):hover > .toolbox, .ui-objecttree-item:hover > .toolbox { display: block; }
+.ui-objecttree .toolbox { display: none; position: absolute; right: 0; top: -3px; background-color: #e2e2e2; padding: 2px 4px; border-radius: 3px; font-size: 12px; color: #8e8e8e; cursor: pointer; }
+.ui-objecttree .toolbox i { margin-right: 4px; }
+.ui-objecttree .toolbox i:hover { margin-right: 4px; color: black; }
+.ui-objecttree .toolbox i:last-child{ margin-right: 0; }
+.ui-objecttree .ml { margin-left: 16px; }
+.ui-objecttree .fa.fa-chevron-down { font-size: 10px; margin-right: 4px; padding: 1px 2px; background-color: #c6c6c6; border-radius: 2px; cursor: pointer; }
+.ui-objecttree .fa.fa-chevron-down.fa-rotate-270 { background-color: #9fb0ff; }
+
+.ui-dark .ui-objecttree { color: #A0A0A0; background-color: #404040; }
+.ui-dark .ui-objecttree-item-key:hover { background-color: #353535; }
+.ui-dark .ui-objecttree .toolbox { background-color: #6e6e6e; color: #cbcbcb; }
+.ui-dark .ui-objecttree .fa.fa-chevron-down { background-color: #414141; }
+.ui-dark .ui-objecttree .fa.fa-chevron-down.fa-rotate-270 { background-color: #9fb0ff; color: #e5e5e5; }
+.ui-dark .ui-objecttree .toolbox i:hover { color: white; }
+/* End: j-ObjectTree */
