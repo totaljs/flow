@@ -1411,7 +1411,7 @@
 			var components = {};
 
 			for (var com of flow.components)
-				components[c.id] = c.name.toLowerCase();
+				components[com.id] = com.name.toLowerCase();
 
 			for (var com of selected.components) {
 				var { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
