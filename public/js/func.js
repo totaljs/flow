@@ -57,6 +57,16 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 		FUNC.trigger(this.id, data);
 	};
 
+	Instance.prototype.call = function(data, callback, globalcall) {
+		var callbackid = GUID(10);
+		if (typeof(data) === 'function') {
+			callback = data;
+			data = null;
+		}
+		flow.calls[callbackid] = callback;
+		SETTER('websocket/send', { TYPE: 'call', id: globalcall ? ('@' + this.component.id) : this.id, data: data, callbackid: callbackid });
+	};
+
 	Instance.prototype.$destroy = function() {
 		var t = this;
 		delete meta.instances[t.id];
