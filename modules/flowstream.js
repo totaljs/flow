@@ -948,6 +948,8 @@ function init_current(meta, callback) {
 					if (instance.instance) {
 						instanceid = instance.instance.id;
 						componentid = instance.instance.component;
+					} else {
+						console.log('ERROR', instance);
 					}
 				} else if (source === 'instance_close') {
 					instanceid = instance.id;
@@ -2023,10 +2025,16 @@ function MAKEFLOWSTREAM(meta) {
 	// component.status() will execute this method
 	flow.onstatus = function(status) {
 
-		this.$status = status;
+		var instance = this;
 
-		if (flow.proxy.online)
-			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: this.id, data: status });
+		if (status == null)
+			status = instance.$status;
+		else
+			instance.$status = status;
+
+		if (status != null && flow.proxy.online)
+			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: status });
+
 	};
 
 	// component.dashboard() will execute this method
