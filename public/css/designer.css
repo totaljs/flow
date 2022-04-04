@@ -67,6 +67,8 @@ body.ui-dark { background-color: #202020 !important; }
 .type-sub, .type-output2, .type-output { background-color: #FFEDF8 !important; }
 .type-call { background-color: #FFFBE8 !important; }
 
+.transparent { visibility: hidden; pointer-events: none; }
+
 .ui-dark .type-pub, .ui-dark .type-input2, .ui-dark .type-input { background-color: #193C58 !important; }
 .ui-dark .type-sub, .ui-dark .type-output2, .ui-dark .type-output { background-color: #5d2d4a !important; }
 .ui-dark .type-call { background-color: #464337 !important; }
@@ -357,3 +359,6 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .component figure > div > button { border-color: #404040; color: #FFF; background-color: #222; }
 .ui-dark .component figure > div > button:hover { background-color: #303030; }
 .ui-dark .component figure > div > button:active { background-color: #404040; }
+
+.ui-infowindows-item { box-shadow: 0 10px 20px rgba(0,0,0,.1); }
+.ui-dark .ui-infowindows-item { box-shadow: 0 10px 20px rgba(0,0,0,.4); }

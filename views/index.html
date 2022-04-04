@@ -12,6 +12,7 @@
 </head>
 <body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
 
+	<div data---="windows__common.windows"></div>
 	<div data---="LAZY menu__null__style:2"></div>
 	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
 	<div data---="LAZY message__null__style:2"></div>
@@ -30,16 +31,7 @@
 	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
 
 	<header>
-		<!--
-		<div class="tools">
-			<a href="https://docs.totaljs.com/flow10/" target="_blank" title="@(Documentation)"><i class="fas fa-book"></i></a>
-		</div>-->
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
-		<!--
-		<label>
-			@(Visual Programming Interface)
-			<span>Total.js Flow</span>
-		</label>-->
 		<div class="tabs" data-bind="common.tabs__template:div">
 			<script type="text/html">
 				{{ foreach m in value }}
@@ -162,7 +154,19 @@
 			};
 
 			exports.focus = function(el) {
-				SETTER('parts/focus', ATTRD(el));
+				var id = ATTRD(el);
+
+				if (id === 'main' && common.tabs.length === 1) {
+					var opt = {};
+					opt.element = el;
+					opt.align = 'left';
+					opt.items = CLONE(exports.model.menu);
+					opt.callback = exports.menu;
+					SETTER('menu/show', opt);
+					return;
+				}
+
+				SETTER('parts/focus', id);
 			};
 
 			exports.close = function(el, e) {
@@ -484,7 +488,7 @@
 							if (win) {
 								SETTER('!menu/hide');
 								SETTER('!datepicker/hide');
-								SETTER('windows/focus', win.id);
+								SETTER('infowindows/focus', win.id);
 							}
 							break;
 						case 'edit':

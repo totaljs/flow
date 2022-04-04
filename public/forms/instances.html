@@ -1,0 +1,54 @@
+--PATH=instancesform--
+
+<style>
+	.--PATH-- .item { height: 28px; border-bottom: 1px solid #E0E0E0; font-size: 12px; line-height: 27px; cursor: pointer; }
+	.--PATH-- .item:hover { background-color: rgba(0,0,0,.03); }
+	.--PATH-- .monospace { float: left; margin: 6px 5px 0 5px; padding: 0 3px; color: #777; font-size: 11px; background-color: rgba(0,0,0,.08); line-height: 16px; border-radius: var(--radius); }
+	.--PATH-- .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+	.--PATH-- .name i { width: 13px; text-align: center; margin-right: 5px; }
+	.--PATH-- .name span { font-size: 11px; color: #999; margin-left: 5px; }
+	.--PATH-- .ishidden { color: #E73323; }
+	.--PATH-- .singleton { color: #5C1DC4; }
+	.--PATH-- .controls span { margin-left: 7px; cursor: pointer; }
+	.ui-dark .--PATH-- .monospace { background-color: rgba(200,200,200,.08); }
+	.ui-dark .--PATH-- .item { border-bottom-color: #444; }
+	.ui-dark .--PATH-- .item:hover { background-color: rgba(200,200,200,.04); }
+</style>
+
+<div data-scope="--PATH--" class="--PATH--">
+	<div data---="searchinput__%searchinstances__placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></div>
+	<div data---="viewbox__common.windows__parent:auto;margin:29" class="invisible">
+		<div data---="search__%searchinstances__selector:.item;datasource:flow.data">
+			<div data-bind="flow.data__template:.item">
+				<script type="text/html">
+					{{ foreach m in value }}
+						{{ if m.key !== 'groups' }}
+							<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }}" data-id="{{ m.key }}">
+								<div class="controls">
+									<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="fa fa-wrench"></i></span>
+									<span class="exec" data-exec="?/remove" data-prevent="true" title="@(Remove)"><i class="far fa-trash-alt red"></i></span>
+								</div>
+								<span class="monospace">{{ m.key }}</span>
+								<div class="name{{ if m.value.Component.meta && m.value.Component.meta.singleton }} singleton{{ fi }}{{ if m.value.Component.meta && m.value.Component.meta.hidden }} ishidden{{ fi }}"><i class="{{ m.value.Component.icon }}"></i><b>{{ m.value.Component.name }}</b>{{ if m.value.note }}<span>{{ m.value.note }}</span>{{ fi }}</div>
+							</div>
+						{{ fi }}
+					{{ end }}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	PLUGIN('--PATH--', function(exports) {
+
+		exports.remove = function(el) {
+			var id = ATTRD(el);
+			SETTER('approve/show', '@(Are you sure you want to remove selected instance?)', '"far fa-trash-alt" @(Remove)', function() {
+				Designer.op.remove(id);
+				SET('flow.changed', true);
+			});
+		};
+
+	});
+</script>

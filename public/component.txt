@@ -9,6 +9,7 @@
 	exports.outputs = [{ id: 'output', name: 'Output' }];
 
 	// exports.npm = ['npm_module_1', 'npm_module_2@version'];
+	// exports.meta = { readonly: false, singleton: false, hidden: false };
 
 	exports.make = function(instance, config) {
 

@@ -12,6 +12,8 @@
 </head>
 <body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
+	<div data---="windows__common.windows"></div>
+
 	<div data---="LAZY menu__null__style:2"></div>
 	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
 	<div data---="LAZY message__null__style:2"></div>
@@ -53,6 +55,7 @@
 		common.marketplace = 'https://marketplace.totaljs.com';
 		common.components = '@{PREF.components}';
 		common.page = '';
+		common.windows = [];
 		// common.tms = '@{query.tms}' === '1';
 		common.socket = '@{query.socket}';
 		common.logs = {};

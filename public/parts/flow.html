@@ -14,6 +14,7 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
+			<button title="@(List of instances)" class="exec" data-exec="?/instances"><i class="fas fa-list-ul"></i></button>
 		</div>
 		<div>
 			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
@@ -219,6 +220,21 @@
 			SETTER('menu/show', opt);
 		};
 
+		exports.instances = function() {
+			var id = 'instances';
+
+			if (common.windows.findItem('id', id)) {
+				SETTER('windows/focus', id);
+				return;
+			}
+
+			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:/forms/instances.html"></div>', title: '@(List of instances)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: 200, y: 100, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
+
+			// PUSH('common.windows', { id: id, cachekey: id, title: '@(List of instances)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: 200, y: 100, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }, make: function(el) {
+			// 	IMPORT('/forms/instances.html', el);
+			// }});
+		};
+
 		exports.create = function() {
 			common.form && NUL('common.form');
 			AJAX('GET /component.txt @showloading', function(response) {
@@ -229,6 +245,11 @@
 
 		exports.components = function() {
 			SET('common.form', 'componentsform');
+		};
+
+		exports.find = function(el) {
+			var id = ATTRD(el);
+			CMD('flow.find', id);
 		};
 
 		exports.clear = function() {
@@ -419,6 +440,12 @@
 
 			if (e && e.target && (e.target.tagName === 'BUTTON' || e.target.tagName === 'A'))
 				return;
+
+			if (instance instanceof jQuery) {
+				instance = flow.data[ATTRD(instance)];
+				if (!instance)
+					return;
+			}
 
 			var component = flow.components.findItem('id', instance.component);
 			if (!component || !component.settings)
@@ -751,7 +778,27 @@
 			} else {
 				var com = flow.components.findItem('id', id);
 				var obj = {};
+
+				if (com.meta && com.meta.singleton) {
+
+					// check
+					var cancel = (function() {
+						for (var key in flow.data) {
+							var f = flow.data[key];
+							if (f.component === com.id)
+								return true;
+						}
+					})();
+
+					if (cancel) {
+						SETTER('message/warning', '@(The <b>"{0}"</b> component is already in use)'.format(com.name.encode()));
+						return;
+					}
+
+				}
+
 				obj.id = 'i' + Date.now().toString(36);
+				obj.Component = com;
 				obj.component = id;
 				obj.x = e.offsetX - offsetX;
 				obj.y = e.offsetY - offsetY;
@@ -819,6 +866,7 @@
 					continue;
 				}
 
+				obj.Component = com;
 				obj.name = com.name.slug().replace(/\-/g, '');
 				obj.html = '<figure>' + com.html.format(key) + '</figure>';
 				obj.$outputs = !!obj.outputs;
@@ -881,6 +929,8 @@
 						$(arr[i]).css('background-color', Thelpers.color(arr[i].innerHTML));
 					target.aclass('tms-' + type);
 				}
+
+				el.tclass('transparent', com.meta && com.meta.hidden ? true : false);
 				target.aclass('f-' + self.name);
 			}
 			W.flowinstances.init(self.name, self, el);

@@ -1,4 +1,4 @@
-<div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" data-scope="~PATH~">
 	<nav>
 		<button class="exec" data-exec="?/marketplace"><i class="fas fa-shopping-basket"></i>@(Marketplace)</button>
 		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
@@ -40,8 +40,8 @@
 			</div>
 		</div>
 	</div>
-	<nav data---="validation__?">
-		<button name="close" style="width:100%">@(Close)</button>
+	<nav>
+		<button name="cancel" style="width:100%">@(Close)</button>
 	</nav>
 </div>
 
@@ -167,13 +167,14 @@
 						if (com)
 							$('#settings_f' + com.id).remove();
 
-						AJAX('GET ' + (item.url || ('{0}components/{1}.html').format(common.cdn, item.id)), function(response) {
+						AJAX('GET ' + (item.url || ('{0}components/{1}.html').format(common.cdn || '', item.id)), function(response) {
 							if (typeof(response) === 'string') {
 								if (checkhtml(response)) {
 									var model = {};
 									model.id = com ? com.id : '';
 									model.body = response.trim();
-									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
+									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: next });
+									return;
 								} else
 									SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(item.name.encode()));
 							}
@@ -203,14 +204,20 @@
 
 			var url = el.attrd2('url');
 			var download = function() {
-				AJAX('GET ' + (url || '{0}components/{1}.html'.format(common.cdn, id)), function(response) {
+				AJAX('GET ' + (url || '{0}components/{1}.html'.format(common.cdn || '', id)), function(response) {
 					if (typeof(response) === 'string') {
 						if (checkhtml(response)) {
 							var model = {};
 							model.id = com ? com.id : '';
 							model.body = response.trim();
-							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body });
-							el.aclass('installed');
+							SETTER('loading/show');
+							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
+								SETTER('loading/hide', 200);
+								if (response.error)
+									SETTER('notify/warning', '@(The component <b>"{0}"</b> is invalid: {1})'.format(name.encode(), response.error.encode()));
+								else
+									el.aclass('installed');
+							}});
 						} else
 							SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
 					}

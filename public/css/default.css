@@ -195,7 +195,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .flows .ispaused { display: none; }
 .flows .paused .ispaused { display: block; position: absolute; margin: 15px 0 0 15px; font-size: 20px; color: red; }
 .flows .paused section { border-color: red !important; }
-.flows figure { padding: 10px; width: 25%; max-width: 300px; position: relative; display: inline-block; vertical-align: top; }
+.flows figure { padding: 10px; width: 25%; position: relative; display: inline-block; vertical-align: top; }
 .flows figure section { border: 1px solid #E0E0E0; background-color: #FFF; cursor: pointer; border-radius: var(--radius); }
 .flows figure section:hover { border-color: #D0D0D0; }
 .flows figure .icon { height: 130px; font-size: 40px; text-align: center; line-height: 140px; border-bottom: 1px solid #E0E0E0; overflow: hidden; }
@@ -228,16 +228,16 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 	.flows figure { width: 33.33%; }
 }
 
-@media (max-width:1199px) and (min-width:992px) {
+@media (max-width:1250px) and (min-width:992px) {
 	.flows figure { width: 25%; }
+}
+
+@media (min-width:1251px) {
+	.flows figure { width: 20%; }
 }
 
 @media (min-width:1400px) {
-	.flows figure { width: 25%; }
-}
-
-@media (min-width:1200px) {
-	.flows figure { width: 25%; }
+	.flows figure { width: 280px; }
 }
 
 .ui-largeform .search { height: 30px; }
