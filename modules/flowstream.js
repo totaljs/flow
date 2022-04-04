@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 15;
+const VERSION = 16;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -326,7 +326,7 @@ Instance.prototype.eval = function(msg, callback) {
 };
 
 // Destroys the Flow
-Instance.prototype.destroy = function() {
+Instance.prototype.kill = Instance.prototype.destroy = function() {
 
 	var self = this;
 
@@ -745,6 +745,7 @@ function init_current(meta, callback) {
 	if (Parent) {
 
 		Parent.on('message', function(msg) {
+
 			switch (msg.TYPE) {
 
 				case 'stream/export':
@@ -915,6 +916,10 @@ function init_current(meta, callback) {
 			}
 		});
 
+		flow.proxy.kill = function() {
+			Parent.postMessage({ TYPE: 'stream/kill' });
+		};
+
 		flow.proxy.send = function(msg, type, clientid) {
 			Parent.postMessage({ TYPE: 'ui/send', data: msg, type: type, clientid: clientid });
 		};
@@ -1001,6 +1006,10 @@ function init_current(meta, callback) {
 
 		flow.proxy.io = function(flowstreamid, id, callback) {
 			exports.io(flowstreamid, id, callback);
+		};
+
+		flow.proxy.kill = function() {
+			flow.$instance.kill();
 		};
 
 		flow.proxy.send = NOOP;
@@ -1111,6 +1120,10 @@ function init_worker(meta, type, callback) {
 
 			case 'stream/stats':
 				worker.stats = msg.data;
+				break;
+
+			case 'stream/kill':
+				worker.$instance.destroy(msg.code || 9);
 				break;
 
 			case 'stream/exec':
@@ -1476,6 +1489,10 @@ function MAKEFLOWSTREAM(meta) {
 
 	flow.save = function() {
 		save();
+	};
+
+	flow.kill = function(code) {
+		flow.proxy.kill(code);
 	};
 
 	var refresh_components = function() {
