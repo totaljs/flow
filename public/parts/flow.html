@@ -14,7 +14,7 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
-			<button title="@(List of instances)" class="exec" data-exec="?/instances"><i class="fas fa-list-ul"></i></button>
+			<button title="@(Nodes)" class="exec" data-exec="?/nodes"><i class="fas fa-list-ul"></i></button>
 		</div>
 		<div>
 			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
@@ -29,7 +29,7 @@
 		<div style="border-right:0">
 			<div class="help pull-left mr10" data-bind="?.selected__show:value&&value.component__template">
 				<script type="text/html">
-					<div>{{ value.name }} ({{ value.component | instancecount }})</div>
+					<div>{{ value.Component.name }} ({{ value.component | instancecount }})</div>
 					<div>@(ID): <b class="monospace">{{ value.id }}</b></div>
 				</script>
 			</div>
@@ -87,10 +87,11 @@
 </script>
 
 <div data---="box__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
-	<nav data-bind="navigator.clipboard__show">
-		<button class="exec" data-exec="flow/copyconfig" title="Copy config"><i class="fa fa-copy nmr"></i></button>
-		<button class="exec" data-exec="flow/pasteconfig" title="Paste config"><i class="fa fa-paste nmr"></i></button>
-		<button class="exec" data-exec="flow/resetconfig" title="Reset config"><i class="fa fa-refresh nmr"></i></button>
+	<nav data-bind="navigator.clipboard__show .clipboard">
+		<button class="exec" data-exec="flow/readme2" title="@(Readme)"><i class="fa fa-info-circle nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/copyconfig" title="@(Copy config)"><i class="far fa-copy nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/pasteconfig" title="@(Paste config)"><i class="fa fa-paste nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/resetconfig" title="@(Reset config)"><i class="fa fa-refresh nmr"></i></button>
 	</nav>
 	<div id="flow_settings"></div>
 	<nav data---="validation__settings__$id:settingsvalidation">
@@ -99,9 +100,11 @@
 	</nav>
 </div>
 
+<!--
 <div data---="box__common.panel__if:readme;width:620;title:@(Read me);zindex:10;$id:readme;closeoutside:1;closeesc:1;background:false;transparent:true;align:right">
 	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
 </div>
+-->
 
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
@@ -220,19 +223,15 @@
 			SETTER('menu/show', opt);
 		};
 
-		exports.instances = function() {
-			var id = 'instances';
+		exports.nodes = function() {
+			var id = 'nodes';
 
 			if (common.windows.findItem('id', id)) {
 				SETTER('windows/focus', id);
 				return;
 			}
 
-			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:/forms/instances.html"></div>', title: '@(List of instances)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: 200, y: 100, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
-
-			// PUSH('common.windows', { id: id, cachekey: id, title: '@(List of instances)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: 200, y: 100, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }, make: function(el) {
-			// 	IMPORT('/forms/instances.html', el);
-			// }});
+			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:/forms/nodes.html"></div>', title: '@(Nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 150) >> 0, y: ((WH / 2) - 200) >> 0, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
 		};
 
 		exports.create = function() {
@@ -616,14 +615,29 @@
 			});
 		};
 
+		exports.readme2 = function() {
+			exports.readme(flow.selected.component);
+		};
+
 		exports.readme = function(el) {
+
 			var id = ATTRD(el);
 			var model = GET('?');
 			var item = model.components.findItem('id', id);
 			if (item && item.readme) {
-				RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
-				SET('common.readme', FUNC.strim(item.readme));
-				SET('common.panel', 'readme');
+
+				var winid = 'readme' + id;
+
+				if (common.windows.findItem('id', winid))
+					SETTER('windows/focus', winid);
+				else
+					PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:/forms/readme.html" data-comid="{0}"></div>'.format(id), title: item.name, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: function(el) {
+						el.closest('.ui-windows-item').css('z-index', 50);
+					}});
+
+				// RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
+				// SET('common.readme', FUNC.strim(item.readme));
+				// SET('common.panel', 'readme');
 			}
 		};
 
@@ -930,7 +944,8 @@
 					target.aclass('tms-' + type);
 				}
 
-				el.tclass('transparent', com.meta && com.meta.hidden ? true : false);
+				var meta = com.meta || EMPTYOBJECT;
+				el.tclass('transparent', meta.hidden ? true : false).tclass('singleton', meta.singleton ? true : false);
 				target.aclass('f-' + self.name);
 			}
 			W.flowinstances.init(self.name, self, el);
