@@ -14,7 +14,6 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
 			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
-			<button title="@(Nodes)" class="exec" data-exec="?/nodes"><i class="fas fa-list-ul"></i></button>
 		</div>
 		<div>
 			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
@@ -41,7 +40,7 @@
 
 		<script type="text/plain">
 			{
-				left: { size: 235, minsize: 200, resize: true },
+				left: { size: 200, minsize: 150, resize: true },
 				bottom: { size: 30 },
 				main: {}
 			}
@@ -53,7 +52,7 @@
 
 		<section data-type="main">
 			<div data---="viewbox__null__parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:0;scrollbarshadow:0;$id:flowviewbox">
-				<div data---="flow__?.data__width:10000;height:10000;grid:16;horizontal:1;snapping:5;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></div>
+				<div data---="flow__?.data__width:10000;height:10000;grid:16;horizontal:1;snapping:5;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:2;inputoffsetY:2;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></div>
 			</div>
 		</section>
 
@@ -951,6 +950,16 @@
 			W.flowinstances.init(self.name, self, el);
 		};
 
+		W.loadcomponenterror = function(e) {
+			var msg = (new Date()).format('[ts]') + ' - <b>{0} component</b>: failed client-side code execution - '.format(W.flowinstances.current) + Thelpers.encode(e + '');
+			var a = { type: 'error', body: msg };
+			PUSH('^common.logs.errors.items', a);
+			cleanlogs();
+			W.console && W.console.error('Component: "' + com.name + '"', e);
+			if (!common.console)
+				SET('common.console', true);
+		};
+
 		var loadcomponents = function(response) {
 
 			var js = [];
@@ -976,7 +985,7 @@
 
 				if (com.js) {
 					var tmp = com.js.replace(regid, com.id).replace(regreplace, name).replace(regicon, com.icon).replace(regname, com.name);
-					js.push('W.flowinstances.current=\'' + name + '\';W.flowinstances.checksum=\'' + HASH(tmp).toString(36) + '\';' + tmp);
+					js.push('W.flowinstances.current=\'' + name + '\';W.flowinstances.checksum=\'' + HASH(tmp).toString(36) + '\';try{' + tmp + '}catch(e){W.loadcomponenterror(e)}');
 				}
 
 				com.css && css.push(com.css.replace(regid, com.id).replace(regreplace, 'f-' + name));
@@ -994,17 +1003,7 @@
 			}
 
 			if (js.length) {
-				try {
-					new Function(js.join('\n'))();
-				} catch (e) {
-
-					var a = { type: 'error', body: (new Date()).format('[ts]') + ' - <b>{0} component</b>: failed client-side code execution - '.format(com.name) + Thelpers.encode(e + ''), id: com.id };
-					PUSH('^common.logs.errors.items', a);
-					cleanlogs();
-					W.console && W.console.error('Component: "' + com.name + '"', e);
-					if (!common.console)
-						SET('common.console', true);
-				}
+				new Function(js.join('\n'))();
 				W.flowinstances.current = '';
 			}
 
@@ -1102,7 +1101,9 @@
 			var opt = {};
 			opt.element = el;
 			opt.items = [];
-			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check', note: '@(Export entire flow design)' });
+			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'fas fa-list-ul' });
+			opt.items.push('-');
+			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check' }); // note: '@(Export entire flow design)'
 			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
 			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'fa fa-clipboard-list' });
 			opt.items.push('-');
@@ -1114,6 +1115,9 @@
 			opt.callback = function(item) {
 
 				switch (item.id) {
+					case 'nodes':
+						exports.nodes();
+						break;
 					case 'curvedlines':
 						TOGGLE('common.curvedlines');
 						break;

@@ -60,7 +60,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .ui-layout-left .ui-searchinput { border-bottom-color: #404040; }
 
 .flowcomponents { padding: 0 5px 0; }
-.flowcomponents figure { height: 32px; font-size: 11px; padding: 0 10px; margin: 0 10px 5px; border-radius: var(--radius); cursor: grab; line-height: 15px; background-color: #F8F8F8; border: 1px solid transparent; }
+.flowcomponents figure { height: 24px; font-size: 11px; padding: 0 5px; margin: 0 10px 5px; border-radius: var(--radius); cursor: grab; line-height: 19px; background-color: #F8F8F8; border: 1px solid transparent; }
 .flowcomponents .caption i { float: left; font-size: 11px; margin: 2px 5px 0 0; }
 
 .type-pub, .type-input2, .type-input { background-color: #EDF7FF !important; }
@@ -74,8 +74,8 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .type-call { background-color: #464337 !important; }
 
 .flowcomponents figure:hover { border-color: #E0E0E0; }
-.flowcomponents figure i { width: 15px; margin: 8px 10px 0 0; text-align: center; float: left; font-size: 14px; text-align: center; }
-.flowcomponents .name { font-weight: bold; font-size: 12px; padding-top: 7px; }
+.flowcomponents figure i { width: 13px; margin: 6px 5px 0 0; text-align: center; float: left; font-size: 12px; text-align: center; }
+.flowcomponents .name { font-size: 12px; padding-top: 2px; }
 .flowcomponents .name div { margin-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .flowcomponents .name span { font-weight: normal; font-size: 11px; float: right; color: #777; }
 .flowcomponents .name em { font-weight: normal; font-size: 11px; color: #777; margin-left: 5px; }
@@ -130,21 +130,22 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .flow .stats { background-color: #252525; }
 .ui-dark .flow .stats .realtime { border-left-color: #404040; }
 
-.ui-flow header { padding: 8px; }
-.ui-flow header i { color: #FFF; margin-right: 5px; width: 22px; height: 22px; line-height: 22px; border-radius: 3px; text-align: center; font-size: 12px; vertical-align: middle; }
+.ui-flow header .button { width: auto; }
+.ui-flow header { padding: 8px; font-size: 13px; }
+.ui-flow header i { color: #FFF; margin-right: 5px; width: 18px; height: 18px; line-height: 18px; border-radius: 3px; text-align: center; font-size: 11px; vertical-align: middle; }
 .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.15); border-width: 2px; max-width: 450px; }
 .ui-flow .component.isnewbie { border-color: #68B25B; }
 .ui-flow .component.iserror { border-color: red; }
 .ui-flow .component-selected { border-color: var(--color) !important; }
-.ui-flow-h summary { padding: 10px; font-size: 12px; font-style: normal; border-top: 1px solid rgba(0,0,0,0.05); display: block; }
-.ui-flow-h .output { line-height: 30px; font-size: 14px; }
-.ui-flow-h .output .component-io { line-height: 20px; margin-top: 8px; }
-.ui-flow-h .input { line-height: 30px; font-size: 14px; }
-.ui-flow-h .input .component-io { line-height: 20px; margin-top: 8px; }
+.ui-flow-h summary { padding: 5px 10px; font-size: 11px; font-style: normal; border-top: 1px solid rgba(0,0,0,0.1); display: block; }
+.ui-flow-h .output { line-height: 22px; font-size: 11px; }
+.ui-flow-h .output .component-io { line-height: 22px; margin-top: 5px; margin-right: -12px; }
+.ui-flow-h .input { line-height: 22px; font-size: 11px; }
+.ui-flow-h .input .component-io { line-height: 22px; margin-top: 5px; margin-left: -12px; }
 .ui-flow-h .input.connected { color: #000; font-weight: bold; }
 .ui-flow-h .output.connected { font-weight: bold; }
 .ui-flow .connection { stroke-width: 2.5px; }
-.ui-flow .content { padding: 0; }
+.ui-flow .content { padding: 0; min-width: 150px; }
 .ui-flow footer { border-top: 1px solid rgba(0,0,0,0.1); }
 
 .ui-dark .ui-flow footer { border-top-color: #404040; }
@@ -315,7 +316,7 @@ body.ui-dark { background-color: #202020 !important; }
 .sources-item .name i { margin-right: 5px; }
 .ui-dark .sources-item { border-bottom-color: #404040; }
 
-.button { background-color: #F6F6F6; border-radius: var(--radius); border: 1px solid #E0E0E0; outline: 0; cursor: pointer; width: 100%; display: block; color: #000; user-select: none; height: 32px; font-size: 13px; }
+.button { background-color: #F6F6F6; border-radius: var(--radius); border: 1px solid #E0E0E0; outline: 0; cursor: pointer; width: 100%; display: block; color: #000; user-select: none; height: 28px; font-size: 12px; }
 .button-inline { position: relative; display: inline-block; width: auto; padding: 0 20px; }
 .button i { margin-right: 5px; }
 .button:hover { background-color: #F0F0F0; }
@@ -339,6 +340,7 @@ body.ui-dark { background-color: #202020 !important; }
 .keyvalue > div i { width: 14px; margin-right: 5px; }
 
 .ui-flow .component-io { transition: 0.3s all; }
+.ui-flow .component-io { width: 10px; height: 10px; line-height: 10px; }
 .ui-flow .output.connected .component-io.disabled,.ui-flow .input.connected .component-io.disabled,.ui-flow .output .component-io.disabled,.ui-flow .input .component-io.disabled { background-color: red !important; color: #FFF; border-radius: 100px; width: 16px; height: 16px; margin-top: 6px; }
 
 .mt10 { margin-top: 10px; }
