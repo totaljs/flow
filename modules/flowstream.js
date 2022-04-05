@@ -1495,11 +1495,19 @@ function MAKEFLOWSTREAM(meta) {
 		flow.proxy.kill(code);
 	};
 
-	var refresh_components = function() {
+	var timeoutrefresh = null;
+
+	var refresh_components_force = function() {
+		timeoutrefresh = null;
 		if (flow.proxy.online) {
 			flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) });
 			flow.proxy.send({ TYPE: 'flow/design', data: flow.export() });
 		}
+	};
+
+	var refresh_components = function() {
+		timeoutrefresh && clearTimeout(timeoutrefresh);
+		timeoutrefresh = setTimeout(refresh_components_force, 700);
 	};
 
 	flow.sources = meta.sources;

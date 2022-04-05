@@ -147,7 +147,7 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 })();
 
 FUNC.makeid = function(type) {
-	return type + Date.now().toString(36);
+	return type + Date.now().toString(36).slice(4) + Math.random().toString(16).slice(10);
 };
 
 FUNC.trigger = function(el, data) {
