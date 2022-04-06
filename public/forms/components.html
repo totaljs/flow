@@ -78,18 +78,6 @@
 			});
 		};
 
-		var checkhtml = function(html) {
-			var m = html.match(/exports\.(name|version|icon)(\s)?\=.*?;/g);
-			if (m) {
-				var opt = {};
-				try {
-					new Function('exports', m.join('\n'))(opt);
-					if (opt.name && opt.version && opt.icon)
-						return true;
-				} catch (e) {}
-			}
-		};
-
 		exports.marketplace = function() {
 			NULL('common.form');
 			EXEC('flow/marketplace');
@@ -169,7 +157,7 @@
 
 						AJAX('GET ' + item.url, function(response) {
 							if (typeof(response) === 'string') {
-								if (checkhtml(response)) {
+								if (FUNC.checkhtml(response)) {
 									var model = {};
 									model.id = com ? com.id : '';
 									model.body = response.trim();
@@ -206,7 +194,7 @@
 			var download = function() {
 				AJAX('GET ' + url, function(response) {
 					if (typeof(response) === 'string') {
-						if (checkhtml(response)) {
+						if (FUNC.checkhtml(response)) {
 							var model = {};
 							model.id = com ? com.id : '';
 							model.body = response.trim();

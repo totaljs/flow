@@ -464,3 +464,15 @@ FUNC.pref_read = function(key) {
 	var id = 'flow' + HASH(common.socket).toString(36) + '_' + key;
 	return PREF[id];
 };
+
+FUNC.checkhtml = function(html) {
+	var m = html.match(/exports\.(name|version|icon)(\s)?\=.*?;/g);
+	if (m) {
+		var opt = {};
+		try {
+			new Function('exports', m.join('\n'))(opt);
+			if (opt.name && opt.version && opt.icon)
+				return true;
+		} catch (e) {}
+	}
+};
