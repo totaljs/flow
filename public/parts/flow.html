@@ -1097,6 +1097,7 @@
 			opt.element = el;
 			opt.items = [];
 			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'fas fa-list-ul' });
+			opt.items.push({ id: 'version', name: '@(Version)', icon: 'fas fa-info-circle' });
 			opt.items.push('-');
 			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check' }); // note: '@(Export entire flow design)'
 			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
@@ -1110,6 +1111,9 @@
 			opt.callback = function(item) {
 
 				switch (item.id) {
+					case 'version':
+						SET('common.form', 'versionform');
+						break;
 					case 'nodes':
 						exports.nodes();
 						break;

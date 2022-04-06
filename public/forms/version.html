@@ -1,0 +1,25 @@
+<div data---="miniform__common.form__if:~PATH~;title:@(Version);icon:fa fa-info-circle;autofocus:true;reload:?/reload;submit:?/submit;width:400;closeesc:1;closeoutside:1" class="hidden" data-scope="~PATH~">
+	<div class="padding" data-bind="flow.head__template">
+		<script type="text/html">
+			<div class="keyvalue">
+				<span>@(Node.js version)</span>
+				<div>{{ value.node }}</div>
+			</div>
+			<div class="keyvalue">
+				<span>@(Total.js version)</span>
+				<div>{{ value.total }}</div>
+			</div>
+			<div class="keyvalue">
+				<span>@(FlowStream)</span>
+				<div>{{ value.version }}</div>
+			</div>
+			<div class="keyvalue">
+				<span>@(Origin)</span>
+				<div>{{ value.origin }}</div>
+			</div>
+		</script>
+	</div>
+	<nav>
+		<button name="cancel" style="width:100%">@(Cancel)</button>
+	</nav>
+</div>
