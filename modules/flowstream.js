@@ -724,11 +724,12 @@ function httprequest(self, opt, callback) {
 }
 
 function init_current(meta, callback) {
+
 	if (!meta.directory)
 		meta.directory = PATH.root('flowstream');
 
 	// Due to C/C++ modules
-	if (isFLOWSTREAMWORKER)
+	if (W.workerData || meta.sandbox)
 		CONF.node_modules = '~' + PATH.join(meta.directory, meta.id, 'node_modules');
 
 	var flow = MAKEFLOWSTREAM(meta);
