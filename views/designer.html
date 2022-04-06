@@ -54,6 +54,7 @@
 		common.secret = 'flowstream';
 		common.marketplace = 'https://marketplace.totaljs.com';
 		common.components = '@{PREF.components}';
+		common.components2 = '@{PREF.components2}';
 		common.page = '';
 		common.windows = [];
 		// common.tms = '@{query.tms}' === '1';
@@ -94,6 +95,9 @@
 							break;
 						case 'components':
 							common.components = msg.value;
+							break;
+						case 'components2':
+							common.components2 = msg.value;
 							break;
 					}
 				}

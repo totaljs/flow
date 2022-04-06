@@ -2,6 +2,7 @@ NEWSCHEMA('Settings', function(schema) {
 
 	schema.define('name', String, true);
 	schema.define('components', String, true);
+	schema.define('components2', String);
 	schema.define('token', String);
 	schema.define('darkmode', Boolean);
 	schema.define('backup', Boolean);
