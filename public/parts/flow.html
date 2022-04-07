@@ -1148,12 +1148,13 @@
 		exports.importascomponent = function() {
 			navigator.clipboard.readText().then(function(text) {
 
-				if (!FUNC.checkhtml(text)) {
+				var meta = FUNC.checkhtml(text);
+				if (!meta) {
 					SETTER('notify/warning', '@(Invalid data in the clipboard)');
 					return;
 				}
 
-				var id = FUNC.makeid('c');
+				var id = meta.id || FUNC.makeid('c');
 				var body = FUNC.rtrim(text);
 
 				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){

@@ -157,9 +157,10 @@
 
 						AJAX('GET ' + item.url, function(response) {
 							if (typeof(response) === 'string') {
-								if (FUNC.checkhtml(response)) {
+								var meta = FUNC.checkhtml(response);
+								if (meta) {
 									var model = {};
-									model.id = com ? com.id : '';
+									model.id = com ? com.id : (meta.id || '');
 									model.body = response.trim();
 									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: next });
 									return;
@@ -194,9 +195,10 @@
 			var download = function() {
 				AJAX('GET ' + url, function(response) {
 					if (typeof(response) === 'string') {
-						if (FUNC.checkhtml(response)) {
+						var meta = FUNC.checkhtml(response);
+						if (meta) {
 							var model = {};
-							model.id = com ? com.id : '';
+							model.id = com ? com.id : (meta.id || '');
 							model.body = response.trim();
 							SETTER('loading/show');
 							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {

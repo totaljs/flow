@@ -466,13 +466,13 @@ FUNC.pref_read = function(key) {
 };
 
 FUNC.checkhtml = function(html) {
-	var m = html.match(/exports\.(name|version|icon)(\s)?\=.*?;/g);
+	var m = html.match(/exports\.(id|name|version|icon)(\s)?\=.*?;/g);
 	if (m) {
 		var opt = {};
 		try {
 			new Function('exports', m.join('\n'))(opt);
 			if (opt.name && opt.version && opt.icon)
-				return true;
+				return opt;
 		} catch (e) {}
 	}
 };
