@@ -1940,10 +1940,10 @@ function MAKEFLOWSTREAM(meta) {
 	};
 
 	flow.onregister = function(component) {
-		if (!component.schema && component.schemaid && (component.type === 'pub' || component.type === 'sub')) {
+		if (!component.schema && component.schemaid && (component.type === 'pub' || component.type === 'sub' || component.type === 'call')) {
 			var tmp = flow.sources[component.schemaid[0]];
 			if (tmp && tmp.meta) {
-				var arr = component.type === 'pub' ? tmp.meta.publish : tmp.meta.subscribe;
+				var arr = component.type === 'pub' ? tmp.meta.publish : component.type === 'call' ? tmp.meta.call : tmp.meta.subscribe;
 				component.schema = arr.findItem('id', component.schemaid[1]);
 				component.itemid = component.schemaid[0];
 			} else {
@@ -2375,12 +2375,12 @@ const TEMPLATE_PUBLISH = `<script total>
 </style>
 
 <readme>
-	{2}
+{2}
 </readme>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
+		<div><i class="{3} mr5"></i><span>{6} / <b>{1}</b></span></div>
 		<div class="url">{4}</div>
 	</header>
 </body>`;
@@ -2426,12 +2426,12 @@ const TEMPLATE_SUBSCRIBE = `<script total>
 </style>
 
 <readme>
-	{2}
+{2}
 </readme>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
+		<div><i class="{3} mr5"></i><span>{6} / <b>{1}</b></span></div>
 		<div class="url">{4}</div>
 	</header>
 </body>`;
@@ -2493,17 +2493,17 @@ const TEMPLATE_CALL = `<script total>
 </style>
 
 <readme>
-	{2}
+{2}
 </readme>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
+		<div><i class="{3} mr5"></i><span>{6} / <b>{1}</b></span></div>
 		<div class="url">{4}</div>
 	</header>
 </body>`;
 
-
+// Deprecated
 function makeschema(item) {
 
 	var str = '';
@@ -2549,7 +2549,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'pub' + item.id + 'X' + m.id;
-					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, '', item.id); // makeschema(m.schema)
+					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, item.meta.name.max(15), item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'pub';
@@ -2574,7 +2574,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'sub' + item.id + 'X' + m.id;
-					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, '', item.id); // makeschema(m.schema)
+					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, item.meta.name.max(15), item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'sub';
@@ -2599,7 +2599,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'cal' + item.id + 'X' + m.id;
-					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fa fa-plug', m.url, id, '', item.id); // makeschema(m.schema)
+					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fa fa-plug', m.url, id, item.meta.name.max(15), item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'call';

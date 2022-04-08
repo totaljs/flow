@@ -152,7 +152,7 @@
 
 	PLUGIN('flow', function(exports) {
 
-		var TYPES = { pub: 1, sub: 1 };
+		var TYPES = { pub: 1, sub: 1, call: 1 };
 		var initialized_settings = {};
 		var checksums = {};
 		var settings_current;
@@ -325,7 +325,7 @@
 			if (component) {
 
 				if (single) {
-					opt.items.push(component.name);
+					opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.arg(component) : ''));
 					component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
 					opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'far fa-file-alt' });
 				} else {
@@ -974,6 +974,10 @@
 			for (var i = 0; i < response.length; i++) {
 				var com = response[i];
 				var name = com.name.slug().replace(/\-/g, '');
+
+				if (com.name.length > 15)
+					com.name = com.name.substring(15);
+
 				checksums_tmp[com.id] = HASH(com.html);
 
 				com.html = (com.html || '').replace(reguid, '{0}').replace(regid, com.id).replace(regicon, com.icon).replace(regname, com.name).replace(regtouch, 'flowinstances.instances.{0}').replace(regstatus, 'flow.status.{0}').replace(regconfig, 'flow.config.{0}').replace(regreplace, 'f-' + name);
@@ -1384,26 +1388,29 @@
 
 			var id = ATTRD(el);
 			var component = flow.components.findItem('id', id);
-			if (TYPES[component.type])
-				return;
 
 			var opt = {};
 			opt.x = e.pageX;
 			opt.y = e.pageY;
 			opt.items = [];
-			opt.items.push(component.name);
+
+			opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.arg(component) : ''));
+
 			component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
 
 			var meta = component.meta || EMPTYOBJECT;
 
-			if (!meta.readonly) {
+			if (!meta.readonly && !TYPES[component.type]) {
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
 				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
 				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
 			}
 
-			opt.items.push('-');
-			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-o red' });
+			if (!TYPES[component.type]) {
+				opt.items.push('-');
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-o red' });
+			}
+
 			opt.callback = function(item) {
 				switch (item.id) {
 					case 'readme':
