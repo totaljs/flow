@@ -2270,7 +2270,7 @@ TMS.connect = function(fs, sourceid, callback) {
 
 					item.meta = msg;
 
-					var checksum = HASH(JSON.stringify(msg)) + '';
+					var checksum = HASH(JSON.stringify(msg)) + '1';
 					client.subscribers = {};
 					client.publishers = {};
 					client.calls = {};
@@ -2293,8 +2293,8 @@ TMS.connect = function(fs, sourceid, callback) {
 					}
 
 					if (item.checksum !== checksum) {
-						item.init = false;
 						item.checksum = checksum;
+						item.init = false;
 						TMS.refresh2(fs);
 					}
 
@@ -2357,7 +2357,7 @@ const TEMPLATE_PUBLISH = `<script total>
 	exports.name = '{0}';
 	exports.icon = '{3}';
 	exports.config = {};
-	exports.outputs = [{ id: 'publish', name: '{1}' }];
+	exports.outputs = [{ id: 'publish', name: 'Output' }];
 	exports.group = 'Publishers';
 	exports.type = 'pub';
 	exports.schemaid = ['{7}', '{1}'];
@@ -2380,10 +2380,9 @@ const TEMPLATE_PUBLISH = `<script total>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span>{0}</span></div>
+		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
 		<div class="url">{4}</div>
 	</header>
-	<div class="schema">{6}</div>
 </body>`;
 
 const TEMPLATE_SUBSCRIBE = `<script total>
@@ -2392,23 +2391,31 @@ const TEMPLATE_SUBSCRIBE = `<script total>
 	exports.icon = '{3}';
 	exports.group = 'Subscribers';
 	exports.config = {};
-	exports.inputs = [{ id: 'subscribe', name: '{1}' }];
+	exports.inputs = [{ id: 'subscribe', name: 'Input' }];
 	exports.type = 'sub';
 	exports.schemaid = ['{7}', '{1}'];
 
 	exports.make = function(instance) {
-		instance.message = function(msg, client) {
+		instance.message = function($) {
 			var socket = instance.main.sockets['{7}'];
 			if (socket && socket.subscribers && socket.subscribers['{1}']) {
+
+				var data = $.data;
+
 				/*
 					var err = new ErrorBuilder();
-					var data = framework_jsonschema.transform(schema, err, msg.data, true);
-					if (data)
-						socket.send({ type: 'subscribe', id: '{1}', data: data });
+					data = framework_jsonschema.transform(schema, err, data, true);
+
+					if (err.is) {
+						$.destroy();
+						return;
+					}
+
 				*/
-				socket.send({ type: 'subscribe', id: '{1}', data: msg.data });
+
+				socket.send({ type: 'subscribe', id: '{1}', data: data });
 			}
-			msg.destroy();
+			$.destroy();
 		};
 	};
 
@@ -2424,10 +2431,9 @@ const TEMPLATE_SUBSCRIBE = `<script total>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span>{0}</span></div>
+		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
 		<div class="url">{4}</div>
 	</header>
-	<div class="schema">{6}</div>
 </body>`;
 
 const TEMPLATE_CALL = `<script total>
@@ -2435,28 +2441,36 @@ const TEMPLATE_CALL = `<script total>
 	exports.name = '{0}';
 	exports.icon = '{3}';
 	exports.config = { timeout: 60000 };
-	exports.inputs = [{ id: 'input', name: '{1}' }];
-	exports.outputs = [{ id: 'response', name: 'Response' }, { id: 'error', name: 'Error' }];
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }, { id: 'error', name: 'Error' }];
 	exports.group = 'Calls';
 	exports.type = 'call';
 	exports.schemaid = ['{7}', '{1}'];
 
-	exports.make = function(instance) {
+	exports.make = function(instance, config) {
 
-		instance.message = function(msg, client) {
+		instance.message = function($, client) {
 			var socket = instance.main.sockets['{7}'];
 			if (socket && socket.calls && socket.calls['{1}']) {
 
+				var data = $.data;
+
 				/*
 					var err = new ErrorBuilder();
-					var data = framework_jsonschema.transform(schema, err, msg.data, true);
+					data = framework_jsonschema.transform(schema, err, data, true);
+
+					if (err.is) {
+						$.send('error', err.toString());
+						return;
+					}
+
 				*/
 
 				var callback = function(err, response) {
 					if (err)
-						msg.send('error', err);
+						$.send('error', err);
 					else
-						msg.send('response', response);
+						$.send('output', response);
 				};
 
 				var callbackid = (socket.callbackindexer++) + '';
@@ -2465,9 +2479,10 @@ const TEMPLATE_CALL = `<script total>
 					socket.callbackindexer = 0;
 
 				socket.callbacks[callbackid] = { callback: callback, id: setTimeout(socket.callbacktimeout, config.timeout, callbackid) };
-				socket.send({ type: 'call', id: '{1}', data: msg.data, callbackid: callbackid });
+				socket.send({ type: 'call', id: '{1}', data: data, callbackid: callbackid });
+
 			} else
-				msg.destroy();
+				$.destroy();
 		};
 	};
 
@@ -2483,10 +2498,9 @@ const TEMPLATE_CALL = `<script total>
 
 <body>
 	<header>
-		<div><i class="{3} mr5"></i><span>{0}</span></div>
+		<div><i class="{3} mr5"></i><span><b>{1}</b> / {0}</span></div>
 		<div class="url">{4}</div>
 	</header>
-	<div class="schema">{6}</div>
 </body>`;
 
 
@@ -2524,7 +2538,7 @@ TMS.refresh = function(fs, callback) {
 					var m = item.meta.publish[i];
 					var readme = [];
 
-					readme.push('# ' + item.meta.name);
+					readme.push('# ' + m.id);
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __publish__');
 					readme.push('- JSON schema `' + m.id + '.json`');
@@ -2535,7 +2549,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'pub' + item.id + 'X' + m.id;
-					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, makeschema(m.schema), item.id);
+					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, '', item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'pub';
@@ -2549,7 +2563,7 @@ TMS.refresh = function(fs, callback) {
 					var m = item.meta.subscribe[i];
 					var readme = [];
 
-					readme.push('# ' + item.meta.name);
+					readme.push('# ' + m.id);
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __subscribe__');
 					readme.push('- JSON schema `' + m.id + '.json`');
@@ -2560,7 +2574,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'sub' + item.id + 'X' + m.id;
-					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, makeschema(m.schema), item.id);
+					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, '', item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'sub';
@@ -2574,7 +2588,7 @@ TMS.refresh = function(fs, callback) {
 					var m = item.meta.call[i];
 					var readme = [];
 
-					readme.push('# ' + item.meta.name);
+					readme.push('# ' + m.id);
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __call__');
 					readme.push('- JSON schema `' + m.id + '.json`');
@@ -2585,7 +2599,7 @@ TMS.refresh = function(fs, callback) {
 					readme.push('\`\`\`');
 
 					var id = 'cal' + item.id + 'X' + m.id;
-					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'far fa-plug', m.url, id, makeschema(m.schema), item.id);
+					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fa fa-plug', m.url, id, '', item.id); // makeschema(m.schema)
 					var com = fs.add(id, template);
 					m.url = url;
 					com.type = 'call';

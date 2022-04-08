@@ -290,7 +290,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .componenteditor > nav button[name='submit'] { background-color: var(--color); color: #FFF; }
 
 .ui-box .search { height: 30px; }
-.ui-box .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 10px; }
+.ui-box .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 7px; }
 .ui-dark .ui-box .search .ui-searchinput { border-color: #404040; }
 
 .listing-caption { padding: 0 8px 5px; font-size: 12px; color: #777; }
