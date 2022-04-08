@@ -64,9 +64,6 @@
 		common.logs.errors = { icon: 'fas fa-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
 
-		if (!common.page)
-			location.href = 'https://www.totaljs.com/flow/';
-
 		$(document).on('click', function() {
 			W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket }), '*');
 		});

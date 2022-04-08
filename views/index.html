@@ -43,21 +43,34 @@
 	</header>
 	<div>
 
-		<div class="landing">
-			<div data---="parts__common.tabs__parent:window;margin:60"></div>
+		<div data---="ready__null__rclass:invisible" class="invisible">
+			<div class="landing">
+				<div data---="parts__common.tabs__parent:window;margin:60"></div>
+			</div>
+			<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
+			<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
+			<div data---="importer__common.form__if:welcomeform;url:/forms/welcome.html"></div>
+			<div data---="importer__common.form__if:settingsform;url:/forms/settings.html"></div>
+			<div data---="importer__common.form__if:passwordform;url:/forms/password.html"></div>
 		</div>
-
-		<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
-		<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
-		<div data---="importer__common.form__if:welcomeform;url:/forms/welcome.html"></div>
-		<div data---="importer__common.form__if:settingsform;url:/forms/settings.html"></div>
-		<div data---="importer__common.form__if:passwordform;url:/forms/password.html"></div>
 
 	</div>
 
 	<script>
 
 		var common = {};
+
+		common.openplatform = NAV.query.openplatform || '';
+
+		if (common.openplatform) {
+			(function() {
+				var hostname = common.openplatform.substring(0, common.openplatform.indexOf('/', 10));
+				hostname && IMPORT(hostname + '/openplatform.min.js', function() {
+					OP.appearance();
+				});
+				common.openplatform = '?openplatform=' + encodeURIComponent(common.openplatform);
+			})();
+		}
 
 		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'fa fa-home', noclose: true, import: '@{#}/parts/flows.html' }];
 		common.secret = 'flowstream';
@@ -69,7 +82,7 @@
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker)' !== 'false';
 
-		WAPI({ url: '/api/' });
+		WAPI({ url: '/api/' + common.openplatform });
 		DEF.dateformat = '@(yyyy-MM-dd)';
 		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
@@ -188,31 +201,16 @@
 				}
 
 				var flow = model.items.findItem('id', id);
-				var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+				var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id) + common.openplatform;
 
 				item = {};
 				item.id = id;
 				item.name = flow.name;
-				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || ''));
+				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '');
 
 				SETTER('loading/show');
 				SETTER('loading/hide', 2000);
 				PUSH('?.tabs', item);
-
-				/*
-				var model = GET('?');
-				var id = el instanceof jQuery ? el.attrd2('id') : el;
-				var item = model.items.findItem('id', id);
-				if (item) {
-					if (model.windows.findItem('id', id)) {
-						SETTER('windows/focus', id);
-					} else {
-						var w = (WW / 1.4) >> 0;
-						var h = (WH / 1.4) >> 0;
-						var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
-						PUSH('?.windows', { id: id, offset: { x: (WW / 2 - w / 2) >> 0, y: (WH / 2 - h / 2) >> 0, width: w, height: h, minwidth: 200, minheight: 200 }, url: url, title: item.name + (item.reference ? (': ' + item.reference) : ''), html: ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')), actions: { minimize: false, maximize: true, move: true, resize: true, close: true, menu: false, autosave: true }});
-					}
-				}*/
 			};
 
 			exports.contextmenu = function(el, e) {
@@ -264,7 +262,7 @@
 					switch (opt.id) {
 						case 'newtab':
 							var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
-							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')));
+							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')) + common.openplatform ? ('&' + common.openplatform.substring(1)) : '');
 							break;
 						case 'pause':
 						case 'play':
@@ -346,13 +344,20 @@
 				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
 				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-download' });
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
-				items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
+
+				if (!common.openplatform)
+					items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
+
 				items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
 				items.push('-');
 				items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
 				items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
-				items.push('-');
-				items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+
+				if (!common.openplatform) {
+					items.push('-');
+					items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+				}
+
 				SET('?.menu', items);
 			};
 
