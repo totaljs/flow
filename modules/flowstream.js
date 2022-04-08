@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 16;
+const VERSION = 17;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
