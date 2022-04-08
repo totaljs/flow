@@ -975,9 +975,6 @@
 				var com = response[i];
 				var name = com.name.slug().replace(/\-/g, '');
 
-				if (com.name.length > 15)
-					com.name = com.name.substring(15);
-
 				checksums_tmp[com.id] = HASH(com.html);
 
 				com.html = (com.html || '').replace(reguid, '{0}').replace(regid, com.id).replace(regicon, com.icon).replace(regname, com.name).replace(regtouch, 'flowinstances.instances.{0}').replace(regstatus, 'flow.status.{0}').replace(regconfig, 'flow.config.{0}').replace(regreplace, 'f-' + name);
