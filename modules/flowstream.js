@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 17;
+const VERSION = 18;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -985,6 +985,10 @@ function init_current(meta, callback) {
 			Parent.postMessage({ TYPE: 'stream/toinput', fromflowstreamid: flow.id, fromid: fromid, toflowstreamid: tfsid, toid: toid, data: data });
 		};
 
+		flow.proxy.restart = function() {
+			Parent.postMessage({ TYPE: 'stream/restart' });
+		};
+
 		flow.proxy.io = function(flowstreamid, id, callback) {
 
 			if (typeof(flowstreamid) === 'function') {
@@ -1007,6 +1011,10 @@ function init_current(meta, callback) {
 
 		flow.proxy.io = function(flowstreamid, id, callback) {
 			exports.io(flowstreamid, id, callback);
+		};
+
+		flow.proxy.restart = function() {
+			// nothing
 		};
 
 		flow.proxy.kill = function() {
@@ -1102,6 +1110,7 @@ function init_worker(meta, type, callback) {
 	FLOWS[meta.id] = worker;
 
 	var restart = function(code) {
+		worker.$terminated = true;
 		setTimeout(function(worker, code) {
 			worker.$socket && setTimeout(socket => socket && socket.destroy(), 2000, worker.$socket);
 			if (!worker.$destroyed) {
@@ -1123,8 +1132,16 @@ function init_worker(meta, type, callback) {
 				worker.stats = msg.data;
 				break;
 
+			case 'stream/restart':
+				if (worker.terminate)
+					worker.terminate();
+				else
+					worker.kill(9);
+				break;
+
 			case 'stream/kill':
-				worker.$instance.destroy(msg.code || 9);
+				if (!worker.$terminated)
+					worker.$instance.destroy(msg.code || 9);
 				break;
 
 			case 'stream/exec':
@@ -1494,6 +1511,10 @@ function MAKEFLOWSTREAM(meta) {
 
 	flow.kill = function(code) {
 		flow.proxy.kill(code);
+	};
+
+	flow.restart = function() {
+		flow.proxy.restart();
 	};
 
 	var timeoutrefresh = null;
