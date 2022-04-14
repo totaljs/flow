@@ -15,7 +15,7 @@
 		body { background-color: #F2F5FE; }
 
 		.login { max-width: 300px; text-align: left; margin: 0 auto; width: 100%; }
-		.login > figure { background-color: #FFF; padding: 30px; border-radius: var(--radius); box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+		.login > form { background-color: #FFF; padding: 30px; border-radius: var(--radius); box-shadow: 0 0 20px rgba(0,0,0,0.1); }
 		footer { font-size: 11px; color: #999; text-align: center; padding: 0 0 10px; }
 		footer a { color: #777; }
 		h1 { font-size: 20px; margin: 0 0 15px 0; padding: 0; }
@@ -40,7 +40,7 @@
 
 	<div data---="viewbox__null__centered:1;parent:window" class="invisible">
 		<div class="login" data-scope="signinform">
-			<figure>
+			<form>
 
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
@@ -59,8 +59,8 @@
 
 				<h2><i class="far fa-object-group mr5"></i>@{'%name'}</h2>
 				<div data---="enter__?">
-					<div data---="input__?.login__required:1;autofocus:1__''" class="m">@(User name)</div>
-					<div data---="input__?.password__required:1;type:password__''" class="m">@(Password)</div>
+					<div data---="input__?.login__required:1;autofocus:1;autofill:1__''" class="m">@(User name)</div>
+					<div data---="input__?.password__required:1;type:password;autofill:1__''" class="m">@(Password)</div>
 					<div data-bind="%error__show__template" class="error">
 						<script type="text/html">
 							<i class="fas fa-exclamation-triangle"></i> {{ value }}
@@ -70,7 +70,7 @@
 						<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
 					</div>
 				</div>
-			</figure>
+			</form>
 			<br />
 			<footer>&copy; 2022 - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
 		</div>
