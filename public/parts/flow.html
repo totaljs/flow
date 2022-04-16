@@ -466,17 +466,19 @@
 
 			RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name });
 
+			var name = component.name.slug().replace(/\-/g, '');
+
 			if (initialized_settings[id]) {
 				move && dom.appendChild(domsettings);
 			} else {
 				initialized_settings[id] = 1;
-				$('#flow_settings').aclass('invisible').append($('#template_flowsettings').html().replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings));
+				var html = $('#template_flowsettings').html();
+				$('#flow_settings').aclass('invisible').append(html.replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings.replace(/CLASS/g, 'f-' + name)));
 				COMPILE();
 			}
 
 			var config = CLONE(instance.config);
 			var path = 'flow.settings.' + id;
-			var name = component.name.slug().replace(/\-/g, '');
 			var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
 
 			eventdata.call = function(data, callback, globalcall) {
@@ -494,7 +496,6 @@
 			W.flowinstances.exec(instance.id, 'settings', eventdata);
 			EMIT('configure_' + name, eventdata);
 			EMIT('configure_read_' + name, eventdata);
-
 			settings_data = eventdata;
 			settings_current = instance;
 			$('#flow_settings').rclass('invisible', 1000);
@@ -614,25 +615,11 @@
 		};
 
 		exports.readme = function(el) {
-
 			var id = ATTRD(el);
 			var model = GET('?');
 			var item = model.components.findItem('id', id);
-			if (item && item.readme) {
-
-				var winid = 'readme' + id;
-
-				if (common.windows.findItem('id', winid))
-					SETTER('windows/focus', winid);
-				else
-					PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:/forms/readme.html" data-comid="{0}"></div>'.format(id), title: item.name, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: function(el) {
-						el.closest('.ui-windows-item').css('z-index', 50);
-					}});
-
-				// RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
-				// SET('common.readme', FUNC.strim(item.readme));
-				// SET('common.panel', 'readme');
-			}
+			if (item && item.readme)
+				FUNC.readme(item.name, item.readme);
 		};
 
 		var checkio = function(a, b) {
@@ -1187,6 +1174,8 @@
 					if (msg.name)
 						document.title = msg.name;
 
+					msg.proxyurl = location.origin + msg.proxypath;
+
 					SET('flow.head', msg);
 					SET('flow.stats.paused', msg.paused == true);
 					if (NAV.query.socket) {
@@ -1684,7 +1673,6 @@
 			}
 
 			var head = model.head;
-			RECONFIGURE('#readme', { title: head.name, icon: head.icon || 'fas fa-question-circle' });
 			var body = '';
 
 			if (head.version)
@@ -1697,9 +1685,7 @@
 				body += '| @(Website) | <' + head.url + '> |\n';
 
 			body += (body ? '\n' : '') + (head.readme || '');
-
-			SET('common.readme', FUNC.strim(body));
-			SET('common.panel', 'readme');
+			FUNC.readme(head.name, body);
 		};
 
 		exports.copyconfig = function(el) {
