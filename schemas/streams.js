@@ -10,6 +10,7 @@ NEWSCHEMA('Streams', function(schema) {
 	schema.define('url', String);
 	schema.define('color', 'String(7)');
 	schema.define('readme', String);
+	schema.define('proxypath', String); // proxy server
 
 	schema.setQuery(function($) {
 		var arr = [];
@@ -17,7 +18,7 @@ NEWSCHEMA('Streams', function(schema) {
 			if (key !== 'variables') {
 				var item = MAIN.flowstream.db[key];
 				var instance = MAIN.flowstream.instances[key];
-				arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, stats: instance ? instance.flow.stats : {} });
+				arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, proxypath: item.proxypath, stats: instance ? instance.flow.stats : {} });
 			}
 		}
 		$.callback(arr);
@@ -38,6 +39,17 @@ NEWSCHEMA('Streams', function(schema) {
 	schema.setSave(function($, model) {
 
 		var init = !model.id;
+
+		var db = MAIN.flowstream.db;
+
+		if (model.proxypath) {
+			for (var key in db) {
+				if (db[key].proxypath === model.proxypath && key !== model.id) {
+					$.invalid('Proxy endpoint is already used by the "{0}" Flow.'.format(db[key].name));
+					return;
+				}
+			}
+		}
 
 		if (init) {
 			model.id = 'f' + UID();
@@ -61,6 +73,12 @@ NEWSCHEMA('Streams', function(schema) {
 				item.group = model.group;
 				item.color = model.color;
 				item.readme = model.readme;
+
+				// Remove older proxy
+				if (item.proxypath !== model.proxypath && item.proxypath)
+					PROXY(item.proxypath, null);
+
+				item.proxypath = model.proxypath;
 				var instance = MAIN.flowstream.instances[model.id];
 				instance && instance.refresh(model.id, 'meta', CLONE(model));
 			} else {
@@ -86,6 +104,8 @@ NEWSCHEMA('Streams', function(schema) {
 				path = PATH.root(CONF.directory);
 
 			F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
+
+			item.proxy && PROXY(item.proxy, null);
 
 			delete MAIN.flowstream.db[id];
 			MAIN.flowstream.instances[id].destroy();

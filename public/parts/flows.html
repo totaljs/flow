@@ -43,6 +43,7 @@
 										<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
 										<div class="author">@(Author): {{ m.author | empty }}</div>
 										<div class="size">@(Size): {{ m.size | filesize }}</div>
+										<div class="proxy"><i class="fas fa-server mr5"></i>@(Proxy): {{ if m.proxypath }}<span>{{ m.proxypath }}</span>{{ else }}---{{ fi }}</div>
 									</div>
 									<div class="stats">
 										<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>

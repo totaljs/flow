@@ -34,6 +34,16 @@ NEWSCHEMA('Clipboard', function(schema) {
 		data.variables2 = MAIN.flowstream.variables || {};
 		data.dtcreated = NOW;
 
+		if (data.proxypath) {
+			var db = MAIN.flowstream.db;
+			for (var key in db) {
+				if (db[key].proxypath === data.proxypath) {
+					data.proxypath = '';
+					break;
+				}
+			}
+		}
+
 		delete data.dtupdated;
 		MAIN.flowstream.db[data.id] = data;
 		MAIN.flowstream.init(data.id, function(err) {

@@ -8,7 +8,7 @@
 
 		<div class="row">
 			<div class="col-md-4 m">
-				<div data---="input__?.group">@(Group)</div>
+				<div data---="input__?.group__dirsource:common.groupsform;dircustom:1;dirplaceholder:@(Choose or enter new)">@(Group)</div>
 			</div>
 			<div class="col-md-4 m">
 				<div data---="input__?.reference__align:1">@(Reference)</div>
@@ -30,6 +30,11 @@
 			</div>
 		</div>
 
+		<div class="padding bg-smoke" style="border-radius:var(--radius)">
+			<div data---="input__?.proxypath__placeholder:@(/users/)"><i class="fa fa-server"></i>@(Proxy endpoint)</div>
+			<div class="help">@(It will route all incoming requests to this FlowStream, and it works only in Linux/Unix environment.)</div>
+		</div>
+
 	</div>
 	<hr class="nmb nmt" />
 	<div class="padding">
@@ -49,11 +54,20 @@
 		exports.reload = function(com) {
 			var model = GET('?');
 			var id = model ? model.id : null;
-			com.reconfigure({ title: id ? '@(Update Flow)' : '@(Add Flow)' });
+			com.reconfigure({ title: id ? '@(Update FlowStream)' : '@(Add FlowStream)' });
 		};
 
 		exports.submit = function(hide) {
-			var model = GET('? @reset');
+
+			var model = CLONE(exports.form);
+
+			if (model.proxypath) {
+				if (model.proxypath.charAt(0) !== '/')
+					model.proxypath = '/' + model.proxypath;
+				if (model.proxypath.charAt(model.proxypath.length - 1) !== '/')
+					model.proxypath += '/';
+			}
+
 			WAPI('streams_save', model, ASETTER('message/response', function() {
 				EXEC('common/refresh');
 				hide();
