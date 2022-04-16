@@ -265,6 +265,7 @@ body.ui-dark { background-color: #202020 !important; }
 .badge-medium { font-size: 11px; padding: 2px 6px; }
 .badge-medium i { margin-right: 5px; }
 
+.ui-windows-resizer { z-index: 100; }
 .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.25); }
 .ui-windows-body { overflow: hidden; }
 .ui-windows-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
