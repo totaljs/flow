@@ -202,7 +202,9 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .flows figure .meta { padding: 10px; font-size: 12px; }
 .flows figure .meta .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 15px; font-weight: bold; }
 .flows figure .meta .name span { color: #FFF; border-radius: var(--radius); line-height: 12px; font-size: 11px; padding: 1px 3px; float: right; margin: 4px 5px 0 0; font-weight: normal; }
-.flows figure .size { font-size: 11px; color: #A0A0A0; margin-bottom: 2px; }
+.flows figure .size { font-size: 11px; color: #A0A0A0; margin-bottom: 4px; }
+.flows figure .proxy { border-top: 1px dashed #E0E0E0; padding: 7px 0 0; }
+.flows figure .proxy span { font-family: monospace; font-weight: bold; background-color: #F0F0F0; padding: 1px 2px; border-radius: var(--radius); }
 .flows figure .author { font-size: 11px; color: #000; }
 .flows figure .stats { padding: 10px; font-size: 11px; border-top: 1px solid #E0E0E0; line-height: 12px; }
 .flows figure .stats label { display: block; font-size: 11px; color: #777; margin-bottom: 5px; }

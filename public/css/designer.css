@@ -354,3 +354,15 @@ body.ui-dark { background-color: #202020 !important; }
 
 .ui-infowindows-item { box-shadow: 0 10px 20px rgba(0,0,0,.1); }
 .ui-dark .ui-infowindows-item { box-shadow: 0 10px 20px rgba(0,0,0,.4); }
+
+.colorize { animation: colorize 1.3s infinite alternate; }
+
+@keyframes colorize {
+	0% { color: #d7cd17; }
+	15% { color: #83c83c; }
+	30% { color: #2e67c5; }
+	45% { color: #b92865; }
+	60% { color: #62c9ca; }
+	75% { color: white; }
+	100% { color: #8c42f6; }
+}
