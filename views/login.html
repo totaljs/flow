@@ -72,7 +72,7 @@
 				</div>
 			</form>
 			<br />
-			<footer>&copy; 2022 - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
+			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
 		</div>
 	</div>
 
@@ -82,7 +82,7 @@
 		PLUGIN('signinform', function(exports) {
 
 			exports.submit = function() {
-				AJAX('POST /auth/', exports.form, ERROR(function(response) {
+				AJAX('POST /fapi/auth/', exports.form, ERROR(function(response) {
 					location.href = '/' + ($('.alert').length ? '?welcome=1' : '');
 				}, function(response) {
 					SET('%error', response[0].error);
