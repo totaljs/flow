@@ -1,9 +1,9 @@
 exports.install = function() {
 
 	// REST API
-	ROUTE('-POST    /auth/        *Auth       --> exec');
-	ROUTE('+GET     /logout/      *Auth       --> logout');
-	ROUTE('+POST    /password/    *Auth       --> save');
+	ROUTE('-POST    /fapi/auth/        *Auth       --> exec');
+	ROUTE('+GET     /fapi/logout/      *Auth       --> logout');
+	ROUTE('+POST    /fapi/password/    *Auth       --> save');
 	ROUTE('GET      /private/',   privatefiles);
 
 	// FlowStream
@@ -31,7 +31,7 @@ exports.install = function() {
 	ROUTE('+API    @api    +clipboard_import                 *Clipboard    --> import', [60000 * 5]);
 
 	// Socket
-	ROUTE('+SOCKET  /api/  @api', 1024 * 8); // max. 8 MB
+	ROUTE('+SOCKET  /fapi/  @api', 1024 * 8); // max. 8 MB
 	ROUTE('+SOCKET  /flows/{id}/', socket, 1024 * 8); // max. 8 MB
 };
 
