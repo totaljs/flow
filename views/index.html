@@ -81,8 +81,9 @@
 		common.designer = '/designer/';
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker)' !== 'false';
+		common.cl = {}; // for additional codelists
 
-		WAPI({ url: '/api/' + common.openplatform });
+		WAPI({ url: '/fapi/' + common.openplatform });
 		DEF.dateformat = '@(yyyy-MM-dd)';
 		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
@@ -142,6 +143,7 @@
 				WAPI('streams', ERROR(function(response) {
 
 					var groups = {};
+
 					for (var item of response) {
 
 						if (!item.group)
@@ -150,18 +152,22 @@
 						if (groups[item.group])
 							groups[item.group].items.push(item);
 						else
-							groups[item.group] = { name: item.name, items: [item] };
+							groups[item.group] = { id: item.name, name: item.name, items: [item] };
 					}
 
 					var arr = [];
+					var form = [];
 
 					for (var key in groups) {
+						if (key !== '#')
+							form.push({ id: key, name: key });
 						arr.push({ name: key === '#' ? '' : key, items: groups[key].items });
 						groups[key].items.quicksort('name');
 					}
 
 					arr.quicksort('name');
 					SET('?.groups', arr);
+					SET('?.groupsform', form);
 					SET('?.items', response);
 				}));
 			};
@@ -370,7 +376,7 @@
 						break;
 
 					case 'logout':
-						AJAX('GET /logout/ @showloading', function() {
+						AJAX('GET /fapi/logout/ @showloading', function() {
 							location.href = '/';
 						});
 						break;
