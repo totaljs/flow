@@ -29,10 +29,10 @@
 		.alert { background-color: #fffad7; border: 1px solid #EDE8C8; padding: 15px; border-radius: 2px; color: #988e56; font-size: 12px; line-height: 14px; }
 		.alert i { margin-right: 5px; }
 
-		.keyvalue { line-height: 17px; font-size: 12px; color: black; }
-		.keyvalue .value { margin-left: 85px; text-align: right; }
-		.keyvalue .key { float: left; width: 100px; }
-		.keyvalue > * { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+		.kv { line-height: 17px; font-size: 12px; color: black; }
+		.kv .value { margin-left: 85px; text-align: right; }
+		.kv .key { float: left; width: 100px; }
+		.kv > * { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 
 	</style>
 </head>
@@ -45,11 +45,11 @@
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
 					<div><i class="far fa-user-circle"></i>@(Default account:)</div>
-					<div class="keyvalue" style="margin-top:10px">
+					<div class="kv" style="margin-top:10px">
 						<div class="key">@(User name)</div>
 						<div class="value b">@{PREF.user.login}</div>
 					</div>
-					<div class="keyvalue">
+					<div class="kv">
 						<div class="key">@(Password)</div>
 						<div class="value b">@{PREF.user.raw}</div>
 					</div>
