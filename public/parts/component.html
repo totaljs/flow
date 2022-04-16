@@ -75,31 +75,7 @@
 			opt.position = 'top';
 			opt.element = $('.CodeMirror-cursor');
 			opt.callback = function(icon) {
-				exports.appendcustom(function(editor, cur, selected) {
-
-					var selection = editor.getSelection();
-					var text = selection ? selection : editor.lineInfo(cur.line).text;
-					var prev = text.substring(cur.ch - 1, cur.ch);
-					var clean = false;
-					var reg = /(fal|far|fas|fab|fa)\s/;
-					var is = { fa: 1, far: 1, fas: 1, fab: 1, fal: 1 };
-					var space = is[text.substring(cur.ch - 2, cur.ch)] || is[text.substring(cur.ch - 3, cur.ch)];
-
-					for (var i = cur.ch; i > cur.ch - 30; i--) {
-						var fa2 = text.substring(i - 4, i);
-						var fa = text.substring(i - 3, i);
-
-						if (is[fa.trim()] || is[fa2.trim()]) {
-							icon = icon.replace(reg, '');
-							break;
-						}
-					}
-
-					if (space || (selection && selection.indexOf(' ') === -1))
-						icon = icon.replace(reg, '');
-
-					editor.replaceSelection(prev && prev !== ' ' && prev !== '"' && prev !== '\'' ? (' ' + icon) : icon);
-				});
+				editor.replaceSelection(icon);
 			};
 
 			SETTER('faicons/show', opt);
@@ -134,7 +110,7 @@
 			}
 
 			items.push({ name: '@(Insert color)', icon: 'fill-drip colorize', value: 'colorpicker' });
-			items.push({ name: '@(Insert icon)', icon: 'image blue', value: 'icon' });
+			items.push({ name: '@(Insert icon)', icon: 'fa fa-icons', value: 'icon' });
 
 			SETTER('menu/showxy', e.pageX + 5, e.pageY - 15, items, function(value) {
 
