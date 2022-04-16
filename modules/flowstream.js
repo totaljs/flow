@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 18;
+const VERSION = 19;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -735,6 +735,11 @@ function init_current(meta, callback) {
 	var flow = MAKEFLOWSTREAM(meta);
 	FLOWS[meta.id] = flow;
 
+	if (isFLOWSTREAMWORKER && meta.unixsocket && meta.proxypath && F.frameworkless) {
+		F.Fs.unlink(meta.unixsocket, NOOP);
+		F.frameworkless(false, { unixsocket: meta.unixsocket, config: { allow_stats_snapshot: false }});
+	}
+
 	flow.origin = meta.origin;
 	flow.proxy.online = false;
 	flow.$instance = new Instance(flow, meta.id);
@@ -954,9 +959,8 @@ function init_current(meta, callback) {
 					if (instance.instance) {
 						instanceid = instance.instance.id;
 						componentid = instance.instance.component;
-					} else {
+					} else
 						console.log('ERROR', instance);
-					}
 				} else if (source === 'instance_close') {
 					instanceid = instance.id;
 					componentid = instance.component;
@@ -1087,6 +1091,8 @@ function init_worker(meta, type, callback) {
 
 	var worker = type === true || type === 'worker' ? new W.Worker(__filename, { workerData: meta }) : Fork(__filename, [F.directory, '--fork'], { serialization: 'json' }); // detached: true,
 	var ischild = false;
+
+	meta.unixsocket = F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '.socket');
 
 	if (!worker.postMessage) {
 		worker.postMessage = worker.send;
@@ -1481,6 +1487,7 @@ function MAKEFLOWSTREAM(meta) {
 		data.design = design;
 		data.variables = variables;
 		data.sources = sources;
+		data.proxypath = flow.$schema.proxypath;
 		data.origin = flow.$schema.origin;
 		data.dtcreated = flow.$schema.dtcreated;
 		return data;
@@ -2115,7 +2122,7 @@ function MAKEFLOWSTREAM(meta) {
 	});
 
 	var makemeta = function() {
-		return { TYPE: 'flow/flowstream', version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, readme: flow.$schema.readme, url: flow.$schema.url };
+		return { TYPE: 'flow/flowstream', version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, readme: flow.$schema.readme, url: flow.$schema.url, proxypath: flow.$schema.proxypath };
 	};
 
 	flow.proxy.refreshmeta = function() {
