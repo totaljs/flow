@@ -146,6 +146,21 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 
 })();
 
+FUNC.readme = function(title, md) {
+
+	var winid = 'readme' + HASH(md);
+	common.readmewindow = md;
+
+	if (common.windows.findItem('id', winid)) {
+		SETTER('windows/focus', winid);
+	} else {
+		PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:/forms/readme.html"></div>', title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: function(el) {
+			el.closest('.ui-windows-item').css('z-index', 50);
+		}});
+	}
+
+};
+
 FUNC.makeid = function(type) {
 	return type + Date.now().toString(36).slice(4) + Math.random().toString(16).slice(10);
 };

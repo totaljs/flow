@@ -140,9 +140,7 @@
 		exports.readme = function(el) {
 			var id = ATTRD(el);
 			var item = exports.data.components.findItem('id', id);
-			RECONFIGURE('#readme', { title: item.name, icon: item.icon || 'fas fa-question-circle' });
-			SET('common.readme', FUNC.strim(item.readme || ''));
-			SET('common.panel', 'readme');
+			FUNC.readme(item.name, item.readme);
 		};
 
 		exports.update = function() {

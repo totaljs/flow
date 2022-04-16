@@ -6,11 +6,7 @@
 
 <script>
 	function renderreadme(value, path, el) {
-		var id = ATTRD(el, 'comid');
-		var com = flow.components.findItem('id', id);
-		if (com) {
-			var value = FUNC.strim(com.readme);
-			el.html(Thelpers.markdown(value, { element: el }));
-		}
+		var value = FUNC.strim(common.readmewindow || '');
+		el.html(Thelpers.markdown(value, { element: el }));
 	}
 </script>
