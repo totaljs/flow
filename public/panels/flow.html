@@ -4,12 +4,8 @@
 	<div data---="empty__flow.components2__parent:auto">
 
 		<script type="text/html">
-			<div data-bind="common.tms__show" class="hidden">
-				<div style="padding:10px 20px">@(You don't have defined any Total.js Message Service sources)</div>
-				<button class="exec button button-inline" data-exec="flow/sources"><i class="fa fa-cloud-download"></i>@(Add source)</button>
-			</div>
 			<div data-bind="common.tms__hide" class="hidden">
-				<div style="padding:10px 20px">@(You don't have installed any FlowStream components)</div>
+				<div style="padding:10px 20px">@(You don't have installed any Flow components)</div>
 				<button class="exec button button-inline" data-exec="flow/components"><i class="fa fa-cloud-download"></i>@(Download)</button>
 			</div>
 		</script>
@@ -23,8 +19,8 @@
 						<i class="far fa-object-group"></i>
 						<div class="name"><div>@(Group)</div></div>
 					</figure>
-					<div>
-						<span class="exec link fs11" style="margin:13px 0 0 10px" data-exec="flow/components">@(Download components)</span>
+					<div style="margin:5px 10px 0 10px" class="fs11">
+						<div><span class="exec link" data-exec="flow/components">@(Download components)</span></div>
 					</div>
 				</div>
 				{{ foreach g in value }}
