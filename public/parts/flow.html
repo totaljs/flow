@@ -1080,7 +1080,7 @@
 
 		exports.options = function(el) {
 
-			var model = GET('?');
+			var model = exports.model;
 			var opt = {};
 			opt.element = el;
 			opt.items = [];
@@ -1094,6 +1094,10 @@
 			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'fas fa-bezier-curve', selected: common.curvedlines == true });
 			opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'fas fa-chart-line' });
 			opt.items.push('-');
+
+			if (model.head.worker)
+				opt.items.push({ id: 'restart', name: '@(Restart worker)', icon: 'fas fa-sync' });
+
 			opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'far fa-trash-alt red' });
 
 			opt.callback = function(item) {
@@ -1122,6 +1126,9 @@
 							navigator.clipboard.writeText(STRINGIFY({ type: 'exportedflow', data: response.data })).catch(err => console.error(err));
 							SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
+						break;
+					case 'restart':
+						SETTER('approve/show', '@(Are you sure you want to restart this FlowStream process?)', '"fas fa-sync" @(Restart)', ASETTER('websocket/send', { TYPE: 'restart' }));
 						break;
 					case 'clear':
 						exports.clear();
