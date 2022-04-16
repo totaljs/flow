@@ -31,6 +31,7 @@
 	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
 
 	<header>
+		<span class="console exec pull-right" data-exec="common/console"><i class="fas fa-bug"></i></span>
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
 		<div class="tabs" data-bind="common.tabs__template:div">
 			<script type="text/html">
@@ -465,6 +466,22 @@
 						}, 1000);
 					}));
 				}, true));
+			};
+
+			exports.console = function() {
+				var winid = 'console';
+				if (common.windows.findItem('id', winid)) {
+					SETTER('windows/hide', winid);
+				} else {
+					PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:/forms/console.html"></div>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
+						el.closest('.ui-windows-item').find('pre').empty();
+						WAPI('console_clear', NOOP);
+					}, make: function(el) {
+						el.parent().find('.ui-windows-lastbutton').rclass2('fa').aclass('far fa-trash-alt red');
+						el.closest('.ui-windows-item').css('z-index', 50);
+						el.aclass('noscrollbar');
+					}});
+				}
 			};
 
 			exports.refresh();

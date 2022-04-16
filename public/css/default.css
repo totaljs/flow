@@ -16,6 +16,10 @@ p { font-size: 13px; line-height: 16px; }
 .ui-dark .mainmenu { background-color: #404040; }
 .ui-dark .mainmenu:hover { background-color: #484848; }
 
+header .console { width: 34px; height: 34px; float: right; font-size: 14px; line-height: 34px; text-align: center; margin: 11px 0 0 0; cursor: pointer; border-radius: var(--radius); }
+header .console:hover { background-color: #F5F5F5; }
+.ui-dark header .console:hover { background-color: #484848; }
+
 header > .tabs { float: left; font-size: 13px; margin: 11px 0 0 2px; line-height: 0; user-select: none; }
 header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 34px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
 header > .tabs > div i { margin-right: 7px; color: #999; }
@@ -221,6 +225,10 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .flows figure .author { color: #FFF; }
 .ui-dark .flows figure .stats { border-top-color: #404040; }
 .ui-dark .flows figure .stats label { color: #888; }
+
+.ui-windows-resizer { z-index: 100; }
+.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.25); }
+.ui-dark .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.5); }
 
 @media (max-width:768px) {
 	.flows figure { width: 50%; }

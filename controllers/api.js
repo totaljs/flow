@@ -14,6 +14,8 @@ exports.install = function() {
 	ROUTE('+API    @api    -streams_stats                    *Streams      --> stats');
 	ROUTE('+API    @api    -streams_pause/{id}               *Streams      --> pause');
 	ROUTE('+API    @api    -streams_restart/{id}             *Streams      --> restart');
+	ROUTE('+API    @api    -console                          *Console      --> read');
+	ROUTE('+API    @api    -console_clear                    *Console      --> clear');
 
 	// Common
 	ROUTE('+API    @api    -auth                             *Auth         --> read');

@@ -1,0 +1,19 @@
+<div>
+	<pre data-bind="null__exec:renderconsolelog" style="padding:0 10px;font-size:11px" class="monospace"></pre>
+</div>
+
+<script>
+	function renderconsolelog(value, path, el) {
+		var scrollbar = el.closest('.noscrollbar')[0];
+		var refresh = function() {
+			if (!HIDDEN(el)) {
+				WAPI('console', function(response) {
+					el.html(response.encode());
+					scrollbar.scrollTop = scrollbar.scrollHeight;
+					setTimeout(refresh, 2000);
+				});
+			}
+		};
+		refresh();
+	}
+</script>
