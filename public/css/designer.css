@@ -148,6 +148,8 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .content { padding: 0; min-width: 150px; }
 .ui-flow footer { border-top: 1px solid rgba(0,0,0,0.1); }
 
+.ui-flow .output.connected .component-io.disabled, .ui-flow .input.connected .component-io.disabled, .ui-flow .output .component-io.disabled, .ui-flow .input .component-io.disabled { width: 12px !important; height: 12px !important; margin-top: 5px !important; }
+
 .ui-dark .ui-flow footer { border-top-color: #404040; }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
 .ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
