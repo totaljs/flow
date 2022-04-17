@@ -40,7 +40,7 @@
 
 	<div data---="viewbox__null__centered:1;parent:window" class="invisible">
 		<div class="login" data-scope="signinform">
-			<form>
+			<form onsubmit="return false">
 
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
@@ -70,6 +70,7 @@
 						<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
 					</div>
 				</div>
+
 			</form>
 			<br />
 			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
