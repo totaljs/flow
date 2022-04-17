@@ -43,6 +43,18 @@ NEWSCHEMA('Streams', function(schema) {
 		var db = MAIN.flowstream.db;
 
 		if (model.proxypath) {
+
+			if (model.proxypath[0] !== '/')
+				model.proxypath = '/' + model.proxypath;
+
+			if (model.proxypath[model.proxypath.length - 1] !== '/')
+				model.proxypath += '/';
+
+			if (model.proxypath === '/cdn/' || model.proxypath === '/fapi/' || model.proxypath === '/private/' || model.proxypath === '/flows/' || model.proxypath === '/designer/') {
+				$.invalid('@(Proxy endpoint contains not allowed path)');
+				return;
+			}
+
 			for (var key in db) {
 				if (db[key].proxypath === model.proxypath && key !== model.id) {
 					$.invalid('Proxy endpoint is already used by the "{0}" Flow.'.format(db[key].name));
