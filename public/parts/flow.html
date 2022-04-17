@@ -354,7 +354,8 @@
 			} else if (info.type === 'group') {
 				opt.items.push(item.name);
 				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
-			}
+			} else if (info.type === 'connection')
+				opt.items.push({ id: 'color', name: '@(Change color)', icon: 'fas fa-fill colorize', classname: 'b' });
 
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
 
@@ -428,6 +429,28 @@
 						break;
 					case 'exportcomponents':
 						exports.export_components();
+						break;
+					case 'color':
+						var tmp = {};
+						tmp.x = e.pageX;
+						tmp.y = e.pageY;
+						tmp.callback = function(color) {
+							var conn = info.selected;
+							var selector = '.conn__' + conn.fromid + '__' + conn.toid + '__' + conn.fromindex + '__' + conn.toindex;
+							var instance = flow.data[conn.fromid];
+							if (instance) {
+								var arr = instance.connections[conn.fromindex];
+								if (arr) {
+									for (var item of arr) {
+										if (item.id === conn.toid && item.index === conn.toindex)
+											item.color = color ? color : undefined;
+									}
+								}
+								SET('flow.changed', true);
+							}
+							$(selector).attrd('color', color).css({ stroke: color });
+						};
+						SETTER('colorpicker/show', tmp);
 						break;
 				}
 			};
