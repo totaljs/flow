@@ -59,7 +59,7 @@
 
 	<script>
 
-		DEF.fallback = '/fapi/j-{0}.html';
+		DEF.fallback = '/cdn/j-{0}.html';
 
 		var common = {};
 
@@ -183,6 +183,8 @@
 					opt.element = el;
 					opt.align = 'left';
 					opt.items = CLONE(exports.model.menu);
+					var index = opt.items.findIndex('id', 'settings');
+					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'fas fa-recycle' });
 					opt.callback = exports.menu;
 					SETTER('menu/show', opt);
 					return;
@@ -423,6 +425,11 @@
 					case 'marketplace':
 					case 'password':
 						exports[id]();
+						break;
+					case 'cdnclear':
+						SETTER('approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"fas fa-recycle" @(Clear)', function() {
+							WAPI('cdn_clear', ASETTER('message/response', '@(The CDN cache has been cleared successfully)'));
+						});
 						break;
 				}
 			};

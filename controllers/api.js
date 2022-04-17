@@ -16,6 +16,7 @@ exports.install = function() {
 	ROUTE('+API    @api    -streams_restart/{id}             *Streams      --> restart');
 	ROUTE('+API    @api    -console                          *Console      --> read');
 	ROUTE('+API    @api    -console_clear                    *Console      --> clear');
+	ROUTE('+API    @api    -cdn_clear                        *CDN          --> clear');
 
 	// Common
 	ROUTE('+API    @api    -auth                             *Auth         --> read');
@@ -35,45 +36,7 @@ exports.install = function() {
 	// Socket
 	ROUTE('+SOCKET  /fapi/  @api', 1024 * 8); // max. 8 MB
 	ROUTE('+SOCKET  /flows/{id}/', socket, 1024 * 8); // max. 8 MB
-
-	// Local CDN
-	ROUTE('FILE     /fapi/*.html', uicdn);
 };
-
-MAIN.cdn = {};
-PATH.mkdir(PATH.public('cdn'));
-
-function uicdn(req, res) {
-
-	var filename = req.split[1];
-	var key = 'cdnui_' + filename;
-
-	if (MAIN.cdn[key] === 1) {
-		setTimeout(uicdn, 500, req, res);
-		return;
-	}
-
-	var path = PATH.public(PATH.join('cdn', filename));
-
-	if (MAIN.cdn[key] === 2) {
-		res.file(path);
-		return;
-	}
-
-	MAIN.cdn[key] = 1;
-	PATH.exists(filename ,function(err, response) {
-		if (response) {
-			MAIN.cdn[key] = 2;
-			res.file(path);
-		} else {
-			// Download
-			DOWNLOAD('https://cdn.componentator.com/' + filename, path, function() {
-				MAIN.cdn[key] = 2;
-				res.file(path);
-			});
-		}
-	});
-}
 
 function socket(id) {
 	var self = this;
