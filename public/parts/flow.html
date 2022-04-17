@@ -354,7 +354,7 @@
 			} else if (info.type === 'group') {
 				opt.items.push(item.name);
 				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
-			} else if (info.type === 'connection')
+			} else if (info.type === 'connection' && flow.head.total > 4060)
 				opt.items.push({ id: 'color', name: '@(Change color)', icon: 'fas fa-fill colorize', classname: 'b' });
 
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
@@ -513,7 +513,6 @@
 				}
 
 				exports.call(globalcall ? ('@' + this.component.id) : this.id, data, callback);
-
 			};
 
 			W.flowinstances.exec(instance.id, 'settings', eventdata);
