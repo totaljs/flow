@@ -31,7 +31,15 @@
 	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
 
 	<header>
+
 		<span class="console exec pull-right" data-exec="common/console"><i class="fas fa-bug"></i></span>
+
+		<div class="env" data-bind="common.env__template" title="@(Environment)">
+			<script type="text/html">
+				<span class="badge badge-medium badge-{{ if value === 'dev' }}red{{ else if value === 'test' }}orange{{ else }}green{{ fi }}">{{ value }}</span>
+			</script>
+		</div>
+
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
 		<div class="tabs" data-bind="common.tabs__template:div">
 			<script type="text/html">
@@ -83,7 +91,8 @@
 		common.marketplace = 'https://marketplace.totaljs.com';
 		common.designer = '/designer/';
 		common.totalversion = +'@{F.version}';
-		common.workers = '@{CONF.flowstream_worker)' !== 'false';
+		common.workers = '@{CONF.flowstream_worker}' !== 'false';
+		common.env = '@{PREF.env}';
 		common.cl = {}; // for additional codelists
 
 		WAPI({ url: '/fapi/' + common.openplatform });

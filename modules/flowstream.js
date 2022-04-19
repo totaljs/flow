@@ -740,6 +740,7 @@ function init_current(meta, callback) {
 		F.frameworkless(false, { unixsocket: meta.unixsocket, config: { allow_stats_snapshot: false }});
 	}
 
+	flow.env = meta.env;
 	flow.origin = meta.origin;
 	flow.proxy.online = false;
 	flow.$instance = new Instance(flow, meta.id);
@@ -1999,6 +2000,8 @@ function MAKEFLOWSTREAM(meta) {
 
 	flow.onconnect = function(instance) {
 
+		instance.env = instance.main.env;
+
 		instance.httproute = function(url, callback) {
 			flow.proxy.httproute(url, callback, instance);
 		};
@@ -2126,7 +2129,7 @@ function MAKEFLOWSTREAM(meta) {
 	});
 
 	var makemeta = function() {
-		return { TYPE: 'flow/flowstream', version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, readme: flow.$schema.readme, url: flow.$schema.url, proxypath: flow.$schema.proxypath, worker: isFLOWSTREAMWORKER ? (W.workerData ? 'Worker Thread' : 'Child Process') : false };
+		return { TYPE: 'flow/flowstream', version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, readme: flow.$schema.readme, url: flow.$schema.url, proxypath: flow.$schema.proxypath, env: flow.$schema.env, worker: isFLOWSTREAMWORKER ? (W.workerData ? 'Worker Thread' : 'Child Process') : false };
 	};
 
 	flow.proxy.refreshmeta = function() {

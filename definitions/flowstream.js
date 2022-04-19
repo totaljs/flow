@@ -13,7 +13,7 @@ FS.instances = {};
 var saveid;
 
 function skip(key, value) {
-	return key === 'unixsocket' ? undefined : value;
+	return key === 'unixsocket' || key === 'env' ? undefined : value;
 }
 
 FS.save = function() {
@@ -22,6 +22,7 @@ FS.save = function() {
 };
 
 FS.save_force = function() {
+
 	saveid = null;
 
 	for (var key in FS.db) {
@@ -37,6 +38,7 @@ FS.save_force = function() {
 		});
 	} else
 		PATH.fs.writeFile(PATH.join(DIRECTORY, DB_FILE), JSON.stringify(FS.db, skip, '\t'), ERROR('FlowStream.save'));
+
 };
 
 FS.init = function(id, next) {
@@ -46,6 +48,7 @@ FS.init = function(id, next) {
 	flow.variables2 = FS.db.variables || {};
 	flow.directory = CONF.directory || PATH.root('/flowstream/');
 	flow.sandbox = CONF.flowstream_sandbox == true;
+	flow.env = PREF.env || 'dev';
 
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 
