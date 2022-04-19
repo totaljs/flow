@@ -40,7 +40,7 @@
 
 	<div data---="viewbox__null__centered:1;parent:window" class="invisible">
 		<div class="login" data-scope="signinform">
-			<form onsubmit="return false">
+			<div data---="autofill">
 
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
@@ -71,7 +71,7 @@
 					</div>
 				</div>
 
-			</form>
+			</div>
 			<br />
 			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
 		</div>
