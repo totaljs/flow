@@ -354,8 +354,17 @@
 			} else if (info.type === 'group') {
 				opt.items.push(item.name);
 				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
-			} else if (info.type === 'connection' && flow.head.total > 4060)
-				opt.items.push({ id: 'color', name: '@(Change color)', icon: 'fas fa-fill colorize', classname: 'b' });
+			} else if (info.type === 'connection' && flow.head.total > 4060) {
+				var selector = '.conn__' + item.fromid + '__' + item.toid + '__' + item.fromindex + '__' + item.toindex;
+				var colors = ['E73323', 'EC8632', 'FFFD54', '68B25B', '7CFBFD', '4285F4', 'E73CF7', 'E8357E', '73197B', '91683C'];
+				var submenu = [{ id: 'color', color: '', name: '@(None)' }];
+				var selectedcolor = $(selector).attrd('color');
+				for (var m of colors) {
+					var color = '#' + m;
+					submenu.push({ id: 'color', selected: color === selectedcolor, color: color, name: '<div style="height:20px;background-color:#{0};border-radius:var(--radius);width:100px"></div>'.format(m) });
+				}
+				opt.items.push({ name: '@(Change color)', icon: 'fas fa-fill colorize', children: submenu, classname: 'b' });
+			}
 
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
 
@@ -431,10 +440,7 @@
 						exports.export_components();
 						break;
 					case 'color':
-						var tmp = {};
-						tmp.x = e.pageX;
-						tmp.y = e.pageY;
-						tmp.callback = function(color) {
+						(function() {
 							var conn = info.selected;
 							var selector = '.conn__' + conn.fromid + '__' + conn.toid + '__' + conn.fromindex + '__' + conn.toindex;
 							var instance = flow.data[conn.fromid];
@@ -443,14 +449,13 @@
 								if (arr) {
 									for (var item of arr) {
 										if (item.id === conn.toid && item.index === conn.toindex)
-											item.color = color ? color : undefined;
+											item.color = opt.color ? opt.color : undefined;
 									}
 								}
 								SET('flow.changed', true);
 							}
-							$(selector).attrd('color', color).css({ stroke: color });
-						};
-						SETTER('colorpicker/show', tmp);
+							$(selector).attrd('color', opt.color).css({ stroke: opt.color });
+						})();
 						break;
 				}
 			};
