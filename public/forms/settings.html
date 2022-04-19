@@ -64,8 +64,9 @@
 			WAPI('settings_save @showloading', model, ASETTER('message/response @hideloading', function() {
 
 				hide();
-				document.title = model.name;
+				document.title = model.name + ' (' + model.env + ')';
 				$('body').tclass('ui-dark', model.darkmode == true);
+				SET('common.env', model.env);
 
 				var win = $('.ui-parts-item');
 				for (var i = 0; i < win.length; i++) {
@@ -77,7 +78,6 @@
 						w.postMessage(STRINGIFY({ TYPE: 'components2', value: model.components2 }), '*');
 					}
 				}
-				console.log('SOM TU');
 
 			}));
 		};

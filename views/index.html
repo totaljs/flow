@@ -94,6 +94,7 @@
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
 		common.env = '@{PREF.env}';
 		common.cl = {}; // for additional codelists
+		document.title += ' (' + common.env + ')';
 
 		WAPI({ url: '/fapi/' + common.openplatform });
 		DEF.dateformat = '@(yyyy-MM-dd)';
