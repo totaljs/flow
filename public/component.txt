@@ -17,6 +17,7 @@
 		// instance.main.variables2 {Object}
 		// instance.save();
 		// instance.replace(str); // replaces {variable_name} for values from "variables" and "variables2"
+		// instance.status(obj, [refresh_delay_in_ms]);
 
 		instance.message = function($) {
 			var data = $.data;
