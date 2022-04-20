@@ -1,6 +1,6 @@
 NEWSCHEMA('Console', function(schema) {
 
-	var filename = PATH.logs('debug.log');
+	var filename = F.isBundle ? PATH.root('../logs/debug.log') : PATH.root('logs/debug.log');
 
 	schema.setRead(function($) {
 
