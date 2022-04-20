@@ -1535,8 +1535,13 @@ function MAKEFLOWSTREAM(meta) {
 
 			var instances = flow.export();
 
-			for (var m of instances) {
-				console.log(m);
+			// Removing unused configuration
+			// Saving data
+			for (var key in instances) {
+				var m = instances[key];
+				var com = flow.meta.components[m.component];
+				if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
+					m.config = undefined;
 			}
 
 			flow.proxy.send({ TYPE: 'flow/design', data: instances });
@@ -2183,6 +2188,8 @@ function MAKEFLOWSTREAM(meta) {
 
 				var instances = flow.export();
 
+				// Removing unused configuration
+				// Saving data
 				for (var key in instances) {
 					var m = instances[key];
 					var com = flow.meta.components[m.component];
