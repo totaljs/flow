@@ -2186,7 +2186,7 @@ function MAKEFLOWSTREAM(meta) {
 				for (var key in instances) {
 					var m = instances[key];
 					var com = flow.meta.components[m.component];
-					if (com && ((com.ui.js && REG_CONFIG_JS.test(com.ui.js)) || (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
+					if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
 						m.config = undefined;
 				}
 
