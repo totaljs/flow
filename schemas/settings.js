@@ -61,6 +61,8 @@ NEWSCHEMA('Settings', function(schema) {
 // Initialization
 if (PREF.name)
 	CONF.name = PREF.name;
+else
+	PREF.name = CONF.name;
 
 if (!PREF.env)
 	PREF.env = 'dev';
