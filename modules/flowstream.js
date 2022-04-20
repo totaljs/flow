@@ -1991,6 +1991,12 @@ function MAKEFLOWSTREAM(meta) {
 	};
 
 	flow.ondisconnect = function(instance) {
+
+		if (instance.$statusdelay) {
+			clearTimeout(instance.$statusdelay);
+			instance.$statusdelay = null;
+		}
+
 		for (var key in flow.httproutes) {
 			var route = flow.httproutes[key];
 			if (route && route.id === instance.id)
@@ -2083,19 +2089,23 @@ function MAKEFLOWSTREAM(meta) {
 		flow.proxy.online && flow.proxy.send({ TYPE: 'flow/error', error: err, id: obj.id, ts: obj.ts, source: source });
 	};
 
+	var sendstatusforce = function(instance) {
+		if (instance.$status != null && flow.proxy.online)
+			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
+	};
+
 	// component.status() will execute this method
-	flow.onstatus = function(status) {
+	flow.onstatus = function(status, delay) {
 
 		var instance = this;
 
-		if (status == null)
-			status = instance.$status;
-		else
+		if (status != undefined)
 			instance.$status = status;
 
-		if (status != null && flow.proxy.online)
-			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: status });
-
+		if (delay)
+			instance.$statusdelay = setTimeout(sendstatusforce, delay || 1000, instance, status);
+		else if (instance.$status != null && flow.proxy.online)
+			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
 	};
 
 	// component.dashboard() will execute this method
