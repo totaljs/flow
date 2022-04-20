@@ -473,62 +473,73 @@
 					return;
 			}
 
-			var component = flow.components.findItem('id', instance.component);
-			if (!component || !component.settings)
-				return;
+			var rendersettings = function(response) {
 
-			var id = 'settings_f' + component.id;
-			var dom = $('#flow_settings')[0];
-			var domrepo = $('#flow_repo')[0];
-			var domsettings = $('#' + id)[0];
-			var move = false;
+				var component = flow.components.findItem('id', instance.component);
+				if (!component || !component.settings)
+					return;
 
-			if (!domsettings && initialized_settings[id])
-				delete initialized_settings[id];
+				var id = 'settings_f' + component.id;
+				var dom = $('#flow_settings')[0];
+				var domrepo = $('#flow_repo')[0];
+				var domsettings = $('#' + id)[0];
+				var move = false;
 
-			if (dom.children[0] && dom.children[0] !== domsettings) {
-				domrepo.appendChild(dom.children[0]);
-				move = true;
-			} else if (!dom.children[0])
-				move = true;
+				if (!domsettings && initialized_settings[id])
+					delete initialized_settings[id];
 
-			RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name });
+				if (dom.children[0] && dom.children[0] !== domsettings) {
+					domrepo.appendChild(dom.children[0]);
+					move = true;
+				} else if (!dom.children[0])
+					move = true;
 
-			var name = component.name.slug().replace(/\-/g, '');
+				RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name });
 
-			if (initialized_settings[id]) {
-				move && dom.appendChild(domsettings);
-			} else {
-				initialized_settings[id] = 1;
-				var html = $('#template_flowsettings').html();
-				$('#flow_settings').aclass('invisible').append(html.replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings.replace(/CLASS/g, 'f-' + name)));
-				COMPILE();
-			}
+				var name = component.name.slug().replace(/\-/g, '');
 
-			var config = CLONE(instance.config);
-			var path = 'flow.settings.' + id;
-			var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
-
-			eventdata.call = function(data, callback, globalcall) {
-
-				if (typeof(data) === 'function') {
-					globalcall = callback;
-					callback = data;
-					data = null;
+				if (initialized_settings[id]) {
+					move && dom.appendChild(domsettings);
+				} else {
+					initialized_settings[id] = 1;
+					var html = $('#template_flowsettings').html();
+					$('#flow_settings').aclass('invisible').append(html.replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings.replace(/CLASS/g, 'f-' + name)));
+					COMPILE();
 				}
 
-				exports.call(globalcall ? ('@' + this.component.id) : this.id, data, callback);
+				var config = response;
+				var path = 'flow.settings.' + id;
+				var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
+
+				eventdata.call = function(data, callback, globalcall) {
+
+					if (typeof(data) === 'function') {
+						globalcall = callback;
+						callback = data;
+						data = null;
+					}
+
+					exports.call(globalcall ? ('@' + this.component.id) : this.id, data, callback);
+				};
+
+				W.flowinstances.exec(instance.id, 'settings', eventdata);
+				EMIT('configure_' + name, eventdata);
+				EMIT('configure_read_' + name, eventdata);
+				settings_data = eventdata;
+				settings_current = instance;
+				$('#flow_settings').rclass('invisible', 1000);
+				SETTER('#settingsvalidation/setPath', path);
+				SET('flow.settings.{0} @reset'.format(id), config);
+				SET('common.form', 'settings');
 			};
 
-			W.flowinstances.exec(instance.id, 'settings', eventdata);
-			EMIT('configure_' + name, eventdata);
-			EMIT('configure_read_' + name, eventdata);
-			settings_data = eventdata;
-			settings_current = instance;
-			$('#flow_settings').rclass('invisible', 1000);
-			SETTER('#settingsvalidation/setPath', path);
-			SET('flow.settings.{0} @reset'.format(id), config);
-			SET('common.form', 'settings');
+			if (flow.config[instance.id]) {
+				rendersettings(CLONE(flow.config[instance.id]));
+			} else {
+				SETTER('websocket/send', { TYPE: 'config', id: instance.id, callback: function(response) {
+					rendersettings(response.data);
+				}});
+			}
 		};
 
 		exports.settings_submit = function() {
@@ -1372,6 +1383,7 @@
 				case 'flow/components':
 					loadcomponents(msg.data);
 					break;
+
 				case 'flow/config':
 					if (msg.id && msg.data) {
 						SET('flow.data.' + msg.id + '.config', msg.data);

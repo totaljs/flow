@@ -8,6 +8,7 @@ if (!global.F)
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
 const VERSION = 19;
+const REG_CONFIG_JS = /\.configure|config\./;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -1531,7 +1532,14 @@ function MAKEFLOWSTREAM(meta) {
 		timeoutrefresh = null;
 		if (flow.proxy.online) {
 			flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) });
-			flow.proxy.send({ TYPE: 'flow/design', data: flow.export() });
+
+			var instances = flow.export();
+
+			for (var m of instances) {
+				console.log(m);
+			}
+
+			flow.proxy.send({ TYPE: 'flow/design', data: instances });
 		}
 	};
 
@@ -1627,6 +1635,15 @@ function MAKEFLOWSTREAM(meta) {
 			case 'trigger':
 				var instance = flow.meta.flow[msg.id];
 				instance && instance.trigger && instance.trigger(msg);
+				break;
+
+			case 'config':
+				var instance = flow.meta.flow[msg.id];
+				if (instance) {
+					msg.TYPE = 'flow/configuration';
+					msg.data = instance.config;
+					flow.proxy.send(msg, 1, clientid);
+				}
 				break;
 
 			case 'reconfigure':
@@ -2007,6 +2024,7 @@ function MAKEFLOWSTREAM(meta) {
 	flow.onconnect = function(instance) {
 
 		instance.env = instance.main.env;
+		instance.$statuscount = 0;
 
 		instance.httproute = function(url, callback) {
 			flow.proxy.httproute(url, callback, instance);
@@ -2090,6 +2108,7 @@ function MAKEFLOWSTREAM(meta) {
 	};
 
 	var sendstatusforce = function(instance) {
+		instance.$statuscount = 0;
 		if (instance.$status != null && flow.proxy.online)
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
 	};
@@ -2102,9 +2121,17 @@ function MAKEFLOWSTREAM(meta) {
 		if (status != undefined)
 			instance.$status = status;
 
-		if (delay)
+		if (delay) {
+
+			if (instance.$statuscount > 10) {
+				sendstatusforce(instance, status);
+				return;
+			}
+
+			instance.$statuscount++;
+			instance.$statusdelay && clearTimeout(instance.$statusdelay);
 			instance.$statusdelay = setTimeout(sendstatusforce, delay || 1000, instance, status);
-		else if (instance.$status != null && flow.proxy.online)
+		} else if (instance.$status != null && flow.proxy.online)
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
 	};
 
@@ -2153,7 +2180,17 @@ function MAKEFLOWSTREAM(meta) {
 				flow.proxy.send({ TYPE: 'flow/variables', data: flow.variables }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/variables2', data: flow.variables2 }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) }, 1, clientid);
-				flow.proxy.send({ TYPE: 'flow/design', data: flow.export() }, 1, clientid);
+
+				var instances = flow.export();
+
+				for (var key in instances) {
+					var m = instances[key];
+					var com = flow.meta.components[m.component];
+					if (com && ((com.ui.js && REG_CONFIG_JS.test(com.ui.js)) || (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
+						m.config = undefined;
+				}
+
+				flow.proxy.send({ TYPE: 'flow/design', data: instances }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/errors', data: flow.errors }, 1, clientid);
 				setTimeout(function() {
 					flow.instances().wait(function(com, next) {
