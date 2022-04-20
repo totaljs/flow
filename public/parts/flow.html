@@ -800,8 +800,8 @@
 			if (id === 'group') {
 				var obj = {};
 				obj.id = 'g' + Date.now().toString(36);
-				obj.x = e.offsetX + offsetX;
-				obj.y = e.offsetY + offsetY;
+				obj.x = e.offsetX - offsetX;
+				obj.y = e.offsetY - offsetY;
 				obj.width = 400;
 				obj.height = 400;
 				obj.name = '@(Group)';
