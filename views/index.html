@@ -188,7 +188,7 @@
 			exports.focus = function(el) {
 				var id = ATTRD(el);
 
-				if (id === 'main' && common.tabs.length === 1) {
+				if (id === 'main' && common.tabs[0].focused) {
 					var opt = {};
 					opt.element = el;
 					opt.align = 'left';
@@ -579,7 +579,6 @@
 			exports.mainmenu();
 
 		});
-
 
 	</script>
 
