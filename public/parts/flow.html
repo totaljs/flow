@@ -720,9 +720,7 @@
 
 		exports.clone = function() {
 
-			exports.scope();
-
-			var model = GET('?.data');
+			var model = exports.model.data;
 			var selected = Designer.selected();
 			var add = [];
 			var cloned = {};
@@ -751,6 +749,8 @@
 				newbie.tab = instance.tab;
 				cloned[instance.id] = newbie.id;
 				add.push(newbie);
+				SET('flow.note.' + newbie.id, flow.note[item.id]);
+				SET('flow.config.' + newbie.id, newbie.config);
 				now++;
 			}
 
