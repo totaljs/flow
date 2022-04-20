@@ -364,6 +364,8 @@
 				var items = [];
 				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
 				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-download' });
+				items.push({ id: 'variables', name: '@(Variables)', icon: 'fas fa-clipboard-list', classname: 'b' });
+				items.push('-');
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
 
 				if (!common.openplatform)
@@ -434,6 +436,7 @@
 					case 'settings':
 					case 'marketplace':
 					case 'password':
+					case 'variables':
 						exports[id]();
 						break;
 					case 'cdnclear':
