@@ -393,7 +393,7 @@
 				switch (id) {
 
 					case 'update':
-						SETTER('approve/show', '@(Are you sure you want to update bundle of the Flow?)', '"fas fa-sync" @(Upload bundle)', function() {
+						SETTER('approve/show', '@(Are you sure you want to update bundle of the Total.js Flow?)', '"fas fa-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
 							opt.url = '/fapi/update/' + common.openplatform;
@@ -414,9 +414,7 @@
 						break;
 
 					case 'logout':
-						AJAX('GET /fapi/logout/ @showloading', function() {
-							location.href = '/';
-						});
+						AJAX('GET /fapi/logout/ @showloading', () => location.href = '/');
 						break;
 
 					case 'import':
