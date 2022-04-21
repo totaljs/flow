@@ -2031,7 +2031,6 @@ function MAKEFLOWSTREAM(meta) {
 	flow.onconnect = function(instance) {
 
 		instance.env = instance.main.env;
-		instance.$statuscount = 0;
 
 		instance.httproute = function(url, callback) {
 			flow.proxy.httproute(url, callback, instance);
@@ -2115,7 +2114,7 @@ function MAKEFLOWSTREAM(meta) {
 	};
 
 	var sendstatusforce = function(instance) {
-		instance.$statuscount = 0;
+		instance.$statusdelay = null;
 		if (instance.$status != null && flow.proxy.online)
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
 	};
@@ -2129,15 +2128,8 @@ function MAKEFLOWSTREAM(meta) {
 			instance.$status = status;
 
 		if (delay) {
-
-			if (instance.$statuscount > 10) {
-				sendstatusforce(instance, status);
-				return;
-			}
-
-			instance.$statuscount++;
-			instance.$statusdelay && clearTimeout(instance.$statusdelay);
-			instance.$statusdelay = setTimeout(sendstatusforce, delay || 1000, instance, status);
+			if (!instance.$statusdelay)
+				instance.$statusdelay = setTimeout(sendstatusforce, delay || 1000, instance);
 		} else if (instance.$status != null && flow.proxy.online)
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/status', id: instance.id, data: instance.$status });
 	};
@@ -2597,6 +2589,7 @@ const TEMPLATE_CALL = `<script total>
 </body>`;
 
 // Deprecated
+/*
 function makeschema(item) {
 
 	var str = '';
@@ -2607,7 +2600,7 @@ function makeschema(item) {
 	}
 
 	return str;
-}
+}*/
 
 TMS.refresh = function(fs, callback) {
 
