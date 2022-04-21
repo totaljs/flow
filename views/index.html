@@ -393,7 +393,7 @@
 				switch (id) {
 
 					case 'update':
-						SETTER('approve/show', '@(Are you sure you want to update bundle of the Total.js Flow?)', '"fas fa-sync" @(Upload bundle)', function() {
+						SETTER('approve/show', '<b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"fas fa-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
 							opt.url = '/fapi/update/' + common.openplatform;
