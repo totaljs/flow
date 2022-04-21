@@ -1516,7 +1516,7 @@
 			var components = {};
 
 			for (var com of flow.components)
-				components[com.id] = com.name.toLowerCase();
+				components[com.id] = com.name;
 
 			for (var com of selected.components) {
 				var { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
@@ -1564,7 +1564,7 @@
 				} else if (data.type === 'exported_components') { // external copy&paste
 					SETTER('loading/show');
 					var non_exists = [];
-					const names = flow.components.map(c => c.name.toLowerCase());
+					const names = flow.components.map(c => c.name);
 					Object.keys(data.components).wait((comid, next) => {
 						// check if we know this component
 						let com = data.components[comid];
@@ -1576,9 +1576,11 @@
 								setTimeout(next, 1000);
 							});
 						} else {
-							com.component = flow.components.findItem(item => item.name.toLowerCase() === com.name).id;
-							for (let item of data.items)
-								item.component = com.component;
+							var componentid = flow.components.findItem(item => item.name === com.name).id;
+							for (let item of data.items) {
+								if (item.component === comid)
+									item.component = componentid;
+							}
 							next();
 						}
 					}, function() {
