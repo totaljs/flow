@@ -1597,11 +1597,11 @@
 						});
 
 					}, function() {
-						setTimeout(function() {
+						WATCHONCE('flow.data', function() {
 							SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
 							paste_components(data.items, pos);
 							SETTER('loading/hide', 1000);
-						}, 3000);
+						});
 					});
 
 					return;
