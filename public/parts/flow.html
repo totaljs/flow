@@ -1572,8 +1572,10 @@
 							SETTER('loading/show', '<i class="fa fa-download"></i>@(Installing): ' + com.name);
 							install_component(com.source, function(id) {
 								com.component = id;
-								// wait a bit for the component to load back from server
-								setTimeout(next, 1000);
+								// wait for the component to load back from server
+								WAIT(function(){
+									return flow.components.findItem('id', id);
+								}, next);
 							});
 						} else {
 							var componentid = flow.components.findItem(item => item.name === com.name).id;
