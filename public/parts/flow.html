@@ -533,13 +533,10 @@
 				SET('common.form', 'settings');
 			};
 
-			if (flow.config[instance.id]) {
+			if (flow.config[instance.id])
 				rendersettings(CLONE(flow.config[instance.id]));
-			} else {
-				SETTER('websocket/send', { TYPE: 'config', id: instance.id, callback: function(response) {
-					rendersettings(response.data);
-				}});
-			}
+			else
+				SETTER('websocket/send', { TYPE: 'config', id: instance.id, callback: response => rendersettings(response.data));
 		};
 
 		exports.settings_submit = function() {
