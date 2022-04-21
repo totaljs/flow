@@ -5,7 +5,7 @@
 				{{ foreach m in value }}
 					{{ if m === '-' }}
 					<hr />
-					{{ else }}
+					{{ else if m.hidden !== true }}
 					<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
 					{{ fi }}
 				{{ end }}

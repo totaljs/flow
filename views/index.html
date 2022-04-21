@@ -93,6 +93,7 @@
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
 		common.env = '@{PREF.env}';
+		common.bundle = '@{F.isBundle}' === 'true';
 		common.cl = {}; // for additional codelists
 		document.title += ' (' + common.env + ')';
 
@@ -376,6 +377,9 @@
 				items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
 				items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
 
+				if (common.bundle)
+					items.push({ id: 'update', name: '@(Update bundle)', icon: 'fas fa-sync', hidden: true });
+
 				if (!common.openplatform) {
 					items.push('-');
 					items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
@@ -387,6 +391,23 @@
 			exports.menu = function(el) {
 				var id = ATTRD(el);
 				switch (id) {
+
+					case 'update':
+						SETTER('approve/show', '@(Are you sure you want to update bundle of the Flow?)', '"fas fa-sync" @(Upload bundle)', function() {
+							var opt = {};
+							opt.multiple = false;
+							opt.url = '/fapi/update/' + common.openplatform;
+							opt.callback = function(response, err) {
+								if (err) {
+									SETTER('message/warning', err);
+								} else {
+									SETTER('loading/show');
+									setTimeout(() => location.reload(), 5000);
+								}
+							};
+							SETTER('fileuploader/upload', opt);
+						});
+						break;
 
 					case 'support':
 						W.open('https://www.totaljs.com/contact/');

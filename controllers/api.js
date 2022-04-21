@@ -4,7 +4,8 @@ exports.install = function() {
 	ROUTE('-POST    /fapi/auth/        *Auth       --> exec');
 	ROUTE('+GET     /fapi/logout/      *Auth       --> logout');
 	ROUTE('+POST    /fapi/password/    *Auth       --> save');
-	ROUTE('GET      /private/',   privatefiles);
+	ROUTE('+POST    /fapi/update/',    updatebundle, ['upload'], 1024 * 10); // Flow updater
+	ROUTE('GET      /private/',        privatefiles);
 
 	// FlowStream
 	ROUTE('+API    @api    -streams                          *Streams      --> query');
@@ -34,8 +35,8 @@ exports.install = function() {
 	ROUTE('+API    @api    +clipboard_import                 *Clipboard    --> import', [60000 * 5]);
 
 	// Socket
-	ROUTE('+SOCKET  /fapi/  @api', 1024 * 8); // max. 8 MB
-	ROUTE('+SOCKET  /flows/{id}/', socket, 1024 * 8); // max. 8 MB
+	ROUTE('+SOCKET  /fapi/  @api',  1024 * 8); // max. 8 MB
+	ROUTE('+SOCKET  /flows/{id}/',  socket, 1024 * 8); // max. 8 MB
 };
 
 function socket(id) {
@@ -100,4 +101,27 @@ function privatefiles() {
 			arr.push({ name: file.filename.substring(file.filename.lastIndexOf('/') + 1), size: file.stats.size, modified: file.stats.mtime });
 		$.json(arr);
 	}, q);
+}
+
+function updatebundle() {
+
+	var self = this;
+	var file = self.files[0];
+
+	if (!F.isBundle) {
+		self.invalid('@(Available for bundled version only)');
+		return;
+	}
+
+	if (file && file.extension === 'bundle') {
+		file.move(F.Path.join(PATH.root(), '../bundles/app.bundle'), function(err) {
+			if (err) {
+				self.invalid(err);
+			} else {
+				self.success();
+				setTimeout(() => F.restart(), 1000);
+			}
+		});
+	} else
+		self.invalid('Invalid file');
 }
