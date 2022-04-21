@@ -295,7 +295,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 		editor = CodeMirror(container[0], options);
 		self.editor = editor;
 
-		editor.setOption('lint', { esversion: 9, expr: true, evil: true, unused: true, shadow: true, node: true, browser: true, noreturnawait: true });
+		editor.setOption('lint', { esversion: 8, expr: true, evil: true, unused: true, shadow: true, node: true, browser: true });
 		editor.on('keydown', function(editor, e) {
 
 			if (e.shiftKey && e.ctrlKey && (e.keyCode === 40 || e.keyCode === 38)) {
