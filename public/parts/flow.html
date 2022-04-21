@@ -728,14 +728,14 @@
 
 		exports.clone = function() {
 
-			var model = exports.model.data;
+			var model = exports.model;
 			var selected = Designer.selected();
 			var add = [];
 			var cloned = {};
 			var now = Date.now();
 
 			for (var item of selected.components) {
-				var instance = model[item.id];
+				var instance = model.data[item.id];
 				var newbie = {};
 				newbie.id = 'i' + now.toString(36);
 				newbie.x = instance.x + 50;
@@ -757,7 +757,7 @@
 				newbie.tab = instance.tab;
 				cloned[instance.id] = newbie.id;
 				add.push(newbie);
-				SET('flow.note.' + newbie.id, flow.note[item.id]);
+				SET('flow.note.' + newbie.id, model.note[item.id]);
 				SET('flow.config.' + newbie.id, newbie.config);
 				now++;
 			}
@@ -769,7 +769,7 @@
 							output.id = cloned[output.id];
 					}
 				}
-				model[item.id] = item;
+				model.data[item.id] = item;
 			}
 
 			Designer.find('.component-focused').rclass('component-focused');
@@ -1043,7 +1043,7 @@
 			exports.scope();
 			SET('?.components2', arr);
 
-			var model = GET('?');
+			var model = exports.model;
 			if (model.data) {
 				var rebuild = false;
 				for (var key in model.data) {
@@ -1064,6 +1064,9 @@
 							instance.name = com.name.slug().replace(/\-/g, '');
 							parent.aclass('f-' + instance.name);
 						}
+					} else {
+						rebuild = true;
+						delete model.data[key];
 					}
 				}
 			}
@@ -1481,7 +1484,6 @@
 			SETTER('menu/show', opt);
 		};
 
-
 		exports.clear_sourcecache = function(id) {
 			delete sourcecache[id];
 		};
@@ -1519,8 +1521,8 @@
 				components[com.id] = com.name;
 
 			for (var com of selected.components) {
-				var { id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs } = com.instance;
-				data.items.push({ id, component, name, config, inputs, outputs, connections, template, html, tab, x, y, $inputs, $outputs });
+				var { id, component, name, config, inputs, outputs, connections, tab, x, y, $inputs, $outputs } = com.instance;
+				data.items.push({ id, component, name, config, inputs, outputs, connections, tab, x, y, $inputs, $outputs });
 			}
 
 			SETTER('loading/show', '@(Loading source(s) from server)');
@@ -1562,35 +1564,48 @@
 					SETTER('notify/warning', '@(Please use "Export" menu to copy between FlowStream instances.)');
 					return;
 				} else if (data.type === 'exported_components') { // external copy&paste
+
 					SETTER('loading/show');
-					var non_exists = [];
-					const names = flow.components.map(c => c.name);
-					Object.keys(data.components).wait((comid, next) => {
+
+					var names = {};
+					for (var com of flow.components)
+						names[com.name] = com.id;
+
+					Object.keys(data.components).wait(function(comid, next) {
+
 						// check if we know this component
-						let com = data.components[comid];
-						if (names.indexOf(com.name) < 0) {
-							SETTER('loading/show', '<i class="fa fa-download"></i>@(Installing): ' + com.name);
-							install_component(com.source, function(id) {
-								com.component = id;
-								// wait for the component to load back from server
-								WAIT(function(){
-									return flow.components.findItem('id', id);
-								}, next);
-							});
-						} else {
-							var componentid = flow.components.findItem(item => item.name === com.name).id;
-							for (let item of data.items) {
+						var com = data.components[comid];
+						var tmp = names[com.name];
+
+						var updateid = function(id) {
+							for (var item of data.items) {
 								if (item.component === comid)
-									item.component = componentid;
+									item.component = id;
 							}
 							next();
+						};
+
+						if (tmp) {
+							updateid(tmp);
+							return;
 						}
+
+						install_component(com.source, function(id) {
+							com.id = id;
+							updateid(id);
+							next();
+						});
+
 					}, function() {
-						SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
-						paste_components(data.items, pos);
-						SETTER('loading/hide', 1000);
+						setTimeout(function() {
+							SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
+							paste_components(data.items, pos);
+							SETTER('loading/hide', 1000);
+						}, 3000);
 					});
+
 					return;
+
 				} else if (data.type === 'exported_as_component' && data.component) {
 					SETTER('approve/show', '@(Exported flow will be imported as "{0}" component.)'.format(data.name), '"file-import" @(Import)', function(){
 						var id = FUNC.makeid('c');
@@ -1611,51 +1626,63 @@
 
 		function fix_positions(arr, pos) {
 			let minx, miny;
+
+			if (!pos.x && !pos.y) {
+				var scroll = Designer.element.closest('.ui-scrollbar-area');
+				var num = (Math.random() * 100) >> 0;
+				pos.x = scroll.scrollLeft() + num + 200;
+				pos.y = scroll.scrollTop() + num + 200;
+			}
+
 			// find minx,miny and set it as zero point offset
 			for (let item of arr) {
 				(!minx || minx > item.x) && (minx = item.x);
 				(!miny || miny > item.y) && (miny = item.y);
 			}
+
 			// offset each component based on cursor position(pos)
 			for (let item of arr) {
 				item.x = item.x - minx + pos.x;
 				item.y = item.y - miny + pos.y;
 			}
+
 		};
 
-		function paste_components(components, pos) {
-			exports.scope();
+		function paste_components(items, pos) {
 
-			var model = GET('?.data');
-
+			var model = exports.model;
 			var add = [];
 			var cloned = {};
 			var now = Date.now();
 
-			fix_positions(components, pos);
+			fix_positions(items, pos);
 
-			for (var item of components) {;
+			for (var item of items) {
+				var com = model.components.findItem('id', item.component);
 				var newbie = {};
 				newbie.id = 'i' + now.toString(36);
 				newbie.x = item.x;
 				newbie.y = item.y;
+				newbie.changes = { newbie: true };
 				newbie.name = item.name;
 				newbie.component = item.component;
 				newbie.config = CLONE(item.config);
 				newbie.connected = false;
 				newbie.connections = CLONE(item.connections);
 				newbie.name = item.name.slug().replace(/\-/g, '');
-				newbie.html = item.html.replace(new RegExp(item.id, 'g'), newbie.id);
 				newbie.$outputs = item.$outputs;
 				newbie.outputs = item.outputs;
 				newbie.$inputs = item.$inputs;
 				newbie.inputs = item.inputs;
-				newbie.template = item.template;
 				newbie.onmake = onmake;
 				newbie.onremove = onremove;
-				newbie.tab = item.tab;
+				newbie.tab = model.tab;
+				newbie.html = '<figure>' + com.html.format(newbie.id) + '</figure>';
+				newbie.template = com.template ? Tangular.compile(com.template) : null;
 				cloned[item.id] = newbie.id;
 				add.push(newbie);
+				SET('flow.note.' + newbie.id, model.note[item.id]);
+				SET('flow.config.' + newbie.id, newbie.config);
 				now++;
 			}
 
@@ -1666,7 +1693,7 @@
 							output.id = cloned[output.id];
 					}
 				}
-				model[item.id] = item;
+				model.data[item.id] = item;
 			}
 
 			Designer.find('.component-focused').rclass('component-focused');
@@ -1676,7 +1703,7 @@
 			SET('?.changed', true);
 
 			setTimeout(function(add) {
-				for (let item of add)
+				for (var item of add)
 					Designer.op.select(item.id, true);
 			}, 500, add);
 		};
