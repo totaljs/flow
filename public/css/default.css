@@ -157,6 +157,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .configuration > section:first-child label { border-top-color: #404040; }
 .ui-dark .configuration > section > article { border-top-color: #404040; }
 .ui-dark .configuration > section label { color: #FFF; border-top-color: #404040; }
+.markdown { overflow: hidden; }
 
 .message { padding: 5px; border: 2px solid var(--color); border-radius: var(--radius); font-size: 12px; color: var(--color); margin-bottom: 10px; }
 .message i { margin-right: 5px; }
