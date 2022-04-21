@@ -8,7 +8,7 @@ if (!global.F)
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
 const VERSION = 19;
-const REG_CONFIG_JS = /\.configure|config\./;
+// const REG_CONFIG_JS = /\.configure|config\./;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
