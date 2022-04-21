@@ -1537,12 +1537,14 @@ function MAKEFLOWSTREAM(meta) {
 
 			// Removing unused configuration
 			// Saving data
+			// Possible problems: cloning instances on clien-side + applying schema
+			/*
 			for (var key in instances) {
 				var m = instances[key];
 				var com = flow.meta.components[m.component];
 				if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
 					m.config = undefined;
-			}
+			}*/
 
 			flow.proxy.send({ TYPE: 'flow/design', data: instances });
 		}
@@ -2190,12 +2192,14 @@ function MAKEFLOWSTREAM(meta) {
 
 				// Removing unused configuration
 				// Saving data
+				// Possible problems: cloning instances on clien-side + applying schema
+				/*
 				for (var key in instances) {
 					var m = instances[key];
 					var com = flow.meta.components[m.component];
 					if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
 						m.config = undefined;
-				}
+				}*/
 
 				flow.proxy.send({ TYPE: 'flow/design', data: instances }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/errors', data: flow.errors }, 1, clientid);
