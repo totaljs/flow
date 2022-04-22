@@ -203,6 +203,8 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .flows figure .reference { position: absolute; left: 22px; top: 25px; cursor: pointer; text-align: center; font-size: 16px; font-weight: bold; font-family: Menlo,Consolas,monospace; }
 
 .ui-dark .flows figure section { border-color: #404040; background-color: #282828; }
+.ui-dark .flows figure .proxy { border-top-color: #404040; }
+.ui-dark .flows figure .proxy span { background-color: #111; color: #FFF; }
 .ui-dark .flows figure section:hover { border-color: #454545; }
 .ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; }
 .ui-dark .flows figure .meta .name span { color: #FFF; }
