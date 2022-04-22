@@ -23,7 +23,7 @@
 				<script type="text/html">
 					{{ foreach m in value }}
 						{{ if m.key !== 'groups' && m.key !== 'paused' && m.key !== 'tabs' }}
-							<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }}" data-id="{{ m.key }}">
+							<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }} {{ m.value.note }}" data-id="{{ m.key }}">
 								<div class="controls">
 									<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="fa fa-wrench"></i></span>
 									<span class="exec" data-exec="?/remove" data-prevent="true" title="@(Remove)"><i class="far fa-trash-alt red"></i></span>
