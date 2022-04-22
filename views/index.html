@@ -12,6 +12,8 @@
 </head>
 <body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
 
+	<div data---="locale"></div>
+
 	<div data---="windows__common.windows"></div>
 	<div data---="LAZY menu__null__style:2"></div>
 	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
@@ -98,8 +100,6 @@
 		document.title += ' (' + common.env + ')';
 
 		WAPI({ url: '/fapi/' + common.openplatform });
-		DEF.dateformat = '@(yyyy-MM-dd)';
-		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
 		ON('@flag showloading', function() {
 			SETTER('loading/show');

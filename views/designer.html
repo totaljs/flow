@@ -12,6 +12,7 @@
 </head>
 <body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
+	<div data---="locale"></div>
 	<div data---="windows__common.windows"></div>
 
 	<div data---="LAZY menu__null__style:2"></div>
@@ -68,9 +69,6 @@
 		$(document).on('click', function() {
 			W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket }), '*');
 		});
-
-		DEF.dateformat = '@(yyyy-MM-dd)';
-		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
 		ON('@flag showloading', function() {
 			SETTER('loading/show');
@@ -165,6 +163,7 @@
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				e.preventDefault();
 				e.stopPropagation();
+				console.log('Prevented Default and Stopped Propagation');
 				var designer = FIND('flow');
 				var selected = designer.selected();
 				if (!selected.components.length) {
