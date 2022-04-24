@@ -363,7 +363,7 @@
 					var color = '#' + m;
 					submenu.push({ id: 'color', selected: color === selectedcolor, color: color, name: '<div style="height:20px;background-color:#{0};border-radius:var(--radius);width:100px"></div>'.format(m) });
 				}
-				opt.items.push({ name: '@(Change color)', icon: 'fas fa-fill colorize', children: submenu, classname: 'b' });
+				opt.items.push({ name: '@(Color)', icon: 'fas fa-fill colorize', children: submenu, classname: 'b' });
 			}
 
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
