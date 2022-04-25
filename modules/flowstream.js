@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 19;
+const VERSION = 20;
 // const REG_CONFIG_JS = /\.configure|config\./;
 
 var isFLOWSTREAMWORKER = false;
@@ -2036,6 +2036,11 @@ function MAKEFLOWSTREAM(meta) {
 
 		instance.httproute = function(url, callback) {
 			flow.proxy.httproute(url, callback, instance);
+		};
+
+		instance.href = function(url) {
+			var hostname = (flow.$schema.origin || '') + (flow.$schema.proxypath || '');
+			return url ? U.join(hostname, url) : hostname;
 		};
 
 		instance.save = function() {
