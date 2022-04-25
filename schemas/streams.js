@@ -64,6 +64,7 @@ NEWSCHEMA('Streams', function(schema) {
 		}
 
 		if (init) {
+
 			model.id = 'f' + UID();
 			model.design = {};
 			model.components = {};
@@ -72,6 +73,7 @@ NEWSCHEMA('Streams', function(schema) {
 			model.dtcreated = NOW;
 			MAIN.flowstream.db[model.id] = model;
 			MAIN.flowstream.init(model.id, ERROR('FlowStream.init'));
+
 		} else {
 			var item = MAIN.flowstream.db[model.id];
 			if (item) {
@@ -92,7 +94,17 @@ NEWSCHEMA('Streams', function(schema) {
 
 				item.proxypath = model.proxypath;
 				var instance = MAIN.flowstream.instances[model.id];
-				instance && instance.refresh(model.id, 'meta', CLONE(model));
+				if (instance) {
+
+					// Registers new proxy
+					if (CONF.flowstream_worker && item.proxypath) {
+						PROXY(item.proxypath, null);
+						PROXY(item.proxypath, item.unixsocket, false);
+					}
+
+					instance.refresh(model.id, 'meta', CLONE(model));
+				}
+
 			} else {
 				$.invalid(404);
 				return;

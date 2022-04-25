@@ -743,6 +743,8 @@ function init_current(meta, callback) {
 
 	flow.env = meta.env;
 	flow.origin = meta.origin;
+	flow.proxypath = meta.proxypath || '';
+	flow.proxyendpoint = meta.origin + flow.proxypath;
 	flow.proxy.online = false;
 	flow.$instance = new Instance(flow, meta.id);
 
@@ -2169,6 +2171,9 @@ function MAKEFLOWSTREAM(meta) {
 	};
 
 	flow.proxy.refreshmeta = function() {
+		flow.origin = flow.$schema.origin;
+		flow.proxypath = flow.$schema.proxypath || '';
+		flow.proxyendpoint = flow.origin + flow.proxypath;
 		flow.proxy.send(makemeta(), 0);
 	};
 
@@ -2176,6 +2181,7 @@ function MAKEFLOWSTREAM(meta) {
 		if (flow.proxy.online) {
 			flow.proxy.send(makemeta(), 1, clientid);
 			if (!metaonly) {
+
 				flow.proxy.send({ TYPE: 'flow/variables', data: flow.variables }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/variables2', data: flow.variables2 }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) }, 1, clientid);
