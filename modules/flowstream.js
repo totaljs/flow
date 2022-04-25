@@ -744,8 +744,8 @@ function init_current(meta, callback) {
 	flow.env = meta.env;
 	flow.origin = meta.origin;
 	flow.proxypath = meta.proxypath || '';
-	flow.proxyendpoint = meta.origin + flow.proxypath;
 	flow.proxy.online = false;
+
 	flow.$instance = new Instance(flow, meta.id);
 
 	flow.$instance.output = function(fid, data, tfsid, tid) {
@@ -2173,7 +2173,6 @@ function MAKEFLOWSTREAM(meta) {
 	flow.proxy.refreshmeta = function() {
 		flow.origin = flow.$schema.origin;
 		flow.proxypath = flow.$schema.proxypath || '';
-		flow.proxyendpoint = flow.origin + flow.proxypath;
 		flow.proxy.send(makemeta(), 0);
 	};
 
