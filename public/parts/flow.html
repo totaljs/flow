@@ -1219,7 +1219,7 @@
 					if (msg.name)
 						document.title = msg.name;
 
-					msg.proxyurl = location.origin + msg.proxypath;
+					msg.proxyurl = location.origin + (msg.proxypath || '');
 
 					SET('flow.head', msg);
 					SET('flow.stats.paused', msg.paused == true);
