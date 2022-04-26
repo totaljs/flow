@@ -18,7 +18,9 @@
 				<div data-bind="?.items__template" data---="search__?.search__selector:figure" id="flowstreamcomponents">
 					<script type="text/html">
 						{{ foreach n in value }}
+							{{ if n.name && n.name !== '0' }}
 							<div class="listing-caption">{{ n.name }}</div>
+							{{ fi }}
 							<div class="listing-download">
 								{{ foreach m in n.items }}
 								<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
@@ -60,6 +62,9 @@
 					var com = flow.components.findItem('name', item.name);
 					item.newupdate = com ? item.version.localeCompare(com.version, { numeric: true }) > 0 : false;
 					item.installed = com != null;
+
+					if (!item.group)
+						item.group = '0';
 
 					if (item.newupdate)
 						opt.updates++;
