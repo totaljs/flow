@@ -2,7 +2,7 @@
 
 	exports.name = 'NAME';
 	exports.icon = 'fa fa-code';
-	exports.author = 'Total Avengers';
+	exports.author = 'Total.js';
 	exports.version = '1';
 	exports.config = {};
 	exports.inputs = [{ id: 'input', name: 'Input' }];
