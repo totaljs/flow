@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 20;
+const VERSION = 21;
 // const REG_CONFIG_JS = /\.configure|config\./;
 
 var isFLOWSTREAMWORKER = false;
@@ -1888,6 +1888,7 @@ function MAKEFLOWSTREAM(meta) {
 	flow.sockets = {};
 	flow.$schema = meta;
 	flow.httproutes = {};
+	flow.secrets = {};
 
 	if (meta.paused)
 		flow.pause(true);
@@ -2062,11 +2063,23 @@ function MAKEFLOWSTREAM(meta) {
 			}
 
 			flow.proxy.online && flow.proxy.send({ TYPE: 'flow/redraw', id: instance.id, data: item });
-
 		};
 
 		instance.newvariables = function(data) {
 			flow.proxy.variables(data || {});
+		};
+
+		instance.newsecrets = function(data) {
+
+			for (var key in data)
+				flow.secrets[key] = data[key];
+
+			for (var key in flow.meta.flow) {
+				var m = flow.meta.flow[key];
+				if (m.secrets)
+					m.secrets(flow.secrets);
+			}
+
 		};
 
 		instance.newflowstream = function(meta, isworker, callback) {
