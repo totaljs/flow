@@ -138,7 +138,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .component.isnewbie { border-color: #68B25B; }
 .ui-flow .component.iserror { border-color: red; }
 .ui-flow .component-selected { border-color: var(--color) !important; }
-.ui-flow-h summary { padding: 8px; font-size: 13px; font-style: normal; border-top: 1px solid rgba(0,0,0,0.1); display: block; }
+.ui-flow-h summary { padding: 12px 8px; font-size: 13px; font-style: normal; border-top: 3px solid rgba(0,0,0,0.1); display: block; }
 .ui-flow-h .output { line-height: 22px; font-size: 11px; }
 .ui-flow-h .output .component-io { line-height: 22px; margin-top: 5px; margin-right: -13px; }
 .ui-flow-h .input { line-height: 22px; font-size: 11px; }
