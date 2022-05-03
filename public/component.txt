@@ -1,9 +1,10 @@
 <script total>
 
-	exports.name = 'NAME';
+	exports.name = 'Your component name';
 	exports.icon = 'fa fa-code';
 	exports.author = 'Total.js';
 	exports.version = '1';
+	exports.group = 'Common';
 	exports.config = {};
 	exports.inputs = [{ id: 'input', name: 'Input' }];
 	exports.outputs = [{ id: 'output', name: 'Output' }];
