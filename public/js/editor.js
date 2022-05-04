@@ -1666,8 +1666,11 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 				var completion = data.list[i];
 				if (completion.hint)
 					completion.hint(this.cm, data, completion);
-				else
+				else {
 					this.cm.replaceRange(getText(completion), completion.to || data.to, completion.from || data.from, 'complete');
+					if (completion.line != null)
+						this.cm.setCursor({ line: completion.line, ch: completion.ch || 0 });
+				}
 				CodeMirror.signal(data, 'pick', completion);
 				this.close(completion);
 			},
@@ -2314,12 +2317,6 @@ FUNC.snippets = function(type, text, tabs, line, words, chplus, linestr) {
 	var cache = {};
 	var tmp;
 
-	// for (var i = 0; i < designer.autocomplete.length; i++) {
-	// 	var item = designer.autocomplete[i];
-	// 	if (item.name.indexOf(text) !== -1)
-	// 		arr.push({ displayText: item.name, text: item.name, ch: chplus, line: line, priority: 0 });
-	// }
-
 	for (var i = 0; i < SNIPPETS.length; i++) {
 		var snip = SNIPPETS[i];
 
@@ -2353,21 +2350,6 @@ FUNC.snippets = function(type, text, tabs, line, words, chplus, linestr) {
 			}
 		}
 	}
-
-	/*
-	var count = 0;
-
-	for (var i = 0; i < code.data.files.length; i++) {
-		var file = code.data.files[i];
-		if (file.substring(0, 8) === '/public/') {
-			var path = file.substring(7);
-			if (path.indexOf(text) !== -1) {
-				if (count++ > 10)
-					break;
-				arr.push({ displayText: '<i class="far fa-file mr5"></i>' + path, text: path, ch: path.length + tabs.length + chplus, line: line });
-			}
-		}
-	}*/
 
 	return arr;
 };
@@ -2421,12 +2403,6 @@ FUNC.getext = function(syntax) {
 	return 'plain';
 };
 
-SNIPPETS.push({ type: 'js', search: 'AUTH', text: '<b>AUTH</b>', code: 'AUTH(function($) {\n\t{0}$.success(USER_PROFILE);\n{0}});', ch: 30 });
-// SNIPPETS.push({ type: 'js', search: 'NEWSCHEMA', text: '<b>NEWSCHEMA</b>', code: 'NEWSCHEMA(\'{1}\', function(schema) {\n\t{0}schema.define(\'key\', String, true);\n{0}});', ch: 12 });
-// SNIPPETS.push({ type: 'js', search: 'NEWOPERATION', text: '<b>NEWOPERATION</b>', code: 'NEWOPERATION(\'\', function($, value) {\n\t{0}\n{0}});', ch: 15 });
-// SNIPPETS.push({ type: 'js', search: 'NEWTASK', text: '<b>NEWTASK</b>', code: 'NEWTASK(\'{1}\', function(push) {\n\n\t{0}push(\'TASK_NAME_1\', function($, value) {\n\t\t{0}$.next(\'TASK_NAME_2\');\n\t{0}});\n\n\t{0}push(\'TASK_NAME_2\', function($, value) {\n\t\t{0}$.end();\n\t{0}});\n\n{0}});', ch: 10 });
-SNIPPETS.push({ type: 'js', search: 'NEWCOMMAND', text: '<b>NEWCOMMAND</b>', code: 'NEWCOMMAND(\'\', function() {\n\t{0}\n{0}});', ch: 13 });
-SNIPPETS.push({ type: 'js', search: 'EXEC', text: '<b>EXEC</b>', code: 'EXEC(\'\', model, function(err, response) {\n\t{0}\n{0}});', ch: 6 });
 SNIPPETS.push({ type: 'js', search: 'for var', text: '<b>for in</b>', code: 'for (var i = 0; i < .length; i++)', ch: 21, priority: 10 });
 SNIPPETS.push({ type: 'js', search: 'foreach forEach', text: '<b>forEach</b>', code: 'forEach(function(item) {\n{0}});', ch: 30, priority: 1 });
 SNIPPETS.push({ type: 'js', search: '$.invalid', text: '<b>$.invalid()</b>', code: 'if (err) {\n\t{0}$.invalid(err);\n\t{0}return;\n{0}}', ch: 30 });
@@ -2437,11 +2413,6 @@ SNIPPETS.push({ type: 'js', search: 'callback function', text: '<b>function(resp
 SNIPPETS.push({ type: 'js', search: 'callback function', text: '<b>function(item, next) {</b>', code: 'function(item, next) {\n\t{0}\n{0}}', ch: 30, priority: 1, special: 1 });
 SNIPPETS.push({ type: 'js', search: 'callback function', text: '<b>function($) {</b>', code: 'function($) {\n\t{0}\n{0}}', ch: 30, priority: 1, special: 1 });
 SNIPPETS.push({ type: 'js', search: 'Object.keys', text: '<b>Object.keys</b>', code: 'Object.keys()', ch: 13, priority: 1 });
-SNIPPETS.push({ type: 'js', search: 'schema.middleware', text: '<b>schema.middleware</b>', code: 'schema.middleware(function($, next) {\n\t{0}\n{0}});', ch: 2, line: 1, priority: 1 });
-SNIPPETS.push({ type: 'js', search: 'MERGE', text: '<b>MERGE</b>', code: 'MERGE(\'\', \'\');', ch: 8 });
-SNIPPETS.push({ type: 'js', search: 'ROUTE', text: '<b>ROUTE</b>', code: 'ROUTE(\'\', \'\');', ch: 8 });
-SNIPPETS.push({ type: 'js', search: 'WEBSOCKET', text: '<b>WEBSOCKET</b>', code: 'WEBSOCKET(\'\', action, [\'json\']);', ch: 12 });
-SNIPPETS.push({ type: 'js', search: 'LOCALIZE', text: '<b>LOCALIZE</b>', code: 'LOCALIZE(\'\', \'\');', ch: 11 });
 SNIPPETS.push({ type: 'js', search: 'exports.install', text: '<b>exports.install</b>', code: 'exports.install = function() {\n\t{0}\n{0}};', ch: 2, line: 1 });
 SNIPPETS.push({ type: 'js', search: 'console.log', text: '<b>console.log</b>', code: 'console.log();', ch: 13 });
 SNIPPETS.push({ type: 'js', search: 'console.warn', text: '<b>console.warn</b>', code: 'console.warn();', ch: 14 });
@@ -2451,18 +2422,10 @@ SNIPPETS.push({ type: 'js', search: 'undefined', text: '<b>undefined</b>', code:
 SNIPPETS.push({ type: 'js', search: 'setImmediate', text: 'setImmediate', code: 'setImmediate()', ch: 13, priority: -1 });
 SNIPPETS.push({ type: 'js', search: 'EMPTYARRAY', text: 'EMPTYARRAY', code: 'EMPTYARRAY', ch: 11 });
 SNIPPETS.push({ type: 'js', search: 'EMPTYOBJECT', text: 'EMPTYOBJECT', code: 'EMPTYOBJECT', ch: 12 });
-SNIPPETS.push({ type: 'js', search: '$.ip', text: '$.ip', code: '$.ip', ch: 4 });
-SNIPPETS.push({ type: 'js', search: '$.user', text: '$.user', code: '$.user', ch: 6 });
-SNIPPETS.push({ type: 'js', search: '$.req', text: '$.req', code: '$.req', ch: 5 });
-SNIPPETS.push({ type: 'js', search: '$.res', text: '$.res', code: '$.res', ch: 5 });
-SNIPPETS.push({ type: 'js', search: '$.success()', text: '$.success()', code: '$.success()', ch: 7 });
-SNIPPETS.push({ type: 'js', search: '$.invalid()', text: '$.invalid()', code: '$.invalid()', ch: 7 });
 
-SNIPPETS.push({ search: 'openplatformid', text: 'openplatformid', code: 'openplatformid', ch: 15 });
 SNIPPETS.push({ search: 'encodeURIComponent', text: 'encodeURIComponent', code: 'encodeURIComponent', ch: 19 });
 SNIPPETS.push({ search: 'decodeURIComponent', text: 'decodeURIComponent', code: 'decodeURIComponent', ch: 19 });
 SNIPPETS.push({ search: 'componentator', text: 'componentator', code: 'componentator', ch: 14 });
-SNIPPETS.push({ search: 'RESTBuilder', text: 'RESTBuilder', code: 'RESTBuilder', ch: 12 });
 SNIPPETS.push({ search: 'exports.', text: 'exports.', code: 'exports.', ch: 9 });
 SNIPPETS.push({ search: 'controller', text: 'controller', code: 'controller', ch: 10 });
 SNIPPETS.push({ search: 'response', text: 'response', code: 'response', ch: 9 });
