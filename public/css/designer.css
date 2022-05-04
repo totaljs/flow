@@ -157,6 +157,7 @@ body.ui-dark { background-color: #202020 !important; }
 
 .markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); }
 .ui-dark .markdown pre { background-color: #272727; }
+.markdown-small .markdown p { font-size: 14px !important; }
 
 .landing .body { background-color: #FFF; }
 .bg-smoke { background-color: #F8F8F8; }
