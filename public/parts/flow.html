@@ -741,6 +741,7 @@
 				newbie.x = instance.x + 50;
 				newbie.y = instance.y + 50;
 				newbie.name = instance.name;
+				newbie.Component = instance.Component;
 				newbie.component = instance.component;
 				newbie.config = CLONE(instance.config);
 				newbie.connected = false;
@@ -775,8 +776,11 @@
 			Designer.find('.component-focused').rclass('component-focused');
 			Designer.op.unselect();
 
-			UPD('?.data', 'update');
+			// UPD('?.data', 'update');
 			SET('?.changed', true);
+
+			for (var item of add)
+				CMD('flow.components.add', item);
 
 			setTimeout(function(add) {
 				for (var item of add)
