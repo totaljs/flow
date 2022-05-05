@@ -1753,13 +1753,13 @@
 			var head = model.head;
 			var body = '';
 
-			if (head.version)
+			if (head.version2)
 				body += '| @(Version) | __' + head.version2 + '__ |\n';
 
 			if (head.author)
 				body += '| @(Author) | __' + head.author + '__ |\n';
 
-			if (head.url)
+			if (head.url && head.url.length > 5)
 				body += '| @(Website) | <' + head.url + '> |\n';
 
 			body += (body ? '\n' : '') + (head.readme || '');
