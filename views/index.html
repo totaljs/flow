@@ -515,7 +515,7 @@
 				if (common.windows.findItem('id', winid)) {
 					SETTER('windows/hide', winid);
 				} else {
-					PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:/forms/console.html"></div>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
+					PUSH('common.windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<div data-import="url:/forms/console.html"></div>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
 						el.closest('.ui-windows-item').find('pre').empty();
 						WAPI('console_clear', NOOP);
 					}, make: function(el) {
