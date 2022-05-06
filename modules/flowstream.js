@@ -736,7 +736,8 @@ function init_current(meta, callback) {
 	FLOWS[meta.id] = flow;
 
 	if (isFLOWSTREAMWORKER && meta.unixsocket && meta.proxypath && F.frameworkless) {
-		F.Fs.unlink(meta.unixsocket, NOOP);
+		if (!F.isWindows)
+			F.Fs.unlink(meta.unixsocket, NOOP);
 		F.frameworkless(false, { unixsocket: meta.unixsocket, config: { allow_stats_snapshot: false }});
 	}
 
@@ -1095,7 +1096,7 @@ function init_worker(meta, type, callback) {
 	var worker = type === true || type === 'worker' ? new W.Worker(__filename, { workerData: meta }) : Fork(__filename, [F.directory, '--fork'], { serialization: 'json' }); // detached: true,
 	var ischild = false;
 
-	meta.unixsocket = F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket');
+	meta.unixsocket = F.isWindows ? ('\\\\?\\pipe\\flowstream' + F.directory.makeid() + meta.id + Date.now().toString(36)) : (F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket'));
 
 	if (!worker.postMessage) {
 		worker.postMessage = worker.send;
