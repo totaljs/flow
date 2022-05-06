@@ -29,7 +29,7 @@ function cdn(req, res) {
 	}
 
 	Cache[key] = 1;
-	PATH.exists(filename ,function(err, response) {
+	PATH.exists(path ,function(err, response) {
 		if (response) {
 			Cache[key] = 2;
 			res.file(path);

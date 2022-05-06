@@ -7,8 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 21;
-// const REG_CONFIG_JS = /\.configure|config\./;
+const VERSION = 22;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -1096,7 +1095,7 @@ function init_worker(meta, type, callback) {
 	var worker = type === true || type === 'worker' ? new W.Worker(__filename, { workerData: meta }) : Fork(__filename, [F.directory, '--fork'], { serialization: 'json' }); // detached: true,
 	var ischild = false;
 
-	meta.unixsocket = F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '.socket');
+	meta.unixsocket = F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket');
 
 	if (!worker.postMessage) {
 		worker.postMessage = worker.send;
@@ -1534,20 +1533,7 @@ function MAKEFLOWSTREAM(meta) {
 		timeoutrefresh = null;
 		if (flow.proxy.online) {
 			flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) });
-
 			var instances = flow.export();
-
-			// Removing unused configuration
-			// Saving data
-			// Possible problems: cloning instances on clien-side + applying schema
-			/*
-			for (var key in instances) {
-				var m = instances[key];
-				var com = flow.meta.components[m.component];
-				if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
-					m.config = undefined;
-			}*/
-
 			flow.proxy.send({ TYPE: 'flow/design', data: instances });
 		}
 	};
@@ -2198,24 +2184,10 @@ function MAKEFLOWSTREAM(meta) {
 		if (flow.proxy.online) {
 			flow.proxy.send(makemeta(), 1, clientid);
 			if (!metaonly) {
-
 				flow.proxy.send({ TYPE: 'flow/variables', data: flow.variables }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/variables2', data: flow.variables2 }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) }, 1, clientid);
-
 				var instances = flow.export();
-
-				// Removing unused configuration
-				// Saving data
-				// Possible problems: cloning instances on clien-side + applying schema
-				/*
-				for (var key in instances) {
-					var m = instances[key];
-					var com = flow.meta.components[m.component];
-					if (com && ((com.ui.js && !REG_CONFIG_JS.test(com.ui.js)) && (com.ui.html && com.ui.html.indexOf('CONFIG') === -1)))
-						m.config = undefined;
-				}*/
-
 				flow.proxy.send({ TYPE: 'flow/design', data: instances }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/errors', data: flow.errors }, 1, clientid);
 				setTimeout(function() {
