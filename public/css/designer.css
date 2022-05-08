@@ -143,17 +143,21 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow-h .output .component-io { line-height: 22px; margin-top: 5px; margin-right: -13px; }
 .ui-flow-h .input { line-height: 22px; font-size: 11px; }
 .ui-flow-h .input .component-io { line-height: 22px; margin-top: 5px; margin-left: -13px; }
-.ui-flow-h .input.connected { color: #000; font-weight: bold; }
+.ui-flow-h .input.connected { font-weight: bold; }
 .ui-flow-h .output.connected { font-weight: bold; }
 .ui-flow .connection { stroke-width: 2.5px; }
 .ui-flow .content { padding: 0; min-width: 150px; }
 .ui-flow footer { border-top: 1px solid rgba(0,0,0,0.1); }
-
 .ui-flow .output.connected .component-io.disabled, .ui-flow .input.connected .component-io.disabled, .ui-flow .output .component-io.disabled, .ui-flow .input .component-io.disabled { width: 12px !important; height: 12px !important; margin-top: 5px !important; }
+.ui-flow .output-transform { color: #A19635 !important; background-color: rgba(0,0,0,0.04); }
 
+.ui-dark .ui-flow .output-transform { color: #E0D192 !important; background-color: rgba(255,255,255,0.04); }
 .ui-dark .ui-flow footer { border-top-color: #404040; }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
 .ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
+
+.connection-type-transform.highlight.connection-selected { stroke-dasharray: 4; }
+.connection-type-transform.connection-selected { stroke-dasharray: 10; }
 
 .markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); }
 .ui-dark .markdown pre { background-color: #272727; }
