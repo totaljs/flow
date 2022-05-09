@@ -17,7 +17,7 @@ flowstream_worker           : fork
 // Enables sandbox for NPM dependencies (we recommend to use it for "worker" mode only)
 // flowstream_sandbox          : true
 
-// Memory size for forked processes (in MB)
+// Max. memory size for forked processes (in MB)
 // flowstream_memory           : 4069
 
 // Flow directory
