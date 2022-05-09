@@ -1129,7 +1129,7 @@
 			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'fas fa-list-ul' });
 			opt.items.push({ id: 'version', name: '@(Version)', icon: 'fas fa-info-circle' });
 			opt.items.push('-');
-			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check' }); // note: '@(Export entire flow design)'
+			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check' });
 			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
 			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'fa fa-clipboard-list' });
 			opt.items.push('-');
@@ -1165,7 +1165,7 @@
 						break;
 					case 'export':
 						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
-							navigator.clipboard.writeText(STRINGIFY({ type: 'exportedflow', data: response.data })).catch(err => console.error(err));
+							navigator.clipboard.writeText(STRINGIFY(response.data)).catch(err => console.error(err));
 							SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
 						break;
@@ -1650,7 +1650,7 @@
 				item.y = item.y - miny + pos.y;
 			}
 
-		};
+		}
 
 		function paste_components(items, pos) {
 
@@ -1710,7 +1710,7 @@
 				for (var item of add)
 					Designer.op.select(item.id, true);
 			}, 500, add);
-		};
+		}
 
 		function install_component(str, callback) {
 			var id;
@@ -1727,7 +1727,7 @@
 			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: function(){
 				callback(id);
 			}});
-		};
+		}
 
 		exports.selected_settings = function() {
 			var info = exports.data.info;

@@ -271,7 +271,7 @@
 
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fa fa-pencil' });
 				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-				opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
+				// opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
 				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'far fa-copy' });
 				opt.items.push({ id: 'download', name: '@(Download)', icon: 'fa fa-download' });
 
@@ -318,7 +318,7 @@
 							WAPI('clipboard_export/' + id, ASETTER('message/response', function(response) {
 
 								if (opt.id === 'download') {
-									var blob = new Blob([JSON.stringify(JSON.parse(response.value), null, '\t')], { type: 'text/plain;charset=utf-8'});
+									var blob = new Blob([JSON.stringify(JSON.parse(response.value), null, '\t')], { type: 'text/plain; charset=utf-8' });
 									saveAs(blob, item.name + '.json');
 									return;
 								}

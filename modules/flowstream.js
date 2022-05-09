@@ -1946,7 +1946,7 @@ function MAKEFLOWSTREAM(meta) {
 		// Each 9 seconds
 		if (notifier % 3 === 0) {
 			notifier = 0;
-			Parent && Parent.postMessage({ TYPE: 'stream/stats', data: { paused: flow.paused, messages: flow.stats.messages, pending: flow.stats.pending, memory: flow.stats.memory, minutes: flow.stats.minutes, errors: flow.stats.errors, mm: flow.stats.mm } });
+			Parent && Parent.postMessage({ TYPE: 'stream/stats', data: { paused: flow.paused, messages: flow.stats.messages, pending: flow.stats.pending, memory: flow.stats.memory, minutes: flow.stats.minutes, errors: flow.stats.errors, mm: flow.stats.mm }});
 		}
 
 		notifier++;

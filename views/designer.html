@@ -162,10 +162,9 @@
 		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
 
 		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2) {
+			if (common.page === 'flow' && !common.form && !common.form2 && (!e.target || e.target.tagName !== 'INPUT')) {
 				e.preventDefault();
 				e.stopPropagation();
-				console.log('Prevented Default and Stopped Propagation');
 				var designer = FIND('flow');
 				var selected = designer.selected();
 				if (!selected.components.length) {
