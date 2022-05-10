@@ -178,6 +178,19 @@
 			}
 		});
 
+		SETTER(true, 'exec/register', function(attr, el, e, type) {
+			var c = attr.charAt(0);
+			if (c === '=' || c === '/') {
+				var id = ATTRD(el);
+				var instance = flowinstances.instances[id];
+				if (instance) {
+					attr = attr.substring(1);
+					instance[attr] && instance[attr](el, e);
+				}
+				return true;
+			}
+		});
+
 		function select_connected(comp) {
 			var conns = comp.connections;
 			if (!conns)
