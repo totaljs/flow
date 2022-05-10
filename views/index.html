@@ -18,7 +18,7 @@
 	<div data---="LAZY menu__null__style:2"></div>
 	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
 	<div data---="LAZY message__null__style:2"></div>
-	<div data---="LAZY notifybar"></div>
+	<div data---="LAZY notify__null__position:bottom right"></div>
 	<div data---="LAZY fileuploader"></div>
 	<div data---="LAZY clipboard"></div>
 	<div data---="LAZY faicons"></div>
@@ -297,7 +297,7 @@
 							break;
 						case 'restart':
 							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"fa fa-sync" @(Restart)', function() {
-								WAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notifybar/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
+								WAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
 							});
 							break;
 						case 'variables':
@@ -305,7 +305,7 @@
 								var model = {};
 								model.variables = response;
 								model.callback = function(model) {
-									WAPI('variables_save', { id: id, data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+									WAPI('variables_save', { id: id, data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
 								};
 								SET('variablesform @reset', model);
 								SET('common.form', 'variablesform');
@@ -324,7 +324,7 @@
 								}
 
 								if (opt.id === 'copy' || opt.id === 'copy2') {
-									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : response.value);
+									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(JSON.parse(response.value), null, '\t'));
 									SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 								} else {
 									WAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {
@@ -484,7 +484,7 @@
 					var model = {};
 					model.variables = response;
 					model.callback = function(model) {
-						WAPI('variables_save', { data: model }, ASETTER('notifybar/success', '@(Variables have been changed successfully.)'));
+						WAPI('variables_save', { data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
 					};
 					SET('variablesform @reset', model);
 					SET('common.form', 'variablesform');
