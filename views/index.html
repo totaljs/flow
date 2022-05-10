@@ -142,6 +142,14 @@
 			SET('common.form', 'importform');
 		};
 
+		FUNC.cleanflow = function(data) {
+			delete data.origin;
+			delete data.variables2;
+			delete data.unixsocket;
+			delete data.directory;
+			delete data.size;
+		};
+
 		Thelpers.url = function(val) {
 			var index = val.indexOf('/', 10);
 			return index === -1 ? val : val.substring(0, index);
@@ -318,13 +326,13 @@
 							WAPI('clipboard_export/' + id, ASETTER('message/response', function(response) {
 
 								if (opt.id === 'download') {
-									var blob = new Blob([JSON.stringify(JSON.parse(response.value), null, '\t')], { type: 'text/plain; charset=utf-8' });
+									var blob = new Blob([JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t')], { type: 'text/plain; charset=utf-8' });
 									saveAs(blob, item.name + '.json');
 									return;
 								}
 
 								if (opt.id === 'copy' || opt.id === 'copy2') {
-									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(JSON.parse(response.value), null, '\t'));
+									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t'));
 									SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 								} else {
 									WAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {

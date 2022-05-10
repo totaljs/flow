@@ -556,6 +556,8 @@
 					var inputs = [];
 					var outputs = [];
 
+					delete flow.origin;
+
 					for (var key in flow.components) {
 						var tmp = flow.components[key];
 						var index = tmp.indexOf('<scr' + 'ipt total>');
@@ -1140,11 +1142,39 @@
 			if (model.head.worker)
 				opt.items.push({ id: 'restart', name: '@(Restart worker)', icon: 'fas fa-sync' });
 
+			opt.items.push({ id: 'clearunused', name: '@(Clear unused components)', icon: 'fas fa-recycle' });
 			opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'far fa-trash-alt red' });
 
 			opt.callback = function(item) {
 
 				switch (item.id) {
+					case 'clearunused':
+
+						var arr = [];
+						var com = {};
+						var names = [];
+						for (var key in flow.data)
+							com[flow.data[key].component] = 1;
+
+						for (var m of flow.components) {
+							if (!com[m.id]) {
+								names.push(m.name);
+								arr.push(m.id);
+							}
+						}
+
+						if (!names.length) {
+							SETTER('notify/success', '@(Good job, nothing to clear).');
+							return;
+						}
+
+						SETTER('approve/show', '@(Are you sure you want to clear all unused components ({0})?)'.format(names.join(', ')), '"fas fa-trash-alt" @(Remove)', function() {
+							arr.wait(function(id, next) {
+								SETTER('websocket/send', { TYPE: 'component_remove', id: id });
+								setTimeout(next, 5);
+							}, ASETTER('notify/success', '@(Done, all unused components have been removed).'));
+						});
+						break;
 					case 'version':
 						SET('common.form', 'versionform');
 						break;
@@ -1165,7 +1195,8 @@
 						break;
 					case 'export':
 						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
-							navigator.clipboard.writeText(STRINGIFY(response.data)).catch(err => console.error(err));
+							delete response.data.origin;
+							navigator.clipboard.writeText(JSON.stringify(response.data, null, '\t')).catch(err => console.error(err));
 							SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 						})});
 						break;
