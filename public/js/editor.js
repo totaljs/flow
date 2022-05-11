@@ -395,7 +395,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 
 		editor.on('change', function(a, b) {
 
-			if (config.disabled || !can[b.origin])
+			if (config.disabled || (b.origin && !can[b.origin]))
 				return;
 
 			setTimeout2(self.id, function() {
