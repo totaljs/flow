@@ -430,18 +430,8 @@
 						FUNC.import(function(data, hide) {
 							data = data.trim();
 							var obj = PARSE(data);
-							var is = obj && obj.type === 'exportedflow';
-							if (data.substring(0, 4) === 'flow' || is) {
-								if (is) {
-									data = STRINGIFY(obj.data);
-								} else {
-									data = DECRYPT(data, common.secret, 'flow');
-									if (!data) {
-										SETTER('message/warning', '@(Invalid data)');
-										return;
-									}
-									data = STRINGIFY(data);
-								}
+							if (obj && obj.components && obj.id && obj.name && obj.design) {
+								data = STRINGIFY(obj.data);
 								WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
 									exports.scope();
 									exports.refresh();
