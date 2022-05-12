@@ -129,7 +129,7 @@ NEWSCHEMA('Streams', function(schema) {
 
 			F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
 
-			item.proxy && PROXY(item.proxy, null);
+			item.proxypath && PROXY(item.proxypath, null);
 
 			delete MAIN.flowstream.db[id];
 			MAIN.flowstream.instances[id].destroy();
