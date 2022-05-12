@@ -431,7 +431,7 @@
 							data = data.trim();
 							var obj = PARSE(data);
 							if (obj && obj.components && obj.id && obj.name && obj.design) {
-								data = STRINGIFY(obj.data);
+								data = STRINGIFY(obj);
 								WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
 									exports.scope();
 									exports.refresh();
