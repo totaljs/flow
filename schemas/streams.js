@@ -100,7 +100,6 @@ NEWSCHEMA('Streams', function(schema) {
 					if (CONF.flowstream_worker && item.proxypath) {
 						PROXY(item.proxypath, null);
 						PROXY(item.proxypath, item.unixsocket, false);
-						console.log('Proxy registered:', item.proxypath);
 					}
 
 					instance.refresh(model.id, 'meta', CLONE(model));
