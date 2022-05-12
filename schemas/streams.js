@@ -51,7 +51,7 @@ NEWSCHEMA('Streams', function(schema) {
 				model.proxypath += '/';
 
 			if (model.proxypath === '/cdn/' || model.proxypath === '/fapi/' || model.proxypath === '/private/' || model.proxypath === '/flows/' || model.proxypath === '/designer/') {
-				$.invalid('@(Proxy endpoint contains not allowed path)');
+				$.invalid('@(Proxy endpoint contains reserved path)');
 				return;
 			}
 
@@ -100,6 +100,7 @@ NEWSCHEMA('Streams', function(schema) {
 					if (CONF.flowstream_worker && item.proxypath) {
 						PROXY(item.proxypath, null);
 						PROXY(item.proxypath, item.unixsocket, false);
+						console.log('Proxy registered:', item.proxypath);
 					}
 
 					instance.refresh(model.id, 'meta', CLONE(model));
@@ -148,24 +149,28 @@ NEWSCHEMA('Streams', function(schema) {
 			$.invalid(404);
 	});
 
+	var internalstats = {};
+	internalstats.node = F.version_node;
+	internalstats.total = F.version;
+	internalstats.version = MODULE('flowstream').version;
+
 	schema.addWorkflow('stats', function($) {
 
-		var data = {};
-		data.messages = 0;
-		data.pending = 0;
-		data.mm = 0;
-		data.memory = process.memoryUsage().heapUsed;
+		internalstats.messages = 0;
+		internalstats.pending = 0;
+		internalstats.mm = 0;
+		internalstats.memory = process.memoryUsage().heapUsed;
 
 		for (var key in MAIN.flowstream.instances) {
 			var flow = MAIN.flowstream.instances[key];
 			if (flow.flow && flow.flow.stats) {
-				data.messages += flow.flow.stats.messages;
-				data.mm += flow.flow.stats.mm;
-				data.pending += flow.flow.stats.pending;
+				internalstats.messages += flow.flow.stats.messages;
+				internalstats.mm += flow.flow.stats.mm;
+				internalstats.pending += flow.flow.stats.pending;
 			}
 		}
 
-		$.callback(data);
+		$.callback(internalstats);
 	});
 
 	schema.addWorkflow('pause', function($) {

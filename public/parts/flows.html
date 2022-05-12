@@ -68,6 +68,7 @@
 				<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
 				<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
 				<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
+				<span class="center" title="FlowStream: {{ value.version }}, Total.js: {{ value.total }}, Node.js: {{ value.node }}">FlowStream v{{ value.version }} | Total.js: v{{ value.total }}</span>
 			</script>
 		</div>
 	</footer>
