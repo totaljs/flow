@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 22;
+const VERSION = 23;
 
 var isFLOWSTREAMWORKER = false;
 var Parent = W.parentPort;
@@ -624,6 +624,8 @@ exports.refresh = function(id, type) {
 		flow.$instance.refresh(id, type);
 	}
 };
+
+exports.version = VERSION;
 
 function exec(self, opt) {
 
