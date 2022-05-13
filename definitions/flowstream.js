@@ -49,6 +49,7 @@ FS.init = function(id, next) {
 	flow.directory = CONF.directory || PATH.root('/flowstream/');
 	flow.sandbox = CONF.flowstream_sandbox == true;
 	flow.env = PREF.env || 'dev';
+	flow.memory = CONF.flowstream_memory;
 
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 
@@ -82,6 +83,7 @@ FS.init = function(id, next) {
 		};
 
 		instance.onsave = function(data) {
+			data.unixsocket = flow.unixsocket;
 			EMIT('flowstream_save', data);
 			FS.db[id] = data;
 			FS.save();

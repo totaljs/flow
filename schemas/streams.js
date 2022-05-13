@@ -97,10 +97,8 @@ NEWSCHEMA('Streams', function(schema) {
 				if (instance) {
 
 					// Registers new proxy
-					if (CONF.flowstream_worker && item.proxypath) {
-						PROXY(item.proxypath, null);
+					if (CONF.flowstream_worker && item.proxypath)
 						PROXY(item.proxypath, item.unixsocket, false);
-					}
 
 					instance.refresh(model.id, 'meta', CLONE(model));
 				}
