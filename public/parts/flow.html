@@ -346,8 +346,8 @@
 						single && opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
 						//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
 						//opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
-						opt.items.push({ id: 'copycomponents', name: '@(Copy component(s))', icon: 'far fa-copy' });
-						opt.items.push({ id: 'exportcomponents', name: '@(Export component(s))', icon: 'far fa-copy' });
+						// opt.items.push({ id: 'copycomponents', name: '@(Copy component(s))', icon: 'far fa-copy' });
+						opt.items.push({ id: 'exportcomponents', name: '@(Copy)', icon: 'far fa-copy' });
 						opt.items.push('-');
 					}
 				}
@@ -1592,7 +1592,7 @@
 					return;
 				}
 
-				if ((data.type === 'copied_components' || data.type === 'exported_components') && data.flowstreamid === flowstreamid) { // local copy&paste
+				if ((data.type === 'copied_components' || data.type === 'exported_components') && data.flowstreamid === flowstreamid) {
 					paste_components(data.items, pos);
 					return;
 				} if (data.type === 'copied_components' && data.flowstreamid !== flowstreamid) { // external copy & local paste
@@ -1602,7 +1602,9 @@
 
 					SETTER('loading/show');
 
+					var isinstall = false;
 					var names = {};
+
 					for (var com of flow.components)
 						names[com.name] = com.id;
 
@@ -1627,16 +1629,20 @@
 
 						install_component(com.source, function(id) {
 							com.id = id;
+							isinstall = true;
 							updateid(id);
-							next();
 						});
 
 					}, function() {
-						WATCHONCE('flow.data', function() {
+						var done = function() {
 							SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
 							paste_components(data.items, pos);
 							SETTER('loading/hide', 1000);
-						});
+						};
+						if (isinstall)
+							WATCHONCE('flow.data', done);
+						else
+							done();
 					});
 
 					return;
@@ -1755,7 +1761,7 @@
 			if (!id)
 				id = FUNC.makeid('c');
 
-			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: function(){
+			SETTER('websocket/send', { TYPE: 'component_save', id: id, data: FUNC.rtrim(str), callback: function() {
 				callback(id);
 			}});
 		}
