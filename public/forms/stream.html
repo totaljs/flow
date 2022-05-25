@@ -66,6 +66,22 @@
 					model.proxypath = '/' + model.proxypath;
 				if (model.proxypath.charAt(model.proxypath.length - 1) !== '/')
 					model.proxypath += '/';
+
+				var error;
+				for (var i = 0; i < common.items.length; i++) {
+					var item = common.items[i];
+					if (item.id === model.id)
+						continue;
+					if (item.proxypath && (item.proxypath === model.proxypath || item.proxypath.startsWith(model.proxypath) || model.proxypath.startsWith(item.proxypath))) {
+						error = '@(Invalid endpoint) <span class="link">{0}</span>.<br>@(Overlapping with <span class="link">{1}</span> used by <b>{2}</b>)'.format(model.proxypath, item.proxypath, item.name);
+						break;
+					}
+				}
+
+				if (error) {
+					SETTER('message/warning', error);
+					return;
+				}
 			}
 
 			WAPI('streams_save', model, ASETTER('message/response', function() {

@@ -257,7 +257,10 @@
 		};
 
 		exports.reset = function() {
-			SETTER('approve/show', '@(Are you sure you want to reset errors?)', '"broom" @(Reset)', ASETTER('websocket/send', { TYPE: 'reset' }));
+			SETTER('approve/show', '@(Are you sure you want to reset errors?)', '"broom" @(Reset)', function(){
+				SETTER('websocket/send', { TYPE: 'reset' });
+				SET('common.console', false);
+			});
 		};
 
 		exports.marketplace = function() {
@@ -1452,7 +1455,7 @@
 		};
 
 		exports.component_contextmenu = function(el, e) {
-
+console.log('CONTEXT');
 			var id = ATTRD(el);
 			var component = flow.components.findItem('id', id);
 

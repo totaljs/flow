@@ -239,10 +239,14 @@
 				item.id = id;
 				item.name = flow.name;
 				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '');
-
+				item.focus = 'common/focusiframe';
 				SETTER('loading/show');
 				SETTER('loading/hide', 2000);
 				PUSH('?.tabs', item);
+			};
+
+			exports.focusiframe = function(el, item) {
+				el[0].firstChild.contentWindow.focus();
 			};
 
 			exports.contextmenu = function(el, e) {

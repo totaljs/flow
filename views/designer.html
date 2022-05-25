@@ -136,7 +136,7 @@
 		}, true);
 
 		SETTER(true, 'shortcuts/register', 'CMD+C, CTRL+C', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2 && flow.selected) {
+			if (!window.getSelection().toString() && common.page === 'flow' && !common.form && !common.form2 && flow.selected) {
 				EXEC('flow/copy_components');
 				e.preventDefault();
 				e.stopPropagation();
@@ -162,9 +162,7 @@
 		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
 
 		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2 && (!e.target || e.target.tagName !== 'INPUT')) {
-				e.preventDefault();
-				e.stopPropagation();
+			if (common.page === 'flow' && !common.form && !common.form2 && (!e.target || e.target.tagName !== 'INPUT' || e.target.tagName !== 'TEXTAREA')) {
 				var designer = FIND('flow');
 				var selected = designer.selected();
 				if (!selected.components.length) {
@@ -172,11 +170,11 @@
 						if (c !== 'groups' && c !== 'paused')
 							designer.op.select(c, true);
 					});
-				} else if (selected.components.length === 1) {
+				} else {
 					select_connected(flow.selected);
 				}
 			}
-		});
+		}, true);
 
 		SETTER(true, 'exec/register', function(attr, el, e, type) {
 			var c = attr.charAt(0);
