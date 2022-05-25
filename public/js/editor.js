@@ -433,9 +433,11 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 		});
 
 		self.event('contextmenu', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			config.contextmenu && self.EXEC(config.contextmenu, e, editor);
+			if (config.contextmenu) {
+				e.preventDefault();
+				e.stopPropagation();
+				self.EXEC(config.contextmenu, e, editor);
+			}
 		});
 
 		editor.on('cursorActivity', function() {
