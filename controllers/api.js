@@ -86,6 +86,8 @@ function privatefiles() {
 			}
 
 			var stream = F.Fs.createReadStream(path, opt);
+
+			$.nocache();
 			$.stream(stream, U.getContentType(U.getExtension(path)), filename, { 'x-size': stat.size, 'last-modified': stat.mtime.toUTCString() });
 
 		});
