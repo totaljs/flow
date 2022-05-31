@@ -980,7 +980,7 @@ function init_current(meta, callback) {
 			}
 
 			instanceid && flow.onerror(err, source, instanceid, componentid);
-			Parent.postMessage({ TYPE: 'stream/error', error: err.toString(), source: source, id: instanceid, component: componentid });
+			Parent.postMessage({ TYPE: 'stream/error', error: err.toString(), stack: err.stack, source: source, id: instanceid, component: componentid });
 		};
 
 		flow.proxy.refresh = function(type) {
@@ -1195,8 +1195,8 @@ function init_worker(meta, type, callback) {
 				break;
 
 			case 'stream/error':
-				worker.socket && worker.$socket.send({ TYPE: 'flow/error', error: msg.error, source: msg.source, id: msg.id, component: msg.component });
-				worker.$instance.onerror && worker.$instance.onerror(msg.error, msg.source, msg.id, msg.component);
+				worker.socket && worker.$socket.send({ TYPE: 'flow/error', error: msg.error, stack: msg.stack, source: msg.source, id: msg.id, component: msg.component });
+				worker.$instance.onerror && worker.$instance.onerror(msg.error, msg.source, msg.id, msg.component, msg.stack);
 				break;
 
 			case 'stream/save':

@@ -64,7 +64,7 @@ FS.init = function(id, next) {
 
 		instance.httprouting();
 		instance.ondone = () => next();
-		instance.onerror = function(err, source, id, component) {
+		instance.onerror = function(err, source, id, component, stack) {
 			var empty = '---';
 			var output = '';
 			output += '|------------- FlowError: ' + new Date().format('yyyy-MM-dd HH:mm:ss') + '\n';
@@ -72,7 +72,9 @@ FS.init = function(id, next) {
 			output += '| Name: ' + flow.name + '\n';
 			output += '| Source: ' + (source || empty) + '\n';
 			output += '| Instance ID: ' + (id || empty) + '\n';
-			output += '| Component ID: ' + (component || empty);
+			output += '| Component ID: ' + (component || empty) + '\n';
+			output += '|---- Stack: ----\n';
+			output += stack;
 			console.error(output);
 			var meta = {};
 			meta.error = err;
