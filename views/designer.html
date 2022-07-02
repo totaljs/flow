@@ -162,19 +162,21 @@
 		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
 
 		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
-			if (common.page === 'flow' && !common.form && !common.form2 && (!e.target || e.target.tagName !== 'INPUT' || e.target.tagName !== 'TEXTAREA')) {
-				var designer = FIND('flow');
-				var selected = designer.selected();
-				if (!selected.components.length) {
-					Object.keys(flow.data).forEach(c => {
-						if (c !== 'groups' && c !== 'paused')
-							designer.op.select(c, true);
-					});
-				} else {
-					select_connected(flow.selected);
+			var designer = FIND('flow');
+			var selected = designer.selected();
+			if (!selected.components.length) {
+				var keys = Object.keys(flow.data);
+				for (var key in keys) {
+					if (key !== 'groups' && key !== 'paused')
+						designer.op.select(key, true);
 				}
-			}
-		}, true);
+			} else
+				select_connected(flow.selected);
+		}, false, function(e) {
+			var is = common.page === 'flow' && !common.form && !common.form2 && (!e.target || (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA'));
+			is && e.preventDefault();
+			return is;
+		});
 
 		SETTER(true, 'exec/register', function(attr, el, e, type) {
 			var c = attr.charAt(0);
