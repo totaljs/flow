@@ -21,20 +21,20 @@
 		</div>
 		<hr />
 		<div class="padding npt">
-			<div data---="input__?.name__required:1__document.title" class="m">@(Name)</div>
+			<div data---="input__?.name__required:1;innerlabel:1__document.title" class="m">@(Name)</div>
 			<div class="row">
 				<div class="col-md-6 m">
-					<div data---="input__?.components__required:1;type:url">@(Main components)</div>
+					<div data---="input__?.components__required:1;innerlabel:1;type:url">@(Main components)</div>
 					<div class="help">@(We don't recommend to change it)</div>
 				</div>
 				<div class="col-md-6 m">
-					<div data---="input__?.components2__type:url;placeholder:@(URL address to list of components)">@(Custom components)</div>
+					<div data---="input__?.components2__type:url;innerlabel:1;placeholder:@(URL address to list of components)">@(Custom components)</div>
 					<div class="help"><a href="https://github.com/totaljs/flowstreamcomponents/blob/main/db.json" target="_blank"><i class="fas fa-external-link"></i>@(Follow this file structure)</a></div>
 				</div>
 			</div>
 			<hr class="nmt" />
 			<p class="fs12">@(The access token allows you to access to <b>private</b> directory from the internet on the <b>/private/?token=YOUR_TOKEN</b> endpoint).</p>
-			<div data---="input__?.token__camouflage:1">@(Access token)</div>
+			<div data---="input__?.token__camouflage:1;innerlabel:1;placeholder:@(Enter access token)">@(Access token)</div>
 			<div class="help"><span class="link exec" data-exec="?/generate">@(Generate token)</span></div>
 			<hr />
 			<div data---="checkbox__?.backup">@(Backup Flow database file after each change)</div>
