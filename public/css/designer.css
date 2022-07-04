@@ -159,8 +159,10 @@ body.ui-dark { background-color: #202020 !important; }
 .connection-type-transform.highlight.connection-selected { stroke-dasharray: 4; }
 .connection-type-transform.connection-selected { stroke-dasharray: 10; }
 
-.markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); }
+.markdown p { color: #000; }
+.markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); margin: 0; }
 .ui-dark .markdown pre { background-color: #272727; }
+.ui-dark .markdown p { color: #F0F0F0; }
 .markdown-small .markdown p { font-size: 14px !important; }
 
 .landing .body { background-color: #FFF; }
