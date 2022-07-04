@@ -75,7 +75,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .type-call { background-color: #464337 !important; }
 
 .flowcomponents figure:hover { border-color: #E0E0E0; }
-.flowcomponents figure i { width: 13px; margin: 6px 5px 0 0; text-align: center; float: left; font-size: 12px; text-align: center; }
+.flowcomponents figure i { width: 13px; margin: 6px 6px 0 0; text-align: center; float: left; font-size: 12px; text-align: center; }
 .flowcomponents .name { font-size: 12px; padding-top: 2px; }
 .flowcomponents .name div { margin-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .flowcomponents .name span { font-weight: normal; font-size: 11px; float: right; color: #777; }
