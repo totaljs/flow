@@ -12,6 +12,7 @@ body.ui-dark { background-color: #202020 !important; }
 .markdown-tiny .markdown { font-size: 12px; line-height: 16px; font-family: Arial; }
 .markdown-tiny .markdown p { font-size: 12px !important; margin-bottom: 8px; }
 .markdown-tiny p code, .markdown-tiny li code, .markdown-tiny section code, .markdown-tiny blockquote code, .markdown-tiny td code, .markdown-tiny pre code { font-size: 11px; border: 0 !important; }
+.markdown-tiny .markdown-container > *:last-child { margin-bottom: 0 !important; }
 
 :root {
 	--monospace: Menlo, Consolas, monospace;
