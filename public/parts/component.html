@@ -3,10 +3,9 @@
 		<div data---="codemirror__?.body__type:totaljs;parent:auto;contextmenu:?/contextmenu;$assign:EDITOR;height:0__''"></div>
 	</div>
 	<nav>
-		<div class="help" style="margin-top:25px"><a href="https://docs.totaljs.com/" target="_blank"><i class="far fa-book-spells"></i>@(Documentation)</a></div>
+		<!--<div class="help" style="margin-top:25px"><a href="https://docs.totaljs.com/" target="_blank"><i class="far fa-book-spells"></i>@(Documentation)</a></div>-->
 		<div>
-			<button name="submit" class="exec" data-exec="?/submit"><i class="far fa-check-circle"></i>@(SUBMIT)</button>
-			<button class="exec" data-exec="?/cancel">@(Cancel)</button>
+			<button name="submit" class="exec" data-exec="?/submit" style="width:50%"><i class="far fa-check-circle"></i>@(SUBMIT)</button><button class="exec" data-exec="?/cancel" style="width:50%">@(Cancel)</button>
 		</div>
 	</nav>
 </div>
@@ -22,6 +21,7 @@
 				exports.element.find('.componenteditor').rclass('invisible', 1000);
 				init = true;
 			}
+			SET('common.console', false);
 		};
 
 		exports.refresh = function() {

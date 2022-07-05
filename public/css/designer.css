@@ -294,7 +294,7 @@ body.ui-dark { background-color: #202020 !important; }
 .componenteditor { background-color: #FFF; }
 .componenteditor .CodeMirror { border-radius: 0 !important; border-top: 0; border-right: 0; border-left: 0; }
 .componenteditor nav { height: 60px; padding: 0 15px; }
-.componenteditor > nav button { border: 0; margin: 15px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 15px; color: #000; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; min-width: 120px; }
+.componenteditor > nav button { border: 0; margin: 14px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 15px; color: #000; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; min-width: 120px; }
 .componenteditor > nav button i { width: 15px; text-align: center; margin-right: 5px; }
 .componenteditor > nav button:hover { opacity: 0.9; }
 .componenteditor > nav button:active { background-color: #D0D0D0; }
