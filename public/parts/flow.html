@@ -107,8 +107,10 @@
 
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
+
 <div data---="importer__common.form__if:groupform;url:/forms/group.html"></div>
 <div data---="importer__common.form__if:newflow;url:/forms/new.html"></div>
+<div data---="importer__common.form__if:noteform;url:/forms/note.html"></div>
 
 <script>
 
@@ -388,14 +390,10 @@
 						break;
 
 					case 'note':
-						var input = {};
-						input.icon = opt.icon;
-						input.element = $(e.target);
-						input.summary = '@(Type a custom note for this instance.)';
-						input.placeholder = '@(Your note)';
-						input.value = flow.note[item.id] || '';
-						input.maxlength = 10000;
-						input.callback = function(value) {
+
+						var data = {};
+						data.note = flow.note[item.id] || '';
+						data.callback = function(value) {
 							if (item.connected) {
 								SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
 							} else {
@@ -404,7 +402,8 @@
 							}
 						};
 
-						SETTER('floatinginput/show', input);
+						SET('noteform @reset', data);
+						SET('common.form', 'noteform');
 						break;
 
 					case 'settings':
@@ -480,7 +479,7 @@
 
 				var component = flow.components.findItem('id', instance.component);
 				if (!component || !component.settings)
-					return;
+					return SETTER('notify/warning', '@(No settings available)');
 
 				var id = 'settings_f' + component.id;
 				var dom = $('#flow_settings')[0];
@@ -951,7 +950,7 @@
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html"></summ' + 'ary>');
+			content.append('<summ' + 'ary class="hidden selectable markdown-small" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div></div></summ' + 'ary>');
 			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
@@ -1455,7 +1454,7 @@
 		};
 
 		exports.component_contextmenu = function(el, e) {
-console.log('CONTEXT');
+
 			var id = ATTRD(el);
 			var component = flow.components.findItem('id', id);
 
@@ -1804,6 +1803,13 @@ console.log('CONTEXT');
 
 			body += (body ? '\n' : '') + (head.readme || '');
 			FUNC.readme(head.name, body);
+		};
+
+		exports.notewindow = function(el) {
+			var id = ATTRD(el);
+			var note = flow.note[id];
+			var instance = flow.data[id];
+			note && FUNC.readme(instance.Component.name, note);
 		};
 
 		exports.copyconfig = function(el) {

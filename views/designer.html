@@ -108,6 +108,9 @@
 			if (common.page === 'componenteditor' && !common.form && !common.form2) {
 				EXEC('componenteditor/submit');
 				is = true;
+			} else if (common.form === 'noteform') {
+				EXEC('noteform/submit');
+				is = true;
 			} else if (common.form === 'settings' && !FIND('#flowsettings').find('button[name="submit"]').prop('disabled')) {
 				EXEC('flow/settings_submit');
 				is = true;
