@@ -950,7 +950,7 @@
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-small"></div></summ' + 'ary>');
+			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
 			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
