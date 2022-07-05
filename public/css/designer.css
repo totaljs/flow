@@ -139,8 +139,9 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .component.iserror { border-color: red; }
 .ui-flow .component-selected { border-color: var(--color) !important; }
 .ui-flow-h summary { padding: 5px 8px 12px; font-size: 13px; font-style: normal; border-top: 3px solid rgba(0,0,0,0.1); display: block; position: relative; }
+.ui-flow-h summary > div { max-height: 200px; }
 .ui-flow-h summary .towindow { position: absolute; top: 5px; right: 5px; color: #000; cursor: pointer; }
-.ui-flow-h summary > div { padding-top: 5px; }
+.ui-flow-h summary > div { padding-top: 7px; width: auto; }
 .ui-flow-h summary > span { font-size: 11px; color: #777; }
 .ui-flow-h .output { line-height: 22px; font-size: 11px; }
 .ui-flow-h .output .component-io { line-height: 22px; margin-top: 5px; margin-right: -13px; }
@@ -164,7 +165,7 @@ body.ui-dark { background-color: #202020 !important; }
 .connection-type-transform.connection-selected { stroke-dasharray: 10; }
 
 .markdown p { color: #000; }
-.markdown pre { background-color: #F8F8F8; overflow: hidden; padding: 10px; border-radius: var(--radius); margin: 0; }
+.markdown pre { background-color: #F8F8F8; padding: 10px; border-radius: var(--radius); margin: 0; }
 .ui-dark .markdown pre { background-color: #272727; }
 .ui-dark .markdown p { color: #F0F0F0; }
 .markdown-small .markdown p { font-size: 14px !important; }
@@ -341,7 +342,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .button:hover { background-color: #262626; color: #FFF; }
 .ui-dark .button:disabled { background-color: #272727; color: #555; border-color: #333; }
 
-.markdown pre code { white-space: break-spaces; display: block; font-size: 11px; line-height: 16px; padding: 0; }
+.markdown pre code { white-space: pre; display: block; font-size: 11px; line-height: 16px; padding: 0; }
 
 .keyvalue.small { font-size: 11px; min-height: 14px; line-height: 14px; }
 .keyvalue.small > span i { width: 12px; }

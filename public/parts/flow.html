@@ -950,7 +950,7 @@
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden selectable markdown-small" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div></div></summ' + 'ary>');
+			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-small"></div></summ' + 'ary>');
 			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
@@ -1890,21 +1890,26 @@
 	};
 
 	ON('markdown', function(el) {
-		el.find('pre code').each(function() {
-			var el = $(this);
-			var type = 'application/ld+json';
 
-			if (el.hclass('lang-js'))
-				type = 'text/javascript';
-			else if (el.hclass('lang-html'))
-				type = 'text/html';
-			else if (el.hclass('lang-sql'))
-				type = 'text/x-sql';
+		var arr = el.find('pre code');
+		for (var t of arr) {
+			if (!t.$mdcodemirror) {
+				t.$mdcodemirror = true;
+				var el = $(t);
+				var type = 'application/ld+json';
 
-			el.aclass('cm-s-default');
-			var code = FUNC.strim(el.html()).trim().replace(/&gt;|&lt;|&quot;|&#39;/g, htmldecode);
-			CodeMirror.runMode(code.replace(/\t/g, '  '), type, el[0]);
-		});
+				if (el.hclass('lang-js'))
+					type = 'text/javascript';
+				else if (el.hclass('lang-html'))
+					type = 'text/html';
+				else if (el.hclass('lang-sql'))
+					type = 'text/x-sql';
+
+				el.aclass('cm-s-default');
+				var code = FUNC.strim(el.html()).trim().replace(/&gt;|&lt;|&quot;|&#39;/g, htmldecode);
+				CodeMirror.runMode(code.replace(/\t/g, '  '), type, el[0]);
+			}
+		}
 	});
 
 	isTOUCH && (function() {
