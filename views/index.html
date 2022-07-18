@@ -30,7 +30,7 @@
 	<div data---="shortcuts"></div>
 	<div data---="loading__null__style:2"></div>
 
-	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
+	<div data---="importer__common.form__if:importform;url:@{#}/forms/import.html"></div>
 
 	<header>
 
@@ -58,18 +58,18 @@
 			<div class="landing">
 				<div data---="parts__common.tabs__parent:window;margin:60"></div>
 			</div>
-			<div data---="importer__common.form__if:streamform;url:/forms/stream.html"></div>
-			<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
-			<div data---="importer__common.form__if:welcomeform;url:/forms/welcome.html"></div>
-			<div data---="importer__common.form__if:settingsform;url:/forms/settings.html"></div>
-			<div data---="importer__common.form__if:passwordform;url:/forms/password.html"></div>
+			<div data---="importer__common.form__if:streamform;url:@{#}/forms/stream.html"></div>
+			<div data---="importer__common.form__if:variablesform;url:@{#}/forms/variables.html"></div>
+			<div data---="importer__common.form__if:welcomeform;url:@{#}/forms/welcome.html"></div>
+			<div data---="importer__common.form__if:settingsform;url:@{#}/forms/settings.html"></div>
+			<div data---="importer__common.form__if:passwordform;url:@{#}/forms/password.html"></div>
 		</div>
 
 	</div>
 
 	<script>
 
-		DEF.fallback = '/cdn/j-{0}.html';
+		DEF.fallback = '@{#}/cdn/j-{0}.html';
 		DEF.versionhtml = '@{MAIN.flowstream.version}';
 
 		var common = {};
@@ -92,7 +92,7 @@
 		common.windows = [];
 		common.page = 'flows';
 		common.marketplace = 'https://marketplace.totaljs.com';
-		common.designer = '/designer/';
+		common.designer = '@{#}/designer/';
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
 		common.env = '@{PREF.env}';
@@ -100,7 +100,7 @@
 		common.cl = {}; // for additional codelists
 		document.title += ' (' + common.env + ')';
 
-		WAPI({ url: '/fapi/' + common.openplatform });
+		WAPI({ url: '@{#}/fapi/' + common.openplatform });
 
 		ON('@flag showloading', function() {
 			SETTER('loading/show');
@@ -233,7 +233,7 @@
 				}
 
 				var flow = model.items.findItem('id', id);
-				var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id) + common.openplatform;
+				var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id) + common.openplatform;
 
 				item = {};
 				item.id = id;
@@ -297,7 +297,7 @@
 				opt.callback = function(opt) {
 					switch (opt.id) {
 						case 'newtab':
-							var url = location.origin.replace(/^http/, 'ws') + '/flows/{0}/'.format(id);
+							var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id);
 							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')) + (common.openplatform ? ('&' + common.openplatform.substring(1)) : ''));
 							break;
 						case 'pause':
@@ -428,7 +428,7 @@
 						break;
 
 					case 'logout':
-						AJAX('GET /fapi/logout/ @showloading', () => location.href = '/');
+						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '/');
 						break;
 
 					case 'import':

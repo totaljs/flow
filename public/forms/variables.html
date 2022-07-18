@@ -14,7 +14,7 @@
 	PLUGIN('~PATH~', function(exports) {
 
 		exports.submit = function(hide) {
-			var model = GET('?');
+			var model = exports.model;
 			model.callback && model.callback(model.variables);
 			hide();
 		};

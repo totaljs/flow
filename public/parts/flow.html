@@ -47,7 +47,7 @@
 		</script>
 
 		<section data-type="left">
-			<div data-import="url:/panels/flow.html"></div>
+			<div data-import="url:@{#}/panels/flow.html"></div>
 		</section>
 
 		<section data-type="main">
@@ -108,9 +108,9 @@
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
 
-<div data---="importer__common.form__if:groupform;url:/forms/group.html"></div>
-<div data---="importer__common.form__if:newflow;url:/forms/new.html"></div>
-<div data---="importer__common.form__if:noteform;url:/forms/note.html"></div>
+<div data---="importer__common.form__if:groupform;url:@{#}/forms/group.html"></div>
+<div data---="importer__common.form__if:newflow;url:@{#}/forms/new.html"></div>
+<div data---="importer__common.form__if:noteform;url:@{#}/forms/note.html"></div>
 
 <script>
 
@@ -232,7 +232,7 @@
 				return;
 			}
 
-			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:/forms/nodes.html"></div>', title: '@(Nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 150) >> 0, y: ((WH / 2) - 200) >> 0, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
+			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:@{#}/forms/nodes.html"></div>', title: '@(Nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 150) >> 0, y: ((WH / 2) - 200) >> 0, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
 		};
 
 		exports.create = function() {
@@ -1256,7 +1256,10 @@
 					if (msg.name)
 						document.title = msg.name;
 
-					msg.proxyurl = location.origin + (msg.proxypath || '');
+					msg.proxyurl = location.origin;
+					var tmp = (msg.proxypath || '');
+					if (tmp)
+						msg.proxyurl += common.root && tmp.charAt(0) === '/' ? (common.root + tmp.substring(1)) : tmp;
 
 					SET('flow.head', msg);
 					SET('flow.stats.paused', msg.paused == true);
@@ -1264,6 +1267,10 @@
 						var socket = NAV.query.socket.replace(/^ws/, 'http');
 						var index = socket.indexOf('/', 9);
 						var origin = index === -1 ? socket : socket.substring(0, index);
+
+						if (common.root)
+							origin += common.root.substring(0, common.root.length - 1);
+
 						if (origin && msg.origin !== origin)
 							SETTER('websocket/send', { TYPE: 'origin', body: origin });
 					}

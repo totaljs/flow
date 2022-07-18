@@ -37,21 +37,21 @@
 	<div data---="loading"></div>
 	<div data---="console__common.console__datasource:common.logs"></div>
 
-	<div data---="part__common.page__if:flow;url:/parts/flow.html;loading:0" class="hidden invisible"></div>
-	<div data---="part__common.page__if:componenteditor;url:/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></div>
+	<div data---="part__common.page__if:flow;url:@{#}/parts/flow.html;loading:0" class="hidden invisible"></div>
+	<div data---="part__common.page__if:componenteditor;url:@{#}/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></div>
 
-	<div data---="importer__common.form__if:componentsform;url:/forms/components.html"></div>
-	<div data---="importer__common.form__if:sourcesform;url:/forms/sources.html"></div>
-	<div data---="importer__common.form__if:versionform;url:/forms/version.html"></div>
-	<div data---="importer__common.form2__if:sourceform;url:/forms/source.html"></div>
-	<div data---="importer__common.form__if:variablesform;url:/forms/variables.html"></div>
-	<div data---="importer__common.form__if:importform;url:/forms/import.html"></div>
+	<div data---="importer__common.form__if:componentsform;url:@{#}/forms/components.html"></div>
+	<div data---="importer__common.form__if:sourcesform;url:@{#}/forms/sources.html"></div>
+	<div data---="importer__common.form__if:versionform;url:@{#}/forms/version.html"></div>
+	<div data---="importer__common.form2__if:sourceform;url:@{#}/forms/source.html"></div>
+	<div data---="importer__common.form__if:variablesform;url:@{#}/forms/variables.html"></div>
+	<div data---="importer__common.form__if:importform;url:@{#}/forms/import.html"></div>
 
 	<script>
 
 		var common = {};
 
-		DEF.fallback = '/cdn/j-{0}.html';
+		DEF.fallback = '@{#}/cdn/j-{0}.html';
 		DEF.versionhtml = '@{MAIN.flowstream.version}';
 
 		ENVIRONMENT('designer');
@@ -64,6 +64,7 @@
 		common.windows = [];
 		// common.tms = '@{query.tms}' === '1';
 		common.socket = '@{query.socket}';
+		common.root = '@{#}';
 		common.logs = {};
 		common.logs.errors = { icon: 'fas fa-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
