@@ -2035,7 +2035,11 @@ function MAKEFLOWSTREAM(meta) {
 
 		instance.href = function(url) {
 			var hostname = (flow.$schema.origin || '') + (flow.$schema.proxypath || '');
-			return url ? U.join(hostname, url) : hostname;
+
+			if (url && hostname[hostname.length - 1] === '/')
+				hostname = hostname.substring(0, hostname.length - 1);
+
+			return url ? (hostname + url) : hostname;
 		};
 
 		instance.save = function() {
