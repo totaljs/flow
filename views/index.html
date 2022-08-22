@@ -598,7 +598,11 @@
 				}
 			});
 
-			NAV.query.welcome && SET('common.form', 'welcomeform');
+			if (NAV.query.welcome) {
+				SET('common.form', 'welcomeform');
+				setTimeout(() => REDIRECT(NAV.url), 1000);
+			}
+
 			exports.mainmenu();
 
 		});
