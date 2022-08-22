@@ -159,6 +159,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow footer { border-top: 1px solid rgba(0,0,0,0.1); }
 .ui-flow .output.connected .component-io.disabled, .ui-flow .input.connected .component-io.disabled, .ui-flow .output .component-io.disabled, .ui-flow .input .component-io.disabled { width: 12px !important; height: 12px !important; margin-top: 5px !important; }
 .ui-flow .output-transform { background-color: rgba(0,0,0,0.04); }
+.ui-flow .output[data-index="error"] { color: #E8483F; }
 
 .ui-dark .ui-flow .output-transform { background-color: rgba(255,255,255,0.04); }
 .ui-dark .ui-flow footer { border-top-color: #404040; }
