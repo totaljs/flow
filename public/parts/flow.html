@@ -1,6 +1,10 @@
 <div class="flow" data-scope="flow">
 
 	<header class="header">
+		<div class="pull-right" data-bind="?.head.proxyurl__show__href a">
+			<button class="exec" data-exec="?/copyendpoint" title="@(Copy endpoint to the clipboard)"><i class="fa fa-link"></i></button>
+			<a title="@(Open endpoint)" target="_blank"><i class="fa fa-globe"></i></a>
+		</div>
 		<div class="pull-right">
 			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
 			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="fa fa-info-circle color"></i></button>
@@ -290,6 +294,12 @@
 				type = '';
 
 			CMD('flow.' + name, type, val);
+		};
+
+		exports.copyendpoint = function() {
+			var model = exports.model;
+			SETTER('clipboard/copy', model.head.proxyurl);
+			SETTER('notify/success', '@(Copied)');
 		};
 
 		exports.contextmenu = function(e, type, meta) {
