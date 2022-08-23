@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css', 'spa.min@19.js + filesaver.min.js + ui.js', 'favicon.ico')}
+	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css + editor.min@1.css + editor.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + editor.js', 'favicon.ico')}
 </head>
 <body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
 
@@ -111,11 +111,14 @@
 		});
 
 		function shortcutsprocess(type) {
-			return function() {
-				var win = $('.ui-parts-focused');
-				if (win.length) {
-					var w = win.find('iframe')[0].contentWindow;
-					w.postMessage(STRINGIFY({ TYPE: 'shortcut', key: type }), '*');
+			return function(e) {
+				var t = e.target.target;
+				if (t !== 'TEXTAREA' && t !== 'INPUT') {
+					var win = $('.ui-parts-focused');
+					if (win.length) {
+						var w = win.find('iframe')[0];
+						w && w.contentWindow.postMessage(STRINGIFY({ TYPE: 'shortcut', key: type }), '*');
+					}
 				}
 			};
 		}
@@ -126,10 +129,7 @@
 			com.register('CMD+F, CTRL+F', shortcutsprocess('CMD+F'), true);
 			com.register('CMD+TAB, ALT+TAB', function() {
 				var index = common.tabs.findIndex('focused', true) + 1;
-				if (common.tabs[index])
-					SETTER('parts/focus', common.tabs[index].id);
-				else
-					SETTER('parts/focus', common.tabs[0].id);
+				SETTER('parts/focus', common.tabs[index] ? common.tabs[index].id : common.tabs[0].id);
 			}, true);
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
