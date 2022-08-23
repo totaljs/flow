@@ -972,6 +972,7 @@
 				el.tclass('transparent', meta.hidden ? true : false).tclass('singleton', meta.singleton ? true : false);
 				target.aclass('f-' + self.name);
 			}
+
 			W.flowinstances.init(self.name, self, el);
 		};
 
@@ -1897,8 +1898,7 @@
 	};
 
 	ON('markdown', function(el) {
-
-		var arr = el.find('pre code');
+		var arr = el[0].tagName === 'BODY' ? el.find('.markdown pre code') : el.find('pre code');
 		for (var t of arr) {
 			if (!t.$mdcodemirror) {
 				t.$mdcodemirror = true;
