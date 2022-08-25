@@ -7,7 +7,7 @@
       "url": "https://github.com/totaljs/flow"
   },
   "dependencies": {
-    "total4": "beta"
+    "total4": "latest"
   },
   "scripts": {
     "start": "node index.js 8000"
