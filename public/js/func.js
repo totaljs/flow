@@ -491,3 +491,13 @@ FUNC.checkhtml = function(html) {
 		} catch (e) {}
 	}
 };
+
+Thelpers.highlight = function(val, colorize) {
+
+	if (!val)
+		return val;
+
+	return val.replace(/\{.*?\}/g, function(text) {
+		return '<code' + (colorize ? ' style="color:{0}"'.format(Thelpers.color(text)) : '') + '>' + text + '</code>';
+	});
+};
