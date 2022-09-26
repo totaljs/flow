@@ -391,7 +391,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 			return snippets_cache;
 		}};
 
-		can['+input'] = can['+delete'] = can.undo = can.redo = can.paste = can.cut = can.clear = true;
+		can['+input'] = can['+delete'] = can.undo = can.redo = can.paste = can.cut = can.clear = can.complete = true;
 
 		editor.on('change', function(a, b) {
 
