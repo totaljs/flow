@@ -1435,6 +1435,10 @@
 					CMD('flow.refresh');
 					break;
 
+				case 'flow/notify':
+					W.flowinstances.exec(msg.data.id || '*', 'notify', msg.data);
+					break;
+
 				case 'flow/components':
 					loadcomponents(msg.data);
 					break;

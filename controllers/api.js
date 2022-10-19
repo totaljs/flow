@@ -6,6 +6,8 @@ exports.install = function() {
 	ROUTE('+POST    /fapi/password/    *Auth       --> save');
 	ROUTE('+POST    /fapi/update/',    updatebundle, ['upload'], 1024 * 10); // Flow updater
 	ROUTE('GET      /private/',        privatefiles);
+	ROUTE('GET      /notify/',         notify);
+	ROUTE('POST     /notify/',         notify);
 
 	// FlowStream
 	ROUTE('+API    @api    -streams                          *Streams      --> query');
@@ -126,4 +128,27 @@ function updatebundle() {
 		});
 	} else
 		self.invalid('Invalid file');
+}
+
+function notify() {
+
+	var self = this;
+
+	if (PREF.notify) {
+		var arr = (self.query.flowstream || '').split('-');
+		var instance = MAIN.flowstream.instances[arr[0]];
+		if (instance) {
+			var obj = {};
+			obj.id = arr[1];
+			obj.method = self.method;
+			obj.headers = self.headers;
+			obj.query = self.query;
+			obj.body = self.body;
+			obj.ip = self.ip;
+			arr[1] && instance.notify(arr[1], obj);
+			instance.flow && instance.flow.$socket && instance.flow.$socket.send({ TYPE: 'flow/notify', data: obj });
+		}
+	}
+
+	self.empty();
 }

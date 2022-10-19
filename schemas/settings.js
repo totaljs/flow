@@ -6,6 +6,7 @@ NEWSCHEMA('Settings', function(schema) {
 	schema.define('token', String);
 	schema.define('darkmode', Boolean);
 	schema.define('backup', Boolean);
+	schema.define('notify', Boolean);
 	schema.define('env', ['dev', 'test', 'prod'], true)('test');
 
 	schema.setRead(function($) {
@@ -57,6 +58,9 @@ NEWSCHEMA('Settings', function(schema) {
 	});
 
 });
+
+if (PREF.notify == null)
+	PREF.notify = true;
 
 // Initialization
 if (PREF.name)
