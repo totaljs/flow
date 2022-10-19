@@ -6,8 +6,8 @@ exports.install = function() {
 	ROUTE('+POST    /fapi/password/    *Auth       --> save');
 	ROUTE('+POST    /fapi/update/',    updatebundle, ['upload'], 1024 * 10); // Flow updater
 	ROUTE('GET      /private/',        privatefiles);
-	ROUTE('GET      /notify/',         notify);
-	ROUTE('POST     /notify/',         notify);
+	ROUTE('GET      /notify/{id}/',    notify);
+	ROUTE('POST     /notify/{id}/',    notify);
 
 	// FlowStream
 	ROUTE('+API    @api    -streams                          *Streams      --> query');
@@ -130,12 +130,12 @@ function updatebundle() {
 		self.invalid('Invalid file');
 }
 
-function notify() {
+function notify(id) {
 
 	var self = this;
 
 	if (PREF.notify) {
-		var arr = (self.query.flowstream || '').split('-');
+		var arr = id.split('-');
 		var instance = MAIN.flowstream.instances[arr[0]];
 		if (instance) {
 			var obj = {};
