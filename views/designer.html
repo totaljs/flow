@@ -206,7 +206,25 @@
 					select_connected(flow.data[com.id]);
 				}
 			});
-		};
+		}
+
+		// Error handling
+		ON('ERROR', function(response) {
+
+			if (!(response instanceof Array))
+				response = [response];
+
+			var err = [];
+			var login = false;
+			for (var m of response) {
+				if (m.name === '401')
+					login = true;
+				err.push(m.error);
+			}
+
+			SETTER('message/warning @hideloading', err.join('<br />'));
+			login && location.reload(true);
+		});
 
 	</script>
 

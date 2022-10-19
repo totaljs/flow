@@ -150,5 +150,5 @@ function notify(id) {
 		}
 	}
 
-	self.empty();
+	self.html('<html><body style="font-family:Arial;font-size:11px;color:#777;background-color:#FFF">Close the window<script>window.close();</script></body></html>');
 }

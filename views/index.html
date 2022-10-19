@@ -110,6 +110,24 @@
 			SETTER('loading/hide', 1000);
 		});
 
+		// Error handling
+		ON('ERROR', function(response) {
+
+			if (!(response instanceof Array))
+				response = [response];
+
+			var err = [];
+			var login = false;
+			for (var m of response) {
+				if (m.name === '401')
+					login = true;
+				err.push(m.error);
+			}
+
+			SETTER('message/warning @hideloading', err.join('<br />'));
+			login && location.reload(true);
+		});
+
 		function shortcutsprocess(type) {
 			return function(e) {
 				var t = e.target.target;

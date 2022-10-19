@@ -48,6 +48,12 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 
 	Instance.prototype.draft = function(path, value) {
 
+		if (common.form !== 'settings')
+			return;
+
+		if (flow.settingsid !== this.instance.component)
+			return;
+
 		if (path && typeof(path) === 'object') {
 			value = path;
 			path = '';

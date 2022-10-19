@@ -506,6 +506,7 @@
 				} else if (!dom.children[0])
 					move = true;
 
+				flow.settingsid = component.id;
 				RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name, width: (component.meta ? component.meta.settingswidth : 0) || 800 });
 
 				var name = component.name.slug().replace(/\-/g, '');
