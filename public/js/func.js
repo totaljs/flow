@@ -43,6 +43,20 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 			this.instance.config = flow.config[this.instance.id] = val;
 			UPD('flow.config.' + this.instance.id);
 		}
+
+	};
+
+	Instance.prototype.draft = function(path, value) {
+
+		if (path && typeof(path) === 'object') {
+			value = path;
+			path = '';
+		}
+
+		var p = 'flow.settings.settings_f' + this.instance.component + (path ? ('.' + path) : '');
+		if (value === undefined)
+			return GET(p);
+		SET(p, value);
 	};
 
 	Instance.prototype.rebind = function(type) {
