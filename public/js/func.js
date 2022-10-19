@@ -78,7 +78,7 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 			data = null;
 		}
 		flow.calls[callbackid] = callback;
-		SETTER('websocket/send', { TYPE: 'call', id: globalcall ? ('@' + this.component.id) : this.id, data: data, callbackid: callbackid });
+		SETTER('websocket/send', { TYPE: 'call', id: globalcall ? ('@' + this.instance.component) : this.id, data: data, callbackid: callbackid });
 	};
 
 	Instance.prototype.$destroy = function() {
