@@ -140,10 +140,11 @@ function notify(id) {
 		if (instance) {
 			var obj = {};
 			obj.id = arr[1];
-			obj.method = self.method;
+			obj.method = self.req.method;
 			obj.headers = self.headers;
 			obj.query = self.query;
 			obj.body = self.body;
+			obj.url = self.url;
 			obj.ip = self.ip;
 			arr[1] && instance.notify(arr[1], obj);
 			instance.flow && instance.flow.$socket && instance.flow.$socket.send({ TYPE: 'flow/notify', data: obj });

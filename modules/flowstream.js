@@ -801,7 +801,7 @@ function init_current(meta, callback) {
 				case 'stream/notify':
 				case 'stream/trigger':
 					id = msg.id;
-					let type = msg.TYPE.substring(7);
+					var type = msg.TYPE.substring(7);
 					if (!flow.paused) {
 						if (id[0] === '@') {
 							id = id.substring(1);
@@ -2667,9 +2667,9 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- JSON schema `' + m.id + '.json`');
 					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('\`\`\`json');
+					readme.push('```json');
 					readme.push(JSON.stringify(m.schema, null, '  '));
-					readme.push('\`\`\`');
+					readme.push('```');
 
 					var id = 'pub' + item.id + 'X' + m.id;
 					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, item.meta.name.max(15), item.id); // makeschema(m.schema)
