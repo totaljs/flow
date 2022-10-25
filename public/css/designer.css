@@ -8,6 +8,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ml5 { margin-left: 5px; }
 .ml10 { margin-left: 10px; }
 .px8 { padding-left: 8px !important; padding-right: 8px !important; }
+.exec { cursor: pointer; }
 
 .markdown-tiny .markdown { font-size: 12px; line-height: 16px; font-family: Arial; }
 .markdown-tiny .markdown p { font-size: 12px !important; margin-bottom: 8px; }
