@@ -1718,6 +1718,7 @@ function MAKEFLOWSTREAM(meta) {
 				var origin = msg.body || '';
 				if (flow.$schema.origin !== origin) {
 					flow.origin = flow.$schema.origin = origin;
+					flow.proxy.refreshmeta();
 					save();
 				}
 				break;
