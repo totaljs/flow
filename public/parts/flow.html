@@ -1928,7 +1928,7 @@
 					type = 'text/x-sql';
 
 				el.aclass('cm-s-default');
-				var code = FUNC.strim(el.html()).trim().replace(/&gt;|&lt;|&quot;|&#39;/g, htmldecode);
+				var code = FUNC.strim(el.html()).trim().replace(/&gt;|&lt;|&quot;|&#39;|&amp;/g, htmldecode);
 				CodeMirror.runMode(code.replace(/\t/g, '  '), type, el[0]);
 			}
 		}
