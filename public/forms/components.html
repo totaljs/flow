@@ -112,7 +112,11 @@
 			queue.async(function() {
 
 				var arr = [];
-				for (var key in opt.groups) {
+				var keys = Object.keys(opt.groups);
+
+				keys.quicksort();
+
+				for (var key of keys) {
 					opt.groups[key].items.quicksort('name');
 					arr.push(opt.groups[key]);
 				}
