@@ -50,7 +50,9 @@ NEWSCHEMA('Streams', function(schema) {
 			if (model.proxypath[model.proxypath.length - 1] !== '/')
 				model.proxypath += '/';
 
-			if (model.proxypath === '/cdn/' || model.proxypath === '/fapi/' || model.proxypath === '/private/' || model.proxypath === '/flows/' || model.proxypath === '/designer/') {
+			var blacklist = ['/cdn/', '/fapi/', '/private/', '/flows/', '/designer/', '/parts/', '/forms/', '/css/', '/js/', '/fonts/', '/panels/'];
+
+			if (blacklist.includes(model.proxypath)) {
 				$.invalid('@(Proxy endpoint contains reserved path)');
 				return;
 			}
