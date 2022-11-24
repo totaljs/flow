@@ -25,7 +25,7 @@ header .console:hover { background-color: #F5F5F5; }
 header > .tabs { float: left; font-size: 13px; margin: 11px 0 0 2px; line-height: 0; user-select: none; }
 header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 34px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
 header > .tabs > div i { margin-right: 7px; color: #999; }
-header > .tabs > div .fa-times:hover { color: #E73323 !important; }
+header > .tabs > div .ti-times:hover { color: #E73323 !important; }
 header > .tabs > div.selected { background-color: #E9E9E9; color: #000; }
 header { height: 58px !important; line-height: 56px !important; background-color: #FFF; border: 0; border-bottom: 1px solid #EBEBEB; border-radius: 0; padding-left: 15px; padding-right: 15px; }
 header .ui-searchinput { line-height: 24px; height: 26px; border-radius: var(--radius); width: 180px; float: right; margin: 12px 0 0 10px; background-color: #F8F8F8; border: 1px solid #E0E0E0 !important; }
@@ -89,7 +89,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .toolbar label { height: 26px; line-height: 26px; float: left; font-size: 16px; font-weight: bold; }
 .toolbar button { outline: 0; background: #FFF; border: 1px solid #E0E0E0; border-left: 0; font-size: 11px; height: 26px; padding: 0 8px; color: #000; min-width: 80px; text-align: center; vertical-align: top; background-color: #FFF; line-height: 24px; float: left; text-align: center !important; }
 .toolbar button i { margin-right: 5px; }
-.toolbar button .fa-plus-circle, .toolbar button .fa-check-circle { color: #68B25B; }
+.toolbar button .ti-plus-circle, .toolbar button .ti-check-circle { color: #68B25B; }
 .toolbar button:first-child { border-left: 1px solid #E0E0E0; border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
 .toolbar button:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
 .toolbar button:hover { border-color: #D0D0D0; }

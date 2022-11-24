@@ -1,7 +1,7 @@
-<div data---="box__common.form__if:~PATH~;icon:fas fa-cloud-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" data-scope="~PATH~">
 	<nav>
-		<button class="exec" data-exec="?/marketplace"><i class="fas fa-shopping-basket"></i>@(Marketplace)</button>
-		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="fas fa-sync"></i>@(Update all)</button>
+		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs"></i>@(Enterprise)</button>
+		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="ti ti-sync"></i>@(Update all)</button>
 	</nav>
 	<div>
 		<div class="search">
@@ -11,7 +11,7 @@
 			<div class="padding">
 				<div style="margin:0 0 15px 8px">
 					<div class="pull-right">
-						<span class="link fs12 exec" data-exec="flow/create"><i class="fa fa-plus-circle green mr5"></i>@(Create component)</span>
+						<span class="link fs12 exec" data-exec="flow/create"><i class="ti ti-plus-circle green mr5"></i>@(Create component)</span>
 					</div>
 					<div data---="checkbox__?.approve__null__true">@(Warn on component installation)</div>
 				</div>
@@ -38,7 +38,7 @@
 						{{ end }}
 					</script>
 				</div>
-				<div class="help center m nmt"><i class="far fa-question-circle"></i>@(Official GitHub repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
+				<div class="help center m nmt"><i class="ti ti-question-circle"></i>@(Official GitHub repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
 			</div>
 		</div>
 	</div>
@@ -83,9 +83,9 @@
 			});
 		};
 
-		exports.marketplace = function() {
+		exports.enterprise = function() {
 			NULL('common.form');
-			EXEC('flow/marketplace');
+			EXEC('flow/enterprise');
 		};
 
 		exports.reload = function() {

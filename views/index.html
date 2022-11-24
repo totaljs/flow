@@ -35,7 +35,7 @@
 
 	<header>
 
-		<span class="console exec pull-right" data-exec="common/console"><i class="fas fa-bug"></i></span>
+		<span class="console exec pull-right" data-exec="common/console"><i class="ti ti-bug"></i></span>
 
 		<div class="env" data-bind="common.env__template" title="@(Environment)">
 			<script type="text/html">
@@ -43,11 +43,11 @@
 			</script>
 		</div>
 
-		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="fa fa-th"></i></span>
+		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
 		<div class="tabs" data-bind="common.tabs__template:div">
 			<script type="text/html">
 				{{ foreach m in value }}
-					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="fas fa-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
+					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
 				{{ end }}
 			</script>
 		</div>
@@ -64,6 +64,8 @@
 			<div data---="importer__common.form__if:welcomeform;url:@{#}/forms/welcome.html"></div>
 			<div data---="importer__common.form__if:settingsform;url:@{#}/forms/settings.html"></div>
 			<div data---="importer__common.form__if:passwordform;url:@{#}/forms/password.html"></div>
+
+			<div data---="importer__common.form__if:newform;url:@{#}/forms/new.html"></div>
 		</div>
 
 	</div>
@@ -87,12 +89,12 @@
 			})();
 		}
 
-		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'fa fa-home', noclose: true, import: '@{#}/parts/flows.html' }];
+		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'ti ti-home', noclose: true, import: '@{#}/parts/flows.html' }];
 		common.secret = 'flowstream';
 		common.layout = '';
 		common.windows = [];
 		common.page = 'flows';
-		common.marketplace = 'https://marketplace.totaljs.com';
+		common.enterprise = 'https://enterprise.totaljs.com';
 		common.designer = '@{#}/designer/';
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
@@ -224,7 +226,7 @@
 					opt.align = 'left';
 					opt.items = CLONE(exports.model.menu);
 					var index = opt.items.findIndex('id', 'settings');
-					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'fas fa-recycle' });
+					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
 					opt.callback = exports.menu;
 					SETTER('menu/show', opt);
 					return;
@@ -286,32 +288,32 @@
 				var parent = el.closest('.flowstreams');
 
 				opt.items = [];
-				opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'fa fa-clipboard-list', classname: 'b' });
+				opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 
 				if (common.totalversion > 4045 && item.stats) {
 					if (item.stats.paused) {
-						opt.items.push({ id: 'play', name: '@(Play)', icon: 'fa fa-play green' });
+						opt.items.push({ id: 'play', name: '@(Play)', icon: 'ti ti-play green' });
 						paused = true;
 					} else
-						opt.items.push({ id: 'pause', name: '@(Pause)', icon: 'fa fa-pause red' });
+						opt.items.push({ id: 'pause', name: '@(Pause)', icon: 'ti ti-pause red' });
 				}
 
 				opt.items.push('-');
 
 				if (top === W)
-					opt.items.push({ id: 'newtab', name: '@(Open in new tab)', icon: 'far fa-window-restore' });
+					opt.items.push({ id: 'newtab', name: '@(Open in new tab)', icon: 'ti ti-window-alt' });
 
-				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fa fa-pencil' });
-				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-				// opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
-				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'far fa-copy' });
-				opt.items.push({ id: 'download', name: '@(Download)', icon: 'fa fa-download' });
+				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-pencil' });
+				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+				// opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'ti ti-copy' });
+				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'ti ti-copy' });
+				opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-download' });
 
 				if (common.workers)
-					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'fa fa-sync' });
+					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'ti ti-sync' });
 
 				opt.items.push('-');
-				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 
 				opt.callback = function(opt) {
 					switch (opt.id) {
@@ -328,7 +330,7 @@
 							});
 							break;
 						case 'restart':
-							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"fa fa-sync" @(Restart)', function() {
+							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"ti ti-sync" @(Restart)', function() {
 								WAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
 							});
 							break;
@@ -378,7 +380,7 @@
 							}));
 							break;
 						case 'remove':
-							SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"far fa-trash-alt" @(Remove)', function() {
+							SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"ti ti-remove" @(Remove)', function() {
 								WAPI('streams_remove/' + id, ASETTER('message/response', exports.refresh));
 							});
 							break;
@@ -396,26 +398,26 @@
 
 			exports.mainmenu = function() {
 				var items = [];
-				items.push({ id: 'create', name: '@(Create new)', icon: 'fa fa-plus-circle green' });
-				items.push({ id: 'import', name: '@(Import Flow)', icon: 'fas fa-download' });
-				items.push({ id: 'variables', name: '@(Variables)', icon: 'fas fa-clipboard-list', classname: 'b' });
+				items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
+				items.push({ id: 'import', name: '@(Import Flow)', icon: 'ti ti-download' });
+				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 				items.push('-');
-				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'fas fa-cloud-download' });
+				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'ti ti-cloud-download' });
 
 				if (!common.openplatform)
-					items.push({ id: 'password', name: '@(Change credentials)', icon: 'fa fa-key' });
+					items.push({ id: 'password', name: '@(Change credentials)', icon: 'ti ti-key' });
 
-				items.push({ id: 'settings', name: '@(Settings)', icon: 'fa fa-cog' });
+				items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
 				items.push('-');
-				items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
-				items.push({ id: 'support', name: '@(Support)', icon: 'fa fa-life-ring' });
+				items.push({ id: 'enterprise', name: '@(Enterprise)', icon: 'ti ti-totaljs', classname: 'b' });
+				items.push({ id: 'support', name: '@(Support)', icon: 'ti ti-support' });
 
 				if (common.bundle)
-					items.push({ id: 'update', name: '@(Update bundle)', icon: 'fas fa-sync', hidden: true });
+					items.push({ id: 'update', name: '@(Update bundle)', icon: 'ti ti-sync', hidden: true });
 
 				if (!common.openplatform) {
 					items.push('-');
-					items.push({ id: 'logout', name: '@(Sign out)', icon: 'fa fa-sign-out red' });
+					items.push({ id: 'logout', name: '@(Sign out)', icon: 'ti ti-sign-out red' });
 				}
 
 				SET('?.menu', items);
@@ -426,7 +428,7 @@
 				switch (id) {
 
 					case 'update':
-						SETTER('approve/show', '<i class="fas fa-exclamation-triangle red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"fas fa-sync" @(Upload bundle)', function() {
+						SETTER('approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
 							opt.url = '/fapi/update/' + common.openplatform;
@@ -476,13 +478,13 @@
 						break;
 					case 'create':
 					case 'settings':
-					case 'marketplace':
+					case 'enterprise':
 					case 'password':
 					case 'variables':
 						exports[id]();
 						break;
 					case 'cdnclear':
-						SETTER('approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"fas fa-recycle" @(Clear)', function() {
+						SETTER('approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"ti ti-recycle" @(Clear)', function() {
 							WAPI('cdn_clear', ASETTER('message/response', '@(The CDN cache has been cleared successfully)'));
 						});
 						break;
@@ -513,8 +515,8 @@
 				});
 			};
 
-			exports.marketplace = function() {
-				IMPORT('ONCE ' + common.marketplace + '/open/', AEXEC('marketplace/open', 'flowstream', function(response, data) {
+			exports.enterprise = function() {
+				IMPORT('ONCE ' + common.enterprise + '/open/', AEXEC('enterprise/open', 'flowstream', function(response, data) {
 
 					if (typeof(response) === 'string')
 						response = PARSE(response);
@@ -541,7 +543,7 @@
 						el.closest('.ui-windows-item').find('pre').empty();
 						WAPI('console_clear', NOOP);
 					}, make: function(el) {
-						el.parent().find('.ui-windows-lastbutton').rclass2('fa').aclass('far fa-trash-alt red');
+						el.parent().find('.ui-windows-lastbutton').rclass2('fa').aclass('ti ti-remove red');
 						el.closest('.ui-windows-item').css('z-index', 50);
 						el.aclass('noscrollbar');
 					}});

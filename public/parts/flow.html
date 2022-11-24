@@ -2,32 +2,32 @@
 
 	<header class="header">
 		<div class="pull-right" data-bind="?.head.proxyurl__show__href a">
-			<button class="exec" data-exec="?/copyendpoint" title="@(Copy endpoint to the clipboard)"><i class="fa fa-link"></i></button>
-			<a title="@(Open endpoint)" target="_blank"><i class="fa fa-globe"></i></a>
+			<button class="exec" data-exec="?/copyendpoint" title="@(Copy endpoint to the clipboard)"><i class="ti ti-link"></i></button>
+			<a title="@(Open endpoint)" target="_blank"><i class="ti ti-globe"></i></a>
 		</div>
 		<div class="pull-right">
-			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="fa fa-book"></i></a>
-			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="fa fa-info-circle color"></i></button>
+			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="ti ti-book"></i></a>
+			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="ti ti-info-circle color"></i></button>
 		</div>
 		<div class="apply-button">
-			<button class="exec apply" data-exec="?/submit" data-bind="?.changed__.highlight"><i class="fas fa-play"></i><span>@(APPLY)</span></button>
+			<button class="exec apply" data-exec="?/submit" data-bind="?.changed__.highlight"><i class="ti ti-play"></i><span>@(APPLY)</span></button>
 		</div>
 		<div>
-			<button title="@(Pause)" class="exec" data-exec="?/pause" data-bind="?.stats.paused__.paused"><i class="fas fa-pause"></i><span></span></button>
-			<button title="@(Add)" class="exec green" data-exec="?/add"><i class="fa fa-plus-circle"></i></button>
-			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="fa fa-clipboard-list"></i></button>
-			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="fa fa-bug"></i></button>
-			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="fa fa-broom"></i></button>
+			<button title="@(Pause)" class="exec" data-exec="?/pause" data-bind="?.stats.paused__.paused"><i class="ti ti-pause"></i><span></span></button>
+			<button title="@(Add)" class="exec green" data-exec="?/add"><i class="ti ti-plus-circle"></i></button>
+			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="ti ti-variables"></i></button>
+			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="ti ti-bug"></i></button>
+			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="ti ti-clean"></i></button>
 		</div>
 		<div>
-			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="fa fa-undo"></i></button>
-			<button disabled title="@(Redo)" data-bind="?.redo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="redo"><i class="fa fa-redo"></i></button>
-			<button title="@(Zoom in)" class="exec" data-exec="?/operation" data-type="in"><i class="fa fa-search-plus"></i></button>
-			<button title="@(Zoom out)" class="exec" data-exec="?/operation" data-type="out"><i class="fa fa-search-minus"></i></button>
-			<button title="@(Zoom out/Zoom reset)" class="exec" data-exec="?/operation" data-type="out2"><i class="fas fa-search-location"></i></button>
+			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="ti ti-undo"></i></button>
+			<button disabled title="@(Redo)" data-bind="?.redo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="redo"><i class="ti ti-redo"></i></button>
+			<button title="@(Zoom in)" class="exec" data-exec="?/operation" data-type="in"><i class="ti ti-search-plus"></i></button>
+			<button title="@(Zoom out)" class="exec" data-exec="?/operation" data-type="out"><i class="ti ti-search-minus"></i></button>
+			<button title="@(Zoom out/Zoom reset)" class="exec" data-exec="?/operation" data-type="out2"><i class="ti ti-search-dot"></i></button>
 		</div>
 		<div>
-			<button title="@(Options)" class="exec" data-exec="?/options"><i class="fa fa-cog"></i></button>
+			<button title="@(Options)" class="exec" data-exec="?/options"><i class="ti ti-cog"></i></button>
 		</div>
 		<div style="border-right:0">
 			<div class="help pull-left mr10" data-bind="?.selected__show:value&&value.component__template">
@@ -63,19 +63,19 @@
 		<section data-type="bottom">
 			<div class="stats">
 				<div class="realtime" title="@(Total messages)">
-					<i class="fa fa-calculator"></i>@(Messages): <b data-bind="?.stats.messages__text__empty__format:0"></b>
+					<i class="ti ti-calculator"></i>@(Messages): <b data-bind="?.stats.messages__text__empty__format:0"></b>
 				</div>
 				<div class="realtime" title="@(Pending messages)">
-					<i class="fa fa-refresh fa-spin"></i>@(Pending): <span class="gray" data-bind="?.stats.pending__text__empty__format:0"></span>
+					<i class="ti ti-refresh"></i>@(Pending): <span class="gray" data-bind="?.stats.pending__text__empty__format:0"></span>
 				</div>
 				<div class="realtime" title="@(Messages per minute)">
-					<i class="far fa-clock"></i>@(Per minute): <span class="gray" data-bind="?.stats.mm__text__empty__format:0"></span>
+					<i class="ti ti-clock"></i>@(Per minute): <span class="gray" data-bind="?.stats.mm__text__empty__format:0"></span>
 				</div>
 				<div class="realtime" title="@(Used nodes)">
-					<i class="fas fa-code-branch"></i>@(Nodes): <span class="gray" data-bind="?.connected__text__empty__format:0"></span>
+					<i class="ti ti-code-branch"></i>@(Nodes): <span class="gray" data-bind="?.connected__text__empty__format:0"></span>
 				</div>
 				<div class="realtime" title="@(Memory usage)">
-					<i class="fas fa-microchip"></i>@(Memory): <span class="gray" data-bind="?.stats.memory__text:Thelpers.filesize(value||0)"></span>
+					<i class="ti ti-microchip"></i>@(Memory): <span class="gray" data-bind="?.stats.memory__text:Thelpers.filesize(value||0)"></span>
 				</div>
 			</div>
 		</section>
@@ -89,16 +89,16 @@
 	</div>
 </script>
 
-<div data---="box__common.form__if:settings;width:800;visibleY:1;icon:fa fa-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
+<div data---="box__common.form__if:settings;width:800;visibleY:1;icon:ti ti-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
 	<nav data-bind="navigator.clipboard__show .clipboard">
-		<button class="exec" data-exec="flow/readme2" title="@(Readme)"><i class="fa fa-info-circle nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/copyconfig" title="@(Copy config)"><i class="far fa-copy nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/pasteconfig" title="@(Paste config)"><i class="fa fa-paste nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/resetconfig" title="@(Reset config)"><i class="fa fa-refresh nmr"></i></button>
+		<button class="exec" data-exec="flow/readme2" title="@(Readme)"><i class="ti ti-info-circle nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/copyconfig" title="@(Copy config)"><i class="ti ti-copy nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/pasteconfig" title="@(Paste config)"><i class="ti ti-paste nmr"></i></button>
+		<button class="exec clipboard" data-exec="flow/resetconfig" title="@(Reset config)"><i class="ti ti-refresh nmr"></i></button>
 	</nav>
 	<div id="flow_settings"></div>
 	<nav data---="validation__settings__$id:settingsvalidation">
-		<button name="submit"><i class="far fa-check-circle"></i>@(APPLY)</button>
+		<button name="submit"><i class="ti ti-check-circle"></i>@(APPLY)</button>
 		<button name="cancel">@(Cancel)</button>
 	</nav>
 </div>
@@ -197,13 +197,13 @@
 			opt.element = el;
 			opt.items = [];
 
-			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'fa fa-code' });
-			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'fa fa-code-branch' });
-			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'fa fa-cloud-download' });
+			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'ti ti-code' });
+			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
+			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'ti ti-download' });
 
-			/*if (common.marketplace) {
+			/*if (common.enterprise) {
 				opt.items.push('-');
-				opt.items.push({ id: 'marketplace', name: '@(Marketplace)', icon: 'fa fa-shopping-basket', classname: 'b' });
+				opt.items.push({ id: 'enterprise', name: '@(Enterprise)', icon: 'ti ti-totaljs', classname: 'b' });
 			}*/
 
 			opt.callback = function(item) {
@@ -215,8 +215,8 @@
 					case 'opensource':
 						exports.components();
 						break;
-					case 'marketplace':
-						exports.marketplace();
+					case 'enterprise':
+						exports.enterprise();
 						break;
 					case 'sources':
 						exports.sources();
@@ -269,8 +269,8 @@
 			});
 		};
 
-		exports.marketplace = function() {
-			IMPORT('ONCE ' + common.marketplace + '/open/', AEXEC('marketplace/open', 'flowstream_component', function(response, data) {
+		exports.enterprise = function() {
+			IMPORT('ONCE ' + common.enterprise + '/open/', AEXEC('enterprise/open', 'flowstream_component', function(response, data) {
 				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
 				SET('common.page @hideloading', 'componenteditor');
 			}, true));
@@ -313,8 +313,8 @@
 				opt.y = e.pageY;
 				opt.items = [];
 				//opt.items.push('');
-				opt.items.push({ id: 'paste', name: '@(Paste)', icon: 'fa fa-paste' });
-				opt.items.push({ id: 'import', name: '@(Import)', icon: 'fa fa-download' });
+				opt.items.push({ id: 'paste', name: '@(Paste)', icon: 'ti ti-paste' });
+				opt.items.push({ id: 'import', name: '@(Import)', icon: 'ti ti-download' });
 				opt.callback = function(opt) {
 					Designer.op.unselect();
 					exports.paste_components({ x: e.offsetX, y: e.offsetY });
@@ -341,8 +341,8 @@
 
 				if (single) {
 					opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.arg(component) : ''));
-					component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
-					opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'far fa-file-alt' });
+					component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'ti ti-info-circle blue' });
+					opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'ti ti-file' });
 				} else {
 					opt.items.push(count + ' @(components selected)');
 				}
@@ -352,23 +352,23 @@
 					var meta = component.meta || EMPTYOBJECT;
 
 					if (component.settings && single) {
-						opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
+						opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'ti ti-wrench', classname: 'b' });
 						opt.items.push('-');
 					}
 
 					if (!meta.readonly) {
-						opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-						single && opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
-						//opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'far fa-copy' });
-						//opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
-						// opt.items.push({ id: 'copycomponents', name: '@(Copy component(s))', icon: 'far fa-copy' });
-						opt.items.push({ id: 'exportcomponents', name: '@(Copy)', icon: 'far fa-copy' });
+						opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+						single && opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-laptop-code' });
+						// opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'ti ti-copy' });
+						// opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'ti ti-copy' });
+						// opt.items.push({ id: 'copycomponents', name: '@(Copy component(s))', icon: 'ti ti-copy' });
+						opt.items.push({ id: 'exportcomponents', name: '@(Copy)', icon: 'ti ti-copy' });
 						opt.items.push('-');
 					}
 				}
 			} else if (info.type === 'group') {
 				opt.items.push(item.name);
-				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'fa fa-wrench', classname: 'b' });
+				opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'ti ti-wrench', classname: 'b' });
 			} else if (info.type === 'connection' && flow.head.total > 4060) {
 				var selector = '.conn__' + item.fromid + '__' + item.toid + '__' + item.fromindex + '__' + item.toindex;
 				var colors = ['E73323', 'EC8632', 'FFFD54', '68B25B', '7CFBFD', '4285F4', 'E73CF7', 'E8357E', '73197B', '91683C'];
@@ -378,10 +378,10 @@
 					var color = '#' + m;
 					submenu.push({ id: 'color', selected: color === selectedcolor, color: color, name: '<div style="height:20px;background-color:#{0};border-radius:var(--radius);width:100px"></div>'.format(m) });
 				}
-				opt.items.push({ name: '@(Color)', icon: 'fas fa-fill colorize', children: submenu, classname: 'b' });
+				opt.items.push({ name: '@(Color)', icon: 'ti ti-paint-brush colorize', children: submenu, classname: 'b' });
 			}
 
-			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'far fa-trash-alt red' });
+			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 
 			opt.callback = function(opt) {
 				switch (opt.id) {
@@ -562,7 +562,7 @@
 		};
 
 		exports.exportascomponent = function() {
-			SETTER('approve/show', '@(Are you sure you want to create a component from this FlowStream?)', '"fas fa-file-export" @(Export)', function() {
+			SETTER('approve/show', '@(Are you sure you want to create a component from this FlowStream?)', '"ti ti-file-export" @(Export)', function() {
 				SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
 
 					var flow = response.data;
@@ -687,7 +687,7 @@
 
 		exports.submit = function() {
 
-			SETTER('approve/show', '@(Are you sure you want to save and apply Flow?)', '"far fa-check-circle" @(Continue)', function() {
+			SETTER('approve/show', '@(Are you sure you want to save and apply Flow?)', '"ti ti-check-circle" @(Continue)', function() {
 
 				if (BLOCKED('save', 2000))
 					return;
@@ -961,7 +961,7 @@
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="far fa-window-restore"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
+			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
 			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
@@ -1142,22 +1142,22 @@
 			var opt = {};
 			opt.element = el;
 			opt.items = [];
-			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'fas fa-list-ul' });
-			opt.items.push({ id: 'version', name: '@(Version)', icon: 'fas fa-info-circle' });
+			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'ti ti-list' });
+			opt.items.push({ id: 'version', name: '@(Version)', icon: 'ti ti-info-circle' });
 			opt.items.push('-');
-			opt.items.push({ id: 'export', name: '@(Export)', icon: 'fa fa-clipboard-check' });
-			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'fas fa-plug' });
-			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'fa fa-clipboard-list' });
+			opt.items.push({ id: 'export', name: '@(Export)', icon: 'ti ti-file-export' });
+			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'ti ti-plug' });
+			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'ti ti-list' });
 			opt.items.push('-');
-			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'fas fa-bezier-curve', selected: common.curvedlines == true });
-			opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'fas fa-chart-line' });
+			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'ti ti-bezier-curve', selected: common.curvedlines == true });
+			opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'ti ti-chart-line' });
 			opt.items.push('-');
 
 			if (model.head.worker)
-				opt.items.push({ id: 'restart', name: '@(Restart worker)', icon: 'fas fa-sync' });
+				opt.items.push({ id: 'restart', name: '@(Restart worker)', icon: 'ti ti-sync' });
 
-			opt.items.push({ id: 'clearunused', name: '@(Clear unused components)', icon: 'fas fa-recycle' });
-			opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'far fa-trash-alt red' });
+			opt.items.push({ id: 'clearunused', name: '@(Clear unused components)', icon: 'ti ti-recycle' });
+			opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'ti ti-remove red' });
 
 			opt.callback = function(item) {
 
@@ -1182,7 +1182,7 @@
 							return;
 						}
 
-						SETTER('approve/show', '@(Are you sure you want to clear all unused components ({0})?)'.format(names.join(', ')), '"fas fa-trash-alt" @(Remove)', function() {
+						SETTER('approve/show', '@(Are you sure you want to clear all unused components ({0})?)'.format(names.join(', ')), '"ti ti-remove" @(Remove)', function() {
 							arr.wait(function(id, next) {
 								SETTER('websocket/send', { TYPE: 'component_remove', id: id });
 								setTimeout(next, 5);
@@ -1215,7 +1215,7 @@
 						})});
 						break;
 					case 'restart':
-						SETTER('approve/show', '@(Are you sure you want to restart this FlowStream process?)', '"fas fa-sync" @(Restart)', ASETTER('websocket/send', { TYPE: 'restart' }));
+						SETTER('approve/show', '@(Are you sure you want to restart this FlowStream process?)', '"ti ti-sync" @(Restart)', ASETTER('websocket/send', { TYPE: 'restart' }));
 						break;
 					case 'clear':
 						exports.clear();
@@ -1488,19 +1488,19 @@
 
 			opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.arg(component) : ''));
 
-			component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'fa fa-info-circle blue' });
+			component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'ti ti-info-circle blue' });
 
 			var meta = component.meta || EMPTYOBJECT;
 
 			if (!meta.readonly && !TYPES[component.type]) {
-				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fas fa-laptop-code' });
-				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'far fa-clone' });
-				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'far fa-copy' });
+				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-laptop-code' });
+				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'ti ti-copy' });
 			}
 
 			if (!TYPES[component.type]) {
 				opt.items.push('-');
-				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-o red' });
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 			}
 
 			opt.callback = function(item) {
@@ -1535,7 +1535,7 @@
 						break;
 					case 'remove':
 						var com = GET('?.components').findItem('id', id);
-						SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"trash-o" @(Remove)', ASETTER('websocket/send', { TYPE: 'component_remove', id: id }));
+						SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"ti ti-remove" @(Remove)', ASETTER('websocket/send', { TYPE: 'component_remove', id: id }));
 						break;
 					case 'copycomponent':
 						exports.copycomponents();
@@ -1660,7 +1660,7 @@
 
 					}, function() {
 						var done = function() {
-							SETTER('loading/show', '<i class="fa fa-check"></i>@(Import finished)');
+							SETTER('loading/show', '<i class="ti ti-check"></i>@(Import finished)');
 							paste_components(data.items, pos);
 							SETTER('loading/hide', 1000);
 						};

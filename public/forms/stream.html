@@ -1,4 +1,4 @@
-<div data---="box__common.form__if:~PATH~;icon:far fa-object-ungroup;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
 	<div class="padding bg-smoke">
 		<div class="grid-2">
 			<div class="m">
@@ -30,13 +30,13 @@
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data---="input__?.icon__required:1;type:icon__'fas fa-microchip'">@(Icon)</div>
+				<div data---="input__?.icon__required:1;type:icon__'ti ti-microchip'">@(Icon)</div>
 			</div>
 			<div class="col-md-3 m">
 				<div data---="input__?.color__type:color">@(Color)</div>
 			</div>
 			<div class="col-md-6">
-				<div data---="input__?.proxypath__placeholder:@(/users/)"><i class="fa fa-server"></i><b>@(Proxy endpoint)</b></div>
+				<div data---="input__?.proxypath__placeholder:@(/users/)"><i class="ti ti-server"></i><b>@(Proxy endpoint)</b></div>
 				<div class="help">@(It will route all incoming requests to this FlowStream.)</div>
 			</div>
 		</div>
@@ -49,7 +49,7 @@
 		<div class="help">@(Markdown format)</div>
 	</div>
 	<nav data---="validation__?">
-		<button name="submit" disabled><i class="fa fa-check-circle"></i>@(SUBMIT)</button>
+		<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
 		<button name="cancel">@(Cancel)</button>
 	</nav>
 </div>

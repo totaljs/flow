@@ -44,7 +44,7 @@
 
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
-					<div><i class="far fa-user-circle"></i>@(Default account:)</div>
+					<div><i class="ti ti-user"></i>@(Default account:)</div>
 					<div class="kv" style="margin-top:10px">
 						<div class="key">@(User name)</div>
 						<div class="value b">@{PREF.user.login}</div>
@@ -57,13 +57,13 @@
 				</div>
 				@{fi}
 
-				<h2><i class="far fa-object-group mr5"></i>@{'%name'}</h2>
+				<h2><i class="ti ti-object-group mr5"></i>@{'%name'}</h2>
 				<div data---="enter__?">
 					<div data---="input__?.login__required:1;autofocus:1;autofill:1__''" class="m">@(User name)</div>
 					<div data---="input__?.password__required:1;type:password;autofill:1__''" class="m">@(Password)</div>
 					<div data-bind="%error__show__template" class="error">
 						<script type="text/html">
-							<i class="fas fa-exclamation-triangle"></i> {{ value }}
+							<i class="ti ti-exclamation-triangle"></i> {{ value }}
 						</script>
 					</div>
 					<div data---="validate__?" style="margin-top:20px">

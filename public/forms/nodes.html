@@ -25,8 +25,8 @@
 						{{ if m.key !== 'groups' && m.key !== 'paused' && m.key !== 'tabs' }}
 							<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }} {{ m.value.note }}" data-id="{{ m.key }}">
 								<div class="controls">
-									{{ if m.value.Component.settings }}<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="fa fa-wrench"></i></span>{{ fi }}
-									<span class="exec" data-exec="?/remove" data-prevent="true" title="@(Remove)"><i class="far fa-trash-alt red"></i></span>
+									{{ if m.value.Component.settings }}<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="ti ti-wrench"></i></span>{{ fi }}
+									<span class="exec" data-exec="?/remove" data-prevent="true" title="@(Remove)"><i class="ti ti-trash red"></i></span>
 								</div>
 								<span class="monospace">{{ m.key }}</span>
 								<div class="name{{ if m.value.Component.meta && m.value.Component.meta.singleton }} singleton{{ fi }}{{ if m.value.Component.meta && m.value.Component.meta.hidden }} ishidden{{ fi }}"><i class="{{ m.value.Component.icon }}"></i><b>{{ m.value.Component.name }}</b>{{ if m.value.note }}<span>{{ m.value.note }}</span>{{ fi }}</div>
@@ -44,7 +44,7 @@
 
 		exports.remove = function(el) {
 			var id = ATTRD(el);
-			SETTER('approve/show', '@(Are you sure you want to remove selected node?)', '"far fa-trash-alt" @(Remove)', function() {
+			SETTER('approve/show', '@(Are you sure you want to remove selected node?)', '"ti ti-trash" @(Remove)', function() {
 				Designer.op.remove(id);
 				SET('flow.changed', true);
 			});

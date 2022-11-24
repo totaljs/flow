@@ -23,7 +23,7 @@
 				<div>@(This Total.js Flow application doesn't contain any Flow)</div>
 				<div class="m b">@(Create something awesome)</div>
 				<div style="max-width:220px;margin:0 auto;width:100%;padding:5px">
-					<button class="exec button b" data-exec="common/create"><i class="fa fa-plus-circle mr5"></i>@(Create Flow)</button>
+					<button class="exec button b" data-exec="common/create"><i class="ti ti-plus-circle mr5"></i>@(Create Flow)</button>
 				</div>
 			</script>
 
@@ -35,15 +35,15 @@
 							{{ foreach m in g.items }}
 							<figure class="exec exec3{{ if m.stats && m.stats.paused }} paused{{ fi }}" data-exec="common/open" data-id="{{ m.id }}" data-exec3="common/contextmenu">
 								<section{{ if m.color }} style="border-color:{{ m.color }}"{{ fi }}>
-									<div class="ispaused"><i class="fa fa-pause"></i></div>
+									<div class="ispaused"><i class="ti ti-pause"></i></div>
 									{{ if m.reference }}<div class="reference">{{ m.reference }}</div>{{ fi }}
-									<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="fas fa-ellipsis-v"></i></div>
+									<div class="options exec" data-exec="common/contextmenu" data-prevent="true"><i class="ti ti-ellipsis-v"></i></div>
 									<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
 									<div class="meta">
 										<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
 										<div class="author">@(Author): {{ m.author | empty }}</div>
 										<div class="size">@(Size): {{ m.size | filesize }}</div>
-										<div class="proxy"><i class="fas fa-server mr5"></i>@(Proxy): {{ if m.proxypath }}<span>{{ m.proxypath }}</span>{{ else }}---{{ fi }}</div>
+										<div class="proxy"><i class="ti ti-server mr5"></i>@(Proxy): {{ if m.proxypath }}<span>{{ m.proxypath }}</span>{{ else }}---{{ fi }}</div>
 									</div>
 									<div class="stats">
 										<div><span>{{ m.stats.memory | filesize }}</span><label>@(Memory)</label></div>

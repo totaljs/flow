@@ -1,6 +1,6 @@
-<div data---="box__common.form__if:~PATH~;title:@(TMS sources);icon:fa fa-code-branch;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<div data---="box__common.form__if:~PATH~;title:@(TMS sources);icon:ti ti-code-branch;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
 	<nav>
-		<button class="exec" data-exec="?/add"><i class="fa fa-plus green"></i>@(Add source)</button>
+		<button class="exec" data-exec="?/add"><i class="ti ti-plus green"></i>@(Add source)</button>
 	</nav>
 	<div>
 		<div class="search">
@@ -18,11 +18,11 @@
 						{{ foreach m in value }}
 							<div class="sources-item search" data-search="{{ m.url }}" data-id="{{ m.id }}">
 								<div class="controls">
-									<button title="@(Edit)" class="exec" data-exec="?/edit"><i class="fas fa-pencil"></i></button>
-									<button class="red exec" data-exec="?/remove" title="@(Remove)"><i class="far fa-trash-alt"></i></button>
+									<button title="@(Edit)" class="exec" data-exec="?/edit"><i class="ti ti-pencil"></i></button>
+									<button class="red exec" data-exec="?/remove" title="@(Remove)"><i class="ti ti-trash"></i></button>
 								</div>
 								{{ if m.error }}<div class="code">Error code: <b>{{ m.error }}</b></div>{{ fi }}
-								<div class="name"><i class="fa fa-circle {{ if m.online }}green{{ else }}red{{ fi }}"></i> {{ m.name }} <b>{{ m.url | url }}</b></div>
+								<div class="name"><i class="ti ti-circle {{ if m.online }}green{{ else }}red{{ fi }}"></i> {{ m.name }} <b>{{ m.url | url }}</b></div>
 							</div>
 						{{ end }}
 					</script>
