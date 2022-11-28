@@ -92,25 +92,25 @@
 
 			if (can) {
 
-				items.push({ name: '@(Copy)', icon: '!far fa-copy', command: 'copy' });
+				items.push({ name: '@(Copy)', icon: '!ti ti-copy', command: 'copy' });
 
 				if (text.indexOf('<') !== -1)
-					items.push({ name: '@(Copy without tags)', icon: '!far fa-copy', value: 'copytext' });
+					items.push({ name: '@(Copy without tags)', icon: '!ti ti-copy', value: 'copytext' });
 
 				if ((/\:(\s)?#|#\w{6}|background|border|stroke|fill|color|rgba\:/).test(text))
-					items.push({ name: '@(Transform to Dark mode)', icon: 'tint', value: 'darkmode' });
+					items.push({ name: '@(Transform to Dark mode)', icon: 'ti ti-appearance', value: 'darkmode' });
 
 				if ((/(#)?[A-F0-9]{6}/i).test(text) && text.indexOf('\n') === -1)
-					items.push({ name: '@(Convert to RGBA)', icon: 'palette', value: 'hex2rgba' });
+					items.push({ name: '@(Convert to RGBA)', icon: 'ti ti-palette', value: 'hex2rgba' });
 
 				if (((/\d+,(\s)?\d+,(\s)?\d+/i)).test(text))
-					items.push({ name: '@(Convert to HEX)', icon: 'palette', value: 'rgba2hex' });
+					items.push({ name: '@(Convert to HEX)', icon: 'ti ti-palette', value: 'rgba2hex' });
 
 				items.push('-');
 			}
 
 			items.push({ name: '@(Insert color)', icon: 'fill-drip colorize', value: 'colorpicker' });
-			items.push({ name: '@(Insert icon)', icon: 'fa fa-icons', value: 'icon' });
+			items.push({ name: '@(Insert icon)', icon: 'ti ti-icons', value: 'icon' });
 
 			SETTER('menu/showxy', e.pageX + 5, e.pageY - 15, items, function(value) {
 
