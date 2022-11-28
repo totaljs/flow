@@ -140,6 +140,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow header .button { width: auto; }
 .ui-flow header { padding: 8px; font-size: 13px; }
 .ui-flow header i { color: #FFF; margin-right: 5px; width: 18px; height: 18px; line-height: 18px; border-radius: 3px; text-align: center; font-size: 11px; vertical-align: middle; }
+.ui-flow header i.ti { transform: scale(1); font-size: 14px; }
 .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.15); border-width: 2px; max-width: 250px; }
 .ui-flow .component.isnewbie { border-color: #68B25B; }
 .ui-flow .component.iserror { border-color: red; }
