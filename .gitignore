@@ -6,7 +6,6 @@ logs/
 index.js.json
 index.pid
 flowstream/
-public/cdn
 logs/
 databases/
 index.js.overload
