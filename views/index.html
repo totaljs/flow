@@ -94,7 +94,6 @@
 		common.layout = '';
 		common.windows = [];
 		common.page = 'flows';
-		common.enterprise = 'https://enterprise.totaljs.com';
 		common.designer = '@{#}/designer/';
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
@@ -409,7 +408,6 @@
 
 				items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
 				items.push('-');
-				items.push({ id: 'enterprise', name: '@(Enterprise)', icon: 'ti ti-totaljs', classname: 'b' });
 				items.push({ id: 'support', name: '@(Support)', icon: 'ti ti-support' });
 
 				if (common.bundle)
@@ -478,7 +476,6 @@
 						break;
 					case 'create':
 					case 'settings':
-					case 'enterprise':
 					case 'password':
 					case 'variables':
 						exports[id]();
@@ -513,25 +510,6 @@
 					SET('variablesform @reset', model);
 					SET('common.form', 'variablesform');
 				});
-			};
-
-			exports.enterprise = function() {
-				IMPORT('ONCE ' + common.enterprise + '/open/', AEXEC('enterprise/open', 'flowstream', function(response, data) {
-
-					if (typeof(response) === 'string')
-						response = PARSE(response);
-
-					response && WAPI('clipboard_import @showloading', { data: response }, ASETTER('message/response @hideloading', function(response) {
-						exports.scope();
-						exports.refresh();
-						setTimeout(function() {
-							WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
-								SET('streamform @reset', response);
-								SET('common.form', 'streamform');
-							}));
-						}, 1000);
-					}));
-				}, true));
 			};
 
 			exports.console = function() {

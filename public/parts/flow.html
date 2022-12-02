@@ -201,11 +201,6 @@
 			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
 			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'ti ti-download' });
 
-			/*if (common.enterprise) {
-				opt.items.push('-');
-				opt.items.push({ id: 'enterprise', name: '@(Enterprise)', icon: 'ti ti-totaljs', classname: 'b' });
-			}*/
-
 			opt.callback = function(item) {
 
 				switch (item.id) {
@@ -214,9 +209,6 @@
 						break;
 					case 'opensource':
 						exports.components();
-						break;
-					case 'enterprise':
-						exports.enterprise();
 						break;
 					case 'sources':
 						exports.sources();
@@ -267,13 +259,6 @@
 				SETTER('websocket/send', { TYPE: 'reset' });
 				SET('common.console', false);
 			});
-		};
-
-		exports.enterprise = function() {
-			IMPORT('ONCE ' + common.enterprise + '/open/', AEXEC('enterprise/open', 'flowstream_component', function(response, data) {
-				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
-				SET('common.page @hideloading', 'componenteditor');
-			}, true));
 		};
 
 		exports.operation = function(el) {
