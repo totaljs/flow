@@ -1,7 +1,9 @@
 NEWSCHEMA('CDN', function(schema) {
 
-	schema.addWorkflow('clear', function($) {
-		MODULE('cdn').clear($.done());
+	schema.action('clear', {
+		name: 'Clear cdn',
+		action: function($) {
+			MODULE('cdn').clear($.done());
+		}
 	});
-
 });

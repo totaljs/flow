@@ -1,57 +1,61 @@
-<div data---="box__common.form__if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" data-scope="~PATH~">
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" plugin="~PATH~">
 	<nav>
-		<button class="exec" data-bind="?.newupdates__enable" data-exec="?/update"><i class="ti ti-sync"></i>@(Update all)</button>
+		<ui-bind path="?.newupdates" config="enable .D">
+			<button class="exec D" data-exec="?/update"><i class="ti ti-sync"></i>@(Update all)</button>
+		</ui-bind>
 	</nav>
 	<div>
 		<div class="search">
-			<div data---="searchinput__?.search__placeholder:@(Search components)"></div>
+			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search components)"></ui-component>
 		</div>
-		<div data---="viewbox__common.form__parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
+		<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
 			<div class="padding">
 				<div style="margin:0 0 15px 8px">
 					<div class="pull-right">
 						<span class="link fs12 exec" data-exec="flow/create"><i class="ti ti-plus-circle green mr5"></i>@(Create component)</span>
 					</div>
-					<div data---="checkbox__?.approve__null__true">@(Warn on component installation)</div>
+					<ui-component name="checkbox" path="?.approve" default="true">@(Warn on component installation)</ui-component>
 				</div>
-				<div data-bind="?.items__template" data---="search__?.search__selector:figure" id="flowstreamcomponents">
-					<script type="text/html">
-						{{ foreach n in value }}
-							{{ if n.name && n.name !== '0' }}
-							<div class="listing-caption">{{ n.name }}</div>
-							{{ fi }}
-							<div class="listing-download">
-								{{ foreach m in n.items }}
-								<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-									<section>
-										<!--{{ if m.version }}<div class="version">@(Version:) {{ m.version }}</div>{{ fi }}-->
-										<div class="icon" style="background:{{ m.groupcolor }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-										<div class="name"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
-										<!--div class="author">@(Version:) {{ m.version | empty }}</div>-->
-									</section>
-								</figure>
-								{{ end }}
-								<div class="clearfix"></div>
-							</div>
-							<br />
-						{{ end }}
-					</script>
-				</div>
+				<ui-component name="search" path="?.search" config="selector:figure">
+					<ui-bind path="?.items" config="template" id="flowstreamcomponents">
+						<script type="text/html">
+							{{ foreach n in value }}
+								{{ if n.name && n.name !== '0' }}
+								<div class="listing-caption">{{ n.name }}</div>
+								{{ fi }}
+								<div class="listing-download">
+									{{ foreach m in n.items }}
+									<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+										<section>
+											<!--{{ if m.version }}<div class="version">@(Version:) {{ m.version }}</div>{{ fi }}-->
+											<div class="icon" style="background:{{ m.groupcolor }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
+											<div class="name"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
+											<!--div class="author">@(Version:) {{ m.version | empty }}</div>-->
+										</section>
+									</figure>
+									{{ end }}
+									<div class="clearfix"></div>
+								</div>
+								<br />
+							{{ end }}
+						</script>
+					</ui-bind>
+				</ui-component>
 				<div class="help center m nmt"><i class="ti ti-question-circle"></i>@(Official GitHub repository:) <a href="https://github.com/totaljs/flowstreamcomponents" target="_blank">https://github.com/totaljs/flowstreamcomponents</a></div>
 			</div>
-		</div>
+		</ui-component>
 	</div>
 	<nav>
 		<button name="cancel" style="width:100%">@(Close)</button>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		var refresh = function(url, opt, callback) {
-			AJAX('GET ' + url, function(response) {
+			exports.ajax('GET ' + url, function(response) {
 
 				if (!(response instanceof Array))
 					return;
@@ -80,6 +84,11 @@
 
 				callback();
 			});
+		};
+
+		exports.enterprise = function() {
+			NULL('common.form');
+			EXEC('flow/enterprise');
 		};
 
 		exports.reload = function() {
@@ -115,9 +124,9 @@
 					arr.push(opt.groups[key]);
 				}
 
-				SET('?.newupdates', opt.updates);
-				SET('?.components', opt.components);
-				SET('?.items', arr);
+				exports.set('newupdates', opt.updates);
+				exports.set('components', opt.components);
+				exports.set('items', arr);
 			});
 		};
 
@@ -136,7 +145,7 @@
 					if (item.newupdate)
 						updates++;
 				}
-				SET('?.newupdates', updates);
+				exports.set('newupdates', updates);
 			}
 		};
 
@@ -148,7 +157,7 @@
 
 		exports.update = function() {
 			var model = exports.data;
-			SETTER('approve/show', '@(Are you sure you want to apply all new updates ({0}x)?)'.format(model.newupdates), '"fas fa-sync" @(Update)', function() {
+			EXEC('-approve/show', '@(Are you sure you want to apply all new updates ({0}x)?)'.format(model.newupdates), '"fas fa-sync" @(Update)', function() {
 				model.components.wait(function(item, next) {
 					if (item.newupdate) {
 
@@ -156,17 +165,17 @@
 						if (com)
 							$('#settings_f' + com.id).remove();
 
-						AJAX('GET ' + item.url, function(response) {
+						exports.ajax('GET ' + item.url, function(response) {
 							if (typeof(response) === 'string') {
 								var meta = FUNC.checkhtml(response);
 								if (meta) {
 									var model = {};
 									model.id = com ? com.id : (meta.id || '');
 									model.body = response.trim();
-									SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: next });
+									EXEC('-websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: next });
 									return;
 								} else
-									SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(item.name.encode()));
+									EXEC('-notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(item.name.encode()));
 							}
 							setTimeout(next, 100);
 						});
@@ -176,7 +185,7 @@
 				}, function() {
 					FREE();
 					exports.scope();
-					SET('?.mewupdates', 0);
+					exports.set('mewupdates', 0);
 				});
 			});
 		};
@@ -194,29 +203,29 @@
 
 			var url = el.attrd2('url');
 			var download = function() {
-				AJAX('GET ' + url, function(response) {
+				exports.ajax('GET ' + url, function(response) {
 					if (typeof(response) === 'string') {
 						var meta = FUNC.checkhtml(response);
 						if (meta) {
 							var model = {};
 							model.id = com ? com.id : (meta.id || '');
 							model.body = response.trim();
-							SETTER('loading/show');
-							SETTER('websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
-								SETTER('loading/hide', 200);
+							EXEC('-loading/show');
+							EXEC('-websocket/send', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
+								EXEC('-loading/hide', 200);
 								if (response.error)
-									SETTER('notify/warning', '@(The component <b>"{0}"</b> is invalid: {1})'.format(name.encode(), response.error.encode()));
+									EXEC('-notify/warning', '@(The component <b>"{0}"</b> is invalid: {1})'.format(name.encode(), response.error.encode()));
 								else
 									el.aclass('installed');
 							}});
 						} else
-							SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
+							EXEC('-notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
 					}
 				});
 			};
 
 			if (exports.data.approve)
-				SETTER('approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
+				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
 			else
 				download();
 

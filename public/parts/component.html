@@ -1,17 +1,17 @@
-<div data-scope="~PATH~" class="componenteditor invisible">
-	<div data---="viewbox__null__parent:window;margin:60;scrollbar:0">
-		<div data---="codemirror__?.body__type:totaljs;parent:auto;contextmenu:?/contextmenu;$assign:EDITOR;height:0__''"></div>
-	</div>
+<ui-plugin class="componenteditor invisible">
+	<ui-component name="viewbox" config="parent:window;margin:60;scrollbar:0">
+		<ui-component name="codemirror" path="?.body" config="type:totaljs;parent:auto;contextmenu:?/contextmenu;$assign:EDITOR;height:0__''"></ui-component>
+	</ui-component>
 	<nav>
 		<!--<div class="help" style="margin-top:25px"><a href="https://docs.totaljs.com/" target="_blank"><i class="far fa-book-spells"></i>@(Documentation)</a></div>-->
 		<div>
 			<button name="submit" class="exec" data-exec="?/submit" style="width:50%"><i class="far fa-check-circle"></i>@(SUBMIT)</button><button class="exec" data-exec="?/cancel" style="width:50%">@(Cancel)</button>
 		</div>
 	</nav>
-</div>
+</ui-plugin>
 
 <script>
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		var init = false;
 		var editor;
@@ -24,12 +24,9 @@
 			SET('common.console', false);
 		};
 
-		exports.refresh = function() {
-		};
-
 		exports.submit = function() {
 
-			var model = GET('? @reset');
+			var model = exports.form;
 			var id = model.id;
 
 			model.body = EDITOR.editor.getValue();
@@ -58,9 +55,7 @@
 
 		exports.cancel = function() {
 			SET('common.page', 'flow');
-			setTimeout(function() {
-				EMIT('resize');
-			}, 100);
+			setTimeout(() => EMIT('resize'), 100);
 		};
 
 		exports.appendcustom = function(fn) {
@@ -77,8 +72,7 @@
 			opt.callback = function(icon) {
 				editor.replaceSelection(icon);
 			};
-
-			SETTER('icons/show', opt);
+			EXEC('-icons/show', opt);
 		};
 
 		exports.contextmenu = function(e, editor) {
@@ -112,7 +106,7 @@
 			items.push({ name: '@(Insert color)', icon: 'ti ti-fill colorize', value: 'colorpicker' });
 			items.push({ name: '@(Insert icon)', icon: 'ti ti-icons', value: 'icon' });
 
-			SETTER('menu/showxy', e.pageX + 5, e.pageY - 15, items, function(value) {
+			EXEC('-menu/showxy', e.pageX + 5, e.pageY - 15, items, function(value) {
 
 				if (value.command) {
 					editor.focus();
@@ -216,7 +210,7 @@
 					opt.callback = function(selected) {
 						editor.replaceSelection(selected);
 					};
-					setTimeout(ASETTER('colorpicker/show', opt), 100);
+					setTimeout(AEXEC('-colorpicker/show', opt), 100);
 					return;
 				}
 

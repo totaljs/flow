@@ -1,6 +1,15 @@
 var BLACKLIST = {};
 
+OpenPlatform.permissions.push({ name: 'Create Flows', value: 'create' });
+OpenPlatform.permissions.push({ name: 'Remove Flows', value: 'remove' });
+
 AUTH(function($) {
+
+	// Setup interface
+	if (CONF.op_reqtoken && CONF.op_restoken) {
+		OpenPlatform.auth($);
+		return;
+	}
 
 	if (BLACKLIST[$.ip] > 15) {
 		$.invalid();

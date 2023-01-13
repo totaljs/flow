@@ -118,7 +118,7 @@ function updatebundle() {
 	}
 
 	if (file && file.extension === 'bundle') {
-		file.move(F.Path.join(PATH.root(), '../bundles/app.bundle'), function(err) {
+		file.move(PATH.join(PATH.root(), '../bundles/app.bundle'), function(err) {
 			if (err) {
 				self.invalid(err);
 			} else {

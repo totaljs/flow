@@ -9,11 +9,11 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.js + ui.js', 'spa.min@19.css + ui.css', 'favicon.ico')}
+	@{import('spa.min@19.css', 'spa.min@19.js')}
+	<script src="@{REPO.ui}"></script>
+	@{import('meta', 'head', 'favicon.ico')}
 	<style>
-
 		body { background-color: #F2F5FE; }
-
 		.login { max-width: 300px; text-align: left; margin: 0 auto; width: 100%; }
 		.login > div { background-color: #FFF; padding: 30px; border-radius: var(--radius); box-shadow: 0 0 20px rgba(0,0,0,0.1); }
 		footer { font-size: 11px; color: #999; text-align: center; padding: 0 0 10px; }
@@ -28,19 +28,19 @@
 		.error { padding: 5px 0; color: red; }
 		.alert { background-color: #fffad7; border: 1px solid #EDE8C8; padding: 15px; border-radius: 2px; color: #988e56; font-size: 12px; line-height: 14px; }
 		.alert i { margin-right: 5px; }
-
 		.kv { line-height: 17px; font-size: 12px; color: black; }
 		.kv .value { margin-left: 85px; text-align: right; }
 		.kv .key { float: left; width: 100px; }
 		.kv > * { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
-
 	</style>
 </head>
-<body data---="exec">
+<body>
 
-	<div data---="viewbox__null__centered:1;parent:window" class="invisible">
+	<ui-component name="exec"></ui-component>
+
+	<ui-component name="viewbox" config="centered:1;parent:window" class="invisible">
 		<div class="login" data-scope="signinform">
-			<div data---="autofill">
+			<ui-component name="autofill">
 
 				@{if PREF.user.raw}
 				<div class="alert" style="margin-bottom:20px">
@@ -58,25 +58,24 @@
 				@{fi}
 
 				<h2><i class="ti ti-object-group mr5"></i>@{'%name'}</h2>
-				<div data---="enter__?">
-					<div data---="input__?.login__required:1;autofocus:1;autofill:1__''" class="m">@(User name)</div>
-					<div data---="input__?.password__required:1;type:password;autofill:1__''" class="m">@(Password)</div>
-					<div data-bind="%error__show__template" class="error">
+				<ui-component name="enter" path="?">
+					<ui-component name="input" path="?.login" config="required:1;autofocus:1;autofill:1" default="''" class="m">@(User name)</ui-component>
+					<ui-component name="input" path="?.password" config="required:1;type:password;autofill:1" default="''" class="m">@(Password)</ui-component>
+					<ui-bind path="%error" config="show;template" class="error">
 						<script type="text/html">
 							<i class="ti ti-exclamation-triangle"></i> {{ value }}
 						</script>
-					</div>
-					<div data---="validate__?" style="margin-top:20px">
+					</ui-bind>
+					<ui-component name="validate" path="?" style="margin-top:20px">
 						<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
-					</div>
-				</div>
+					</ui-component>
+				</ui-component>
 
-			</div>
+			</ui-component>
 			<br />
 			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
 		</div>
-	</div>
-
+	</ui-component>
 
 	<script>
 

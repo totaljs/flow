@@ -1,5 +1,5 @@
-<div data---="miniform__common.form__if:~PATH~;title:@(Version);icon:ti ti-info-circle;autofocus:true;reload:?/reload;submit:?/submit;width:550;closeesc:1;closeoutside:1" class="hidden" data-scope="~PATH~">
-	<div class="padding" data-bind="flow.head__template">
+<ui-component name="miniform" path="common.form" config="if:~PATH~;title:@(Version);icon:ti ti-info-circle;autofocus:true;reload:?/reload;submit:?/submit;width:550;closeesc:1;closeoutside:1" class="hidden" plugin="~PATH~">
+	<ui-bind path="flow.head" config="template" class="padding block">
 		<script type="text/html">
 			<div class="keyvalue">
 				<span>@(Node.js version)</span>
@@ -30,8 +30,8 @@
 				<div>{{ value.origin }}</div>
 			</div>
 		</script>
-	</div>
+	</ui-bind>
 	<nav>
 		<button name="cancel" style="width:100%">@(Cancel)</button>
 	</nav>
-</div>
+</ui-component>

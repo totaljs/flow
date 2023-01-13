@@ -1,12 +1,12 @@
-<div data---="box__common.form__if:~PATH~;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" data-scope="~PATH~">
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" plugin="~PATH~">
 	<div class="padding bg-smoke">
 		<div class="grid-2">
 			<div class="m">
-				<div data---="input__?.name__required:1__''" class="m">@(Name)</div>
+				<ui-component name="input" path="?.name" config="required:1" default="''" class="m">@(Name)</ui-component>
 				<div class="help">@(Enter FlowStream name)</div>
 			</div>
 			<div class="m">
-				<div data---="input__?.url__null__'https://'">@(Support URL address)</div>
+				<ui-component name="input" path="?.url" default="'https://'">@(Support URL address)</ui-component>
 				<div class="help">@(Optional, you can enter the URL address for support)</div>
 			</div>
 		</div>
@@ -15,28 +15,28 @@
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data---="input__?.group__dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirplaceholder:@(Choose or enter new)">@(Group)</div>
+				<ui-component name="input" path="?.group" config="dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirplaceholder:@(Choose or enter new)">@(Group)</ui-component>
 			</div>
 			<div class="col-md-3 m">
-				<div data---="input__?.reference__align:1">@(Reference)</div>
+				<ui-component name="input" path="?.reference" config="align:1">@(Reference)</ui-component>
 			</div>
 			<div class="col-md-3 m">
-				<div data---="input__?.version__align:1">@(Version)</div>
+				<ui-component name="input" path="?.version" config="align:1">@(Version)</ui-component>
 			</div>
 			<div class="col-md-3 m">
-				<div data---="input__?.author__align:1">@(Author)</div>
+				<ui-component name="input" path="?.author" config="align:1">@(Author)</ui-component>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data---="input__?.icon__required:1;type:icon__'ti ti-microchip'">@(Icon)</div>
+				<ui-component name="input" path="?.icon" config="required:1;type:icon" default="'ti ti-microchip'">@(Icon)</ui-component>
 			</div>
 			<div class="col-md-3 m">
-				<div data---="input__?.color__type:color">@(Color)</div>
+				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
 			</div>
 			<div class="col-md-6">
-				<div data---="input__?.proxypath__placeholder:@(/users/)"><i class="ti ti-server"></i><b>@(Proxy endpoint)</b></div>
+				<ui-component name="input" path="?.proxypath" config="placeholder:@(/users/)"><i class="ti ti-server"></i><b>@(Proxy endpoint)</b></ui-component>
 				<div class="help">@(It will route all incoming requests to this FlowStream.)</div>
 			</div>
 		</div>
@@ -45,21 +45,23 @@
 	<hr class="nmb nmt" />
 	<div class="padding">
 		<div class="ui-input-label">@(Additional information):</div>
-		<div data---="codemirror__?.readme__minheight:300;parent:auto;margin:390;monospace:1;type:markdown;linenumbers:0"></div>
+		<ui-component name="codemirror" path="?.readme" config="minheight:300;parent:auto;margin:390;monospace:1;type:markdown;linenumbers:0"></ui-component>
 		<div class="help">@(Markdown format)</div>
 	</div>
-	<nav data---="validation__?">
-		<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
-		<button name="cancel">@(Cancel)</button>
+	<nav>
+		<ui-component name="validate" path="?">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		exports.reload = function(com) {
-			var model = GET('?');
+			var model = exports.model;
 			var id = model ? model.id : null;
 			com.reconfigure({ title: id ? '@(Update FlowStream)' : '@(Add FlowStream)' });
 		};
@@ -86,15 +88,15 @@
 				}
 
 				if (error) {
-					SETTER('message/warning', error);
+					EXEC('-message/warning', error);
 					return;
 				}
 			}
 
-			WAPI('streams_save', model, ASETTER('message/response', function() {
+			exports.tapi('streams_save ERROR', model, function() {
 				EXEC('common/refresh');
 				hide();
-			}));
+			});
 		};
 
 	});

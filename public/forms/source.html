@@ -1,31 +1,33 @@
-<div data---="miniform__common.form2__if:~PATH~;icon:ti ti-globe;autofocus:true;reload:?/reload;submit:?/submit;width:450;zindex:20" class="hidden" data-scope="~PATH~">
+<ui-component name="miniform" path="common.form2" config="if:~PATH~;icon:ti ti-globe;autofocus:true;reload:?/reload;submit:?/submit;width:450;zindex:20" class="hidden" plugin="~PATH~">
 	<div class="padding">
 
-		<div data---="input__?.url__required:1__'https://'">@(TMS endpoint)</div>
+		<ui-component name="input" path="?.url" config="required:1" default="'https://'">@(TMS endpoint)</ui-component>
 		<div class="help m">@(Enter absolute URL address to TMS endpoint for your app)</div>
 
-		<div data---="input__?.token__required:0;camouflage:*__''">@(Token)</div>
+		<ui-component name="input" path="?.token" config="required:0;camouflage:*" default="''">@(Token)</ui-component>
 		<div class="help">@(Optional, enter the security token)</div>
 
 	</div>
-	<nav data---="validation__?">
-		<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
-		<button name="cancel">@(Cancel)</button>
+	<nav>
+		<ui-component name="validation" path="?">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		exports.reload = function(com) {
-			var model = GET('?');
+			var model = exports.model;
 			var id = model ? model.id : null;
 			com.reconfigure({ title: id ? '@(Update source)' : '@(Add source)' });
 		};
 
 		exports.submit = function(hide) {
-			var model = GET('? @reset');
+			var model = exports.form;
 			if (!model.id)
 				model.id = FUNC.makeid('src');
 			FUNC.send({ TYPE: 'source_save', data: model }, ASETTER('message/response', function() {

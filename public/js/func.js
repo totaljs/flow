@@ -1,5 +1,47 @@
 var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 
+customElements.define('is-div', class extends HTMLDivElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'div' });
+
+customElements.define('is-summary', class extends HTMLElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'summary' });
+
+customElements.define('is-span', class extends HTMLSpanElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'span' });
+
+customElements.define('is-button', class extends HTMLButtonElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'button' });
+
+customElements.define('is-a', class extends HTMLLinkElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'a' });
+
+customElements.define('is-footer', class extends HTMLElement {
+	constructor() {
+		super();
+		setTimeout(NEWUIBIND, 2, this);
+	}
+}, { extends: 'footer' });
+
 (function() {
 
 	var meta = {};
@@ -174,7 +216,7 @@ FUNC.readme = function(title, md) {
 	if (common.windows.findItem('id', winid)) {
 		SETTER('windows/focus', winid);
 	} else {
-		PUSH('common.windows', { id: winid, cache: 'readme', html: '<div data-import="url:@{#}/forms/readme.html"></div>', title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: function(el) {
+		PUSH('common.windows', { id: winid, cache: 'readme', html: '<ui-import="url:@{#}/forms/readme.html"></ui-import>', title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: function(el) {
 			el.closest('.ui-windows-item').css('z-index', 50);
 		}});
 	}

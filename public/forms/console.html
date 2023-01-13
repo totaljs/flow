@@ -1,5 +1,7 @@
 <div>
-	<pre data-bind="null__exec:renderconsolelog" style="padding:0 10px;font-size:11px" class="monospace"></pre>
+	<ui-bind config="exec:renderconsolelog">
+		<pre style="padding:0 10px;font-size:11px" class="monospace"></pre>
+	</ui-bind>
 </div>
 
 <script>
@@ -17,7 +19,7 @@
 		var refresh = function() {
 			if (!HIDDEN(el)) {
 				WAPI('console', function(response) {
-					el.html(response.encode());
+					el.find('pre').html(response.encode());
 					if (!scrolling)
 						scrollbar.scrollTop = scrollbar.scrollHeight;
 					setTimeout(refresh, 2000);

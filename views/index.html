@@ -8,73 +8,85 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.css + ui.css + default.css + editor.min@1.css + editor.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + editor.js + func.js', 'favicon.ico')}
+	@{import('spa.min@19.css', 'spa.min@19.js')}
+	<script src="@{REPO.ui}"></script>
+	@{import('meta', 'head', 'default.css + editor.min@1.css + editor.css', 'filesaver.min.js + editor.min@1.js + editor.js + func.js', 'favicon.ico')}
 </head>
-<body data---="exec"@{if PREF.darkmode} class="ui-dark"@{fi}>
+<body@{if PREF.darkmode} class="ui-dark"@{fi}>
 
-	<div data---="locale"></div>
+	<ui-component name="exec"></ui-component>
+	<ui-component name="locale"></ui-component>
 
-	<div data---="windows__common.windows"></div>
-	<div data---="LAZY menu__null__style:2"></div>
-	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
-	<div data---="LAZY message__null__style:2"></div>
-	<div data---="LAZY notify__null__position:bottom right"></div>
-	<div data---="LAZY fileuploader"></div>
-	<div data---="LAZY clipboard"></div>
-	<div data---="LAZY faicons"></div>
-	<div data---="LAZY icons"></div>
-	<div data---="LAZY datepicker"></div>
-	<div data---="LAZY directory__null__placeholder:@(Search)"></div>
-	<div data---="LAZY colorpicker"></div>
+	<ui-component name="windows" path="common.windows"></ui-component>
+	<ui-component name="LAZY menu" config="style:2"></ui-component>
+	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
+	<ui-component name="LAZY message" config="style:2"></ui-component>
+	<ui-component name="LAZY notify" config="position:bottom right"></ui-component>
+	<ui-component name="LAZY fileuploader"></ui-component>
+	<ui-component name="LAZY clipboard"></ui-component>
+	<ui-component name="LAZY icons" config="list:@{#}/icons-db.html"></ui-component>
+	<ui-component name="LAZY datepicker"></ui-component>
+	<ui-component name="LAZY directory" config="placeholder:@(Search)"></ui-component>
+	<ui-component name="LAZY colorpicker"></ui-component>
 
-	<div data---="paste"></div>
-	<div data---="shortcuts"></div>
-	<div data---="loading__null__style:2"></div>
+	<ui-component name="paste"></ui-component>
+	<ui-component name="shortcuts"></ui-component>
+	<ui-component name="loading" config="style:2"></ui-component>
 
-	<div data---="importer__common.form__if:importform;url:@{#}/forms/import.html"></div>
+	<ui-component name="importer" path="common.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
 
 	<header>
 
 		<span class="console exec pull-right" data-exec="common/console"><i class="ti ti-bug"></i></span>
 
-		<div class="env" data-bind="common.env__template" title="@(Environment)">
+		<ui-bind path="common.env" config="template" title="@(Environment)" class="env">
 			<script type="text/html">
 				<span class="badge badge-medium badge-{{ if value === 'dev' }}red{{ else if value === 'test' }}orange{{ else }}green{{ fi }}">{{ value }}</span>
 			</script>
-		</div>
+		</ui-bind>
 
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
-		<div class="tabs" data-bind="common.tabs__template:div">
+		<ui-bind path="common.tabs" config="template:div" class="tabs block">
 			<script type="text/html">
 				{{ foreach m in value }}
 					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
 				{{ end }}
 			</script>
-		</div>
-		<div data---="virtualwire__common.page"></div>
+		</ui-bind>
+		<ui-component name="virtualwire" path="common.page"></ui-component>
 	</header>
 	<div>
 
-		<div data---="ready__null__rclass:invisible" class="invisible">
+		<ui-component name="ready__null__rclass:invisible" class="invisible">
 			<div class="landing">
-				<div data---="parts__common.tabs__parent:window;margin:60"></div>
+				<ui-component name="parts__common.tabs__parent:window;margin:60"></ui-component>
 			</div>
-			<div data---="importer__common.form__if:streamform;url:@{#}/forms/stream.html"></div>
-			<div data---="importer__common.form__if:variablesform;url:@{#}/forms/variables.html"></div>
-			<div data---="importer__common.form__if:welcomeform;url:@{#}/forms/welcome.html"></div>
-			<div data---="importer__common.form__if:settingsform;url:@{#}/forms/settings.html"></div>
-			<div data---="importer__common.form__if:passwordform;url:@{#}/forms/password.html"></div>
 
-			<div data---="importer__common.form__if:newform;url:@{#}/forms/new.html"></div>
-		</div>
+			<ui-component name="importer" path="common.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
+			<ui-component name="importer" path="common.form" config="if:variablesform;url:@{#}/forms/variables.html"></ui-component>
+			<ui-component name="importer" path="common.form" config="if:welcomeform;url:@{#}/forms/welcome.html"></ui-component>
+
+			@{if user.sa}
+			<ui-component name="importer" path="common.form" config="if:settingsform;url:@{#}/forms/settings.html"></ui-component>
+			<ui-component name="importer" path="common.form" config="if:passwordform;url:@{#}/forms/password.html"></ui-component>
+			@{fi}
+
+			@{if user.sa || user.permissions.includes('create')}
+			<ui-component name="importer" path="common.form" config="if:newform;url:@{#}/forms/new.html"></ui-component>
+			@{fi }
+
+		</ui-component>
 
 	</div>
+
+	@{json(user.json ? user.json() : user, 'userdata')}
 
 	<script>
 
 		DEF.fallback = '@{#}/cdn/j-{0}.html';
 		DEF.versionhtml = '@{MAIN.flowstream.version}';
 
+		var user = PARSE('#userdata');
 		var common = {};
 
 		common.openplatform = NAV.query.openplatform || '';
@@ -82,9 +94,7 @@
 		if (common.openplatform) {
 			(function() {
 				var hostname = common.openplatform.substring(0, common.openplatform.indexOf('/', 10));
-				hostname && IMPORT(hostname + '/openplatform.min.js', function() {
-					OP.appearance();
-				});
+				hostname && IMPORT(hostname + '/iframe.js');
 				common.openplatform = '?openplatform=' + encodeURIComponent(common.openplatform);
 			})();
 		}
@@ -105,11 +115,11 @@
 		WAPI({ url: '@{#}/fapi/' + common.openplatform });
 
 		ON('@flag showloading', function() {
-			SETTER('loading/show');
+			EXEC('-loading/show');
 		});
 
 		ON('@flag hideloading', function() {
-			SETTER('loading/hide', 1000);
+			EXEC('-loading/hide', 1000);
 		});
 
 		// Error handling
@@ -126,7 +136,7 @@
 				err.push(m.error);
 			}
 
-			SETTER('message/warning @hideloading', err.join('<br />'));
+			EXEC('-message/warning @hideloading', err.join('<br />'));
 			login && location.reload(true);
 		});
 
@@ -149,13 +159,13 @@
 			com.register('CMD+F, CTRL+F', shortcutsprocess('CMD+F'), true);
 			com.register('CMD+TAB, ALT+TAB', function() {
 				var index = common.tabs.findIndex('focused', true) + 1;
-				SETTER('parts/focus', common.tabs[index] ? common.tabs[index].id : common.tabs[0].id);
+				EXEC('-parts/focus', common.tabs[index] ? common.tabs[index].id : common.tabs[0].id);
 			}, true);
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
 		});
 
-		SETTER(true, 'loading/hide', 500);
+		EXEC(true, '-loading/hide', 500);
 
 		FUNC.import = function(callback) {
 			SET('importform @default', { callback: callback });
@@ -181,10 +191,7 @@
 			var checksum;
 
 			exports.refresh = function() {
-
-				exports.scope();
-
-				WAPI('streams', ERROR(function(response) {
+				exports.tapi('streams ERROR', function(response) {
 
 					var groups = {};
 
@@ -210,10 +217,10 @@
 					}
 
 					arr.quicksort('name');
-					SET('?.groups', arr);
-					SET('?.groupsform', form);
-					SET('?.items', response);
-				}));
+					exports.set('groups', arr);
+					exports.set('groupsform', form);
+					exports.set('items', response);
+				});
 			};
 
 			exports.focus = function(el) {
@@ -227,17 +234,17 @@
 					var index = opt.items.findIndex('id', 'settings');
 					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
 					opt.callback = exports.menu;
-					SETTER('menu/show', opt);
+					EXEC('-menu/show', opt);
 					return;
 				}
 
-				SETTER('parts/focus', id);
+				EXEC('-parts/focus', id);
 			};
 
 			exports.close = function(el, e) {
 				e.stopPropagation();
 				e.preventDefault();
-				SETTER('parts/close', ATTRD(el));
+				EXEC('-parts/close', ATTRD(el));
 			};
 
 			exports.open = function(el) {
@@ -248,7 +255,7 @@
 
 				if (item) {
 					if (!item.focused)
-						SETTER('parts/focus', item.id);
+						EXEC('-parts/focus', item.id);
 					return;
 				}
 
@@ -260,9 +267,9 @@
 				item.name = flow.name;
 				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '');
 				item.focus = 'common/focusiframe';
-				SETTER('loading/show');
-				SETTER('loading/hide', 2000);
-				PUSH('?.tabs', item);
+				EXEC('-loading/show');
+				EXEC('-loading/hide', 2000);
+				exports.push('tabs', item);
 			};
 
 			exports.focusiframe = function(el, item) {
@@ -282,7 +289,8 @@
 					opt.align = 'right';
 				}
 
-				var item = GET('?.items').findItem('id', id);
+				var model = exports.model;
+				var item = model.items.findItem('id', id);
 				var paused = false;
 				var parent = el.closest('.flowstreams');
 
@@ -311,8 +319,10 @@
 				if (common.workers)
 					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'ti ti-sync' });
 
-				opt.items.push('-');
-				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
+				if (user.sa || user.permissions.include('remove')) {
+					opt.items.push('-');
+					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
+				}
 
 				opt.callback = function(opt) {
 					switch (opt.id) {
@@ -322,23 +332,23 @@
 							break;
 						case 'pause':
 						case 'play':
-							WAPI(QUERIFY('streams_pause/' + id, { is: paused ? 0 : 1 }), function() {
+							exports.tapi(QUERIFY('streams_pause/{0} ERROR'.format(id), { is: paused ? 0 : 1 }), function() {
 								parent.find('figure[data-id="{0}"]'.format(id)).tclass('paused', !paused);
 								if (item.stats)
 									item.stats.paused = !paused;
 							});
 							break;
 						case 'restart':
-							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"ti ti-sync" @(Restart)', function() {
-								WAPI('streams_restart/' + id, ASETTER('message/response',ASETTER('notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name))));
+							EXEC('-approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"ti ti-sync" @(Restart)', function() {
+								exports.tapi('streams_restart/{0} ERROR'.format(id), AEXEC('-notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name)));
 							});
 							break;
 						case 'variables':
-							WAPI('variables?id=' + id, ASETTER('message/response', function(response) {
+							WAPI('variables?id=' + id, AEXEC('-message/response', function(response) {
 								var model = {};
 								model.variables = response;
 								model.callback = function(model) {
-									WAPI('variables_save', { id: id, data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
+									exports.tapi('variables_save ERROR', { id: id, data: model }, AEXEC('-notify/success', '@(Variables have been changed successfully.)'));
 								};
 								SET('variablesform @reset', model);
 								SET('common.form', 'variablesform');
@@ -348,7 +358,7 @@
 						case 'copy2':
 						case 'clone':
 						case 'download':
-							WAPI('clipboard_export/' + id, ASETTER('message/response', function(response) {
+							exports.tapi('clipboard_export/{0} ERROR'.format(id), function(response) {
 
 								if (opt.id === 'download') {
 									var blob = new Blob([JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t')], { type: 'text/plain; charset=utf-8' });
@@ -357,48 +367,52 @@
 								}
 
 								if (opt.id === 'copy' || opt.id === 'copy2') {
-									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t'));
-									SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
+									EXEC('-clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t'));
+									EXEC('-notify/success', '@(The FlowStream has been copied into the clipboard)');
 								} else {
-									WAPI('clipboard_import @showloading', { data: response.value }, ASETTER('message/response @hideloading', function(response) {
+									exports.tapi('clipboard_import @showloading ERROR', { data: response.value }, function(response) {
 										exports.refresh();
 										setTimeout(function() {
-											WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+											exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
 												SET('streamform @reset', response);
 												SET('common.form', 'streamform');
-											}));
+											});
 										}, 1000);
-									}));
+									});
 								}
-							}));
+							});
 							break;
 						case 'edit':
-							WAPI('streams_read/{0} @showloading'.format(id), ASETTER('message/response', function(response) {
+							exports.tapi('streams_read/{0} @showloading ERROR'.format(id), function(response) {
 								SET('streamform @reset', response);
 								SET('common.form @hideloading', 'streamform');
-							}));
+							});
 							break;
 						case 'remove':
-							SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"ti ti-remove" @(Remove)', function() {
-								WAPI('streams_remove/' + id, ASETTER('message/response', exports.refresh));
+							user.sa && EXEC('-approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"ti ti-remove" @(Remove)', function() {
+								exports.tapi('streams_remove/{0} ERROR'.format(id), exports.refresh);
 							});
 							break;
 					}
 				};
-				SETTER('menu/show', opt);
+				EXEC('-menu/show', opt);
 			};
 
 			exports.settings = function() {
-				WAPI('settings @showloading', ASETTER('message/response', function(response) {
+				exports.tapi('settings @showloading ERROR', function(response) {
 					SET('settingsform @reset @hideloading', response);
 					SET('common.form', 'settingsform');
-				}));
+				});
 			};
 
 			exports.mainmenu = function() {
 				var items = [];
-				items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
-				items.push({ id: 'import', name: '@(Import Flow)', icon: 'ti ti-download' });
+
+				if (user.sa || user.permissions.include('create')) {
+					items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
+					items.push({ id: 'import', name: '@(Import Flow)', icon: 'ti ti-download' });
+				}
+
 				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 				items.push('-');
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'ti ti-cloud-download' });
@@ -418,7 +432,7 @@
 					items.push({ id: 'logout', name: '@(Sign out)', icon: 'ti ti-sign-out red' });
 				}
 
-				SET('?.menu', items);
+				exports.set('menu', items);
 			};
 
 			exports.menu = function(el) {
@@ -426,19 +440,19 @@
 				switch (id) {
 
 					case 'update':
-						SETTER('approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
+						EXEC('-approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
 							opt.url = '/fapi/update/' + common.openplatform;
 							opt.callback = function(response, err) {
 								if (err) {
-									SETTER('message/warning', err);
+									EXEC('-message/warning', err);
 								} else {
-									SETTER('loading/show');
+									EXEC('-loading/show');
 									setTimeout(() => location.reload(), 5000);
 								}
 							};
-							SETTER('fileuploader/upload', opt);
+							EXEC('-fileuploader/upload', opt);
 						});
 						break;
 
@@ -456,23 +470,22 @@
 							var obj = PARSE(data);
 							if (obj && obj.components && obj.id && obj.name && obj.design) {
 								data = STRINGIFY(obj);
-								WAPI('clipboard_import @showloading', { data: data }, ASETTER('message/response @hideloading', function(response) {
-									exports.scope();
+								exports.tapi('clipboard_import @showloading ERROR', { data: data }, function(response) {
 									exports.refresh();
 									setTimeout(function() {
-										WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+										exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
 											SET('streamform @reset', response);
 											SET('common.form', 'streamform');
-										}));
+										});
 									}, 1000);
-								}));
+								});
 								hide();
 							} else
-								SETTER('message/warning', '@(Invalid data)');
+								EXEC('-message/warning', '@(Invalid data)');
 						});
 						break;
 					case 'opensource':
-						SET('common.form', 'templatesform');
+						exports.set('form', 'templatesform');
 						break;
 					case 'create':
 					case 'settings':
@@ -481,8 +494,8 @@
 						exports[id]();
 						break;
 					case 'cdnclear':
-						SETTER('approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"ti ti-recycle" @(Clear)', function() {
-							WAPI('cdn_clear', ASETTER('message/response', '@(The CDN cache has been cleared successfully)'));
+						EXEC('-approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"ti ti-recycle" @(Clear)', function() {
+							exports.tapi('cdn_clear ERROR', AEXEC('-message/success', '@(The CDN cache has been cleared successfully)'));
 						});
 						break;
 				}
@@ -494,18 +507,18 @@
 			};
 
 			exports.password = function() {
-				WAPI('auth', ASETTER('message/response', function(response) {
+				exports.tapi('auth ERROR', function(response) {
 					SET('passwordform @reset', response);
 					SET('common.form', 'passwordform');
-				}));
+				});
 			};
 
 			exports.variables = function() {
-				WAPI('variables', function(response) {
+				exports.tapi('variables ERROR', function(response) {
 					var model = {};
 					model.variables = response;
 					model.callback = function(model) {
-						WAPI('variables_save', { data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
+						exports.tapi('variables_save ERROR', { data: model }, AEXEC('-notify/success', '@(Variables have been changed successfully.)'));
 					};
 					SET('variablesform @reset', model);
 					SET('common.form', 'variablesform');
@@ -515,9 +528,9 @@
 			exports.console = function() {
 				var winid = 'console';
 				if (common.windows.findItem('id', winid)) {
-					SETTER('windows/hide', winid);
+					EXEC('-windows/hide', winid);
 				} else {
-					PUSH('common.windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<div data-import="url:/forms/console.html"></div>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
+					exports.push('windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<ui-import config="url:/forms/console.html"></ui-import>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
 						el.closest('.ui-windows-item').find('pre').empty();
 						WAPI('console_clear', NOOP);
 					}, make: function(el) {
@@ -531,7 +544,7 @@
 			exports.refresh();
 
 			exports.stats = function() {
-				WAPI('streams_stats', 'common.stats');
+				exports.tapi('streams_stats', 'stats');
 			};
 
 			ON('ready', exports.stats);
@@ -549,25 +562,27 @@
 				if (data && data.SOURCE === 'flow') {
 					switch (data.TYPE) {
 						case 'open':
+							var model = exports.model;
 							if (data.id.charAt(0) === '@')
-								data.id = common.items.findValue('reference', data.id.substring(1), 'id');
+								data.id = model.items.findValue('reference', data.id.substring(1), 'id');
 							data.id && exports.open(data.id);
-							SETTER('!menu/hide');
-							SETTER('!datepicker/hide');
+							EXEC('-!menu/hide');
+							EXEC('-!datepicker/hide');
 							break;
 						case 'focus':
-							var win = common.windows.findItem('url', data.socket);
+							var model = exports.model;
+							var win = model.windows.findItem('url', data.socket);
 							if (win) {
-								SETTER('!menu/hide');
-								SETTER('!datepicker/hide');
-								SETTER('infowindows/focus', win.id);
+								EXEC('-!menu/hide');
+								EXEC('-!datepicker/hide');
+								EXEC('-infowindows/focus', win.id);
 							}
 							break;
 						case 'edit':
-							WAPI('streams_read/{id} @showloading'.arg(data), ASETTER('mmessage/response', function(response) {
+							exports.tapi('streams_read/{id} @showloading ERROR'.arg(data), function(response) {
 								SET('streamform @reset', response);
 								SET('common.form @hideloading', 'streamform');
-							}));
+							});
 							break;
 					}
 				}
@@ -578,27 +593,27 @@
 				if (!common.form && text.substring(0, 4) === 'flow') {
 					data = DECRYPT(text, common.secret, 'flow');
 					if (data) {
-						SETTER('approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
-							WAPI('clipboard_import @showloading', { data: STRINGIFY(data) }, ASETTER('message/response @hideloading', function(response) {
+						EXEC('-approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
+							TAPI('clipboard_import @showloading ERROR', { data: STRINGIFY(data) }, function(response) {
 
 								if (response.error)
-									SETTER('message/warning', response.error);
+									EXEC('-message/warning', response.error);
 
-								EXEC('common/refresh');
+								exports.exec('refresh');
 								setTimeout(function() {
-									WAPI('streams_read/' + response.value, ASETTER('message/response', function(response) {
+									TAPI('streams_read/{0} ERROR' + response.value, function(response) {
 										SET('streamform @reset', response);
 										SET('common.form', 'streamform');
-									}));
+									});
 								}, 1000);
-							}));
+							});
 						});
 					}
 				}
 			});
 
 			if (NAV.query.welcome) {
-				SET('common.form', 'welcomeform');
+				exports.set('form', 'welcomeform');
 				setTimeout(() => REDIRECT(NAV.url), 1000);
 			}
 

@@ -1,31 +1,31 @@
-<div data---="miniform__common.form__if:~PATH~;title:@(Edit group);icon:ti ti-object-group;autofocus:true;submit:?/submit;width:400" class="hidden" data-scope="~PATH~">
+<ui-component name="miniform" path="common.form" config="if:~PATH~;title:@(Edit group);icon:ti ti-object-group;autofocus:true;submit:?/submit;width:400" class="hidden" plugin="~PATH~">
 	<div class="padding">
-		<div data---="input__?.name__maxlength:50;required:1" class="m">@(Group name)</div>
+		<ui-component name="input" path="?.name" config="maxlength:50;required:1" class="m">@(Group name)</ui-component>
 		<div class="row">
 			<div class="col-md-6 m">
-				<div data---="input__?.background__type:color">@(Background)</div>
+				<ui-component name="input" path="?.background" config="type:color">@(Background)</ui-component>
 			</div>
 			<div class="col-md-6 m">
-				<div data---="input__?.color__type:color">@(Color)</div>
+				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
 			</div>
 		</div>
 	</div>
 	<nav>
 		<button name="submit" style="width:100%"><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 		exports.submit = function(hide) {
-			var model = GET('?');
+			var model = exports.model;
 			var group = flow.data.groups.findItem('id', model.id);
 			group.name = model.name;
 			group.background = model.background ? model.background.charAt(0) === '#' ? FUNC.hex2rgba(model.background, 0.3) : model.background : undefined;
 			group.color = model.color ? model.color : undefined;
 			UPD('flow.data');
-			SETTER('websocket/send', { TYPE: 'groups', data: flow.data.groups });
+			EXEC('-websocket/send', { TYPE: 'groups', data: flow.data.groups });
 			hide();
 		};
 

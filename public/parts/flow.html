@@ -1,46 +1,53 @@
-<div class="flow" data-scope="flow">
+<ui-plugin name="flow" class="flow">
 
 	<header class="header">
-		<div class="pull-right" data-bind="?.head.proxyurl__show__href a">
+
+		<div is="is-div" path="?.head.proxyurl" config="show;href a" class="pull-right">
 			<button class="exec" data-exec="?/copyendpoint" title="@(Copy endpoint to the clipboard)"><i class="ti ti-link"></i></button>
 			<a title="@(Open endpoint)" target="_blank"><i class="ti ti-globe"></i></a>
 		</div>
+
 		<div class="pull-right">
 			<a href="https://docs.totaljs.com/flow10/" title="@(Documentation: Total.js Platform)" target="_blank" class="special"><i class="ti ti-book"></i></a>
 			<button title="@(FlowStream information)" class="exec pull-right" data-exec="?/info"><i class="ti ti-info-circle color"></i></button>
 		</div>
-		<div class="apply-button">
-			<button class="exec apply" data-exec="?/submit" data-bind="?.changed__.highlight"><i class="ti ti-play"></i><span>@(APPLY)</span></button>
+
+		<div is="is-div" path="?.changed" config=".highlight button" class="apply-button">
+			<button class="exec apply" data-exec="?/submit"><i class="ti ti-play"></i><span>@(APPLY)</span></button>
 		</div>
+
 		<div>
-			<button title="@(Pause)" class="exec" data-exec="?/pause" data-bind="?.stats.paused__.paused"><i class="ti ti-pause"></i><span></span></button>
+			<button title="@(Pause)" class="exec" data-exec="?/pause" is="is-button" path="?.stats.paused" config=".paused"><i class="ti ti-pause"></i><span></span></button>
 			<button title="@(Add)" class="exec green" data-exec="?/add"><i class="ti ti-plus-circle"></i></button>
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="ti ti-variables"></i></button>
-			<button title="@(Console)" class="exec" data-exec="?/console" data-bind="common.logs.errors.items.length__.red"><i class="ti ti-bug"></i></button>
-			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" data-bind="common.logs.errors.items.length__show"><i class="ti ti-clean"></i></button>
+			<button title="@(Console)" class="exec" data-exec="?/console" is="is-button" path="common.logs.errors.items.length" config=".red"><i class="ti ti-bug"></i></button>
+			<button title="@(Reset)" class="exec hidden" data-exec="?/reset" is="is-button" path="common.logs.errors.items.length" config="show"><i class="ti ti-clean"></i></button>
 		</div>
+
 		<div>
-			<button disabled title="@(Undo)" data-bind="?.undo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="ti ti-undo"></i></button>
-			<button disabled title="@(Redo)" data-bind="?.redo__enabled:value && value.length" class="exec" data-exec="?/operation" data-type="redo"><i class="ti ti-redo"></i></button>
+			<button disabled title="@(Undo)" is="is-button" path="?.undo" config="enabled:value && value.length" class="exec" data-exec="?/operation" data-type="undo"><i class="ti ti-undo"></i></button>
+			<button disabled title="@(Redo)" is="is-button" path="?.redo" config="enabled:value && value.length" class="exec" data-exec="?/operation" data-type="redo"><i class="ti ti-redo"></i></button>
 			<button title="@(Zoom in)" class="exec" data-exec="?/operation" data-type="in"><i class="ti ti-search-plus"></i></button>
 			<button title="@(Zoom out)" class="exec" data-exec="?/operation" data-type="out"><i class="ti ti-search-minus"></i></button>
 			<button title="@(Zoom out/Zoom reset)" class="exec" data-exec="?/operation" data-type="out2"><i class="ti ti-search-dot"></i></button>
 		</div>
+
 		<div>
 			<button title="@(Options)" class="exec" data-exec="?/options"><i class="ti ti-cog"></i></button>
 		</div>
+
 		<div style="border-right:0">
-			<div class="help pull-left mr10" data-bind="?.selected__show:value&&value.component__template">
+			<ui-bind path="?.selected" config="show:value&&value.component;template" class="help pull-left mr10">
 				<script type="text/html">
 					<div>{{ value.Component.name }} ({{ value.component | instancecount }})</div>
 					<div>@(ID): <b class="monospace">{{ value.id }}</b></div>
 				</script>
-			</div>
+			</ui-bind>
 		</div>
 	</header>
 	<div class="header-empty"></div>
 
-	<div data---="layout__?.layout__margin:45">
+	<ui-component name="layout" path="?.layout" config="margin:45">
 
 		<script type="text/plain">
 			{
@@ -51,70 +58,69 @@
 		</script>
 
 		<section data-type="left">
-			<div data-import="url:@{#}/panels/flow.html"></div>
+			<ui-import config="url:@{#}/panels/flow.html"></ui-import>
 		</section>
 
 		<section data-type="main">
-			<div data---="viewbox__null__parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:0;scrollbarshadow:0;$id:flowviewbox">
-				<div data---="flow__?.data__width:10000;height:10000;markers:0;grid:16;horizontal:1;snapping:0;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:2;inputoffsetY:2;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></div>
-			</div>
+			<ui-component name="viewbox" config="parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:0;scrollbarshadow:0;$id:flowviewbox">
+				<ui-component name="flow" path="?.data" config="width:10000;height:10000;markers:0;grid:16;horizontal:1;snapping:0;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:2;inputoffsetY:2;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></ui-component>
+			</ui-component>
 		</section>
 
 		<section data-type="bottom">
 			<div class="stats">
 				<div class="realtime" title="@(Total messages)">
-					<i class="ti ti-calculator"></i>@(Messages): <b data-bind="?.stats.messages__text__empty__format:0"></b>
+					<i class="ti ti-calculator"></i>@(Messages): <ui-bind path="?.stats.messages" config="text;empty;format:0" class="b"></ui-bind>
 				</div>
 				<div class="realtime" title="@(Pending messages)">
-					<i class="ti ti-refresh"></i>@(Pending): <span class="gray" data-bind="?.stats.pending__text__empty__format:0"></span>
+					<i class="ti ti-refresh"></i>@(Pending): <ui-bind class="gray" path="?.stats.pending" config="text;empty;format:0"></ui-bind>
 				</div>
 				<div class="realtime" title="@(Messages per minute)">
-					<i class="ti ti-clock"></i>@(Per minute): <span class="gray" data-bind="?.stats.mm__text__empty__format:0"></span>
+					<i class="ti ti-clock"></i>@(Per minute): <ui-bind class="gray" path="?.stats.mm" config="text;empty;format:0"></ui-bind>
 				</div>
 				<div class="realtime" title="@(Used nodes)">
-					<i class="ti ti-code-branch"></i>@(Nodes): <span class="gray" data-bind="?.connected__text__empty__format:0"></span>
+					<i class="ti ti-code-branch"></i>@(Nodes): <ui-bind class="gray" path="?.connected" config="text;empty;format:0"></ui-bind>
 				</div>
 				<div class="realtime" title="@(Memory usage)">
-					<i class="ti ti-microchip"></i>@(Memory): <span class="gray" data-bind="?.stats.memory__text:Thelpers.filesize(value||0)"></span>
+					<i class="ti ti-microchip"></i>@(Memory): <ui-bind class="gray" path="?.stats.memory" config="text:Thelpers.filesize(value||0)"></ui-bind>
 				</div>
 			</div>
 		</section>
 
-	</div>
-</div>
+	</ui-component>
+
+</ui-plugin>
 
 <script id="template_flowsettings" type="text/html">
-	<div data-scope="flow.settings.@NAME@" id="@NAME@">
+	<ui-plugin path="flow.settings.@NAME@" id="@NAME@">
 		@BODY@
-	</div>
+	</ui-plugin>
 </script>
 
-<div data---="box__common.form__if:settings;width:800;visibleY:1;icon:ti ti-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
-	<nav data-bind="navigator.clipboard__show .clipboard">
-		<button class="exec" data-exec="flow/readme2" title="@(Readme)"><i class="ti ti-info-circle nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/copyconfig" title="@(Copy config)"><i class="ti ti-copy nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/pasteconfig" title="@(Paste config)"><i class="ti ti-paste nmr"></i></button>
-		<button class="exec clipboard" data-exec="flow/resetconfig" title="@(Reset config)"><i class="ti ti-refresh nmr"></i></button>
+<ui-component name="box" path="common.form" config="if:settings;width:800;visibleY:1;icon:ti ti-cog;submit:flow/settings_submit;$id:flowsettings" class="hidden invisible">
+	<nav>
+		<ui-bind path="navigator.clipboard" config="show .clipboard">
+			<button class="exec" data-exec="flow/readme2" title="@(Readme)"><i class="ti ti-info-circle nmr"></i></button>
+			<button class="exec clipboard" data-exec="flow/copyconfig" title="@(Copy config)"><i class="ti ti-copy nmr"></i></button>
+			<button class="exec clipboard" data-exec="flow/pasteconfig" title="@(Paste config)"><i class="ti ti-paste nmr"></i></button>
+			<button class="exec clipboard" data-exec="flow/resetconfig" title="@(Reset config)"><i class="ti ti-refresh nmr"></i></button>
+		</ui-bind>
 	</nav>
 	<div id="flow_settings"></div>
-	<nav data---="validation__settings__$id:settingsvalidation">
-		<button name="submit"><i class="ti ti-check-circle"></i>@(APPLY)</button>
-		<button name="cancel">@(Cancel)</button>
+	<nav>
+		<ui-component name="validate" path="settings" config="$id:settingsvalidation">
+			<button name="submit"><i class="ti ti-check-circle"></i>@(APPLY)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
 	</nav>
-</div>
-
-<!--
-<div data---="box__common.panel__if:readme;width:620;title:@(Read me);zindex:10;$id:readme;closeoutside:1;closeesc:1;background:false;transparent:true;align:right">
-	<div data-bind="common.readme__html:value?Thelpers.markdown(value, { element: el }):''" class="padding markdown-small"></div>
-</div>
--->
+</ui-component>
 
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
 
-<div data---="importer__common.form__if:groupform;url:@{#}/forms/group.html"></div>
-<div data---="importer__common.form__if:newflow;url:@{#}/forms/new.html"></div>
-<div data---="importer__common.form__if:noteform;url:@{#}/forms/note.html"></div>
+<ui-component name="importer" path="common.form" config="if:groupform;url:@{#}/forms/group.html"></ui-component>
+<ui-component name="importer" path="common.form" config="if:newflow;url:@{#}/forms/new.html"></ui-component>
+<ui-component name="importer" path="common.form" config="if:noteform;url:@{#}/forms/note.html"></ui-component>
 
 <script>
 
@@ -171,14 +177,13 @@
 			ADD('websocket__null__url:{0}'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) + ';encoder:false');
 		};
 
-		exports.reload = function() {
-		};
+		exports.reload = function() {};
 
 		exports.refreshinfo = function(data) {
-			var model = GET('?');
+			var model = exports.model;
 			if (model.selected !== data.selected)
-				SET('?.selected', data.selected);
-			SET('?.info', data);
+				exports.set('selected', data.selected);
+			exports.set('info', data);
 		};
 
 		exports.call = function(id, data, callback) {
@@ -228,7 +233,7 @@
 				return;
 			}
 
-			PUSH('common.windows', { id: id, cachekey: id, html: '<div data-import="url:@{#}/forms/nodes.html"></div>', title: '@(Nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 150) >> 0, y: ((WH / 2) - 200) >> 0, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
+			PUSH('common.windows', { id: id, cachekey: id, html: '<ui-import config="url:@{#}/forms/nodes.html"></ui-import>', title: '@(Nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 150) >> 0, y: ((WH / 2) - 200) >> 0, width: 300, height: 400, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
 		};
 
 		exports.create = function() {
@@ -267,7 +272,8 @@
 			var val;
 
 			if (type === 'out2') {
-				if (GET('?').info.zoom !== 100) {
+				var model = exports.model;
+				if (model.info.zoom !== 100) {
 					type = 'reset';
 				} else {
 					val = 60;
@@ -289,7 +295,8 @@
 
 		exports.contextmenu = function(e, type, meta) {
 
-			var info = GET('?.info');
+			var model = exports.model;
+			var info = model.info;
 			var item = info.selected;
 
 			if (type === 'map' && info.type !== 'group') {
@@ -651,7 +658,7 @@
 
 		exports.readme = function(el) {
 			var id = ATTRD(el);
-			var model = GET('?');
+			var model = exports.model;
 			var item = model.components.findItem('id', id);
 			if (item && item.readme)
 				FUNC.readme(item.name, item.readme);
@@ -942,12 +949,12 @@
 				var span = area.find('.meta').find('span');
 				area[0].appendChild(footer[0]);
 				area.parent();
-				content = area.find('.content');;
+				content = area.find('.content');
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden" data-bind="flow.note.' + self.id + '__show__html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
-			var target = el.closest('.component').attr('data-bind', 'flow.errors.{0}__.iserror:value&&value.length__title:value?value[0].error:\'\''.format(self.id)).tclass('isnewbie', !self.connected);
+			content.append('<summ' + 'ary class="hidden" is="is-summary" path="flow.note.' + self.id + '" config="show;html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
+			var target = el.closest('.component').attr('is', 'is-div').attr('path', 'flow.errors.' + self.id).attr('config', '.iserror:value&&value.length__title:value?value[0].error:\'\'').tclass('isnewbie', !self.connected);
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
 
@@ -1092,7 +1099,8 @@
 		};
 
 		exports.pause = function() {
-			var is = GET('?.stats.paused');
+			var model = exports.model;
+			var is = model.stats.paused;
 			SETTER('loading/show');
 			SETTER('websocket/send', { TYPE: 'pause', is: is === true ? false : true });
 			SETTER('loading/hide', 3000);
@@ -1519,7 +1527,7 @@
 
 						break;
 					case 'remove':
-						var com = GET('?.components').findItem('id', id);
+						var com = exports.model.components.findItem('id', id);
 						SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"ti ti-remove" @(Remove)', ASETTER('websocket/send', { TYPE: 'component_remove', id: id }));
 						break;
 					case 'copycomponent':

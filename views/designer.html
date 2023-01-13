@@ -8,46 +8,49 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('meta', 'head', 'spa.min@19.css + editor.min@1.css + ui.css + editor.css + designer.css', 'spa.min@19.js + filesaver.min.js + editor.min@1.js + ui.js + func.js + editor.js', 'favicon.ico')}
+	@{import('spa.min@19.css', 'spa.min@19.js')}
+	<script src="@{REPO.ui}"></script>
+	@{import('meta', 'head', 'editor.min@1.css + editor.css + designer.css', 'filesaver.min.js + editor.min@1.js + func.js + editor.js', 'favicon.ico')}
 </head>
-<body data---="exec"@{if query.darkmode === '1'} class="ui-dark"@{fi}>
+<body@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
-	<div data---="locale"></div>
-	<div data---="windows__common.windows"></div>
+	<ui-component name="exec"></ui-component>
+	<ui-component name="locale"></ui-component>
+	<ui-component name="windows__common.windows"></ui-component>
 
-	<div data---="LAZY menu__null__style:2"></div>
-	<div data---="LAZY approve__null__cancel:@(Cancel)"></div>
-	<div data---="LAZY message__null__style:2"></div>
-	<div data---="LAZY notify__null__position:bottom right"></div>
-	<div data---="LAZY notifybar"></div>
-	<div data---="LAZY fileuploader"></div>
-	<div data---="LAZY clipboard"></div>
-	<div data---="LAZY faicons"></div>
-	<div data---="LAZY icons"></div>
-	<div data---="LAZY timepicker"></div>
-	<div data---="LAZY datepicker"></div>
-	<div data---="LAZY directory__null__placeholder:@(Search)"></div>
-	<div data---="LAZY colorpicker"></div>
-	<div data---="LAZY filereader"></div>
-	<div data---="LAZY floatinginput"></div>
-	<div data---="LAZY tooltip"></div>
+	<ui-component name="LAZY menu" config="style:2"></ui-component>
+	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
+	<ui-component name="LAZY message" config="style:2"></ui-component>
+	<ui-component name="LAZY notify" config="position:bottom right"></ui-component>
+	<ui-component name="LAZY notifybar"></ui-component>
+	<ui-component name="LAZY fileuploader"></ui-component>
+	<ui-component name="LAZY clipboard"></ui-component>
+	<ui-component name="LAZY faicons"></ui-component>
+	<ui-component name="LAZY icons"></ui-component>
+	<ui-component name="LAZY timepicker"></ui-component>
+	<ui-component name="LAZY datepicker"></ui-component>
+	<ui-component name="LAZY directory" config="placeholder:@(Search)"></ui-component>
+	<ui-component name="LAZY colorpicker"></ui-component>
+	<ui-component name="LAZY filereader"></ui-component>
+	<ui-component name="LAZY floatinginput"></ui-component>
+	<ui-component name="LAZY tooltip"></ui-component>
 
-	<div data---="edit"></div>
-	<div data---="markdown"></div>
-	<div data---="paste"></div>
-	<div data---="shortcuts"></div>
-	<div data---="loading"></div>
-	<div data---="console__common.console__datasource:common.logs"></div>
+	<ui-component name="edit"></ui-component>
+	<ui-component name="markdown" config="highlight:false;charts:false"></ui-component>
+	<ui-component name="paste"></ui-component>
+	<ui-component name="shortcuts"></ui-component>
+	<ui-component name="loading"></ui-component>
+	<ui-component name="console__common.console__datasource:common.logs"></ui-component>
 
-	<div data---="part__common.page__if:flow;url:@{#}/parts/flow.html;loading:0" class="hidden invisible"></div>
-	<div data---="part__common.page__if:componenteditor;url:@{#}/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></div>
+	<ui-component name="part" path="common.page" config="if:flow;url:@{#}/parts/flow.html;loading:0" class="hidden invisible"></ui-component>
+	<ui-component name="part" path="common.page" config="if:componenteditor;url:@{#}/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></ui-component>
 
-	<div data---="importer__common.form__if:componentsform;url:@{#}/forms/components.html"></div>
-	<div data---="importer__common.form__if:sourcesform;url:@{#}/forms/sources.html"></div>
-	<div data---="importer__common.form__if:versionform;url:@{#}/forms/version.html"></div>
-	<div data---="importer__common.form2__if:sourceform;url:@{#}/forms/source.html"></div>
-	<div data---="importer__common.form__if:variablesform;url:@{#}/forms/variables.html"></div>
-	<div data---="importer__common.form__if:importform;url:@{#}/forms/import.html"></div>
+	<ui-component name="importer" path="common.form" config="if:componentsform;url:@{#}/forms/components.html"></ui-component>
+	<ui-component name="importer" path="common.form" config="if:sourcesform;url:@{#}/forms/sources.html"></ui-component>
+	<ui-component name="importer" path="common.form" config="if:versionform;url:@{#}/forms/version.html"></ui-component>
+	<ui-component name="importer" path="common.form" config="if:variablesform;url:@{#}/forms/variables.html"></ui-component>
+	<ui-component name="importer" path="common.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
+	<ui-component name="importer" path="common.form2" config="if:sourceform;url:@{#}/forms/source.html"></ui-component>
 
 	<script>
 
@@ -64,6 +67,7 @@
 		common.components2 = '@{PREF.components2}';
 		common.page = '';
 		common.windows = [];
+
 		// common.tms = '@{query.tms}' === '1';
 		common.socket = '@{query.socket}';
 		common.root = '@{#}';
@@ -131,9 +135,9 @@
 			}
 		});
 
-		SETTER(true, 'shortcuts/register', 'CMD+ENTER, CTRL+ENTER', saveshortcut);
+		EXEC(true, '-shortcuts/register', 'CMD+ENTER, CTRL+ENTER', saveshortcut);
 
-		SETTER(true, 'shortcuts/register', 'CMD+D, CTRL+D', function(e) {
+		EXEC(true, '-shortcuts/register', 'CMD+D, CTRL+D', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				EXEC('flow/clone');
 				e.preventDefault();
@@ -141,7 +145,7 @@
 			}
 		}, true);
 
-		SETTER(true, 'shortcuts/register', 'CMD+C, CTRL+C', function(e) {
+		EXEC(true, '-shortcuts/register', 'CMD+C, CTRL+C', function(e) {
 			if (!window.getSelection().toString() && common.page === 'flow' && !common.form && !common.form2 && flow.selected) {
 				EXEC('flow/copy_components');
 				e.preventDefault();
@@ -149,7 +153,7 @@
 			}
 		});
 
-		SETTER(true, 'shortcuts/register', 'CMD+V, CTRL+V', function(e) {
+		EXEC(true, '-shortcuts/register', 'CMD+V, CTRL+V', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2 && (e.target.nodeName !== 'INPUT' && e.target.nodeName !== 'TEXTAREA')) {
 				EXEC('flow/paste_components', { x: 0, y: 0 }, true);
 				e.preventDefault();
@@ -157,7 +161,7 @@
 			}
 		});
 
-		SETTER(true, 'shortcuts/register', 'remove', function(e) {
+		EXEC(true, '-shortcuts/register', 'remove', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				CMD('flow.selected.clear');
 				SET('flow.changed', true);
@@ -165,9 +169,9 @@
 			}
 		});
 
-		SETTER(true, 'shortcuts/register', 'save', saveshortcut, true);
+		EXEC(true, '-shortcuts/register', 'save', saveshortcut, true);
 
-		SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
+		EXEC(true, '-shortcuts/register', 'CMD+A, CTRL+A', function(e) {
 			var designer = FIND('flow');
 			var selected = designer.selected();
 			if (!selected.components.length) {
@@ -184,7 +188,7 @@
 			return is;
 		});
 
-		SETTER(true, 'exec/register', function(attr, el, e, type) {
+		EXEC(true, '-exec/register', function(attr, el, e, type) {
 			var c = attr.charAt(0);
 			if (c === '=' || c === '/') {
 				var id = ATTRD(el);

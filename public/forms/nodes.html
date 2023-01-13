@@ -15,11 +15,11 @@
 	.ui-dark .--PATH-- .item:hover { background-color: rgba(200,200,200,.04); }
 </style>
 
-<div data-scope="--PATH--" class="--PATH--">
-	<div data---="searchinput__%searchinstances__placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></div>
-	<div data---="viewbox__common.windows__parent:auto;margin:29" class="invisible">
-		<div data---="search__%searchinstances__selector:.item;datasource:flow.data">
-			<div data-bind="flow.data__template:.item">
+<ui-plugin path="--PATH--" class="--PATH--">
+	<ui-component name="searchinput" path="%searchinstances" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
+	<ui-component name="viewbox" path="common.windows" config="parent:auto;margin:29" class="invisible">
+		<ui-component name="search" path="%searchinstances" config="selector:.item;datasource:flow.data">
+			<ui-bind path="flow.data" config="template:.item">
 				<script type="text/html">
 					{{ foreach m in value }}
 						{{ if m.key !== 'groups' && m.key !== 'paused' && m.key !== 'tabs' }}
@@ -34,17 +34,17 @@
 						{{ fi }}
 					{{ end }}
 				</script>
-			</div>
-		</div>
-	</div>
-</div>
+			</ui-bind>
+		</ui-component>
+	</ui-component>
+</ui-plugin>
 
 <script>
 	PLUGIN('--PATH--', function(exports) {
 
 		exports.remove = function(el) {
 			var id = ATTRD(el);
-			SETTER('approve/show', '@(Are you sure you want to remove selected node?)', '"ti ti-trash" @(Remove)', function() {
+			EXEC('-approve/show', '@(Are you sure you want to remove selected node?)', '"ti ti-trash" @(Remove)', function() {
 				Designer.op.remove(id);
 				SET('flow.changed', true);
 			});

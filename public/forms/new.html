@@ -1,4 +1,4 @@
-<div data---="intro__common.form__if:~PATH~;close:@(Done);next:@(Next);exec:~PATH~/done" class="hidden">
+<ui-component name="intro" path="common.form" config="if:~PATH~;close:@(Done);next:@(Next);exec:~PATH~/done" class="hidden">
 	<figure>
 		<div class="padding black">
 			<div class="m" style="font-size:55px"><i class="ti green ti-flag"></i></div>
@@ -17,11 +17,11 @@
 			<div>@(Then drag & drop components to the Flow and join them between each other.)</div>
 		</div>
 	</figure>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 		exports.done = function() {
 			EXEC('flow/components');
 		};

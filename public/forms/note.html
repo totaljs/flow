@@ -3,19 +3,21 @@
 	.~PATH~ .ui-input-input { padding: 15px 15px 0 !important; }
 </style>
 
-<div data---="miniform__common.form__if:~PATH~;title:@(Note);icon:ti ti-comment;autofocus:true;closeesc:1;submit:?/submit;width:500" class="hidden invisible" data-scope="~PATH~">
+<ui-component name="miniform" path="common.form" config="if:~PATH~;title:@(Note);icon:ti ti-comment;autofocus:true;closeesc:1;submit:?/submit;width:500" class="hidden invisible" plugin="~PATH~">
 	<div class="~PATH~">
-		<div data---="input__?.note__height:150;type:multiline;monospace:1;placeholder:@(Enter a note)"></div>
+		<ui-component name="input" path="?.note" config="height:150;type:multiline;monospace:1;placeholder:@(Enter a note)"></ui-component>
 	</div>
-	<nav data---="validate__?__changes:1;output:?.is">
-		<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
-		<button name="cancel">@(Cancel)</button>
+	<nav>
+		<ui-component name="validate" path="?" config="changes:1;output:?.is">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		exports.submit = function() {
 			var model = exports.model;

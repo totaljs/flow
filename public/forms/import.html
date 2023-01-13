@@ -1,20 +1,21 @@
-<div data---="form__common.form__if:~PATH~;icon:ti ti-file-import;title:@(Import);autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:700" class="hidden" data-scope="~PATH~">
+<ui-component name="form" path="common.form" config="if:~PATH~;icon:ti ti-file-import;title:@(Import);autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:700" class="hidden" plugin="~PATH~">
 	<div class="padding">
-		<div data---="textarea__?.data__required:1;height:300;placeholder:@(Paste data)__''">@(Data)</div>
+		<ui-component name="textarea" path="?.data" config="required:1;height:300;placeholder:@(Paste data)" default="''">@(Data)</ui-component>
 	</div>
-	<nav data---="validation__?">
-		<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
-		<button name="cancel">@(Cancel)</button>
+	<nav>
+		<ui-component name="validate" path="?">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
 	</nav>
-</div>
+</ui-component>
 
 <script>
 
-	PLUGIN('~PATH~', function(exports) {
+	PLUGIN(function(exports) {
 
 		exports.submit = function(hide) {
-			var model = GET('?');
-			model.callback(model.data, hide);
+			exports.model.callback(model.data, hide);
 		};
 
 	});

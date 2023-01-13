@@ -1,6 +1,6 @@
 // CDN downloader
 // The MIT License
-// Copyright 2022-2023 (c) Peter Širka <petersirka@gmail.com>
+// Copyright 2022 (c) Peter Širka <petersirka@gmail.com>
 
 var Cache = {};
 var Directory;

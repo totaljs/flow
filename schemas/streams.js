@@ -12,33 +12,46 @@ NEWSCHEMA('Streams', function(schema) {
 	schema.define('readme', String);
 	schema.define('proxypath', String); // proxy server
 
-	schema.setQuery(function($) {
-		var arr = [];
-		for (var key in MAIN.flowstream.db) {
-			if (key !== 'variables') {
-				var item = MAIN.flowstream.db[key];
-				var instance = MAIN.flowstream.instances[key];
-				arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, proxypath: item.proxypath ? (CONF.default_root ? (CONF.default_root + item.proxypath.substring(1)) : item.proxypath) : '', stats: instance ? instance.flow.stats : {} });
+	schema.action('query', {
+		name: 'Query streams',
+		action: function($) {
+			var arr = [];
+			for (var key in MAIN.flowstream.db) {
+				if (key !== 'variables') {
+					var item = MAIN.flowstream.db[key];
+					var instance = MAIN.flowstream.instances[key];
+					arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, proxypath: item.proxypath ? (CONF.default_root ? (CONF.default_root + item.proxypath.substring(1)) : item.proxypath) : '', stats: instance ? instance.flow.stats : {} });
+				}
 			}
+			$.callback(arr);
 		}
-		$.callback(arr);
 	});
 
-	schema.setRead(function($) {
-		var id = $.id;
-		var item = MAIN.flowstream.db[id];
-		if (item) {
-			var data = {};
-			for (var key of schema.fields)
-				data[key] = item[key];
-			$.callback(data);
-		} else
-			$.invalid(404);
+	schema.action('read', {
+		name: 'Read specific stream',
+		action: function($) {
+			var id = $.id;
+			var item = MAIN.flowstream.db[id];
+			if (item) {
+				var data = {};
+				for (var key of schema.fields)
+					data[key] = item[key];
+				$.callback(data);
+			} else
+				$.invalid(404);
+		}
 	});
 
-	schema.setSave(function($, model) {
+	schema.action('save', {
+		name: 'Save specific stream',
+		action: function($, model) {
 
 		var init = !model.id;
+
+		if (init) {
+			if (UNAUTHORIZED($, 'create'))
+				return;
+		}
 
 		var db = MAIN.flowstream.db;
 
@@ -114,38 +127,49 @@ NEWSCHEMA('Streams', function(schema) {
 		MAIN.flowstream.save();
 		$.audit();
 		$.success();
+		}
 	});
 
-	schema.setRemove(function($) {
-		var id = $.id;
-		var item = MAIN.flowstream.db[id];
-		if (item) {
+	schema.action('remove', {
+		name: 'Remoce specific stream',
+		action: function($) {
 
-			var path = CONF.directory ? CONF.directory : ('~' + PATH.root('flowstream'));
-			if (path[0] === '~')
-				path = path.substring(1);
+			if (UNAUTHORIZED($, 'remove'))
+				return;
+
+			var id = $.id;
+			var item = MAIN.flowstream.db[id];
+			if (item) {
+
+				var path = CONF.directory ? CONF.directory : ('~' + PATH.root('flowstream'));
+				if (path[0] === '~')
+					path = path.substring(1);
+				else
+					path = PATH.root(CONF.directory);
+
+				F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
+
+				item.proxypath && PROXY(item.proxypath, null);
+
+				delete MAIN.flowstream.db[id];
+				MAIN.flowstream.instances[id].destroy();
+				MAIN.flowstream.save();
+				$.audit();
+				$.success();
+			} else
+				$.invalid(404);
+		}
+	});
+
+	schema.action('raw', {
+		name: 'Read stream raw data',
+		action: function($) {
+			var item = MAIN.flowstream.db[$.id];
+			if (item)
+				$.callback(item);
 			else
-				path = PATH.root(CONF.directory);
-
-			F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
-
-			item.proxypath && PROXY(item.proxypath, null);
-
-			delete MAIN.flowstream.db[id];
-			MAIN.flowstream.instances[id].destroy();
-			MAIN.flowstream.save();
-			$.audit();
-			$.success();
-		} else
-			$.invalid(404);
-	});
-
-	schema.addWorkflow('raw', function($) {
-		var item = MAIN.flowstream.db[$.id];
-		if (item)
-			$.callback(item);
-		else
-			$.invalid(404);
+				$.invalid(404);
+		}
 	});
 
 	var internalstats = {};
@@ -153,56 +177,63 @@ NEWSCHEMA('Streams', function(schema) {
 	internalstats.total = F.version;
 	internalstats.version = MODULE('flowstream').version;
 
-	schema.addWorkflow('stats', function($) {
+	schema.action('stats', {
+		name: 'Read stats',
+		action: function($) {
 
-		internalstats.messages = 0;
-		internalstats.pending = 0;
-		internalstats.mm = 0;
-		internalstats.memory = process.memoryUsage().heapUsed;
+			internalstats.messages = 0;
+			internalstats.pending = 0;
+			internalstats.mm = 0;
+			internalstats.memory = process.memoryUsage().heapUsed;
 
-		for (var key in MAIN.flowstream.instances) {
-			var flow = MAIN.flowstream.instances[key];
-			if (flow.flow && flow.flow.stats) {
-				internalstats.messages += flow.flow.stats.messages;
-				internalstats.mm += flow.flow.stats.mm;
-				internalstats.pending += flow.flow.stats.pending;
+			for (var key in MAIN.flowstream.instances) {
+				var flow = MAIN.flowstream.instances[key];
+				if (flow.flow && flow.flow.stats) {
+					internalstats.messages += flow.flow.stats.messages;
+					internalstats.mm += flow.flow.stats.mm;
+					internalstats.pending += flow.flow.stats.pending;
+				}
 			}
+
+			$.callback(internalstats);
 		}
-
-		$.callback(internalstats);
 	});
 
-	schema.addWorkflow('pause', function($) {
-		var id = $.id;
-		var item = MAIN.flowstream.db[id];
-		if (item) {
-			var is = $.query.is ? ($.query.is === '1') : null;
-			var instance = MAIN.flowstream.instances[id];
+	schema.action('pause', {
+		name: 'Pause a specific stream',
+		action: function($) {
+			var id = $.id;
+			var item = MAIN.flowstream.db[id];
+			if (item) {
+				var is = $.query.is ? ($.query.is === '1') : null;
+				var instance = MAIN.flowstream.instances[id];
 
-			if (instance.flow.stats && is != null)
-				instance.flow.stats.paused = is;
+				if (instance.flow.stats && is != null)
+					instance.flow.stats.paused = is;
 
-			instance.pause(is);
-			$.audit();
-			$.success();
-		} else
-			$.invalid(404);
-
+				instance.pause(is);
+				$.audit();
+				$.success();
+			} else
+				$.invalid(404);
+		}
 	});
 
-	schema.addWorkflow('restart', function($) {
-		var id = $.id;
-		var item = MAIN.flowstream.instances[id];
-		if (item) {
-			if (item.flow) {
-				if (item.flow.terminate)
-					item.flow.terminate();
-				else
-					item.flow.kill(9);
-			}
-			$.success();
-		} else
-			$.invalid(404);
+	schema.action('restart', {
+		name: 'Restart a specific stream',
+		action: function($) {
+			var id = $.id;
+			var item = MAIN.flowstream.instances[id];
+			if (item) {
+				if (item.flow) {
+					if (item.flow.terminate)
+						item.flow.terminate();
+					else
+						item.flow.kill(9);
+				}
+				$.success();
+			} else
+				$.invalid(404);
+		}
 	});
-
 });
