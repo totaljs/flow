@@ -46,10 +46,17 @@
 			<br />
 
 			<div class="caption m">
-				<label><i class="ti ti-totaljs"></i>Total.js OpenPlatform</label>
+				<label><i class="ti ti-totaljs green"></i>Total.js OpenPlatform</label>
 			</div>
 
-			<p>@(You can provide this application on the Total.js OpenPlatform. First, you must obtain tokens from the application registration form in the OpenPlatform instance.)</p>
+			<p>@(The application is designed to work with the Total.js OpenPlatform. First, you must obtain tokens from the application registration form in the OpenPlatform instance.)</p>
+
+			<div class="m">
+				<p>@(You can easily import this app into the OpenPlatform. Copy the link below and paste it into the Importing form in the OpenPlatform.)</p>
+				<ui-bind path="location.origin" config="text span" class="block fs12">
+					<a href="/openplatform.json" target="_blank"><i class="ti ti-globe mr5"></i><span></span>/openplatform.json</a>
+				</ui-bind>
+			</div>
 
 			<div class="grid-2">
 				<div class="m">
