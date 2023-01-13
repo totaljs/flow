@@ -174,7 +174,9 @@
 		var sourcecache = {};
 
 		exports.init = function() {
-			ADD('websocket__null__url:{0}'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) + ';encoder:false');
+			ADD('websocket__null__url:{0};encoder:false'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')));
+			var index = common.socket.indexOf('openplatform=');
+			enterprise.init('/fapi/?' + (index === -1 ? '' : common.socket.substring(index)));
 		};
 
 		exports.reload = function() {};
@@ -245,7 +247,7 @@
 		};
 
 		exports.components = function() {
-			SET('common.form', 'componentsform');
+			enterprise.load(() => SET('common.form', 'componentsform'));
 		};
 
 		exports.find = function(el) {
@@ -255,7 +257,7 @@
 
 		exports.clear = function() {
 			SETTER('approve/show', '@(Are you sure you want to clear the current Flow?)', '"trash-o" @(Clear)', function() {
-				SET('?.data', {});
+				exports.set('data', {});
 			});
 		};
 

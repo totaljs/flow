@@ -1,5 +1,63 @@
 var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 
+(function() {
+
+	var endpoint = 'https://enterprise.totaljs.com';
+	var enterprise = { is: false, loaded: false, token: '' };
+
+	enterprise.init = function(url) {
+		enterprise.api = url;
+	};
+
+	var read = function(callback) {
+
+		if (enterprise.token) {
+			callback();
+			return;
+		}
+
+		API(enterprise.api + ' enterprise_read ERROR', function(response) {
+			SET('enterprise.token', response.token);
+			callback && callback(response.token);
+		});
+	};
+
+	enterprise.edit = function() {
+
+		if (!enterprise.loaded) {
+			IMPORT(endpoint + '/account/');
+			enterprise.loaded = true;
+		}
+
+		read(function(token) {
+			SET('enterpriseform @reset', { token: token });
+			SET('enterprise.form', 'account');
+		});
+
+	};
+
+	enterprise.load = function(callback) {
+		read(function(token) {
+
+			SET('enterprise.token', token);
+
+			if (token) {
+				AJAX('GET {0}/account/verify/?token={1}'.format(endpoint, token), function(response) {
+					SET('enterprise.is', response.status === 'ok');
+					SET('enterprise.account', response);
+					callback && callback(response);
+				});
+			} else {
+				NUL('enterprise.account');
+				callback && callback(null);
+			}
+		});
+	};
+
+	W.enterprise = enterprise;
+
+})();
+
 customElements.define('is-div', class extends HTMLDivElement {
 	constructor() {
 		super();

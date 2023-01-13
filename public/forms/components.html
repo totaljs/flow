@@ -1,8 +1,7 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:800" class="hidden" plugin="~PATH~">
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden" plugin="~PATH~">
 	<nav>
-		<ui-bind path="?.newupdates" config="enable .D">
-			<button class="exec D" data-exec="?/update"><i class="ti ti-sync"></i>@(Update all)</button>
-		</ui-bind>
+		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs green"></i>@(Enterprise)</button>
+		<button class="exec" data-exec="?/update" is="is-button" path="?.newupdates" config="enable"><i class="ti ti-sync"></i>@(Update all)</button>
 	</nav>
 	<div>
 		<div class="search">
@@ -11,10 +10,25 @@
 		<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
 			<div class="padding">
 				<div style="margin:0 0 15px 8px">
+
+					<ui-bind path="enterprise.is" config="hide" class="block hidden">
+						<div class="message message-success center" style="margin-bottom:15px;font-size:14px;padding:15px">
+							<i class="ti ti-totaljs mr5"></i><b>@(Make Total.js Platform better.)</b> @(Join Total.js Enterprise and download premium open-source components and other parts for free.)
+						</div>
+					</ui-bind>
+
+					<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'">
+						<script type="text/html">
+							<div class="bg-smoke padding m" style="border-radius:var(--radius)">
+								<i class="ti ti-totaljs mr5 green"></i>@(Your Total.js Enterprise Account expires on) <i class="ti ti-bull"></i> <b>{{ value.dtexpire | format('[date]') }}</b>
+							</div>
+						</script>
+					</ui-bind>
+
 					<div class="pull-right">
 						<span class="link fs12 exec" data-exec="flow/create"><i class="ti ti-plus-circle green mr5"></i>@(Create component)</span>
 					</div>
-					<ui-component name="checkbox" path="?.approve" default="true">@(Warn on component installation)</ui-component>
+					<ui-component name="input" path="?.approve" config="type:checkbox" default="true">@(Warn about component installation)</ui-component>
 				</div>
 				<ui-component name="search" path="?.search" config="selector:figure">
 					<ui-bind path="?.items" config="template" id="flowstreamcomponents">
@@ -25,12 +39,10 @@
 								{{ fi }}
 								<div class="listing-download">
 									{{ foreach m in n.items }}
-									<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+									<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
 										<section>
-											<!--{{ if m.version }}<div class="version">@(Version:) {{ m.version }}</div>{{ fi }}-->
 											<div class="icon" style="background:{{ m.groupcolor }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-											<div class="name"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
-											<!--div class="author">@(Version:) {{ m.version | empty }}</div>-->
+											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ if m.enterprise }}<span class="badge badge-small badge-red mr5">Enterprise</span>{{ fi }}{{ m.name }}</div>
 										</section>
 									</figure>
 									{{ end }}
@@ -87,8 +99,7 @@
 		};
 
 		exports.enterprise = function() {
-			NULL('common.form');
-			EXEC('flow/enterprise');
+			enterprise.edit();
 		};
 
 		exports.reload = function() {
@@ -100,17 +111,14 @@
 
 			var queue = [];
 
-			if (common.components) {
-				queue.push(function(next) {
-					refresh(common.components, opt, next);
-				});
-			}
+			if (common.components)
+				queue.push(next => refresh(common.components, opt, next));
 
-			if (common.components2) {
-				queue.push(function(next) {
-					refresh(common.components2, opt, next);
-				});
-			}
+			if (common.components2)
+				queue.push(next => refresh(common.components2, opt, next));
+
+			if (enterprise.is)
+				queue.push(next => refresh('https://enterprise.totaljs.com/download/flowcomponents/?token=' + enterprise.token, opt, next));
 
 			queue.async(function() {
 

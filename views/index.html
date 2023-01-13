@@ -57,9 +57,10 @@
 	</header>
 	<div>
 
-		<ui-component name="ready__null__rclass:invisible" class="invisible">
+		<ui-component name="ready" config="rclass:invisible" class="invisible">
+
 			<div class="landing">
-				<ui-component name="parts__common.tabs__parent:window;margin:60"></ui-component>
+				<ui-component name="parts" path="common.tabs" config="parent:window;margin:60"></ui-component>
 			</div>
 
 			<ui-component name="importer" path="common.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
@@ -86,8 +87,8 @@
 		DEF.fallback = '@{#}/cdn/j-{0}.html';
 		DEF.versionhtml = '@{MAIN.flowstream.version}';
 
-		var user = PARSE('#userdata');
 		var common = {};
+		var user = PARSE('#userdata');
 
 		common.openplatform = NAV.query.openplatform || '';
 
@@ -112,7 +113,11 @@
 		common.cl = {}; // for additional codelists
 		document.title += ' (' + common.env + ')';
 
-		WAPI({ url: '@{#}/fapi/' + common.openplatform });
+		(function() {
+			var url = '@{#}/fapi/' + common.openplatform;
+			WAPI({ url: url });
+			enterprise.init(url);
+		})();
 
 		ON('@flag showloading', function() {
 			EXEC('-loading/show');

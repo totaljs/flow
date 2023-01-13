@@ -16,7 +16,7 @@
 
 	<ui-component name="exec"></ui-component>
 	<ui-component name="locale"></ui-component>
-	<ui-component name="windows__common.windows"></ui-component>
+	<ui-component name="windows" path="common.windows" config="zindex:50"></ui-component>
 
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
 	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
@@ -40,7 +40,7 @@
 	<ui-component name="paste"></ui-component>
 	<ui-component name="shortcuts"></ui-component>
 	<ui-component name="loading"></ui-component>
-	<ui-component name="console__common.console__datasource:common.logs"></ui-component>
+	<ui-component name="console" path="common.console" config="datasource:common.logs"></ui-component>
 
 	<ui-component name="part" path="common.page" config="if:flow;url:@{#}/parts/flow.html;loading:0" class="hidden invisible"></ui-component>
 	<ui-component name="part" path="common.page" config="if:componenteditor;url:@{#}/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></ui-component>
@@ -53,6 +53,8 @@
 	<ui-component name="importer" path="common.form2" config="if:sourceform;url:@{#}/forms/source.html"></ui-component>
 
 	<script>
+
+		enterprise.init('@{#}/fapi/');
 
 		var common = {};
 
