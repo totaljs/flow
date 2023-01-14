@@ -20,7 +20,6 @@
 		footer a { color: #777; }
 		h1 { font-size: 20px; margin: 0 0 15px 0; padding: 0; }
 		h1 i { margin-right: 8px; font-size: 30px; vertical-align: middle; }
-
 		h2 { font-size: 16px; margin: 0 0 15px 0; padding: 0; font-weight: normal; color: #777; }
 		button { width: 100%; border: 0; padding: 8px 10px; font-size: 14px; background-color: var(--color); color: #FFF; border-radius: var(--radius); font-weight: bold; outline: 0; }
 		button:hover { opacity: 0.8; }
@@ -40,38 +39,40 @@
 
 	<ui-component name="viewbox" config="centered:1;parent:window" class="invisible">
 		<div class="login" data-scope="signinform">
-			<ui-component name="autofill">
+			<div>
+				<ui-component name="autofill">
 
-				@{if PREF.user.raw}
-				<div class="alert" style="margin-bottom:20px">
-					<div><i class="ti ti-user"></i>@(Default account:)</div>
-					<div class="kv" style="margin-top:10px">
-						<div class="key">@(User name)</div>
-						<div class="value b">@{PREF.user.login}</div>
+					@{if PREF.user.raw}
+					<div class="alert" style="margin-bottom:20px">
+						<div><i class="ti ti-user"></i>@(Default account:)</div>
+						<div class="kv" style="margin-top:10px">
+							<div class="key">@(User name)</div>
+							<div class="value b">@{PREF.user.login}</div>
+						</div>
+						<div class="kv">
+							<div class="key">@(Password)</div>
+							<div class="value b">@{PREF.user.raw}</div>
+						</div>
+						<button name="submit" class="button exec mt10" data-exec="?/fill">@(Fill in the form)</button>
 					</div>
-					<div class="kv">
-						<div class="key">@(Password)</div>
-						<div class="value b">@{PREF.user.raw}</div>
-					</div>
-					<button name="submit" class="button exec mt10" data-exec="?/fill">@(Fill in the form)</button>
-				</div>
-				@{fi}
+					@{fi}
 
-				<h2><i class="ti ti-object-group mr5"></i>@{'%name'}</h2>
-				<ui-component name="enter" path="?">
-					<ui-component name="input" path="?.login" config="required:1;autofocus:1;autofill:1" default="''" class="m">@(User name)</ui-component>
-					<ui-component name="input" path="?.password" config="required:1;type:password;autofill:1" default="''" class="m">@(Password)</ui-component>
-					<ui-bind path="%error" config="show;template" class="error">
-						<script type="text/html">
-							<i class="ti ti-exclamation-triangle"></i> {{ value }}
-						</script>
-					</ui-bind>
-					<ui-component name="validate" path="?" style="margin-top:20px">
-						<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
+					<h2><i class="ti ti-object-group mr5"></i>@{'%name'}</h2>
+					<ui-component name="enter" path="?">
+						<ui-component name="input" path="?.login" config="required:1;autofocus:1;autofill:1" default="''" class="m">@(User name)</ui-component>
+						<ui-component name="input" path="?.password" config="required:1;type:password;autofill:1" default="''" class="m">@(Password)</ui-component>
+						<ui-bind path="%error" config="show;template" class="error">
+							<script type="text/html">
+								<i class="ti ti-exclamation-triangle"></i> {{ value }}
+							</script>
+						</ui-bind>
+						<ui-component name="validate" path="?" style="margin-top:20px">
+							<button name="submit" class="button exec" data-exec="?/submit" disabled>@(Sign in)</button>
+						</ui-component>
 					</ui-component>
-				</ui-component>
 
-			</ui-component>
+				</ui-component>
+			</div>
 			<br />
 			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
 		</div>
@@ -90,8 +91,7 @@
 			};
 
 			exports.fill = function() {
-				SET('signinform', { login: '@{PREF.user.login}', password: '@{PREF.user.raw}' });
-				UPD('signinform @change');
+				SET('signinform @change', { login: '@{PREF.user.login}', password: '@{PREF.user.raw}' });
 			};
 		});
 
