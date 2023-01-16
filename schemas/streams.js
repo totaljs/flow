@@ -4,12 +4,13 @@ NEWSCHEMA('Streams', function(schema) {
 	schema.define('name', String, true);
 	schema.define('author', String);
 	schema.define('version', String);
-	schema.define('icon', String);
+	schema.define('icon', 'Icon');
 	schema.define('reference', String);
 	schema.define('group', String);
 	schema.define('url', String);
-	schema.define('color', 'String(7)');
+	schema.define('color', 'Color');
 	schema.define('readme', String);
+	schema.define('memory', Number);
 	schema.define('proxypath', String); // proxy server
 
 	schema.action('query', {
@@ -20,7 +21,7 @@ NEWSCHEMA('Streams', function(schema) {
 				if (key !== 'variables') {
 					var item = MAIN.flowstream.db[key];
 					var instance = MAIN.flowstream.instances[key];
-					arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, proxypath: item.proxypath ? (CONF.default_root ? (CONF.default_root + item.proxypath.substring(1)) : item.proxypath) : '', stats: instance ? instance.flow.stats : {} });
+					arr.push({ id: item.id, name: item.name, group: item.group, author: item.author, reference: item.reference, url: item.url, color: item.color, icon: item.icon, readme: item.readme, dtcreated: item.dtcreated, dtupdated: item.dtupdated, errors: false, size: item.size || 0, version: item.version, proxypath: item.proxypath ? (CONF.default_root ? (CONF.default_root + item.proxypath.substring(1)) : item.proxypath) : '', memory: item.memory, stats: instance ? instance.flow.stats : {} });
 				}
 			}
 			$.callback(arr);
@@ -46,87 +47,89 @@ NEWSCHEMA('Streams', function(schema) {
 		name: 'Save specific stream',
 		action: function($, model) {
 
-		var init = !model.id;
+			var init = !model.id;
 
-		if (init) {
-			if (UNAUTHORIZED($, 'create'))
-				return;
-		}
-
-		var db = MAIN.flowstream.db;
-
-		if (model.proxypath) {
-
-			if (model.proxypath[0] !== '/')
-				model.proxypath = '/' + model.proxypath;
-
-			if (model.proxypath[model.proxypath.length - 1] !== '/')
-				model.proxypath += '/';
-
-			var blacklist = ['/cdn/', '/fapi/', '/private/', '/flows/', '/designer/', '/parts/', '/forms/', '/css/', '/js/', '/fonts/', '/panels/'];
-
-			if (blacklist.includes(model.proxypath)) {
-				$.invalid('@(Proxy endpoint contains reserved path)');
-				return;
+			if (init) {
+				if (UNAUTHORIZED($, 'create'))
+					return;
 			}
 
-			for (var key in db) {
-				if (db[key].proxypath === model.proxypath && key !== model.id) {
-					$.invalid('Proxy endpoint is already used by the "{0}" Flow.'.format(db[key].name));
+			var db = MAIN.flowstream.db;
+
+			if (model.proxypath) {
+
+				if (model.proxypath[0] !== '/')
+					model.proxypath = '/' + model.proxypath;
+
+				if (model.proxypath[model.proxypath.length - 1] !== '/')
+					model.proxypath += '/';
+
+				var blacklist = ['/cdn/', '/fapi/', '/private/', '/flows/', '/designer/', '/parts/', '/forms/', '/css/', '/js/', '/fonts/', '/panels/'];
+
+				if (blacklist.includes(model.proxypath)) {
+					$.invalid('@(Proxy endpoint contains reserved path)');
+					return;
+				}
+
+				for (var key in db) {
+					if (db[key].proxypath === model.proxypath && key !== model.id) {
+						$.invalid('Proxy endpoint is already used by the "{0}" Flow.'.format(db[key].name));
+						return;
+					}
+				}
+			}
+
+			if (init) {
+
+				model.id = 'f' + UID();
+				model.design = {};
+				model.components = {};
+				model.variables = {};
+				model.sources = {};
+				model.dtcreated = NOW;
+				MAIN.flowstream.db[model.id] = model;
+				MAIN.flowstream.init(model.id, ERROR('FlowStream.init'));
+
+			} else {
+				var item = MAIN.flowstream.db[model.id];
+				if (item) {
+
+					var restart = item.memory !== model.memory;
+
+					item.dtupdated = NOW;
+					item.name = model.name;
+					item.icon = model.icon;
+					item.url = model.url;
+					item.version = model.version;
+					item.reference = model.reference;
+					item.author = model.author;
+					item.group = model.group;
+					item.color = model.color;
+					item.memory = model.memory;
+					item.readme = model.readme;
+
+					// Remove older proxy
+					if (item.proxypath !== model.proxypath && item.proxypath)
+						PROXY(item.proxypath, null);
+
+					item.proxypath = model.proxypath;
+					var instance = MAIN.flowstream.instances[model.id];
+					if (instance) {
+						// Registers a new proxy
+						if (CONF.flowstream_worker && item.proxypath)
+							PROXY(item.proxypath, item.unixsocket, false);
+						instance.refresh(model.id, 'meta', CLONE(model), restart);
+					}
+
+				} else {
+					$.invalid(404);
 					return;
 				}
 			}
-		}
 
-		if (init) {
-
-			model.id = 'f' + UID();
-			model.design = {};
-			model.components = {};
-			model.variables = {};
-			model.sources = {};
-			model.dtcreated = NOW;
-			MAIN.flowstream.db[model.id] = model;
-			MAIN.flowstream.init(model.id, ERROR('FlowStream.init'));
-
-		} else {
-			var item = MAIN.flowstream.db[model.id];
-			if (item) {
-				item.dtupdated = NOW;
-				item.name = model.name;
-				item.icon = model.icon;
-				item.url = model.url;
-				item.version = model.version;
-				item.reference = model.reference;
-				item.author = model.author;
-				item.group = model.group;
-				item.color = model.color;
-				item.readme = model.readme;
-
-				// Remove older proxy
-				if (item.proxypath !== model.proxypath && item.proxypath)
-					PROXY(item.proxypath, null);
-
-				item.proxypath = model.proxypath;
-				var instance = MAIN.flowstream.instances[model.id];
-				if (instance) {
-
-					// Registers new proxy
-					if (CONF.flowstream_worker && item.proxypath)
-						PROXY(item.proxypath, item.unixsocket, false);
-
-					instance.refresh(model.id, 'meta', CLONE(model));
-				}
-
-			} else {
-				$.invalid(404);
-				return;
-			}
-		}
-
-		MAIN.flowstream.save();
-		$.audit();
-		$.success();
+			MAIN.flowstream.save();
+			$.audit();
+			$.success();
 		}
 	});
 

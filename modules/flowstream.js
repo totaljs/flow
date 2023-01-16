@@ -516,11 +516,23 @@ Instance.prototype.reconfigure = function(id, config) {
 	return self;
 };
 
-Instance.prototype.refresh = function(id, type, data) {
+Instance.prototype.refresh = function(id, type, data, restart) {
 	var self = this;
 	var flow = self.flow;
 	if (flow.isworkerthread) {
+
+		for (var key in data)
+			flow.$schema[key] = data[key];
+
+		if (restart) {
+			if (flow.terminate)
+				flow.terminate();
+			else
+				flow.kill(9);
+		}
+
 		flow.postMessage2({ TYPE: 'stream/refresh', id: id, type: type, data: data });
+
 	} else {
 
 		if (type === 'meta' && data) {
@@ -734,6 +746,11 @@ function httprequest(self, opt, callback) {
 	}
 }
 
+function killprocess() {
+	console.error('Main process doesn\'t respond');
+	process.exit(1);
+}
+
 function init_current(meta, callback) {
 
 	if (!meta.directory)
@@ -756,6 +773,7 @@ function init_current(meta, callback) {
 	flow.origin = meta.origin;
 	flow.proxypath = meta.proxypath || '';
 	flow.proxy.online = false;
+	flow.proxy.ping = 0;
 
 	flow.$instance = new Instance(flow, meta.id);
 
@@ -765,11 +783,20 @@ function init_current(meta, callback) {
 
 	if (Parent) {
 
+		Parent.on('disconnect', function() {
+			F.Fs.appendFile('disconnect.txt', process.pid + ' ' + meta.id + '\n', NOOP);
+		});
+
 		Parent.on('message', function(msg) {
 
 			var id;
 
 			switch (msg.TYPE) {
+
+				case 'ping':
+					flow.proxy.ping && clearTimeout(flow.proxy.ping);
+					flow.proxy.ping = setTimeout(killprocess, 10000);
+					break;
 
 				case 'stream/export':
 					msg.data = flow.export2();
@@ -1126,11 +1153,10 @@ function init_current(meta, callback) {
 function init_worker(meta, type, callback) {
 
 	var forkargs = [F.directory, '--fork'];
-
 	if (meta.memory)
 		forkargs.push('--max-old-space-size=' + meta.memory);
 
-	var worker = type === true || type === 'worker' ? (new W.Worker(__filename, { workerData: meta })) : Fork(__filename, forkargs, { serialization: 'json' });
+	var worker = type === true || type === 'worker' ? (new W.Worker(__filename, { workerData: meta })) : Fork(__filename, forkargs, { serialization: 'json', detached: false });
 	var ischild = false;
 
 	meta.unixsocket = F.isWindows ? ('\\\\?\\pipe\\flowstream' + F.directory.makeid() + meta.id + Date.now().toString(36)) : (F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket'));
@@ -2824,7 +2850,7 @@ if (W.workerData) {
 	exports.init(W.workerData);
 }
 
-if (process.argv.indexOf('--fork') !== -1) {
+if (process.argv.includes('--fork')) {
 	process.once('message', function(msg) {
 		if (msg.TYPE === 'init') {
 			Parent = process;

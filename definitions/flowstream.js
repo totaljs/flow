@@ -1,5 +1,6 @@
 const DB_FILE = 'database.json';
 const DIRECTORY = CONF.directory || PATH.root('flowstream');
+const PING = { TYPE: 'ping' };
 
 PATH.mkdir(DIRECTORY);
 PATH.mkdir(PATH.private());
@@ -49,7 +50,9 @@ FS.init = function(id, next) {
 	flow.directory = CONF.directory || PATH.root('/flowstream/');
 	flow.sandbox = CONF.flowstream_sandbox == true;
 	flow.env = PREF.env || 'dev';
-	flow.memory = CONF.flowstream_memory;
+
+	if (!flow.memory)
+		flow.memory = CONF.flowstream_memory || 0;
 
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 
@@ -113,6 +116,16 @@ ON('ready', function() {
 		});
 
 	});
+
+	// A simple prevetion for the Flow zombie processes
+	CONF.flowstream_worker && setInterval(function() {
+		// ping all services
+		for (var key in FS.instances) {
+			var fs = FS.instances[key];
+			if (fs.isworkerthread && fs.flow && fs.flow.postMessage2)
+				fs.flow.postMessage2(PING);
+		}
+	}, 5000);
 
 });
 

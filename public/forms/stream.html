@@ -1,21 +1,21 @@
 <ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" plugin="~PATH~">
-	<div class="padding bg-smoke">
+	<div class="padding bg-smoke npb">
 		<div class="grid-2">
 			<div class="m">
-				<ui-component name="input" path="?.name" config="required:1" default="''" class="m">@(Name)</ui-component>
+				<ui-component name="input" path="?.name" config="required:1" default="''">@(Name)</ui-component>
 				<div class="help">@(Enter FlowStream name)</div>
 			</div>
 			<div class="m">
-				<ui-component name="input" path="?.url" default="'https://'">@(Support URL address)</ui-component>
+				<ui-component name="input" path="?.url" default="'https://'">@(URL address for support)</ui-component>
 				<div class="help">@(Optional, you can enter the URL address for support)</div>
 			</div>
 		</div>
 	</div>
-	<div class="padding">
+	<div class="padding npb">
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<ui-component name="input" path="?.group" config="dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirplaceholder:@(Choose or enter new)">@(Group)</ui-component>
+				<ui-component name="input" path="?.group" config="dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirminwidth:300;dirplaceholder:@(Choose or enter new)">@(Group)</ui-component>
 			</div>
 			<div class="col-md-3 m">
 				<ui-component name="input" path="?.reference" config="align:1">@(Reference)</ui-component>
@@ -40,12 +40,20 @@
 				<div class="help">@(It will route all incoming requests to this FlowStream.)</div>
 			</div>
 		</div>
-
+		<hr />
+		<div class="row">
+			<div class="col-md-3 m">
+				<ui-component name="input" path="?.memory" config="type:number" default="0">@(Max. memory)</ui-component>
+			</div>
+			<div class="col-md-9 m">
+				<div class="message message-alert"><i class="ti ti-microchip"></i>@(Maximum memory limit must be defined in kilobytes. Memory management for a worker process. Zero (<b>0</b>) means auto memory limit.)</div>
+			</div>
+		</div>
 	</div>
 	<hr class="nmb nmt" />
 	<div class="padding">
 		<div class="ui-input-label">@(Additional information):</div>
-		<ui-component name="codemirror" path="?.readme" config="minheight:300;parent:auto;margin:390;monospace:1;type:markdown;linenumbers:0"></ui-component>
+		<ui-component name="codemirror" path="?.readme" config="minheight:300;parent:auto;margin:490;monospace:1;type:markdown;linenumbers:0"></ui-component>
 		<div class="help">@(Markdown format)</div>
 	</div>
 	<nav>
