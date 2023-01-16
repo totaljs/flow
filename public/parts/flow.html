@@ -177,6 +177,10 @@
 			ADD('websocket__null__url:{0};encoder:false'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')));
 			var index = common.socket.indexOf('openplatform=');
 			enterprise.init('/fapi/?' + (index === -1 ? '' : common.socket.substring(index)));
+
+			if (!(/openplatform=.*?/).test(common.socket))
+				$(document).on('click', () => W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket })));
+
 		};
 
 		exports.reload = function() {};

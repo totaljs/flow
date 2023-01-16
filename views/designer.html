@@ -77,10 +77,6 @@
 		common.logs.errors = { icon: 'ti ti-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
 
-		$(document).on('click', function() {
-			W.parent && W.parent.postMessage(STRINGIFY({ TYPE: 'focus', SOURCE: 'flow', socket: NAV.query.socket }), '*');
-		});
-
 		ON('@flag showloading', function() {
 			SETTER('loading/show');
 		});
