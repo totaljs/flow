@@ -86,7 +86,7 @@ customElements.define('is-button', class extends HTMLButtonElement {
 	}
 }, { extends: 'button' });
 
-customElements.define('is-a', class extends HTMLLinkElement {
+customElements.define('is-a', class extends HTMLAnchorElement {
 	constructor() {
 		super();
 		setTimeout(NEWUIBIND, 2, this);
