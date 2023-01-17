@@ -15,7 +15,8 @@
 	PLUGIN(function(exports) {
 
 		exports.submit = function(hide) {
-			exports.model.callback(model.data, hide);
+			var model = exports.model;
+			model.callback(model.data, hide);
 		};
 
 	});
