@@ -1562,7 +1562,7 @@
 
 			SETTER('loading/hide', 500);
 			SETTER('notify/success', '@(Selected components({0}) copied into the clipboard.)'.format(data.items.length));
-			navigator.clipboard.writeText(STRINGIFY(data)).catch(err => console.error(er));
+			SETTER('clipboard/copy', STRINGIFY(data));
 
 		};
 
@@ -1602,7 +1602,7 @@
 			}, function done(){
 				SETTER('loading/hide', 500);
 				SETTER('notify/success', '@(Selected components({0}) copied into the clipboard.)'.format(data.items.length));
-				navigator.clipboard.writeText(STRINGIFY(data)).catch(err => console.error(err));
+				SETTER('clipboard/copy', STRINGIFY(data));
 			});
 		};
 
@@ -1835,9 +1835,8 @@
 		};
 
 		exports.copyconfig = function(el) {
-			navigator.clipboard.writeText(STRINGIFY({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) })).then(() => {
-				SETTER('notify/success', '@(Config copied into clipboard.)');
-			}).catch(err => console.error(err));
+			SETTER('clipboard/copy', STRINGIFY({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) }));
+			SETTER('notify/success', '@(The configuration copied into clipboard.)');
 		};
 
 		exports.pasteconfig = function(el) {

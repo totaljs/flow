@@ -479,7 +479,7 @@
 									exports.refresh();
 									setTimeout(function() {
 										exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
-											SET('streamform @reset', response);
+											SET('streamform @reset @hideloading', response);
 											SET('common.form', 'streamform');
 										});
 									}, 1000);
@@ -560,6 +560,7 @@
 			}, 10000);
 
 			$(W).on('message', function(e) {
+
 				var data = e.originalEvent.data;
 				if (data)
 					data = PARSE(data);
