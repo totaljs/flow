@@ -49,6 +49,7 @@ body.ui-dark { background-color: #202020 !important; }
 .header .pull-right { border-right: 0; }
 .header .apply-button { margin-left: 0; }
 
+.ui-dark .header-special { border-left-color: #404040; }
 .ui-dark .header { background-color: #202020; border-bottom-color: #404040; }
 .ui-dark .header button, .ui-dark header a { background-color: transparent; color: #D0D0D0; }
 .ui-dark .header button.apply i { color: #68B25B; }
