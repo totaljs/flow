@@ -1836,7 +1836,7 @@
 
 		exports.copyconfig = function(el) {
 			SETTER('clipboard/copy', STRINGIFY({ type: 'config', componentid: flow.selected.component, componentname: flow.selected.name, data: CLONE(flow.config[flow.selected.id]) }));
-			SETTER('notify/success', '@(The configuration copied into clipboard.)');
+			SETTER('notify/success', '@(The configuration has been copied into clipboard.)');
 		};
 
 		exports.pasteconfig = function(el) {
