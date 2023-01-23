@@ -94,7 +94,7 @@ if (PREF.backup)
 	CONF.backup = PREF.backup;
 
 if (!PREF.components)
-	PREF.components = 'https://cdn.totaljs.com/flowstream/components/db.json';
+	PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
 
 if (!PREF.token)
 	PREF.token = GUID(30);
