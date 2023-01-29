@@ -12,7 +12,7 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 	var read = function(callback) {
 
 		if (enterprise.token) {
-			callback();
+			callback(enterprise.token);
 			return;
 		}
 
@@ -40,7 +40,6 @@ var TIDYUPWHITE = new RegExp(String.fromCharCode(160), 'g');
 		read(function(token) {
 
 			SET('enterprise.token', token);
-
 			if (token) {
 				AJAX('GET {0}/account/verify/?token={1}'.format(endpoint, token), function(response) {
 					SET('enterprise.is', response.status === 'ok');
