@@ -11,11 +11,13 @@
 			<div class="padding">
 				<div style="margin:0 0 15px 8px">
 
+					<!--
 					<ui-bind path="enterprise.is" config="hide" class="block hidden">
 						<div class="message message-success center" style="margin-bottom:15px;font-size:14px;padding:15px">
 							<i class="ti ti-totaljs mr5"></i><b>@(Make Total.js Platform better.)</b> @(Join Total.js Enterprise and download premium open-source components and other parts for free.)
 						</div>
 					</ui-bind>
+					-->
 
 					<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'">
 						<script type="text/html">
@@ -30,7 +32,7 @@
 					</div>
 					<ui-component name="input" path="?.approve" config="type:checkbox" default="true">@(Warn about component installation)</ui-component>
 				</div>
-				<ui-component name="search" path="?.search" config="selector:figure">
+				<ui-component name="search" path="?.search" config="selector:figure;datasource:?.items">
 					<ui-bind path="?.items" config="template" id="flowstreamcomponents">
 						<script type="text/html">
 							{{ foreach n in value }}
