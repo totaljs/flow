@@ -15,7 +15,7 @@
 <body@{if query.darkmode === '1'} class="ui-dark"@{fi}>
 
 	<ui-component name="exec"></ui-component>
-	<ui-component name="locale"></ui-component>
+	<ui-component name="locale" config="language:@{controller.language}"></ui-component>
 	<ui-component name="windows" path="common.windows" config="zindex:50"></ui-component>
 
 	<ui-component name="LAZY menu" config="style:2"></ui-component>

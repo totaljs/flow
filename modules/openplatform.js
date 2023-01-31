@@ -152,5 +152,6 @@ function Logout() {
 	}
 }
 
+DEF.onLocale = req => (req.user ? (req.user.language) : '') || CONF.language || '';
 AUTH(Data.auth);
 global.OpenPlatform = Data;
