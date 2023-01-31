@@ -1,7 +1,7 @@
 <script total>
 
 	exports.name = 'Your component name';
-	exports.icon = 'fa fa-code';
+	exports.icon = 'ti ti-code';
 	exports.author = 'Total.js';
 	exports.version = '1';
 	exports.group = 'Common';
