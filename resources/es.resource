@@ -5,10 +5,10 @@
 T15819ds     : Disponible solo para la versión bundle
 
 // schemas/auth.js
-T102cmcz     : Credenciales inválidos
+T102cmcz     : Credenciales no válidos
 
 // schemas/clipboard.js, views/index.html, public/parts/flow.html
-Tagsor7      : Datos inválidos
+Tagsor7      : Datos no válidos
 
 // schemas/streams.js
 T1mq6mt1     : El endpoint del proxy contiene una ruta reservada
@@ -208,7 +208,7 @@ Trttn6d      : Escribe el nombre de FlowStream
 T1uc8um3     : Dirección URL para soporte
 Tmbeadb      : Opcional, puedes escribir la dirección URL para soporte
 T13xsfh      : Vacio
-T1fw2eg4     : Elije o escribe uno nuevo
+T1fw2eg4     : Elige o escribe uno nuevo
 Thuap0r      : Referencia
 T1cq6x       : Icono
 T10qvu3a     : /users/
@@ -249,19 +249,6 @@ T1375xdy     : Origen
 Tp5payj      : Bienvenido a la interfaz de programación visual de JavaScript llamada <b>Total.js Flow</b>.
 T3i77bj      : Crea un número ilimitado de Flows y automatiza tus dispositivos, procesos o flujos de trabajo de IoT.
 Tibjq9e      : Gracias por usar <b>Total.js Flow</b>.
-
-// public/js/editor.min@1.js
-T1cfqx3j     : ?:[^\\>]|\\.
-T1wpy2k6     : context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph
-Tqqpj6       : -moz-
-T1vltmuu     : media|supports|(-moz-)?document|import
-T1p779b      : font-face|counter-style
-T1va4ive     : -(moz|ms|o|webkit)-
-
-// public/js/spa.min@19.js
-T13          : '
-Tu27         : ',t
-Tjso48d      : xs|sm|md|lg|dark|light
 
 // public/panels/flow.html
 Ti08av       : No se ha instalado ningún componente Flow
