@@ -109,6 +109,16 @@ var total = 'Hello world!';
 			console.log(name, 'variables2', variables);
 		};
 
+		exports.redraw = function() {
+			// Flow design has been redrawn
+			console.log(name, 'redraw');
+		};
+
+		exports.move = function() {
+			// Instance has changed position
+			console.log(name, 'move');
+		};
+
 		exports.close = function() {
 			// Triggered when the instance is closing due to some reasons
 			console.log(name, 'close');
