@@ -1,115 +1,115 @@
 /*
 Component: j-Animation
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-01-23T09:12:34.000Z
 Author: Peter Širka
 
 
 Component: j-Approve
 Version: 1
-Updated: 2022-11-27T15:23:01.000Z
+Updated: 2023-01-23T09:15:01.000Z
 Author: Peter Širka
 
 
 Component: j-Audio
 Version: 1
-Updated: 2017-03-08T11:11:04.000Z
+Updated: 2023-01-23T09:21:04.000Z
 Author: Peter Širka
 
 
 Component: j-AutoExec
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-01-23T09:25:01.000Z
 Author: Peter Širka
 
 
 Component: j-AutoFill
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-01-23T09:26:00.000Z
 Author: Peter Širka
 
 
 Component: j-Box
 Version: 1
-Updated: 2023-01-18T11:38:00.000Z
+Updated: 2023-02-03T21:15:00.000Z
 Author: Peter Širka
 
 
 Component: j-Checkbox
 Version: 1
-Updated: 2022-11-28T13:50:00.000Z
+Updated: 2023-01-31T10:50:00.000Z
 Author: Peter Širka
 
 
 Component: j-Choose
 Version: 1
-Updated: 2022-11-28T14:08:00.000Z
+Updated: 2023-01-31T11:08:00.000Z
 Author: Peter Širka
 
 
 Component: j-Clipboard
 Version: 1
-Updated: 2023-01-17T12:55:00.000Z
+Updated: 2023-01-23T10:55:00.000Z
 Author: Peter Širka
 
 
 Component: j-ColorPicker
 Version: 1
-Updated: 2022-11-28T12:35:01.000Z
+Updated: 2023-01-23T11:00:01.000Z
 Author: Denis Granec
 
 
 Component: j-Configuration
 Version: 1
-Updated: 2022-11-28T15:55:00.000Z
+Updated: 2023-01-24T10:55:00.000Z
 Author: Peter Širka
 
 
 Component: j-Console
 Version: 1
-Updated: 2023-01-12T14:12:00.000Z
+Updated: 2023-01-24T11:03:00.000Z
 Author: Peter Širka
 
 
 Component: j-DatePicker
 Version: 1
-Updated: 2023-01-18T09:03:24.000Z
+Updated: 2023-01-25T10:03:24.000Z
 Author: Peter Širka
 
 
 Component: j-Directory
 Version: 1
-Updated: 2022-11-28T10:39:00.000Z
+Updated: 2023-01-25T10:39:00.000Z
 Author: Peter Širka
 
 
 Component: j-Edit
 Version: 1
-Updated: 2022-12-26T11:31:00.000Z
+Updated: 2023-01-25T12:11:00.000Z
 Author: Peter Širka
 
 
 Component: j-Empty
 Version: 1
-Updated: 2022-11-28T11:20:05.000Z
+Updated: 2023-01-25T13:20:05.000Z
 Author: Peter Širka
 
 
 Component: j-Enter
 Version: 1
-Updated: 2021-09-28T14:50:01.000Z
+Updated: 2023-01-25T13:05:01.000Z
 Author: Peter Širka
 
 
 Component: j-Exec
 Version: 1
-Updated: 2022-12-27T16:24:01.000Z
+Updated: 2023-01-25T13:24:01.000Z
 Author: Peter Širka
 
 
 Component: j-FileReader
 Version: 1
-Updated: 2022-12-06T14:19:00.000Z
+Updated: 2023-01-31T09:10:00.000Z
 Author: Peter Širka
 
 
@@ -121,25 +121,25 @@ Author: Peter Širka
 
 Component: j-FloatingBox
 Version: 1
-Updated: 2023-01-07T18:16:00.000Z
+Updated: 2023-01-31T10:00:00.000Z
 Author: Peter Širka
 
 
 Component: j-FloatingInput
 Version: 1
-Updated: 2022-11-28T16:02:01.000Z
+Updated: 2023-01-31T09:20:01.000Z
 Author: Peter Širka
 
 
 Component: j-FloatingSearch
 Version: 1
-Updated: 2022-11-28T12:50:03.000Z
+Updated: 2023-01-31T09:29:03.000Z
 Author: Peter Širka
 
 
 Component: j-Flow
 Version: 1
-Updated: 2023-01-29T14:34:00.000Z
+Updated: 2023-01-31T09:34:00.000Z
 Author: Peter Širka
 
 
@@ -151,7 +151,7 @@ Author: Peter Širka
 
 Component: j-Icons
 Version: 1
-Updated: 2023-01-13T10:57:05.000Z
+Updated: 2023-01-31T11:24:05.000Z
 Author: Peter Širka
 
 
@@ -163,13 +163,13 @@ Author: Peter Širka
 
 Component: j-InlineDatePicker
 Version: 1
-Updated: 2022-11-28T12:55:00.000Z
+Updated: 2023-01-31T12:08:00.000Z
 Author: Peter Širka
 
 
 Component: j-Input
 Version: 1
-Updated: 2023-01-18T07:53:00.000Z
+Updated: 2023-01-31T12:11:00.000Z
 Author: Peter Širka
 
 
@@ -181,61 +181,61 @@ Author: Peter Širka
 
 Component: j-Intro
 Version: 1
-Updated: 2023-01-08T18:59:00.000Z
+Updated: 2023-01-31T12:17:00.000Z
 Author: Peter Širka
 
 
 Component: j-KeyValue
 Version: 1
-Updated: 2022-11-28T10:30:00.000Z
+Updated: 2023-01-31T14:18:00.000Z
 Author: Peter Širka
 
 
 Component: j-Layout
 Version: 1
-Updated: 2022-10-22T10:38:50.000Z
+Updated: 2023-01-31T14:24:50.000Z
 Author: Peter Širka
 
 
 Component: j-ListForm
 Version: 1
-Updated: 2023-01-24T09:26:04.000Z
+Updated: 2023-01-31T15:26:04.000Z
 Author: Peter Širka
 
 
 Component: j-LoadContent
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-01-31T14:50:00.000Z
 Author: Peter Širka
 
 
 Component: j-Loading
 Version: 1
-Updated: 2022-09-06T09:42:00.000Z
+Updated: 2023-01-31T14:55:00.000Z
 Author: Peter Širka
 
 
 Component: j-Locale
 Version: 1
-Updated: 2022-08-16T11:04:00.000Z
+Updated: 2023-01-31T14:56:00.000Z
 Author: Peter Širka
 
 
 Component: j-Markdown
 Version: 1
-Updated: 2023-01-12T10:44:00.000Z
+Updated: 2023-01-31T15:04:00.000Z
 Author: Peter Širka
 
 
 Component: j-Menu
 Version: 1
-Updated: 2023-01-09T09:38:00.000Z
+Updated: 2023-01-31T15:51:00.000Z
 Author: Peter Širka
 
 
 Component: j-Message
 Version: 1
-Updated: 2022-11-28T09:35:01.000Z
+Updated: 2023-01-31T15:54:01.000Z
 Author: Peter Širka
 
 
@@ -247,97 +247,103 @@ Author: Peter Širka
 
 Component: j-NoScrollbar
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-02-01T08:35:00.000Z
 Author: Peter Širka
 
 
 Component: j-Notify
 Version: 1
-Updated: 2022-11-28T08:40:00.000Z
+Updated: 2023-02-01T08:50:00.000Z
 Author: Peter Širka
 
 
 Component: j-NotifyBar
 Version: 1
-Updated: 2022-11-28T08:36:01.000Z
+Updated: 2023-02-01T09:02:01.000Z
 Author: Peter Širka
 
 
 Component: j-ObjectTree
 Version: 1
-Updated: 2023-01-18T07:53:01.000Z
+Updated: 2023-02-01T09:10:01.000Z
 Author: Martin Smola
 
 
 Component: j-Page
 Version: 1
-Updated: 2023-01-07T18:16:01.000Z
+Updated: 2023-02-01T09:23:01.000Z
 Author: Peter Širka
 
 
 Component: j-Part
 Version: 1
-Updated: 2023-01-07T18:16:03.000Z
+Updated: 2023-02-01T18:16:03.000Z
 Author: Peter Širka
 
 
 Component: j-Parts
 Version: 1
-Updated: 2023-01-07T18:16:04.000Z
+Updated: 2023-02-01T09:46:04.000Z
 Author: Peter Širka
 
 
 Component: j-Paste
 Version: 1
-Updated: {dateupdated}
+Updated: 2023-02-01T09:47:00.000Z
 Author: Peter Širka
 
 
 Component: j-Progress
 Version: 1
-Updated: 2020-02-24T13:38:00.000Z
+Updated: 2023-02-01T10:07:00.000Z
 Author: Peter Širka
 
 
 Component: j-Properties2
 Version: 1
-Updated: 2022-11-28T10:00:01.000Z
+Updated: 2023-02-01T10:11:01.000Z
 Author: Peter Širka
 
 
 Component: j-Ready
 Version: 1
-Updated: 2023-01-14T20:52:00.000Z
+Updated: 2023-02-01T10:38:00.000Z
 Author: Peter Širka
 
 
 Component: j-Search
 Version: 1
-Updated: 2022-02-04T14:31:02.000Z
+Updated: 2023-02-01T11:16:02.000Z
 Author: Peter Širka
 
 
 Component: j-SearchInput
 Version: 1
-Updated: 2022-11-26T14:51:03.000Z
+Updated: 2023-02-01T11:21:03.000Z
 Author: Peter Širka
 
 
 Component: j-Selected
 Version: 1
-Updated: 2022-04-19T14:06:00.000Z
+Updated: 2023-02-01T12:03:00.000Z
+Author: Peter Širka
+
+
+Component: j-Selection
+Version: 1
+Updated: 2023-02-03T20:40:00.000Z
 Author: Peter Širka
 
 
 Component: j-Shortcuts
 Version: 1
-Updated: 2022-05-19T19:45:00.000Z
+Updated: 2023-02-01T12:12:00.000Z
 Author: Peter Širka
 
 
 Component: j-TabMenu
 Version: 1
-Updated: 2022-05-05T13:25:01.000Z
+Updated: 2023-01-31T11:35:01.000Z
 Author: Peter Širka
 
 
@@ -447,7 +453,7 @@ CSS(`.animation{visibility:hidden}.ui-animation-1-init{transition:all 0.2s;opaci
 
 .ui-approve-noscroll,.ui-approve-noscroll body{overflow:hidden}.ui-approve{background-color:rgba(255,255,255,0.9);position:fixed;left:0;right:0;bottom:0;top:0;z-index:100;width:100%;display:table;height:100%;transition:0.5s all;opacity:0}.ui-approve > div{display:table-cell;vertical-align:middle;text-align:center;color:#FFF;padding:15px}.ui-approve-body{color:#000;padding:0;position:relative;display:inline-block;max-width:300px;text-align:left;transform:scale(0.8);transition:0.15s all;border:0;background-color:#FFF;box-shadow:0 0 30px rgba(0,0,0,0.1)}.ui-approve-content{padding:50px 30px;text-align:center}.ui-approve-content > i{font-size:50px;display:block;margin-bottom:10px}.ui-approve-buttons{height:40px}.ui-approve button{font-size:12px;float:left;cursor:pointer;outline:0;background-color:#E0E0E0;border:0;border-radius:0;color:gray;padding:0;width:50%;height:40px;font-weight:normal;margin:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ui-approve button i{margin-right:5px}.ui-approve button:hover{opacity:0.9}.ui-approve-close{position:absolute;color:#C0C0C0;font-size:11px;right:8px;top:5px;cursor:pointer}.ui-approve-close:hover{color:#A0A0A0}.ui-approve-visible{opacity:1}.ui-approve-visible .ui-approve-body{-webkit-transform:scale(1);transform:scale(1)}.ui-approve-click{transform:scale(1.07) !important}.ui-dark .ui-approve{background-color:rgba(0,0,0,0.9)}.ui-dark .ui-approve-body{background-color:#202020}.ui-dark .ui-approve-content{border-bottom-color:#303030;color:#FFF}.ui-dark .ui-approve button{background-color:#505050;color:#C0C0C0}.ui-dark .ui-approve-close{color:#505050}.ui-dark .ui-approve-close:hover{color:#888}.ui-approve button[data-index='0']{color:#FFF;font-weight:bold;font-weight:bold;background-color:#EC2C28}@media(max-width:340px){.ui-approve button{display:block;margin:8px 0 0;display:block;width:100%;height:34px;font-size:13px}}
 
-.ui-box-noscroll,.ui-box-noscroll body{overflow:hidden}.ui-box-container{width:100%;position:fixed;left:0;top:0;bottom:0;right:0;z-index:5;overflow:hidden;transform-style:preserve-3d}.ui-box-bg{background-color:rgba(230,233,237,0.8)}.ui-box-nobg .ui-box{border:1px solid #E9E9E9}.ui-box-transparent{pointer-events:none}.ui-box{background-color:#FFF;border-radius:3px;box-shadow:0 10px 30px rgba(0,0,0,0.1);transform:scale(0);transition:all 0.15s;opacity:0;text-align:left;position:relative;margin:0 auto;pointer-events:all}.ui-box-animate{transform:scale(1);opacity:1}.ui-box-title{padding:0 10px 0 var(--gap);line-height:57px;font-size:16px;user-select:none;color:#000;background-color:#FFF;border-bottom:1px solid #E0E0E0;height:58px;border-radius:3px 3px 0 0}.ui-box-title .ui-box-button-close{float:right;cursor:pointer;font-size:18px;margin:1px 0 0;background:none;border:0;outline:0;height:auto;color:red;text-align:right !important;width:20px;padding:0}.ui-box-title .ui-box-button-close i{font-weight:bold}.ui-box-title .ui-box-button-close:hover{transform:scale(1.1)}.ui-box-title > nav{float:right;margin-right:18px;font-size:14px}.ui-box-title > span{font-weight:bold}.ui-box-title > nav button{border:0;margin:15px 0 0;background-color:#F0F0F0;height:28px;padding:0 10px;color:#000;cursor:pointer;font-family:Arial;line-height:23px;vertical-align:middle;outline:0;font-size:12px;text-decoration:none;transition:all 0.3s;float:left;border-left:1px solid #E0E0E0}.ui-box-title > nav button i{width:12px;text-align:center;margin-right:5px}.ui-box-title > nav button:hover{opacity:0.8}.ui-box-title > nav button:active{background-color:#D0D0D0}.ui-box-title > nav button:disabled{background-color:#F5F5F5 !important;border-color:#E0E0E0 !important;color:silver !important;cursor:not-allowed;box-shadow:none}.ui-box-title > nav button:disabled i{color:silver !important}.ui-box-title > nav button:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius);border-left:0}.ui-box-title > nav button:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-box-title i{margin-right:7px}.ui-box > nav{padding:0 15px 0;border-top:1px solid #E0E0E0;background-color:#FFF;border-radius:0 0 3px 3px;line-height:65px;height:65px;display:block;float:none;width:100%}.ui-box > nav button{border:0;margin:15px 0 0;background-color:#F0F0F0;height:34px;padding:0 20px;color:#000;cursor:pointer;font-family:Arial;line-height:34px;vertical-align:middle;outline:0;font-size:14px;text-decoration:none;transition:all 0.3s;float:left;width:50%}.ui-box > nav button i{width:15px;text-align:center;margin-right:5px}.ui-box > nav button:hover{opacity:0.8}.ui-box > nav button:active{background-color:#D0D0D0}.ui-box > nav button:disabled{background-color:#F5F5F5 !important;border-color:#E0E0E0 !important;color:silver !important;cursor:not-allowed;box-shadow:none}.ui-box > nav button:disabled i{color:silver !important}.ui-box > nav button:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius)}.ui-box > nav button:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-box > nav button[name='submit']{font-weight:bold;background-color:var(--color);color:#FFF}.ui-box-style-2 .ui-box{border-bottom-right-radius:0;border-bottom-left-radius:0}.ui-box-style-3 .ui-box{border-top-right-radius:0;border-top-left-radius:0}.ui-box-align-left{margin:0 auto 0 0}.ui-box-align-right{margin:0 0 0 auto}.ui-dark .ui-box{background-color:#202020}.ui-dark .ui-box-container{background-color:rgba(50,50,50,0.9)}.ui-dark .ui-box-title{background-color:#202020;border-bottom-color:#303030;color:#FFF}.ui-dark .ui-box-title > nav{background-color:#202020;border-top-color:#303030}.ui-dark .ui-box-title > nav button{border-color:#404040;background-color:#505050;color:#E0E0E0}.ui-dark .ui-box-title > nav button:active{background-color:#404040}.ui-dark .ui-box-title > nav button:disabled i{color:#606060 !important}.ui-dark .ui-box-title > nav button:disabled{background-color:#303030 !important;color:#606060 !important;border-color:#202020 !important}.ui-dark .ui-box > nav{background-color:#202020;border-top-color:#303030}.ui-dark .ui-box > nav button{border-color:#202020;background-color:#505050;color:#F0F0F0}.ui-dark .ui-box > nav button[name='submit']{background-color:var(--color)}.ui-dark .ui-box > nav button:active{background-color:#404040}.ui-dark .ui-box > nav button:disabled i{color:#606060 !important}.ui-dark .ui-box > nav button:disabled{background-color:#303030 !important;color:#606060 !important;border-color:#202020 !important}@media(max-width:767px){.ui-box-container{background:none;padding:0 !important}.ui-box{border-radius:0;max-width:none !important;width:100% !important}}
+.ui-box-noscroll,.ui-box-noscroll body{overflow:hidden}.ui-box-container{width:100%;position:fixed;left:0;top:0;bottom:0;right:0;z-index:5;overflow:hidden;transform-style:preserve-3d}.ui-box-bg{background-color:rgba(230,233,237,0.8)}.ui-box-nobg .ui-box{border:1px solid #E9E9E9}.ui-box-transparent{pointer-events:none}.ui-box{background-color:#FFF;border-radius:3px;box-shadow:0 10px 30px rgba(0,0,0,0.1);transform:scale(0);transition:all 0.15s;opacity:0;text-align:left;position:relative;margin:0 auto;pointer-events:all}.ui-box-animate{transform:scale(1);opacity:1}.ui-box-title{padding:0 10px 0 var(--gap);line-height:57px;font-size:16px;user-select:none;color:#000;background-color:#FFF;border-bottom:1px solid #E0E0E0;height:58px;border-radius:3px 3px 0 0}.ui-box-title .ui-box-button-close{float:right;cursor:pointer;font-size:18px;margin:1px 0 0;background:none;border:0;outline:0;height:auto;color:red;text-align:right !important;width:20px;padding:0}.ui-box-title .ui-box-button-close i{font-weight:bold}.ui-box-title .ui-box-button-close:hover{transform:scale(1.1)}.ui-box-title > nav{float:right;margin-right:18px;font-size:14px}.ui-box-title > span{font-weight:bold}.ui-box-title > nav button{border:0;margin:15px 0 0;background-color:#F0F0F0;height:28px;padding:0 10px;color:#000;cursor:pointer;font-family:Arial;line-height:23px;vertical-align:middle;outline:0;font-size:12px;text-decoration:none;transition:all 0.3s;float:left;border-left:1px solid #E0E0E0}.ui-box-title > nav button i{width:12px;text-align:center;margin-right:5px}.ui-box-title > nav button:hover{opacity:0.8}.ui-box-title > nav button:active{background-color:#D0D0D0}.ui-box-title > nav button:disabled{background-color:#F5F5F5 !important;border-color:#E0E0E0 !important;color:silver !important;cursor:not-allowed;box-shadow:none}.ui-box-title > nav button:disabled i{color:silver !important}.ui-box-title > nav button:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius);border-left:0}.ui-box-title > nav button:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-box-title i{margin-right:7px}.ui-box > nav{padding:0 15px 0;border-top:1px solid #E0E0E0;background-color:#FFF;border-radius:0 0 3px 3px;line-height:65px;height:65px;display:block;float:none;width:100%}.ui-box > nav button{border:0;margin:15px 0 0;background-color:#F0F0F0;height:34px;padding:0 20px;color:#000;cursor:pointer;font-family:Arial;line-height:34px;vertical-align:middle;outline:0;font-size:14px;text-decoration:none;transition:all 0.3s;float:left;width:50%}.ui-box > nav button i{width:15px;text-align:center;margin-right:5px}.ui-box > nav button:hover{opacity:0.8}.ui-box > nav button:active{background-color:#D0D0D0}.ui-box > nav button:disabled{background-color:#F5F5F5 !important;border-color:#E0E0E0 !important;color:silver !important;cursor:not-allowed;box-shadow:none}.ui-box > nav button:disabled i{color:silver !important}.ui-box > nav button:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius)}.ui-box > nav button:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-box > nav button[name='submit']{font-weight:bold;background-color:var(--color);color:#FFF}.ui-box-style-2 .ui-box{border-bottom-right-radius:0;border-bottom-left-radius:0}.ui-box-style-3 .ui-box{border-top-right-radius:0;border-top-left-radius:0}.ui-box-align-left{margin:0 auto 0 0}.ui-box-align-right{margin:0 0 0 auto}.ui-dark .ui-box{background-color:#202020}.ui-dark .ui-box-bg{background-color:rgba(50,50,50,0.9)}.ui-dark .ui-box-nobg .ui-box{border-color:#333}.ui-dark .ui-box-title{background-color:#202020;border-bottom-color:#303030;color:#FFF}.ui-dark .ui-box-title > nav{background-color:#202020;border-top-color:#303030}.ui-dark .ui-box-title > nav button{border-color:#404040;background-color:#505050;color:#E0E0E0}.ui-dark .ui-box-title > nav button:active{background-color:#404040}.ui-dark .ui-box-title > nav button:disabled i{color:#606060 !important}.ui-dark .ui-box-title > nav button:disabled{background-color:#303030 !important;color:#606060 !important;border-color:#202020 !important}.ui-dark .ui-box > nav{background-color:#202020;border-top-color:#303030}.ui-dark .ui-box > nav button{border-color:#202020;background-color:#505050;color:#F0F0F0}.ui-dark .ui-box > nav button[name='submit']{background-color:var(--color)}.ui-dark .ui-box > nav button:active{background-color:#404040}.ui-dark .ui-box > nav button:disabled i{color:#606060 !important}.ui-dark .ui-box > nav button:disabled{background-color:#303030 !important;color:#606060 !important;border-color:#202020 !important}@media(max-width:767px){.ui-box-container{background:none;padding:0 !important}.ui-box{border-radius:0;max-width:none !important;width:100% !important}}
 
 .ui-checkbox{position:relative;font-size:13px;margin-bottom:5px}.ui-checkbox *{height:25px;cursor:pointer}.ui-checkbox span{width:20px;height:20px;line-height:19px;font-size:11px;margin:0 7px 0 0;text-align:center;float:left;border:1px solid #D0D0D0;border-radius:var(--radius);background:#FFF}.ui-checkbox span i{display:none}.ui-checkbox.ui-checkbox-checked span i{display:inline-block}.ui-checkbox label{line-height:19px}.ui-checkbox.ui-disabled *{cursor:not-allowed}.ui-checkbox.ui-disabled{color:#A0A0A0}.ui-checkbox.ui-disabled span{background-color:#F0F0F0;color:#B0B0B0;border-color:#E0E0E0}.ui-dark .ui-checkbox span{border-color:#404040;background:#252525}.ui-dark .ui-checkbox.ui-disabled span{background-color:#282828;color:#999;border-color:#303003}.ui-dark .ui-checkbox.ui-disabled{color:#666}
 
@@ -525,7 +531,7 @@ CSS(`.animation{visibility:hidden}.ui-animation-1-init{transition:all 0.2s;opaci
 
 .ui-searchinput{height:30px;border:1px solid #E0E0E0}.ui-searchinput-left > span{float:left}.ui-searchinput-left > div{margin-left:28px}.ui-searchinput-right > span{float:right}.ui-searchinput-right > div{margin-right:28px;padding-left:5px}.ui-searchinput input{border:0;width:100%;background-color:transparent;outline:0;margin:0;padding:0;height:28px;font-size:12px}.ui-searchinput span{width:28px;text-align:center;font-size:12px;line-height:29px;color:gray}.ui-searchinput-is span{cursor:pointer;color:red}.ui-dark .ui-searchinput{border-color:#404040}
 
-.ui-tabmenu{padding:0;margin:0 0 10px;display:block;position:relative;font-size:12px;list-style-type:none;height:26px}.ui-tabmenu li{float:left;line-height:26px;border:0;margin:0 1px 0 0;padding:0;background-color:#F0F0F0;text-align:center;color:gray;cursor:pointer;min-width:80px}.ui-tabmenu li:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius)}.ui-tabmenu li:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-tabmenu .selected{background-color:var(--color);color:#FFF}.ui-tabmenu i{margin-right:5px}.ui-tabmenu.ui-disabled .selected{background-color:#E0E0E0}.ui-tabmenu.ui-disabled li{cursor:not-allowed;color:#A0A0A0}.ui-dark .ui-tabmenu li{background-color:#303030;color:#A0A0A0}.ui-dark .ui-tabmenu .selected{background-color:var(--color);color:#FFF}.ui-dark .ui-tabmenu.ui-disabled .selected{background-color:#404040}.ui-dark .ui-tabmenu.ui-disabled li{color:#888}
+.ui-tabmenu{padding:0;margin:0 0 10px;display:block;position:relative;font-size:12px;list-style-type:none;height:26px}.tabmenu{padding:0;margin:0 0 10px;display:block;position:relative;font-size:12px;list-style-type:none;height:26px}.ui-tabmenu li{float:left;line-height:26px;border:0;margin:0 1px 0 0;padding:0;background-color:#F0F0F0;text-align:center;color:gray;cursor:pointer;min-width:80px}.ui-tabmenu li:first-child{border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius)}.ui-tabmenu li:last-child{border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}.ui-tabmenu .selected{background-color:var(--color);color:#FFF}.ui-tabmenu i{margin-right:5px}.ui-tabmenu.ui-disabled .selected{background-color:#E0E0E0}.ui-tabmenu.ui-disabled li{cursor:not-allowed;color:#A0A0A0}.ui-dark .ui-tabmenu li{background-color:#303030;color:#A0A0A0}.ui-dark .ui-tabmenu .selected{background-color:var(--color);color:#FFF}.ui-dark .ui-tabmenu.ui-disabled .selected{background-color:#404040}.ui-dark .ui-tabmenu.ui-disabled li{color:#888}
 
 .json{font-family:Menlo,Consolas,monospace;color:#000;tab-size:2;overflow:hidden;white-space:pre-wrap}.json-key{color:#1A8B95}.json-number{color:#3990B5}.json-true{color:#1B7F16}.json-false{color:#9C251D}.json-null{color:#777;font-style:italic}.json-uid{color:#1A4795}.json-color i{margin-right:5px;vertical-align:middle}.json-icon{color:#451393}.json-icon i{margin-right:5px;vertical-align:middle}.json-date{color:#BF3CB3}.ui-dark .json{color:#A0A0A0}
 
@@ -652,6 +658,8 @@ COMPONENT('search','class:hidden;delay:50;attribute:data-search;splitwords:1;del
 COMPONENT('searchinput','searchicon:ti ti-search;cancelicon:ti ti-times;align:left',function(self,config,cls){var input,icon,prev,prev2;self.novalidate();self.make=function(){self.aclass(cls+' '+cls+'-'+config.align);self.html('<span><i class="{0}"></i></span><div><input type="text" autocomplete="new-password" maxlength="100" placeholder="{1}" data-jc-bind /></div>'.format(config.searchicon,config.placeholder));input=self.find('input')[0];icon=self.find('i');self.event('click','span',function(){prev&&self.set('');prev2=''});config.autofocus&&self.autofocus()};self.focus=function(){input&&input.focus()};self.check=function(){var is=!!input.value.trim();if(is!==prev){icon.rclass().aclass(is?config.cancelicon:config.searchicon);prev=is;self.tclass(cls+'-is',is)}};self.clear=function(){input.value='';config.exec&&self.SEEX(config.exec,input.value,self.element);self.check()};self.setter=function(value,path,type){input.value=value||'';if(prev2!==input.value){prev2=input.value;type&&config.exec&&self.SEEX(config.exec,input.value,self.element)}self.check()}});
 
 COMPONENT('selected','class:selected;selector:a;attr:if;attror:or;delay:50',function(self,config){self.readonly();var highlight=function(){var cls=config.class,val=self.get()||'';self.find(config.selector).each(function(){var el=$(this);var or=el.attrd(config.attror)||'';if(el.attrd(config.attr)===val||(or&&val.indexOf(or)!==-1))el.aclass(cls);else if(el.hclass(cls))el.rclass(cls)})};self.configure=function(key,value){switch(key){case'datasource':self.datasource(value,function(){setTimeout2(self.ID,highlight,config.delay)});break}};self.setter=function(){setTimeout2(self.ID,highlight,config.delay)}});
+
+COMPONENT('selection','remember:1;key:id;class:selected;click:.selection;selector:.selection;attr:id;event:click;dblclickselectall:1',function(self,config,cls){var skip=false;self.make=function(){self.aclass(cls);self.event(config.event,config.click,function(e){e.preventDefault();e.stopPropagation();var el=$(this);if(config.click!==config.selector)el=el.find(config.selector);self.toggle(el)});if(config.dblclickselectall){self.event('dblclick',config.click,function(){self.selecttoggle()})}config.cancel&&self.watch(self.makepath(config.cancel),self.selectnone)};self.selectall=function(){var arr=self.find(config.selector);var sel=[];for(var i=0;i<arr.length;i++){var el=$(arr[i]);sel.push(el.attrd(config.attr));el.aclass(config.class)}skip=true;self.set(sel)};self.selectnone=function(){var model=self.get();if(model&&model.length){var arr=self.find(config.selector);for(var i=0;i<arr.length;i++){var el=$(arr[i]);el.rclass(config.class)}skip=true;self.set([])}};self.selecttoggle=function(){var arr=self.find(config.selector);var sel=[];for(var i=0;i<arr.length;i++){var el=$(arr[i]);if(el.hclass(config.class)){el.rclass(config.class)}else{sel.push(el.attrd(config.attr));el.aclass(config.class)}}skip=true;self.set(sel);self.change()};self.toggle=function(id){if(id instanceof jQuery)id=id.attrd(config.attr);var model=self.get();var added=false;if(model==null){model=[id];added=true;self.rewrite(model)}else{var index=model.indexOf(id);if(index===-1){model.push(id);added=true}else model.splice(index,1)}var el=self.find(config.selector+'[data-{0}="{1}"]'.format(config.attr,id));skip=true;el.tclass(config.class,added);self.update(true);self.change()};self.recalc=function(){var arr=self.find(config.selector);var model=self.get()||EMPTYARRAY;for(var i=0;i<arr.length;i++){var el=$(arr[i]);el.tclass(config.class,model.indexOf(el.attrd(config.attr))!==-1)}};var datasource=function(path,value){if(!config.remember){self.set([]);return}if(!value)value=EMPTYARRAY;var model=self.get()||EMPTYARRAY;var rem=[];for(var i=0;i<model.length;i++){var item=value.findItem(config.key,model[i]);if(!item)rem.push(model[i])}for(var i=0;i<rem.length;i++)model.splice(model.indexOf(rem[i]),1);self.update()};self.configure=function(key,value){if(key==='datasource')self.datasource(value,datasource)};self.setter=function(){if(skip)skip=false;else setTimeout2(self.ID,self.recalc,10)}});
 
 COMPONENT('shortcuts',function(self){var items=[],length=0,keys={},keys_session={},issession=false;self.singleton();self.readonly();self.blind();self.nocompile&&self.nocompile();var cb=function(o,e){o.callback(e,o.owner)};self.make=function(){$(W).on('keydown',function(e){var f=e.key||'',c=e.keyCode;if(f.length>1&&f.charAt(0)==='F')c=0;else f='-';var key=(e.ctrlKey?1:0)+''+(e.altKey?1:0)+''+(e.shiftKey?1:0)+''+(e.metaKey?1:0)+f+c;if(issession){if(!keys_session[key])return}else{if(!keys[key])return}if(length&&!e.isPropagationStopped()){for(var i=0;i<length;i++){var o=items[i];if(o.fn(e)){if(o.prepare&&!o.prepare(e,e.target))continue;if(o.prevent){e.preventDefault();e.stopPropagation()}setTimeout(cb,100,o,e);return}}}});ON('component + knockknock',self.refresh)};self.refreshforce=function(){var arr=document.querySelectorAll('.shortcut');var index=0;while(true){var item=items[index++];if(item==null)break;if(item.owner){index--;items.splice(index,1)}}for(var i=0;i<arr.length;i++){var shortcut=arr[i].getAttribute('data-shortcut');shortcut&&self.register(shortcut,self.execshortcut,true,null,arr[i])}};self.session=function(callback){issession=true;keys_session={};callback(self.register)};self.end=function(){issession=false};self.execshortcut=function(e,owner){var evt=$.Event('click');evt.shortcutEvent=evt.shortcut=e;$(owner).trigger(evt)};self.refresh=function(){setTimeout2(self.ID,self.refreshforce,500)};self.exec=function(shortcut){var item=items.findItem('shortcut',shortcut.toLowerCase().replace(/\s/g,''));item&&item.callback(null,$(item.owner))};self.register=function(shortcut,callback,prevent,prepare,owner){if(typeof(prevent)==='function'){var tmp=prepare;prepare=prevent;prevent=tmp}var currentkeys=issession?keys_session:keys,ismac=M.ua.os.toLowerCase()==='mac';var special=ismac?'metaKey':'ctrlKey',specialindex=ismac?3:0;shortcut.split(',').trim().forEach(function(shortcut){var builder=[],alias=[],cachekey=[0,0,0,0,'-',0];shortcut.split('+').trim().forEach(function(item){var lower=item.toLowerCase();alias.push(lower);switch(lower){case'ctrl':cachekey[0]=1;break;case'alt':cachekey[1]=1;break;case'shift':cachekey[2]=1;break;case'win':case'meta':case'cmd':cachekey[3]=1;break}switch(lower){case'ctrl':case'alt':case'shift':builder.push('e.{0}Key'.format(lower));return;case'win':case'meta':case'cmd':builder.push('e.metaKey');return;case'ins':builder.push('e.keyCode===45');cachekey[5]=45;return;case'space':builder.push('e.keyCode===32');cachekey[5]=32;return;case'tab':builder.push('e.keyCode===9');cachekey[5]=9;return;case'esc':builder.push('e.keyCode===27');cachekey[5]=27;return;case'enter':builder.push('e.keyCode===13');cachekey[5]=13;return;case'backspace':builder.push('e.keyCode===8');cachekey[5]=8;break;case'del':case'delete':builder.push('e.keyCode===46');cachekey[5]=46;return;case'save':builder.push('(e.{0}&&e.keyCode===83)'.format(special));cachekey[specialindex]=1;cachekey[5]=83;return;case'remove':builder.push('((e.{0}&&e.keyCode===8)||e.keyCode===46)'.format(special));cachekey[5]=-1;return;case'clone':builder.push('(e.{0}&&e.keyCode===68)'.format(special));cachekey[specialindex]=1;cachekey[5]=68;return;case'selectall':builder.push('(e.{0}&&e.keyCode===65)'.format(special));cachekey[specialindex]=1;cachekey[5]=65;return;case'copy':builder.push('(e.{0}&&e.keyCode===67)'.format(special));cachekey[specialindex]=1;cachekey[5]=67;return;case'undo':builder.push('(e.{0}&&e.keyCode===90)'.format(special));cachekey[specialindex]=1;cachekey[5]=90;return;case'redo':builder.push('(e.{0}&&e.shiftKey&&e.keyCode===90)'.format(special));cachekey[specialindex]=1;cachekey[5]=90;return;case'refresh':builder.push('e.key===\'F5\'');cachekey[5]=116;return;case'up':builder.push('e.keyCode===38');cachekey[5]=38;return;case'down':builder.push('e.keyCode===40');cachekey[5]=40;return;case'right':builder.push('e.keyCode===39');cachekey[5]=39;return;case'left':builder.push('e.keyCode===37');cachekey[5]=37;return;case'f1':case'f2':case'f3':case'f4':case'f5':case'f6':case'f7':case'f8':case'f9':case'f10':case'f11':case'f12':var a=item.toUpperCase();builder.push('e.key===\'{0}\''.format(a));cachekey[4]=a;return;case'capslock':builder.push('e.which===20');cachekey[5]=20;return}var num=item.parseInt();if(num){builder.push('e.which==='+num);cachekey[5]=num}else{num=item.toUpperCase().charCodeAt(0);cachekey[5]=num;builder.push('e.keyCode==={0}'.format(num))}});items.push({shortcut:alias.join('+'),fn:new Function('e','return '+builder.join('&&')),callback:callback,prevent:prevent,owner:owner,prepare:prepare});length=items.length;var k;if(cachekey[5]===-1){cachekey[5]=8;cachekey[3]=1;k=cachekey.join('');currentkeys[k]=1;cachekey[3]=0;cachekey[5]=46}k=cachekey.join('');currentkeys[k]=1});if(!owner)self.refresh();return self}});
 
