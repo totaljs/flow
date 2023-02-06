@@ -29,7 +29,7 @@
 						<div>
 						{{ foreach m in g.items }}
 							<figure class="exec exec3{{ if m.type }} type-{{ m.type }}{{ fi }}" data-exec3="flow/component_contextmenu" data-id="{{ m.id }}" draggable="true" data-search="{{ m.name }}{{ if m.schema }} {{ m.schema }}{{ fi }}" data-exec="flow/readme" title="{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}">
-								<i class="{{ m.icon }}"{{ if g.color }} style="color:{{ g.color }}"{{ fi }}></i>
+								<i class="{{ m.icon }}"{{ if m.color }} style="color:{{ m.color }}"{{ else if g.color }} style="color:{{ g.color }}"{{ fi }}></i>
 								<div class="name">{{ if m.schema }}<span>{{ m.name }}</span>{{ fi }}{{ if m.version }}<span>v{{ m.version }}{{ fi }}</span><div>{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}</div></div>
 							</figure>
 						{{ end }}
