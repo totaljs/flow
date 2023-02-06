@@ -84,7 +84,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .type-call { background-color: #464337 !important; }
 
 .flowcomponents figure:hover { border-color: #E0E0E0; }
-.flowcomponents figure i { width: 13px; margin: 6px 6px 0 0; text-align: center; float: left; font-size: 12px; text-align: center; }
+.flowcomponents figure i { width: 13px; margin: 5px 6px 0 0; text-align: center; float: left; font-size: 12px; text-align: center; }
 .flowcomponents .name { font-size: 12px; padding-top: 2px; }
 .flowcomponents .name div { margin-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .flowcomponents .name span { font-weight: normal; font-size: 11px; float: right; color: #777; }
@@ -167,7 +167,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .output[data-index="error"] { color: #E8483F; }
 
 .ui-dark .ui-flow .output-transform { background-color: rgba(255,255,255,0.04); }
-.ui-dark .ui-flow footer { border-top-color: #404040; }
+.ui-dark .ui-flow footer { border-top-color: rgba(40,40,40,0.5); }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
 .ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
 .ui-dark .ui-flow-h summary .towindow { color: #D0D0D0; }
@@ -384,6 +384,13 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dark .ui-infowindows-item { box-shadow: 0 10px 20px rgba(0,0,0,.4); }
 
 .colorize { animation: colorize 1.3s infinite alternate; }
+
+.selection { width: 19px; height: 19px; border: 1px solid #D0D0D0; border-radius: var(--radius); font-size: 12px; float: left; text-align: center; margin-right: 8px; background-color: #FFF; line-height: 19px; color: #000; }
+.selection i { display: none; line-height: 19px; }
+.selection.selected i { display: block; }
+.listing .selection { margin-top: 2px; }
+.listing figure.selected .selection i, .listing2 figure.selected .selection i { display: block; }
+.listing.small .selection { margin-top: 0; }
 
 @keyframes colorize {
 	0% { color: #d7cd17; }
