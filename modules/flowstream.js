@@ -468,7 +468,7 @@ function readinstance(flow, id) {
 		var com = flow.meta.components[tmp.component];
 		if (com) {
 			if ((com.type === 'output' || com.type === 'input' || com.type === 'config'))
-				return { id: id, componentid: tmp.component, component: com.name, name: tmp.config.name || com.name, schema: com.schemaid ? com.schemaid[1] : undefined, icon: com.icon, type: com.type, readme: tmp.config.readme, outputs: tmp.outputs, inputs: tmp.inputs };
+				return { id: id, componentid: tmp.component, component: com.name, name: tmp.config.name || com.name, schema: com.schemaid ? com.schemaid[1] : undefined, icon: com.icon, color: com.color, type: com.type, readme: tmp.config.readme, outputs: tmp.outputs, inputs: tmp.inputs };
 		} else
 			flow.clean();
 	}
@@ -1512,7 +1512,7 @@ function MAKEFLOWSTREAM(meta) {
 
 			var c = flow.meta.components[com.component];
 			if (c) {
-				tmp.template = { type: c.type, icon: c.icon, group: c.group, name: c.name, inputs: c.inputs, outputs: c.outputs };
+				tmp.template = { type: c.type, icon: c.icon, color: c.color, group: c.group, name: c.name, inputs: c.inputs, outputs: c.outputs };
 				return tmp;
 			}
 		}
@@ -1972,6 +1972,7 @@ function MAKEFLOWSTREAM(meta) {
 				obj.css = com.ui.css;
 				obj.js = com.ui.js;
 				obj.icon = com.icon;
+				obj.color = com.color;
 				obj.config = com.config;
 				obj.html = com.ui.html;
 				obj.schema = com.schema ? com.schema.id : null;
