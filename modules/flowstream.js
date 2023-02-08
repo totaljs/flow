@@ -1607,6 +1607,8 @@ function MAKEFLOWSTREAM(meta) {
 		timeoutrefresh = setTimeout(refresh_components_force, 700);
 	};
 
+	flow.redraw = refresh_components;
+
 	flow.sources = meta.sources;
 	flow.proxy = {};
 
