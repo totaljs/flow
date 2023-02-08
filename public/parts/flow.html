@@ -268,10 +268,8 @@
 		};
 
 		exports.reset = function() {
-			SETTER('approve/show', '@(Are you sure you want to reset errors?)', '"broom" @(Reset)', function(){
-				SETTER('websocket/send', { TYPE: 'reset' });
-				SET('common.console', false);
-			});
+			SETTER('websocket/send', { TYPE: 'reset' });
+			SET('common.console', false);
 		};
 
 		exports.operation = function(el) {
