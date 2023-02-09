@@ -514,7 +514,8 @@
 				} else {
 					initialized_settings[id] = 1;
 					var html = $('#template_flowsettings').html();
-					$('#flow_settings').aclass('invisible').append(html.replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings.replace(/CLASS/g, 'f-' + name)));
+					var regcls = new RegExp('CLA' + 'SS', 'g');
+					$('#flow_settings').aclass('invisible').append(html.replace(/@NAME@/g, id).replace(/@CONFIG@/g, '?').replace(/@BODY@/g, component.settings.replace(regcls, 'f-' + name)));
 					COMPILE();
 				}
 
@@ -1009,7 +1010,7 @@
 			var groups = {};
 			var checksums_tmp = {};
 			var regname = /NAME/g;
-			var regreplace = /CLASS/g;
+			var regreplace = new RegExp('CLA' + 'SS', 'g');
 			var regstatus = /STATUS/g;
 			var regicon = /ICON/g;
 			var regconfig = /CONFIG/g;
