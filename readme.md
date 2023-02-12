@@ -10,7 +10,7 @@
 
 There are several ways to provide Flow. You can use our cloud services and run Flow without installation, or use Docker, or download the source code locally.
 
-## Locally
+### Locally
 
 - install [Node.js platform](https://nodejs.org/en/)
 - download Flow source code
@@ -30,7 +30,7 @@ or directly using node executable (port is optional, default 8000)
 node index.js <port>
 ```
 
-## Flow in Docker
+### Flow in Docker
 
 ```bash
 docker pull totalplatform/flow
