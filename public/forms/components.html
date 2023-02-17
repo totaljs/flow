@@ -41,7 +41,7 @@
 								{{ fi }}
 								<div class="listing-download">
 									{{ foreach m in n.items }}
-									<figure data-search="{{ m.id }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
 										<section>
 											<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
 											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ if m.enterprise }}<span class="badge badge-small badge-red mr5">Enterprise</span>{{ fi }}{{ m.name }}</div>
