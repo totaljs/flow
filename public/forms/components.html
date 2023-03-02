@@ -19,7 +19,7 @@
 					</ui-bind>
 					-->
 
-					<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'">
+					<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'" class="block">
 						<script type="text/html">
 							<div class="bg-smoke padding m" style="border-radius:var(--radius)">
 								<i class="ti ti-totaljs mr5 green"></i>@(Your Total.js Enterprise Account expires on) <i class="ti ti-bull"></i> <b>{{ value.dtexpire | format('[date]') }}</b>
@@ -31,6 +31,11 @@
 						<span class="link fs12 exec" data-exec="flow/create"><i class="ti ti-plus-circle green mr5"></i>@(Create component)</span>
 					</div>
 					<ui-component name="input" path="?.approve" config="type:checkbox" default="true">@(Warn about component installation)</ui-component>
+					<hr />
+
+					<div class="fs12">
+						<span class="exec" data-exec="?/kind" data-id="action"><i class="ti ti-circle-alt legend-action mr5"></i>@(Actions)</span> &nbsp; <span class="exec" data-exec="?/kind" data-id="trigger"><i class="ti ti-circle-alt legend-trigger mr5"></i>@(Triggers)</span> &nbsp; <span class="exec" data-exec="?/kind" data-id="output"><i class="ti ti-circle-alt legend-output mr5"></i>@(Outputs)</span>
+					</div>
 				</div>
 				<ui-component name="search" path="?.search" config="selector:figure;datasource:?.items">
 					<ui-bind path="?.items" config="template" id="flowstreamcomponents">
@@ -41,10 +46,10 @@
 								{{ fi }}
 								<div class="listing-download">
 									{{ foreach m in n.items }}
-									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-										<section>
+									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+										<section{{ if m.enterprise }} style="border-left:3px solid red" title="Total.js Enterprise"{{ fi }}>
 											<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ if m.enterprise }}<span class="badge badge-small badge-red mr5">Enterprise</span>{{ fi }}{{ m.name }}</div>
+											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
 										</section>
 									</figure>
 									{{ end }}
@@ -238,7 +243,38 @@
 				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
 			else
 				download();
+		};
 
+		exports.kind = function(el) {
+
+			var model = exports.model;
+			var id = ATTRD(el);
+			var opt = {};
+
+			opt.element = el;
+			opt.items = [];
+			opt.offsetY = -10;
+			opt.offsetWidth = 250;
+
+			for (var m of model.components) {
+				if (m.kind === id) {
+					var item = {};
+					item.id = m.id;
+					item.name = m.name;
+					item.icon = m.icon;
+					item.color = m.color;
+					item.template = '<i class="{{ icon }} icon"{{ if color }} style="color:{{ color }}"{{ fi }}></i>{{ name }}';
+					opt.items.push(item);
+				}
+			}
+
+			opt.callback = function(sel) {
+				var el = exports.element.find('figure[data-id="{0}"]'.format(sel.id));
+				if (el.length)
+					exports.install(el);
+			};
+
+			SETTER('directory/show', opt);
 		};
 
 		WATCH('flow.components', function() {
