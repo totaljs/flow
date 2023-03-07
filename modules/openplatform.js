@@ -80,6 +80,10 @@ Data.auth = function($) {
 		session = response.body.parseJSON(true);
 
 		if (session) {
+
+			if (!session.permissions)
+				session.permissions = [];
+
 			session.dtexpire = NOW.add(CONF.op_expire || EXPIRE);
 			session.token = token;
 			session.logout = Logout;
