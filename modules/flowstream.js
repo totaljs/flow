@@ -783,10 +783,6 @@ function init_current(meta, callback) {
 
 	if (Parent) {
 
-		Parent.on('disconnect', function() {
-			F.Fs.appendFile('disconnect.txt', process.pid + ' ' + meta.id + '\n', NOOP);
-		});
-
 		Parent.on('message', function(msg) {
 
 			var id;
