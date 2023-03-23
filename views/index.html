@@ -100,6 +100,7 @@
 			})();
 		}
 
+		common.language = '@{controller.language}';
 		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'ti ti-home', noclose: true, import: '@{#}/parts/flows.html' }];
 		common.secret = 'flowstream';
 		common.layout = '';
@@ -112,6 +113,7 @@
 		common.bundle = '@{F.isBundle}' === 'true';
 		common.cl = {}; // for additional codelists
 		document.title += ' (' + common.env + ')';
+
 
 		(function() {
 			var url = '@{#}/fapi/' + common.openplatform;
@@ -270,7 +272,7 @@
 				item = {};
 				item.id = id;
 				item.name = flow.name;
-				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '');
+				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '', common.language);
 				item.focus = 'common/focusiframe';
 				EXEC('-loading/show');
 				EXEC('-loading/hide', 2000);

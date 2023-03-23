@@ -176,6 +176,7 @@
 		var sourcecache = {};
 
 		exports.init = function() {
+
 			ADD('websocket__null__url:{0};encoder:false'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')));
 			var index = common.socket.indexOf('openplatform=');
 			enterprise.init('/fapi/?' + (index === -1 ? '' : common.socket.substring(index)));
