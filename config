@@ -22,3 +22,6 @@ flowstream_worker           : fork
 
 // Flow directory
 // directory                   : /absolute/path/to/flow/database/
+
+// A default language
+// language                    : es
