@@ -11,18 +11,19 @@ NEWSCHEMA('Variables', function(schema) {
 			var id = $.query.id;
 			if (id) {
 				var fs = MAIN.flowstream.db[id];
-				if (fs) {
+				if (fs)
 					$.callback(fs.variables);
-				} else
+				else
 					$.invalid(404);
 			} else
 				$.callback(MAIN.flowstream.db.variables);
-			}
+		}
 	});
 
 	schema.action('save', {
 		name: 'Save variables',
 		action: function($, model) {
+
 			if (!model.data)
 				model.data = {};
 
