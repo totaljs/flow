@@ -804,6 +804,12 @@ function init_current(meta, callback) {
 		F.frameworkless(false, { unixsocket: meta.unixsocket, config: { allow_stats_snapshot: false }});
 	}
 
+	if (meta.import) {
+		var tmp = meta.import.split(',').trim();
+		for (var m of tmp)
+			require(PATH.root(m));
+	}
+
 	flow.env = meta.env;
 	flow.origin = meta.origin;
 	flow.proxypath = meta.proxypath || '';
