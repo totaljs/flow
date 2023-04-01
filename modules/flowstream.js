@@ -28,6 +28,7 @@ var CALLBACKID = 1;
 	module.trigger(flowstreamid, id, data);
 	module.refresh([flowstreamid], [type]);
 	module.rpc(name, callback);
+	module.exec(id, opt);
 
 	Methods:
 	instance.trigger(id, data);
@@ -45,6 +46,7 @@ var CALLBACKID = 1;
 	instance.pause(is);
 	instance.socket(socket);
 	instance.exec(opt, callback);
+	instance.cmd(path, data);
 	instance.httprequest(opt, callback);
 	instance.eval(msg, callback);
 
@@ -238,6 +240,20 @@ Instance.prototype.httprouting = function() {
 	};
 
 	return instance;
+};
+
+Instance.prototype.cmd = function(path, data) {
+
+	var self = this;
+	if (self.flow.isworkerthread) {
+		self.flow.postMessage2({ TYPE: 'stream/cmd', path: path, data: data });
+	} else {
+		var fn = path.indexOf('.') === - 1 ? global[path] : U.get(global, path);
+		if (typeof(fn) === 'function')
+			fn(data);
+	}
+
+	return self;
 };
 
 Instance.prototype.exec = function(opt, callback) {
@@ -805,9 +821,12 @@ function init_current(meta, callback) {
 	}
 
 	if (meta.import) {
-		var tmp = meta.import.split(',').trim();
-		for (var m of tmp)
-			require(PATH.root(m));
+		var tmp = meta.import.split(/,|;/).trim();
+		for (var m of tmp) {
+			var mod = require(PATH.root(m));
+			mod.install && mod.install(flow);
+			mod.init && mod.init(flow);
+		}
 	}
 
 	flow.env = meta.env;
@@ -846,6 +865,12 @@ function init_current(meta, callback) {
 
 				case 'stream/httprequest':
 					httprequest(flow, msg.data, msg.callbackid);
+					break;
+
+				case 'stream/cmd':
+					var fn = msg.path.indexOf('.') === - 1 ? global[msg.path] : U.get(global, msg.path);
+					if (fn && typeof(fn) === 'function')
+						fn(msg.data);
 					break;
 
 				case 'stream/exec':
@@ -1610,6 +1635,7 @@ function MAKEFLOWSTREAM(meta) {
 		data.proxypath = flow.$schema.proxypath;
 		data.origin = flow.$schema.origin;
 		data.dtcreated = flow.$schema.dtcreated;
+		data.import = flow.$schema.import;
 		return data;
 	};
 
