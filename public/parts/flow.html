@@ -1509,10 +1509,13 @@
 				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'ti ti-copy' });
 			}
 
-			if (!TYPES[component.type]) {
+			if (!TYPES[component.type] && (!meta || meta.remove !== false)) {
 				opt.items.push('-');
 				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 			}
+
+			if (opt.items.length <= 1)
+				return;
 
 			opt.callback = function(item) {
 				switch (item.id) {
