@@ -287,15 +287,16 @@ FUNC.makeid = function(type) {
 FUNC.trigger = function(el, data) {
 	if (data && data.constructor !== Object)
 		data = null;
+	var isel = el instanceof jQuery;
 	if (!data || typeof(data) !== 'object')
-		data = {};
+		data = isel ? { data: el.attrd('data') } : {};
 	setTimeout(function(id, data) {
 		if (id && flow.data[id] && flow.data[id].connected) {
 			data.TYPE = 'trigger';
 			data.id = id;
 			SETTER('websocket/send', data);
 		}
-	}, 10, el instanceof jQuery ? el.attrd2('id') : el, data);
+	}, 10, isel ? el.attrd2('id') : el, data);
 	return data;
 };
 
