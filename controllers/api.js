@@ -155,6 +155,11 @@ function notify(id) {
 		}
 	}
 
+	if (self.query.REDIRECT) {
+		self.redirect(self.query.REDIRECT);
+		return;
+	}
+
 	var accept = self.headers.accept;
 	if (accept && accept.indexOf('html') !== -1)
 		self.html('<html><body style="font-family:Arial;font-size:11px;color:#777;background-color:#FFF">Close the window<script>window.close();</script></body></html>');
