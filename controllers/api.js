@@ -7,7 +7,7 @@ exports.install = function() {
 	ROUTE('+POST    /fapi/update/',    updatebundle, ['upload'], 1024 * 10); // Flow updater
 	ROUTE('GET      /private/',        privatefiles);
 	ROUTE('GET      /notify/{id}/',    notify);
-	ROUTE('POST     /notify/{id}/',    notify);
+	ROUTE('POST     /notify/{id}/',    notify, 1024); // 1 MB
 
 	// FlowStream
 	ROUTE('+API    @api    -streams                          *Streams      --> query');
