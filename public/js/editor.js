@@ -13,6 +13,7 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 	var autocomplete_unique;
 	var REGAUTOCOMPLETE = /(#)?[a-zA-Z0-9_-]{3,30}/g;
 	var lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'.split(' ');
+	var skipbind = false;
 
 	self.getter = null;
 	self.nocompile();
@@ -422,9 +423,10 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 					val = lines.join('\n').trim();
 				}
 
+				skipbind = true;
 				self.getter2 && self.getter2(val);
 				self.change(true);
-				self.rewrite(val, 2);
+				self.set(val, 2);
 				config.required && self.validate2();
 				rebuild(b.from.line);
 
@@ -467,6 +469,11 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 	};
 
 	self.setter = function(value, path, type) {
+
+		if (skipbind) {
+			skipbind = false;
+			return;
+		}
 
 		setTimeout2('EditorRebuild', rebuild_source, 500);
 		editor.setValue(value || '');
