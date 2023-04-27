@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 25;
+const VERSION = 26;
 const NOTIFYPATH = '/notify/';
 
 var isFLOWSTREAMWORKER = false;
@@ -2347,8 +2347,7 @@ function MAKEFLOWSTREAM(meta) {
 				flow.proxy.send({ TYPE: 'flow/variables', data: flow.variables }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/variables2', data: flow.variables2 }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/components', data: flow.components(true) }, 1, clientid);
-				var instances = flow.export();
-				flow.proxy.send({ TYPE: 'flow/design', data: instances }, 1, clientid);
+				flow.proxy.send({ TYPE: 'flow/design', data: flow.export() }, 1, clientid);
 				flow.proxy.send({ TYPE: 'flow/errors', data: flow.errors }, 1, clientid);
 				setTimeout(function() {
 					flow.instances().wait(function(com, next) {
@@ -2928,6 +2927,7 @@ if (W.workerData) {
 }
 
 if (process.argv.includes('--fork')) {
+
 	process.once('message', function(msg) {
 		if (msg.TYPE === 'init') {
 			Parent = process;
@@ -2936,6 +2936,11 @@ if (process.argv.includes('--fork')) {
 			F.dir(process.argv[2]);
 			exports.init(msg.data);
 		}
+	});
+
+	ON('error', function(obj) {
+		if (obj.error.indexOf('ERR_IPC_CHANNEL_CLOSED') !== -1)
+			process.exit(1);
 	});
 }
 
