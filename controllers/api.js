@@ -150,6 +150,7 @@ function notify(id) {
 			obj.body = self.body;
 			obj.url = self.url;
 			obj.ip = self.ip;
+			obj.params = arr.length > 2 ? arr.slice(2) : EMPTYOBJECT;
 			arr[1] && instance.notify(arr[1], obj);
 			instance.flow && instance.flow.$socket && instance.flow.$socket.send({ TYPE: 'flow/notify', data: obj });
 		}
