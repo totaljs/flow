@@ -43,6 +43,10 @@
 	<ui-component name="loading"></ui-component>
 	<ui-component name="console" path="common.console" config="datasource:common.logs"></ui-component>
 
+	<ui-component name="dropfiles" path="null" config="exec:flow/dropfiles" class="hidden">
+		@(Drag &amp; Drop files here)
+	</ui-component>
+
 	<ui-component name="part" path="common.page" config="if:flow;url:@{#}/parts/flow.html;loading:0" class="hidden invisible"></ui-component>
 	<ui-component name="part" path="common.page" config="if:componenteditor;url:@{#}/parts/component.html;invisible:1;reload:?/reload" class="hidden invisible"></ui-component>
 
@@ -65,7 +69,6 @@
 		ENVIRONMENT('designer');
 
 		common.secret = 'flowstream';
-		common.marketplace = 'https://marketplace.totaljs.com';
 		common.components = '@{PREF.components}';
 		common.components2 = '@{PREF.components2}';
 		common.language = '@{controller.language}';
