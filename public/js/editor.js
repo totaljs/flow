@@ -878,8 +878,11 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 				if (stream.match(/\{\{.*?\}\}/, true))
 					return 'variable-A';
 
-				if (stream.match(/ICON|NAME|UID|ID|CONFIG|CLASS|STATUS/, true))
-					return 'variable-R';
+				if (stream.match(/ICON|NAME|UID|ID|CONFIG|CLASS|STATUS/, true)) {
+					var a = stream.lineOracle.state.baseCur || '';
+					if ((/tag|string|qualifier/).test(a))
+						return 'variable-R';
+				}
 
 				stream.next();
 				return null;
