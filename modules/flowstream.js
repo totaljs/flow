@@ -589,6 +589,7 @@ Instance.prototype.variables = function(variables) {
 		for (var key in flow.meta.flow) {
 			var instance = flow.meta.flow[key];
 			instance.variables && instance.variables(flow.variables);
+			instance.vary && instance.vary('variables');
 		}
 		flow.proxy.online && flow.proxy.send({ TYPE: 'flow/variables', data: variables });
 		flow.save();
@@ -610,6 +611,7 @@ Instance.prototype.variables2 = function(variables) {
 		for (var key in flow.meta.flow) {
 			var instance = flow.meta.flow[key];
 			instance.variables2 && instance.variables2(flow.variables2);
+			instance.vary && instance.vary('variables2');
 		}
 		flow.save();
 	}
@@ -2222,8 +2224,8 @@ function MAKEFLOWSTREAM(meta) {
 
 			for (var key in flow.meta.flow) {
 				var m = flow.meta.flow[key];
-				if (m.secrets)
-					m.secrets(flow.secrets);
+				m.secrets && m.secrets(flow.secrets);
+				m.vary && m.vary('secrets');
 			}
 
 		};
