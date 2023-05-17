@@ -1,7 +1,7 @@
 NEWSCHEMA('Streams', function(schema) {
 
 	schema.define('id', 'String(30)');
-	schema.define('name', String, true);
+	schema.define('name', 'SafeString', true);
 	schema.define('author', String);
 	schema.define('version', String);
 	schema.define('icon', 'Icon');
@@ -210,13 +210,14 @@ NEWSCHEMA('Streams', function(schema) {
 			if (item) {
 				var is = $.query.is ? ($.query.is === '1') : null;
 				var instance = MAIN.flowstream.instances[id];
-
-				if (instance.flow.stats && is != null)
-					instance.flow.stats.paused = is;
-
-				instance.pause(is);
-				$.audit();
-				$.success();
+				if (instance) {
+					if (instance.flow.stats && is != null)
+						instance.flow.stats.paused = is;
+					instance.pause(is);
+					$.audit();
+					$.success();
+				} else
+					$.invalid('@(Instance is not running)');
 			} else
 				$.invalid(404);
 		}
