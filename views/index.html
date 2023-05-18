@@ -17,6 +17,10 @@
 	<ui-component name="exec"></ui-component>
 	<ui-component name="locale" config="requests:1;language:@{controller.language}"></ui-component>
 
+	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
+		@(Drag &amp; Drop FlowStream)
+	</ui-component>
+
 	<ui-component name="windows" path="common.windows"></ui-component>
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
 	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
@@ -246,6 +250,33 @@
 				}
 
 				EXEC('-parts/focus', id);
+			};
+
+			exports.dragdrop = function(files) {
+				var reader = new FileReader();
+				reader.onload = function() {
+					var data = PARSE(reader.result);
+					if (data && data.components && data.design && data.id && data.name) {
+						exports.tapi('clipboard_import @showloading ERROR', { data: reader.result }, function(response) {
+							exports.refresh();
+							setTimeout(function() {
+								exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+									SET('streamform @reset @hideloading', response);
+									SET('common.form', 'streamform');
+								});
+							}, 1000);
+						});
+						return;
+					}
+					EXEC('-message/warning', '@(Invalid file content)');
+				};
+				reader.readAsText(files[0]);
+			};
+
+			exports.dragdropcheck = function(e) {
+				var model = exports.model;
+				var selected = model.tabs.findItem('focused', true);
+				return !selected || selected.id === 'main';
 			};
 
 			exports.close = function(el, e) {
