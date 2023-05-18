@@ -4,6 +4,7 @@ NEWSCHEMA('Settings', function(schema) {
 	schema.define('components', String, true);
 	schema.define('components2', String);
 	schema.define('token', String);
+	schema.define('language', String);
 	schema.define('darkmode', Boolean);
 	schema.define('backup', Boolean);
 	schema.define('notify', Boolean);
