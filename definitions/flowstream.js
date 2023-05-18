@@ -54,6 +54,8 @@ FS.init = function(id, next) {
 	if (!flow.memory)
 		flow.memory = CONF.flowstream_memory || 0;
 
+	flow.asfiles = CONF.flowstream_asfiles === true;
+
 	MODULE('flowstream').init(flow, CONF.flowstream_worker, function(err, instance) {
 
 		if (CONF.flowstream_worker && flow.proxypath) {

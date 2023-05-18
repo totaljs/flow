@@ -65,7 +65,7 @@
 
 		<section data-type="main">
 			<ui-component name="viewbox" config="parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:0;scrollbarshadow:0;$id:flowviewbox">
-				<ui-component name="flow" path="?.data" config="width:10000;height:10000;markers:0;grid:16;horizontal:1;snapping:0;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:2;inputoffsetY:2;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:500"></ui-component>
+				<ui-component name="flow" path="?.data" config="width:10000;height:10000;markers:0;grid:16;horizontal:1;snapping:0;=curvedlines:common.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:2;inputoffsetY:2;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/groupedit;animationlimit:300;animationlimitconnection:3"></ui-component>
 			</ui-component>
 		</section>
 
@@ -1018,7 +1018,7 @@
 
 		var replacekeywords = function(str, keywords) {
 
-			var allowed = [' ', '\'', '"', '.', '>', '<', '=', '+', '-', ',', ';', '!', '\n', '\t', ':', ' '];
+			var allowed = [' ', '\'', '"', '.', '>', '<', '=', '+', '-', ',', ';', '!', '\n', '\t', ':', ' ', '_'];
 
 			for (var key in keywords) {
 				var index = 0;

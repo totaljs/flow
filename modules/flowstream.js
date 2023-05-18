@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 26;
+const VERSION = 27;
 const NOTIFYPATH = '/notify/';
 
 var isFLOWSTREAMWORKER = false;
@@ -17,6 +17,7 @@ var FLOWS = {};
 var TMS = {};
 var RPC = {};
 var CALLBACKID = 1;
+var ASFILES = true;
 
 /*
 	var instance = MODULE('flowstream').init({ components: {}, design: {}, variables: {}, variables2: {} }, true/false);
@@ -445,7 +446,7 @@ Instance.prototype.add = function(id, body, callback) {
 			CALLBACKS[callbackid] = { id: self.flow.id, callback: callback };
 		self.flow.postMessage2({ TYPE: 'stream/add', id: id, data: body, callbackid: callbackid });
 	} else
-		self.flow.add(id, body, callback);
+		self.flow.add(id, body, callback, ASFILES);
 	return self;
 };
 
@@ -589,6 +590,7 @@ Instance.prototype.variables = function(variables) {
 		for (var key in flow.meta.flow) {
 			var instance = flow.meta.flow[key];
 			instance.variables && instance.variables(flow.variables);
+			instance.vary && instance.vary('variables');
 		}
 		flow.proxy.online && flow.proxy.send({ TYPE: 'flow/variables', data: variables });
 		flow.save();
@@ -610,6 +612,7 @@ Instance.prototype.variables2 = function(variables) {
 		for (var key in flow.meta.flow) {
 			var instance = flow.meta.flow[key];
 			instance.variables2 && instance.variables2(flow.variables2);
+			instance.vary && instance.vary('variables2');
 		}
 		flow.save();
 	}
@@ -1002,7 +1005,7 @@ function init_current(meta, callback) {
 						if (msg.callbackid !== -1)
 							Parent.postMessage(msg);
 						flow.save();
-					});
+					}, ASFILES);
 					break;
 
 				case 'stream/rem':
@@ -1223,11 +1226,14 @@ function init_current(meta, callback) {
 function init_worker(meta, type, callback) {
 
 	var forkargs = [F.directory, '--fork'];
+
 	if (meta.memory)
 		forkargs.push('--max-old-space-size=' + meta.memory);
 
 	var worker = type === true || type === 'worker' ? (new W.Worker(__filename, { workerData: meta })) : Fork(__filename, forkargs, { serialization: 'json', detached: false });
 	var ischild = false;
+
+	ASFILES = meta.asfiles === true;
 
 	meta.unixsocket = F.isWindows ? ('\\\\?\\pipe\\flowstream' + F.directory.makeid() + meta.id + Date.now().toString(36)) : (F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket'));
 
@@ -2011,7 +2017,7 @@ function MAKEFLOWSTREAM(meta) {
 					callback && callback(msg);
 					refresh_components();
 					save();
-				});
+				}, ASFILES);
 				break;
 
 			case 'component_remove':
@@ -2044,7 +2050,7 @@ function MAKEFLOWSTREAM(meta) {
 
 		flow.ready = true;
 		setImmediate(() => flow.proxy.done());
-	});
+	}, ASFILES);
 
 	flow.components = function(prepare_export) {
 
@@ -2222,8 +2228,8 @@ function MAKEFLOWSTREAM(meta) {
 
 			for (var key in flow.meta.flow) {
 				var m = flow.meta.flow[key];
-				if (m.secrets)
-					m.secrets(flow.secrets);
+				m.secrets && m.secrets(flow.secrets);
+				m.vary && m.vary('secrets');
 			}
 
 		};
@@ -2795,9 +2801,9 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- JSON schema `' + m.id + '.json`');
 					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('\`\`\`json');
+					readme.push('```json');
 					readme.push(JSON.stringify(m, null, '  '));
-					readme.push('\`\`\`');
+					readme.push('```');
 
 					var id = 'sub' + item.id + 'X' + m.id;
 					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, item.meta.name.max(15), item.id);
@@ -2820,9 +2826,9 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- JSON schema `' + m.id + '.json`');
 					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('\`\`\`json');
+					readme.push('```json');
 					readme.push(JSON.stringify(m.schema, null, '  '));
-					readme.push('\`\`\`');
+					readme.push('```');
 
 					var id = 'cal' + item.id + 'X' + m.id;
 					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fa fa-plug', m.url, id, item.meta.name.max(15), item.id);

@@ -20,6 +20,9 @@ flowstream_worker           : fork
 // Max. memory size for forked processes (in MB)
 // flowstream_memory           : 4069
 
+// Every Flow component will be stored on HDD and evaluated via the `require()` method
+// flowstream_asfiles          : true
+
 // Flow directory
 // directory                   : /absolute/path/to/flow/database/
 
