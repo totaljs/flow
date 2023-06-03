@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 27;
+const VERSION = 28;
 const NOTIFYPATH = '/notify/';
 
 var isFLOWSTREAMWORKER = false;
@@ -814,6 +814,8 @@ function init_current(meta, callback) {
 	if (W.workerData || meta.sandbox)
 		CONF.node_modules = '~' + PATH.join(meta.directory, meta.id, 'node_modules');
 
+	ASFILES = meta.asfiles === true;
+
 	var flow = MAKEFLOWSTREAM(meta);
 	FLOWS[meta.id] = flow;
 
@@ -1232,8 +1234,6 @@ function init_worker(meta, type, callback) {
 
 	var worker = type === true || type === 'worker' ? (new W.Worker(__filename, { workerData: meta })) : Fork(__filename, forkargs, { serialization: 'json', detached: false });
 	var ischild = false;
-
-	ASFILES = meta.asfiles === true;
 
 	meta.unixsocket = F.isWindows ? ('\\\\?\\pipe\\flowstream' + F.directory.makeid() + meta.id + Date.now().toString(36)) : (F.Path.join(F.OS.tmpdir(), 'flowstream_' + F.directory.makeid() + '_' + meta.id + '_' + Date.now().toString(36) + '.socket'));
 
