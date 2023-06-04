@@ -440,6 +440,7 @@ Instance.prototype.input = function(flowstreamid, fromid, toid, data) {
 
 // Adds a new component
 Instance.prototype.add = function(id, body, callback) {
+	var self = this;
 	if (self.flow.isworkerthread) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callback)
@@ -452,6 +453,7 @@ Instance.prototype.add = function(id, body, callback) {
 
 // Removes specific component
 Instance.prototype.rem = function(id, callback) {
+	var self = this;
 	if (self.flow.isworkerthread) {
 		var callbackid = callback ? (CALLBACKID++) : -1;
 		if (callback)
