@@ -1,8 +1,14 @@
-<ui-plugin class="componenteditor invisible">
+<style>
+	.CLASS .reviewbtn { position: absolute; right: 15px; bottom: 75px; padding: 4px 12px; font-size: 14px; background-color: #8CC152; color: #fff; border-radius: var(--radius); box-shadow: 0px 1px 4px 0 rgb(0 0 0 / 10%); }
+	.CLASS .reviewbtn:hover { opacity: 0.9; }
+</style>
+
+<ui-plugin class="CLASS componenteditor invisible">
 	<ui-component name="viewbox" config="parent:window;margin:60;scrollbar:0">
 		<ui-component name="codemirror" path="?.body" config="type:totaljs;parent:auto;contextmenu:?/contextmenu;$assign:EDITOR;height:0" default="''"></ui-component>
 	</ui-component>
 	<nav>
+		<span class="exec reviewbtn" data-exec="?/review"><i class="ti ti-totaljs mr5"></i>@(Code review)</span>
 		<!--<div class="help" style="margin-top:25px"><a href="https://docs.totaljs.com/" target="_blank"><i class="far fa-book-spells"></i>@(Documentation)</a></div>-->
 		<div>
 			<button name="submit" class="exec" data-exec="?/submit" style="width:50%"><i class="far fa-check-circle"></i>@(SUBMIT)</button><button class="exec" data-exec="?/cancel" style="width:50%">@(Cancel)</button>
@@ -22,6 +28,31 @@
 				init = true;
 			}
 			SET('common.console', false);
+		};
+
+		exports.review = function() {
+
+			var model = exports.model;
+			var source = EDITOR.editor.getValue();
+			var m = source.match(/exports\.(name|id|version)(\s=).*?;/g);
+			var data = {};
+
+			data.data = source;
+
+			if (m) {
+				try {
+					var meta = {};
+					new Function('exports', m.join('\n'))(meta);
+					data.path = meta.name + '.html';
+					data.version = meta.version;
+					data.id = meta.id || model.id || '';
+				} catch (e) {
+					data.path = (model.id || 'component') + '.html';
+				}
+			}
+
+			SET('codereviewform', data);
+			SET('common.form', 'codereviewform');
 		};
 
 		exports.submit = function() {

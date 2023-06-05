@@ -1,0 +1,41 @@
+<ui-component name="miniform" path="common.form" config="if:~PATH~;title:@(Code review);icon:ti ti-search-dot;autofocus:false;reload:?/reload;submit:?/submit;width:360" class="hidden ~PATH~" plugin="~PATH~">
+	<div class="padding">
+		<p>@(Your code will be reviewed by our professional team as soon as possible.)</p>
+		<hr />
+		<ui-component name="input" path="?.meta.token" config="required:1;camouflage:1">@(Total.js API token)</ui-component>
+		<div class="help m">@(Code review is a paid service provided by Total.js Platform authors.) <a href="https://docs.totaljs.com/totalapi/" target="_blank">@(Read more.)</a></div>
+		<ui-component name="input" path="?.meta.user" config="required:1" class="m">@(Your name)</ui-component>
+		<ui-component name="input" path="?.meta.useremail" config="required:1" default="'@'">@(E-mail address)</ui-component>
+	</div>
+	<nav>
+		<ui-component name="validate" path="?" config="validonly:1">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
+	</nav>
+</ui-component>
+
+<script>
+
+	PLUGIN(function(exports) {
+
+		exports.reload = function(com) {
+			// var model = exports.model;
+			CACHEPATH(exports.name + '.meta', '1 year');
+		};
+
+		exports.submit = function(hide) {
+			var form = CLONE(exports.form.meta);
+			var model = exports.model;
+			form.project = document.title;
+			form.ip = 'Unknown';
+			form.path = '/' + model.path;
+			form.data = model.data;
+			form.projectid = model.id;
+			form.version = model.version;
+			AJAX('POST https://review.totaljs.com/review/', form, ASETTER('message/response', '@(Your component source code will be reviewed.)', hide));
+		};
+
+	});
+
+</script>
