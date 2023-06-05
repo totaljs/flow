@@ -1,0 +1,181 @@
+<style>
+	.CLASS .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 15px; }
+	.CLASS .listing-caption { padding: 0 8px 5px 0; font-size: 12px; color: #777; }
+	.CLASS .listing-download figure { width: 25%; float: left; padding: 5px 8px; }
+	.CLASS .listing-download section { border: 1px solid #E0E0E0; background-color: #F8F8F8; padding: 8px; border-radius: var(--radius); cursor: pointer; }
+	.CLASS .listing-download section:hover { opacity: 0.8; }
+	.CLASS .listing-download .icon { float: left; width: 30px; height: 30px; line-height: 30px; font-size: 15px; text-align: center; margin-right: 8px; color: #FFF; border-radius: 3px; }
+	.CLASS .listing-download .text { line-height: 14px; }
+	.CLASS .listing-download .author { font-size: 11px; color: #777; }
+	.CLASS .listing-download .version { float: right; font-size: 11px; color: #777; margin: 10px 0 0; }
+	.CLASS .listing-download .name { font-size: 12px; }
+	.CLASS .listing-download .readme { font-size: 11px; float: right; cursor: pointer; color: #777; font-weight: normal; margin-top: 1px; }
+	.CLASS .listing-download .readme:hover { text-decoration: underline; }
+	.CLASS .listing-download .enterprise > section { border-left: 3px solid #EA706B !important; }
+	.CLASS .listing-download .community > section { border-left: 3px solid #62C9CA !important; background-color: rgba(98,201,202,0.1); }
+	.CLASS .listing-download .installed section { border-color: var(--color); background-color: var(--color); color: #FFF; font-weight: bold; }
+	.CLASS .listing-download .installed section .readme { color: #FFF; }
+	.ui-dark .CLASS .listing-download section { border-color: #404040; background-color: #303030; }
+</style>
+
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Templates);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden ~PATH~" plugin="~PATH~">
+	<nav>
+		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs green"></i>@(Enterprise)</button>
+	</nav>
+	<div>
+		<div class="search">
+			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search components)"></ui-component>
+		</div>
+		<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
+			<div class="padding">
+
+				<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'" class="block">
+					<script type="text/html">
+						<div class="bg-smoke padding m" style="border-radius:var(--radius)">
+							<i class="ti ti-totaljs mr5 green"></i>@(Your Total.js Enterprise Account expires on) <i class="ti ti-bull"></i> <b>{{ value.dtexpire | format('[date]') }}</b>
+						</div>
+					</script>
+				</ui-bind>
+
+				<ui-component name="search" path="?.search" config="selector:figure;datasource:?.list">
+					<ui-bind path="?.list" config="template">
+						<script type="text/html">
+							{{ foreach n in value }}
+								{{ if n.name && n.name !== '0' }}
+								<div class="listing-caption">{{ n.name }}</div>
+								{{ fi }}
+								<div class="listing-download" style="margin:0 -8px">
+									{{ foreach m in n.items }}
+									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.community }} community{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-id="{{ m.id }}" data-name="{{ m.name }}" data-url="{{ m.url }}" data-exec="?/install">
+										<section{{ if m.enterprise }} title="Total.js Enterprise"{{ else if m.community }} title="@(Community)"{{ fi }}>
+											<div class="icon"><span class="icon" style="background-color:{{ m.color | empty('#4285F4') }}"><i class="{{ m.icon }}"></i></span></div>
+											<div class="text">
+												<div class="header"><span class="name hellip">{{ m.name }}</span><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span></div>
+												<div class="author hellip gray">{{ m.author }}</div>
+											</div>
+										</section>
+									</figure>
+									{{ end }}
+								</div>
+							{{ end }}
+						</script>
+					</ui-bind>
+				</ui-component>
+			</div>
+		</ui-component>
+	</div>
+	<nav>
+		<button name="cancel" style="width:100%">@(Close)</button>
+	</nav>
+</ui-component>
+
+<script>
+
+	PLUGIN(function(exports) {
+
+		var caller;
+
+		exports.reload = function() {
+			caller = exports.caller;
+			exports.refresh();
+		};
+
+		exports.refresh = function() {
+
+			var queue = [];
+			var response = [];
+
+			var download = function(url, next) {
+				exports.ajax('GET ' + url, function(list) {
+
+					for (var m of list)
+						m.community = m.author ? !(/total\.js/i).test(m.author) : true;
+
+					response.push.apply(response, list);
+					next();
+				});
+			};
+
+			queue.push(next => download('https://cdn.totaljs.com/flowstream/templates/db.json', next));
+			enterprise.is && queue.push(next => download('https://enterprise.totaljs.com/download/flowtemplates/?token=' + enterprise.token, next));
+
+			queue.wait(function(fn, next) {
+				fn(next);
+			}, function() {
+
+				var groups = {};
+
+				for (var item of response) {
+
+					if (!item.group)
+						item.group = '$';
+
+					if (groups[item.group])
+						groups[item.group].push(item);
+					else
+						groups[item.group] = [item];
+				}
+
+				var items = [];
+				var def = { name: '', items: groups.$ || [] };
+
+				delete groups.$;
+
+				for (var key in groups)
+					items.push({ name: key, items: groups[key] });
+
+				items.quicksort('name');
+				items.unshift(def);
+
+				if (!def.items.length)
+					items.shift();
+
+				// response.reverse();
+				exports.set('groups', Object.keys(groups));
+				exports.set('list', items);
+				exports.set('items @hideloading', response);
+			});
+		};
+
+		exports.readme = function(el) {
+			var id = ATTRD(el);
+			var item = exports.data.items.findItem('id', id);
+			FUNC.readme(item.name, item.readme);
+		};
+
+		exports.enterprise = function() {
+			enterprise.edit(function(response) {
+				response && exports.refresh();
+			});
+		};
+
+		exports.install = function(el) {
+
+			var id = el.attrd2('id');
+			var name = el.attrd2('name');
+			var url = el.attrd2('url');
+
+			var download = function() {
+				exports.ajax('GET ' + url, function(response) {
+					if (response && response.components && response.id && response.name && response.design) {
+						var data = STRINGIFY(response);
+						exports.tapi('clipboard_import @showloading ERROR', { data: data }, function(response) {
+							caller.refresh();
+							setTimeout(function() {
+								exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+									SET('streamform @reset @hideloading', response);
+									SET('common.form', 'streamform');
+								});
+							}, 1000);
+						});
+					} else
+						EXEC('-message/warning', '@(Invalid data)');
+				});
+			};
+
+			EXEC('-approve/show', '@(Are you sure you want to import selected template <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(IMPORT)', download);
+		};
+
+	});
+
+</script>

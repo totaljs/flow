@@ -16,12 +16,12 @@
 
 	<ui-component name="exec"></ui-component>
 	<ui-component name="locale" config="requests:1;language:@{controller.language}"></ui-component>
+	<ui-component name="windows" path="common.windows" config="zindex:50"></ui-component>
 
 	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
 		@(Drag &amp; Drop FlowStream)
 	</ui-component>
 
-	<ui-component name="windows" path="common.windows"></ui-component>
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
 	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
 	<ui-component name="LAZY message" config="style:2"></ui-component>
@@ -36,6 +36,7 @@
 	<ui-component name="paste"></ui-component>
 	<ui-component name="shortcuts"></ui-component>
 	<ui-component name="loading" config="style:2"></ui-component>
+	<ui-component name="markdown" config="highlight:false;charts:false"></ui-component>
 
 	<ui-component name="importer" path="common.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
 
@@ -72,8 +73,10 @@
 			<ui-component name="importer" path="common.form" config="if:welcomeform;url:@{#}/forms/welcome.html"></ui-component>
 
 			@{if user.sa}
+			<ui-component name="importer" path="common.form" config="if:templatesform;url:@{#}/forms/templates.html"></ui-component>
 			<ui-component name="importer" path="common.form" config="if:settingsform;url:@{#}/forms/settings.html"></ui-component>
 			<ui-component name="importer" path="common.form" config="if:passwordform;url:@{#}/forms/password.html"></ui-component>
+			<ui-component name="importer" path="common.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
 			@{fi}
 
 			@{if user.sa || user.permissions.includes('create')}
@@ -114,10 +117,10 @@
 		common.totalversion = +'@{F.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
 		common.env = '@{PREF.env}';
+		common.templates = '@{PREF.templates}';
 		common.bundle = '@{F.isBundle}' === 'true';
 		common.cl = {}; // for additional codelists
 		document.title += ' (' + common.env + ')';
-
 
 		(function() {
 			var url = '@{#}/fapi/' + common.openplatform;
@@ -189,6 +192,9 @@
 			delete data.unixsocket;
 			delete data.directory;
 			delete data.size;
+			delete data.asfiles;
+			delete data.env;
+			delete data.sandbox;
 			return data;
 		};
 
@@ -357,6 +363,8 @@
 				if (common.workers)
 					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'ti ti-sync' });
 
+				opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
+
 				if (user.sa || user.permissions.include('remove')) {
 					opt.items.push('-');
 					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
@@ -431,6 +439,17 @@
 								exports.tapi('streams_remove/{0} ERROR'.format(id), exports.refresh);
 							});
 							break;
+						case 'publish':
+							exports.tapi('clipboard_export/{0} ERROR'.format(id), function(response) {
+								var data = {};
+								data.type = 'flowstream';
+								data.name = item.name;
+								data.email = CACHE('email') || '@';
+								data.data = JSON.stringify(FUNC.cleanflow(PARSE(response.value)), null, '\t');
+								SET('publishform @reset', data);
+								SET('common.form', 'publishform');
+							});
+							break;
 					}
 				};
 				EXEC('-menu/show', opt);
@@ -451,6 +470,7 @@
 					items.push({ id: 'import', name: '@(Import Flow)', icon: 'ti ti-download' });
 				}
 
+				items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download' });
 				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 				items.push('-');
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'ti ti-cloud-download' });
@@ -535,6 +555,9 @@
 						EXEC('-approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"ti ti-recycle" @(Clear)', function() {
 							exports.tapi('cdn_clear ERROR', AEXEC('-message/success', '@(The CDN cache has been cleared successfully)'));
 						});
+						break;
+					case 'templates':
+						enterprise.load(() => SET('common.form', 'templatesform'));
 						break;
 				}
 			};
@@ -659,6 +682,8 @@
 			exports.mainmenu();
 
 		});
+
+		enterprise.init('@{#}/fapi/');
 
 	</script>
 

@@ -3,8 +3,8 @@ NEWSCHEMA('Settings', function(schema) {
 	schema.define('name', String, true);
 	schema.define('components', String, true);
 	schema.define('components2', String);
+	schema.define('templates', String, true);
 	schema.define('token', String);
-	schema.define('language', String);
 	schema.define('darkmode', Boolean);
 	schema.define('backup', Boolean);
 	schema.define('notify', Boolean);
@@ -96,6 +96,9 @@ if (PREF.backup)
 
 if (!PREF.components)
 	PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
+
+if (!PREF.templates)
+	PREF.templates = 'https://cdn.totaljs.com/flowstream/templates/db.json';
 
 if (!PREF.token)
 	PREF.token = GUID(30);

@@ -1,0 +1,45 @@
+<ui-component name="miniform" path="common.form" config="if:~PATH~;icon:ti ti-upload;autofocus:false;reload:?/reload;submit:?/submit;width:420" class="hidden ~PATH~" plugin="~PATH~">
+	<img src="/img/publish.png" class="img-responsive" alt="" />
+	<div class="padding">
+		<p>@(Thanks for your interest in publishing your content to the Total.js Flow community. Our team will check it and, if everything is in order, we can make your FlowStream available for download to everyone in the community of Flow.)</p>
+		<hr />
+		<div class="fs12">
+			<ui-bind path="?.name" config="text b" class="block">@(Name): <b></b></ui-bind>
+		</div>
+		<hr />
+		<ui-component name="input" path="?.email" config="type:email;required:1" default="'@'" class="m">@(E-mail address)</ui-component>
+		<ui-component name="input" path="?.message" default="''" class="m">@(Message)</ui-component>
+	</div>
+	<nav>
+		<ui-component name="validate" path="?" config="validonly:1">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
+	</nav>
+</ui-component>
+
+<script>
+
+	PLUGIN(function(exports) {
+
+		exports.reload = function(form) {
+			var model = exports.model;
+			form.reconfigure({ title: model.type === 'flowstream' ? '@(Publish FlowStream)' : '@(Publish component)' });
+		};
+
+		exports.submit = function(hide) {
+
+			var model = exports.model;
+
+			CACHE('email', model.email, '1 year');
+
+			API('https://flowdb.totaljs.com/api/ save @showloading ERROR', model, function() {
+				SETTER('message/success @hideloading', '@(<b>Thank you.</b> Regarding the publishing, we will contact you soon.)');
+				hide();
+			});
+
+		};
+
+	});
+
+</script>

@@ -187,7 +187,8 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .flows .paused section { border-color: red !important; }
 .flows figure { padding: 10px; width: 25%; position: relative; display: inline-block; vertical-align: top; }
 .flows figure section { border: 1px solid #E0E0E0; background-color: #FFF; cursor: pointer; border-radius: var(--radius); }
-.flows figure section:hover { border-color: #D0D0D0; }
+.flows figure section:hover { border-color: #C0C0C0; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.flows figure section:hover .icon { background-color: #F8F8F8; }
 .flows figure .icon { height: 130px; font-size: 40px; text-align: center; line-height: 140px; border-bottom: 1px solid #E0E0E0; overflow: hidden; }
 .flows figure .meta { padding: 10px; font-size: 12px; }
 .flows figure .meta .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 15px; font-weight: bold; }
@@ -206,7 +207,8 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .flows figure section { border-color: #404040; background-color: #282828; }
 .ui-dark .flows figure .proxy { border-top-color: #404040; }
 .ui-dark .flows figure .proxy span { background-color: #111; color: #FFF; }
-.ui-dark .flows figure section:hover { border-color: #454545; }
+.ui-dark .flows figure section:hover { border-color: #606060; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+.ui-dark .flows figure section:hover .icon { background-color: #303030; }
 .ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; }
 .ui-dark .flows figure .meta .name span { color: #FFF; }
 .ui-dark .flows figure .size { color: #888; }
@@ -215,7 +217,9 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .flows figure .stats label { color: #888; }
 
 .ui-windows-resizer { z-index: 100; }
-.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.25); }
+.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.1); }
+.ui-windows-body { overflow: hidden; }
+.ui-windows-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
 .ui-dark .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.5); }
 
 @media (max-width:768px) {
@@ -234,8 +238,16 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 	.flows figure { width: 20%; }
 }
 
-@media (min-width:1400px) {
-	.flows figure { width: 280px; }
+@media (min-width:1600px) {
+	.flows figure { width: 16.6%; }
+}
+
+@media (min-width:2200px) {
+	.flows figure { width: 14.28%; }
+}
+
+@media (min-width:2500px) {
+	.flows figure { width: 12.5%; }
 }
 
 .ui-largeform .search { height: 30px; }
@@ -280,3 +292,4 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 
 .ui-dark .appmenu { border-right-color: #404040; background-color: #222; color: #777; }
 .ui-dark .appmenu .selected, .ui-dark .appmenu .exec:hover  { background-color: #303030; color: #FFF; }
+.ui-dark .ui-box .search .ui-searchinput { border-color: #404040; }

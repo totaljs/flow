@@ -123,6 +123,7 @@
 <ui-component name="importer" path="common.form" config="if:groupform;url:@{#}/forms/group.html"></ui-component>
 <ui-component name="importer" path="common.form" config="if:newflow;url:@{#}/forms/new.html"></ui-component>
 <ui-component name="importer" path="common.form" config="if:noteform;url:@{#}/forms/note.html"></ui-component>
+<ui-component name="importer" path="common.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
 
 <script>
 
@@ -212,8 +213,9 @@
 			opt.items = [];
 
 			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'ti ti-code' });
-			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
 			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'ti ti-download' });
+			opt.items.push('-');
+			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
 
 			opt.callback = function(item) {
 
@@ -377,6 +379,7 @@
 						single && opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-laptop-code' });
 						opt.items.push({ id: 'exportcomponents', name: '@(Copy)', icon: 'ti ti-copy' });
 						single && opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-save' });
+						single && opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 						opt.items.push('-');
 					}
 				}
@@ -489,6 +492,17 @@
 							}
 							$(selector).attrd('color', opt.color).css({ stroke: opt.color });
 						})();
+						break;
+					case 'publish':
+						SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: ASETTER('message/response', function(response) {
+							var data = {};
+							data.type = 'component';
+							data.name = item.name;
+							data.email = CACHE('email') || '@';
+							data.data = response.data;
+							SET('publishform @reset', data);
+							SET('common.form', 'publishform');
+						})});
 						break;
 				}
 			};
@@ -1545,6 +1559,7 @@
 				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
 				opt.items.push({ id: 'copy2', name: '@(Copy source-code)', icon: 'ti ti-copy' });
 				opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-save' });
+				opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 			}
 
 			if (!TYPES[component.type] && (!meta || meta.remove !== false)) {
@@ -1597,6 +1612,18 @@
 						break;
 					case 'copycomponent':
 						exports.copycomponents();
+						break;
+					case 'publish':
+						SETTER('websocket/send', { TYPE: 'component_read', id: id, callback: ASETTER('message/response', function(response) {
+							var data = {};
+							data.type = 'component';
+							data.name = component.name;
+							data.email = CACHE('email') || '@';
+							data.data = response.data;
+							SET('publishform @reset', data);
+							SET('common.form', 'publishform');
+						})});
+						break;
 				}
 			};
 			SETTER('menu/show', opt);

@@ -1,4 +1,4 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-download;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden" plugin="~PATH~">
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden" plugin="~PATH~">
 	<nav>
 		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs green"></i>@(Enterprise)</button>
 		<button class="exec" data-exec="?/update" is="is-button" path="?.newupdates" config="enable"><i class="ti ti-sync"></i>@(Update all)</button>
@@ -49,8 +49,8 @@
 								{{ fi }}
 								<div class="listing-download">
 									{{ foreach m in n.items }}
-									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-										<section{{ if m.enterprise }} style="border-left:3px solid red" title="Total.js Enterprise"{{ fi }}>
+									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+										<section{{ if m.enterprise }} title="Total.js Enterprise"{{ else if m.community }} title="@(Community)"{{ fi }}>
 											<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
 											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
 										</section>
@@ -87,6 +87,7 @@
 					var com = flow.components.findItem('name', item.name);
 					item.newupdate = com ? item.version.localeCompare(com.version, { numeric: true }) > 0 : false;
 					item.installed = com != null;
+					item.community = item.author ? !(/total\.js/i).test(item.author) : true;
 
 					if (!item.group)
 						item.group = '0';
@@ -109,7 +110,9 @@
 		};
 
 		exports.enterprise = function() {
-			enterprise.edit();
+			enterprise.edit(function(response) {
+				response && exports.reload();
+			});
 		};
 
 		exports.reload = function() {
@@ -243,7 +246,7 @@
 			};
 
 			if (exports.data.approve)
-				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(Import)', download);
+				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(IMPORT)', download);
 			else
 				download();
 		};
