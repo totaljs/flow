@@ -113,30 +113,30 @@ function privatefiles() {
 
 function updatebundle() {
 
-	var self = this;
-	var file = self.files[0];
+	var $ = this;
+	var file = $.files[0];
 
 	if (!F.isBundle) {
-		self.invalid('@(Available for bundled version only)');
+		$.invalid('@(Available for bundled version only)');
 		return;
 	}
 
 	if (file && file.extension === 'bundle') {
 		file.move(PATH.join(PATH.root(), '../bundles/app.bundle'), function(err) {
 			if (err) {
-				self.invalid(err);
+				$.invalid(err);
 			} else {
-				self.success();
+				$.success();
 				setTimeout(() => F.restart(), 1000);
 			}
 		});
 	} else
-		self.invalid('Invalid file');
+		$.invalid('Invalid file');
 }
 
 function notify(id) {
 
-	var self = this;
+	var $ = this;
 
 	if (PREF.notify) {
 		var arr = id.split('-');
@@ -144,26 +144,26 @@ function notify(id) {
 		if (instance) {
 			var obj = {};
 			obj.id = arr[1];
-			obj.method = self.req.method;
-			obj.headers = self.headers;
-			obj.query = self.query;
-			obj.body = self.body;
-			obj.url = self.url;
-			obj.ip = self.ip;
+			obj.method = $.req.method;
+			obj.headers = $.headers;
+			obj.query = $.query;
+			obj.body = $.body;
+			obj.url = $.url;
+			obj.ip = $.ip;
 			obj.params = arr.length > 2 ? arr.slice(2) : EMPTYOBJECT;
 			arr[1] && instance.notify(arr[1], obj);
 			instance.flow && instance.flow.$socket && instance.flow.$socket.send({ TYPE: 'flow/notify', data: obj });
 		}
 	}
 
-	if (self.query.REDIRECT) {
-		self.redirect(self.query.REDIRECT);
+	if ($.query.REDIRECT) {
+		$.redirect($.query.REDIRECT);
 		return;
 	}
 
-	var accept = self.headers.accept;
+	var accept = $.headers.accept;
 	if (accept && accept.indexOf('html') !== -1)
-		self.html('<html><body style="font-family:Arial;font-size:11px;color:#777;background-color:#FFF">Close the window<script>window.close();</script></body></html>');
+		$.html('<html><body style="font-family:Arial;font-size:11px;color:#777;background-color:#FFF">Close the window<script>window.close();</script></body></html>');
 	else
-		self.success();
+		$.success();
 }
