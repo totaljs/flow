@@ -1,1 +1,0 @@
-LOCALIZE(() => PREF['language']);
