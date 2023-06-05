@@ -6,6 +6,7 @@ cookie          (generate)  : 6
 cookie_secret   (generate)  : 10
 
 default_uid                 : f
+// language                    : fr
 
 // directory                   : /absolute/path/to/flow/database/
 
