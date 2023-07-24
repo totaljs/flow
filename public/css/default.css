@@ -293,3 +293,5 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .appmenu { border-right-color: #404040; background-color: #222; color: #777; }
 .ui-dark .appmenu .selected, .ui-dark .appmenu .exec:hover  { background-color: #303030; color: #FFF; }
 .ui-dark .ui-box .search .ui-searchinput { border-color: #404040; }
+
+.noscrollbar { overflow-y: scroll !important; }
