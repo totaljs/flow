@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 28;
+const VERSION = 29;
 const NOTIFYPATH = '/notify/';
 
 var isFLOWSTREAMWORKER = false;
@@ -1960,11 +1960,11 @@ function MAKEFLOWSTREAM(meta) {
 						source.token = msg.data.token;
 						source.dtupdated = NOW;
 						source.meta = meta;
-						source.checksum = HASH(JSON.stringify(meta)) + '';
+						source.checksum = HASH(JSON.stringify(meta)).toString(36) + '';
 					} else {
 						flow.sources[msg.data.id] = msg.data;
 						msg.data.meta = meta;
-						msg.data.checksum = HASH(JSON.stringify(meta)) + '';
+						msg.data.checksum = HASH(JSON.stringify(meta)).toString(36) + '';
 					}
 
 					TMS.refresh(flow);
@@ -2517,7 +2517,7 @@ TMS.connect = function(fs, sourceid, callback) {
 
 					item.meta = msg;
 
-					var checksum = HASH(JSON.stringify(msg)) + '1';
+					var checksum = HASH(JSON.stringify(msg)).toString(36);
 					client.subscribers = {};
 					client.publishers = {};
 					client.calls = {};
@@ -2750,6 +2750,22 @@ const TEMPLATE_CALL = `<script total>
 	</header>
 </body>`;
 
+function beautifyjsonschema(schema) {
+
+	var builder = ['__Data__:\n```json'];
+
+	for (var key in schema.properties) {
+		var prop = schema.properties[key];
+		var val = prop.type;
+		var required = schema.required ? schema.required.includes(key) : false;
+		if (prop.enum)
+			val = prop.enum.join('|');
+		builder.push((required ? '*' : '') + key + ' {' + val + '}');
+	}
+	builder.join('```');
+	return builder.join('\n');
+}
+
 TMS.refresh = function(fs, callback) {
 
 	Object.keys(fs.sources).wait(function(key, next) {
@@ -2776,11 +2792,8 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __publish__');
 					readme.push('- JSON schema `' + m.id + '.json`');
-					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('```json');
-					readme.push(JSON.stringify(m.schema, null, '  '));
-					readme.push('```');
+					readme.push(beautifyjsonschema(m.schema));
 
 					var id = 'pub' + item.id + 'X' + m.id;
 					var template = TEMPLATE_PUBLISH.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-broadcast-tower', m.url, id, item.meta.name.max(15), item.id);
@@ -2801,11 +2814,8 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __subscribe__');
 					readme.push('- JSON schema `' + m.id + '.json`');
-					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('```json');
-					readme.push(JSON.stringify(m, null, '  '));
-					readme.push('```');
+					readme.push(beautifyjsonschema(m));
 
 					var id = 'sub' + item.id + 'X' + m.id;
 					var template = TEMPLATE_SUBSCRIBE.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fas fa-satellite-dish', m.url, id, item.meta.name.max(15), item.id);
@@ -2826,11 +2836,8 @@ TMS.refresh = function(fs, callback) {
 					readme.push('- URL address: <' + url + '>');
 					readme.push('- Channel: __call__');
 					readme.push('- JSON schema `' + m.id + '.json`');
-					readme.push('- Version: ' + VERSION);
 					readme.push('');
-					readme.push('```json');
-					readme.push(JSON.stringify(m.schema, null, '  '));
-					readme.push('```');
+					readme.push(beautifyjsonschema(m.schema));
 
 					var id = 'cal' + item.id + 'X' + m.id;
 					var template = TEMPLATE_CALL.format(item.meta.name, m.id, readme.join('\n'), m.icon || 'fa fa-plug', m.url, id, item.meta.name.max(15), item.id);
