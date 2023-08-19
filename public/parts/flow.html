@@ -1398,7 +1398,14 @@
 					break;
 
 				case 'flow/redraw':
-					var com = flow.components.findItem('id', flow.data[msg.id].component);
+
+					var node = flow.data[msg.id];
+					if (!node) {
+						WARN('Instance {0} not found'.format(msg.id));
+						return;
+					}
+
+					var com = flow.components.findItem('id', node.component);
 
 					if (!msg.data.outputs && com)
 						msg.data.outputs = com.outputs ? CLONE(com.outputs) : null;
