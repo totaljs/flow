@@ -1,3 +1,5 @@
+[![Made in EU](https://cdn.componentator.com/eu-small.png)](https://european-union.europa.eu/)
+
 # Total.js Flow
 
 - [Website](https://www.totaljs.com/flow/)
