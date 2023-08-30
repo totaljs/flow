@@ -2,6 +2,7 @@ html,body { padding: 0; margin: 0; overflow: hidden; }
 body { background-color: #F0F0F0; }
 .opbody { background-color: #F0F0F0 !important; }
 body.ui-dark { background-color: #202020 !important; }
+.radius { border-radius: var(--radius); }
 .ui-dark.opbody { background-color: #202020 !important; }
 .monospace { font-family: Menlo, Consolas, monospace; }
 .markdown-small { font-size: 14px; }
@@ -148,6 +149,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .component.isnewbie { border-color: #68B25B; }
 .ui-flow .component.iserror { border-color: red; }
 .ui-flow .component-selected { border-color: var(--color) !important; }
+.ui-dark .ui-flow .component-selected { border-color: var(--color) !important; }
 .ui-flow-h summary { padding: 5px 8px 12px; font-size: 13px; font-style: normal; border-top: 3px solid rgba(0,0,0,0.1); display: block; position: relative; }
 .ui-flow-h summary > div { max-height: 200px; }
 .ui-flow-h summary .towindow { position: absolute; top: 5px; right: 5px; color: #000; cursor: pointer; }
@@ -167,7 +169,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .output[data-index="error"] { color: #E8483F; }
 
 .ui-dark .ui-flow .output-transform { background-color: rgba(255,255,255,0.04); }
-.ui-dark .ui-flow footer { border-top-color: rgba(40,40,40,0.5); }
+.ui-dark .ui-flow footer { border-top-color: rgba(62,62,62,0.9); }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
 .ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
 .ui-dark .ui-flow-h summary .towindow { color: #D0D0D0; }
