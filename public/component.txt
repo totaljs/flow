@@ -34,12 +34,9 @@
 			// this instance is closed
 		};
 
-		instance.variables = function(variables) {
+		instance.vary = function(type) {
+			// @type {String} variables|variables2|secrets
 			// FlowStream variables are changed
-		};
-
-		instance.variables2 = function(variables) {
-			// Global variables are changed
 		};
 
 		instance.configure();
