@@ -573,6 +573,7 @@
 
 				W.flowinstances.exec(instance.id, 'settings', eventdata);
 				EMIT('configure_' + name, eventdata);
+				EMIT('configure_' + component.id, eventdata);
 				EMIT('configure_read_' + name, eventdata);
 				settings_data = eventdata;
 				settings_current = instance;
