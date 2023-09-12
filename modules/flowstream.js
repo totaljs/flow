@@ -54,7 +54,7 @@ var ASFILES = true;
 	Delegates:
 	instance.onsave(data);
 	instance.ondone();
-	instance.onerror(err, type, instanceid);
+	instance.onerror(err, type, instanceid, componentid);
 	instance.output(fid, data, tfsid, tid);
 	instance.onhttproute(url, remove);
 	instance.ondestroy();
