@@ -621,9 +621,9 @@
 						var template = fi.template || fi.meta; // due to backward compatibility
 						if (template) {
 							if (template.type === 'input')
-								inputs.push({ id: fi.id, name: fi.config.name });
+								inputs.push({ id: fi.id, name: fi.config.name || 'Input' });
 							else if (template.type === 'output')
-								outputs.push({ id: fi.id, name: fi.config.name });
+								outputs.push({ id: fi.id, name: fi.config.name || 'Output' });
 						}
 					}
 
