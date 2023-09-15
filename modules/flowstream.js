@@ -7,7 +7,7 @@ if (!global.F)
 
 const W = require('worker_threads');
 const Fork = require('child_process').fork;
-const VERSION = 29;
+const VERSION = 31;
 const NOTIFYPATH = '/notify/';
 
 var isFLOWSTREAMWORKER = false;
@@ -395,13 +395,13 @@ Instance.prototype.kill = Instance.prototype.destroy = function() {
 // Sends data to the speficic input
 // "@id" sends to all component with "id"
 // "id" sends to instance with "id"
-Instance.prototype.input = function(flowstreamid, fromid, toid, data) {
+Instance.prototype.input = function(flowstreamid, fromid, toid, data, reference) {
 
 	var self = this;
 	var flow = self.flow;
 
 	if (flow.isworkerthread) {
-		flow.postMessage2({ TYPE: 'stream/input', flowstreamid: flowstreamid, fromid: fromid, id: toid, data: data });
+		flow.postMessage2({ TYPE: 'stream/input', flowstreamid: flowstreamid, fromid: fromid, id: toid, data: data, reference: reference });
 		return self;
 	}
 
@@ -411,17 +411,17 @@ Instance.prototype.input = function(flowstreamid, fromid, toid, data) {
 			for (let key in flow.meta.flow) {
 				let tmp = flow.meta.flow[key];
 				if (tmp.input && tmp.component === tmpid)
-					tmp.input(flowstreamid, fromid, data);
+					tmp.input(flowstreamid, fromid, data, reference);
 			}
 		} else {
 			let tmp = flow.meta.flow[toid];
 			if (tmp) {
-				tmp.input && tmp.input(flowstreamid, fromid, data);
+				tmp.input && tmp.input(flowstreamid, fromid, data, reference);
 			} else {
 				for (let key in flow.meta.flow) {
 					let tmp = flow.meta.flow[key];
 					if (tmp.input && tmp.config.name === toid)
-						tmp.input(flowstreamid, fromid, data);
+						tmp.input(flowstreamid, fromid, data, reference);
 				}
 			}
 		}
@@ -431,7 +431,7 @@ Instance.prototype.input = function(flowstreamid, fromid, toid, data) {
 			var f = flow.meta.flow[key];
 			var c = flow.meta.components[f.component];
 			if (f.input && c.type === 'input2')
-				f.input(flowstreamid, fromid, data);
+				f.input(flowstreamid, fromid, data, reference);
 		}
 	}
 
@@ -634,8 +634,8 @@ Instance.prototype.export = function(callback) {
 };
 
 // Initializes FlowStream
-exports.init = function(meta, isworker, callback) {
-	return isworker ? init_worker(meta, isworker, callback) : init_current(meta, callback);
+exports.init = function(meta, isworker, callback, nested) {
+	return isworker ? init_worker(meta, isworker, callback) : init_current(meta, callback, nested);
 };
 
 exports.exec = function(id, opt) {
@@ -654,14 +654,14 @@ exports.eval = function(id, opt) {
 		opt.callback(404);
 };
 
-exports.input = function(ffsid, fid, tfsid, tid, data) {
+exports.input = function(ffsid, fid, tfsid, tid, data, reference) {
 	if (tfsid) {
 		var fs = FLOWS[tfsid];
-		fs && fs.$instance.input(ffsid, fid, tid, data);
+		fs && fs.$instance.input(ffsid, fid, tid, data, reference);
 	} else {
 		for (var key in FLOWS) {
 			var flow = FLOWS[key];
-			flow.$instance.input(ffsid, fid, tid, data);
+			flow.$instance.input(ffsid, fid, tid, data, reference);
 		}
 	}
 };
@@ -807,7 +807,7 @@ function killprocess() {
 	process.exit(1);
 }
 
-function init_current(meta, callback) {
+function init_current(meta, callback, nested) {
 
 	if (!meta.directory)
 		meta.directory = PATH.root('flowstream');
@@ -844,11 +844,11 @@ function init_current(meta, callback) {
 
 	flow.$instance = new Instance(flow, meta.id);
 
-	flow.$instance.output = function(fid, data, tfsid, tid) {
-		exports.input(meta.id, fid, tfsid, tid, data);
+	flow.$instance.output = function(fid, data, tfsid, tid, reference) {
+		exports.input(meta.id, fid, tfsid, tid, data, reference);
 	};
 
-	if (Parent) {
+	if (!nested && Parent) {
 
 		Parent.on('message', function(msg) {
 
@@ -979,17 +979,17 @@ function init_current(meta, callback) {
 							for (let key in flow.meta.flow) {
 								let tmp = flow.meta.flow[key];
 								if (tmp.input && tmp.component === id)
-									tmp.input(msg.flowstreamid, msg.fromid, msg.data);
+									tmp.input(msg.flowstreamid, msg.fromid, msg.data, msg.reference);
 							}
 						} else {
 							let tmp = flow.meta.flow[msg.id];
 							if (tmp) {
-								tmp.input && tmp.input(msg.flowstreamid, msg.fromid, msg.data);
+								tmp.input && tmp.input(msg.flowstreamid, msg.fromid, msg.data, msg.reference);
 							} else {
 								for (let key in flow.meta.flow) {
 									let tmp = flow.meta.flow[key];
 									if (tmp.input && tmp.config.name === msg.id)
-										tmp.input(msg.flowstreamid, msg.fromid, msg.data);
+										tmp.input(msg.flowstreamid, msg.fromid, msg.data, msg.reference);
 								}
 							}
 						}
@@ -998,7 +998,7 @@ function init_current(meta, callback) {
 							var f = flow.meta.flow[key];
 							var c = flow.meta.components[f.component];
 							if (f.input && c.type === 'input2')
-								f.input(msg.flowstreamid, msg.fromid, msg.data);
+								f.input(msg.flowstreamid, msg.fromid, msg.data, msg.reference);
 						}
 					}
 					break;
@@ -1121,12 +1121,12 @@ function init_current(meta, callback) {
 			Parent.postMessage({ TYPE: 'stream/refresh', type: type });
 		};
 
-		flow.proxy.output = function(id, data, flowstreamid, instanceid) {
-			Parent.postMessage({ TYPE: 'stream/output', id: id, data: data, flowstreamid: flowstreamid, instanceid: instanceid });
+		flow.proxy.output = function(id, data, flowstreamid, instanceid, reference) {
+			Parent.postMessage({ TYPE: 'stream/output', id: id, data: data, flowstreamid: flowstreamid, instanceid: instanceid, reference: reference });
 		};
 
-		flow.proxy.input = function(fromid, tfsid, toid, data) {
-			Parent.postMessage({ TYPE: 'stream/toinput', fromflowstreamid: flow.id, fromid: fromid, toflowstreamid: tfsid, toid: toid, data: data });
+		flow.proxy.input = function(fromid, tfsid, toid, data, reference) {
+			Parent.postMessage({ TYPE: 'stream/toinput', fromflowstreamid: flow.id, fromid: fromid, toflowstreamid: tfsid, toid: toid, data: data, reference: reference });
 		};
 
 		flow.proxy.restart = function() {
@@ -1189,8 +1189,8 @@ function init_current(meta, callback) {
 			flow.$instance.ondone && setImmediate(flow.$instance.ondone, err);
 		};
 
-		flow.proxy.input = function(fromid, tfsid, toid, data) {
-			exports.input(flow.id, fromid, tfsid, toid, data);
+		flow.proxy.input = function(fromid, tfsid, toid, data, reference) {
+			exports.input(flow.id, fromid, tfsid, toid, data, reference);
 		};
 
 		flow.proxy.error = function(err, source, instance) {
@@ -1218,8 +1218,8 @@ function init_current(meta, callback) {
 			flow.$instance.onerror && flow.$instance.onerror(err, source, instanceid, componentid);
 		};
 
-		flow.proxy.output = function(id, data, flowstreamid, instanceid) {
-			flow.$instance.output && flow.$instance.output(id, data, flowstreamid, instanceid);
+		flow.proxy.output = function(id, data, flowstreamid, instanceid, reference) {
+			flow.$instance.output && flow.$instance.output(id, data, flowstreamid, instanceid, reference);
 		};
 	}
 
@@ -1254,8 +1254,8 @@ function init_worker(meta, type, callback) {
 	worker.isworkerthread = true;
 	worker.$schema = meta;
 
-	worker.$instance.output = function(id, data, flowstreamid, instanceid) {
-		exports.input(meta.id, id, flowstreamid, instanceid, data);
+	worker.$instance.output = function(id, data, flowstreamid, instanceid, reference) {
+		exports.input(meta.id, id, flowstreamid, instanceid, data, reference);
 	};
 
 	FLOWS[meta.id] = worker;
@@ -1325,7 +1325,7 @@ function init_worker(meta, type, callback) {
 				break;
 
 			case 'stream/toinput':
-				exports.input(msg.fromflowstreamid, msg.fromid, msg.toflowstreamid, msg.toid, msg.data);
+				exports.input(msg.fromflowstreamid, msg.fromid, msg.toflowstreamid, msg.toid, msg.data, msg.reference);
 				break;
 
 			case 'stream/refresh':
@@ -1365,9 +1365,9 @@ function init_worker(meta, type, callback) {
 			case 'stream/output':
 				if (worker.$instance.onoutput) {
 					var tmp = meta.design[msg.id];
-					tmp && worker.$instance.onoutput({ id: msg.id, name: tmp.config.name, data: msg.data });
+					tmp && worker.$instance.onoutput({ id: msg.id, name: tmp.config.name, data: msg.data, reference: msg.reference });
 				}
-				worker.$instance.output && worker.$instance.output(msg.id, msg.data, msg.flowstreamid, msg.instanceid);
+				worker.$instance.output && worker.$instance.output(msg.id, msg.data, msg.flowstreamid, msg.instanceid, msg.reference);
 				break;
 
 			case 'stream/add':
@@ -2237,19 +2237,19 @@ function MAKEFLOWSTREAM(meta) {
 		};
 
 		instance.newflowstream = function(meta, isworker, callback) {
-			return exports.init(meta, isworker, callback);
+			return exports.init(meta, isworker, callback, true);
 		};
 
 		instance.io = function(flowstreamid, id, callback) {
 			flow.proxy.io(flowstreamid, id, callback);
 		};
 
-		instance.toinput = function(data, flowstreamid, id) {
-			flow.proxy.input(instance.id, flowstreamid, id, data);
+		instance.toinput = function(data, flowstreamid, id, reference) {
+			flow.proxy.input(instance.id, flowstreamid, id, data, reference);
 		};
 
-		instance.output = function(data, flowstreamid, id) {
-			flow.proxy.output(instance.id, data, flowstreamid, id);
+		instance.output = function(data, flowstreamid, id, reference) {
+			flow.proxy.output(instance.id, data, flowstreamid, id, reference);
 		};
 
 		instance.reconfigure = function(config) {

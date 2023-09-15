@@ -597,6 +597,13 @@
 			NUL('common.form');
 		};
 
+		exports.exportasbase64 = function() {
+			SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
+				SETTER('clipboard/copy', btoa(encodeURIComponent(STRINGIFY(response.data))));
+				SETTER('notify/success', '@(The FlowStream has been copied into the clipboard as base64 format)');
+			})});
+		};
+
 		exports.exportascomponent = function() {
 			SETTER('approve/show', '@(Are you sure you want to create a component from this FlowStream?)', '"ti ti-file-export" @(Export)', function() {
 				SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
@@ -629,40 +636,40 @@
 
 					var make = `function(instance, config) {
 
-	var schema = CLONE(instance.module.flowstreamschema);
-	schema.variables = config;
-	schema.id = instance.id;
-	schema.iscomponent = true;
+		var stream = null;
+		var schema = CLONE(instance.module.flowstreamschema);
 
-	var stream = instance.newflowstream(schema, {0}, function(err, worker) {
-		stream = worker;
-		if (stream) {
-			stream.output = function(fid, data, tfsid, tid) {
-				instance.send(fid, data);
-			};
-		}
-	});
+		schema.id = instance.id + GUID(5);
+		schema.variables = config;
+		schema.iscomponent = true;
 
-	if (stream) {
-		stream.output = function(fid, data, tfsid, tid) {
+		var output = function(fid, data, tfsid, tid, reference) {
 			instance.send(fid, data);
 		};
-	}
 
-	instance.message = function($) {
-		stream && stream.input(null, null, $.input, $.data);
-		$.destroy();
-	};
+		instance.newflowstream(schema, {0}, function(err, worker) {
+			stream = worker;
+			if (stream)
+				stream.output = output;
+		});
 
-	instance.configure = function() {
-		stream && stream.variables(config);
-	};
+		instance.message = function($) {
+			if (stream) {
+				var reference = null;
+				stream.input(null, null, $.input, $.data, reference);
+			}
+			$.destroy();
+		};
 
-	instance.close = function() {
-		stream && stream.destroy();
-	};
+		instance.configure = function() {
+			stream && stream.variables(config);
+		};
 
-};`.format(flow.worker ? ('\'' + flow.worker + '\'') : 'false');
+		instance.close = function() {
+			stream && stream.destroy();
+		};
+
+	};`.format(flow.worker ? ('\'' + flow.worker + '\'') : 'false');
 
 						var builder = [];
 						builder.push('<scri' + 'pt total>');
@@ -1207,8 +1214,9 @@
 			opt.items.push({ id: 'version', name: '@(Version)', icon: 'ti ti-info-circle' });
 			opt.items.push('-');
 			opt.items.push({ id: 'export', name: '@(Export)', icon: 'ti ti-file-export' });
-			opt.items.push({ id: 'exportascomponent', name: '@(Export as a component)', icon: 'ti ti-plug' });
-			opt.items.push({ id: 'importascomponent', name: '@(Import as a component)', icon: 'ti ti-list' });
+			opt.items.push({ id: 'exportascomponent', name: '@(Export to component)', icon: 'ti ti-plug' });
+			opt.items.push({ id: 'exportasbase64', name: '@(Export to BASE64)', icon: 'ti ti-plug' });
+			opt.items.push({ id: 'importascomponent', name: '@(Import component)', icon: 'ti ti-paste' });
 			opt.items.push('-');
 			opt.items.push({ id: 'curvedlines', name: '@(Curved lines)', icon: 'ti ti-bezier-curve', selected: common.curvedlines == true });
 			opt.items.push({ id: 'reset_stats', name: '@(Reset stats)', icon: 'ti ti-chart-line' });
@@ -1264,6 +1272,9 @@
 						break;
 					case 'exportascomponent':
 						exports.exportascomponent();
+						break;
+					case 'exportasbase64':
+						exports.exportasbase64();
 						break;
 					case 'importascomponent':
 						exports.importascomponent();
