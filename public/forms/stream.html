@@ -41,6 +41,9 @@
 			</div>
 		</div>
 		<hr />
+		<ui-component name="input" path="?.cloning" config="type:checkbox" default="true" class="b">@(Enable cloning of message data)</ui-component>
+		<div class="help">@(By disabling this option you can improve FlowStream performance because message data will not be cloned in the exchange. But on the other hand you may have trouble with object references.)</div>
+		<hr />
 		<div class="row">
 			<div class="col-md-3 m">
 				<ui-component name="input" path="?.memory" config="type:number" default="0">@(Max. memory)</ui-component>

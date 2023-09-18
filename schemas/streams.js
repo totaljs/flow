@@ -8,6 +8,7 @@ NEWSCHEMA('Streams', function(schema) {
 	schema.define('reference', String);
 	schema.define('group', String);
 	schema.define('url', String);
+	schema.define('cloning', Boolean);
 	schema.define('color', 'Color');
 	schema.define('readme', String);
 	schema.define('memory', Number);
@@ -37,6 +38,8 @@ NEWSCHEMA('Streams', function(schema) {
 				var data = {};
 				for (var key of schema.fields)
 					data[key] = item[key];
+				if (data.cloning == null)
+					data.cloning = true;
 				$.callback(data);
 			} else
 				$.invalid(404);
@@ -106,6 +109,7 @@ NEWSCHEMA('Streams', function(schema) {
 					item.group = model.group;
 					item.color = model.color;
 					item.memory = model.memory;
+					item.cloning = model.cloning;
 					item.readme = model.readme;
 
 					// Remove older proxy

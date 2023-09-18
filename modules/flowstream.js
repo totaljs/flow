@@ -1567,6 +1567,7 @@ function MAKEFLOWSTREAM(meta) {
 	var saveid;
 
 	flow.metadata = meta;
+	flow.cloning = meta.cloning != false;
 	flow.export_instance2 = function(id) {
 
 		var com = flow.meta.flow[id];
@@ -1633,6 +1634,7 @@ function MAKEFLOWSTREAM(meta) {
 		data.icon = flow.$schema.icon;
 		data.color = flow.$schema.color;
 		data.version = flow.$schema.version;
+		data.cloning = flow.$schema.cloning;
 		data.readme = flow.$schema.readme;
 		data.url = flow.$schema.url;
 		data.name = flow.$schema.name;
@@ -2339,12 +2341,13 @@ function MAKEFLOWSTREAM(meta) {
 	});
 
 	var makemeta = function() {
-		return { TYPE: 'flow/flowstream', id: flow.$schema.id, version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, notify: flow.$schema.origin + NOTIFYPATH + flow.$schema.id + '-/', readme: flow.$schema.readme, url: flow.$schema.url, proxypath: flow.$schema.proxypath, env: flow.$schema.env, worker: isFLOWSTREAMWORKER ? (W.workerData ? 'Worker Thread' : 'Child Process') : false };
+		return { TYPE: 'flow/flowstream', id: flow.$schema.id, version: VERSION, paused: flow.paused, node: F.version_node, total: F.version, name: flow.$schema.name, version2: flow.$schema.version, icon: flow.$schema.icon, reference: flow.$schema.reference, author: flow.$schema.author, color: flow.$schema.color, origin: flow.$schema.origin, notify: flow.$schema.origin + NOTIFYPATH + flow.$schema.id + '-/', readme: flow.$schema.readme, url: flow.$schema.url, proxypath: flow.$schema.proxypath, env: flow.$schema.env, worker: isFLOWSTREAMWORKER ? (W.workerData ? 'Worker Thread' : 'Child Process') : false, cloning: flow.cloning };
 	};
 
 	flow.proxy.refreshmeta = function() {
 		flow.origin = flow.$schema.origin;
 		flow.proxypath = flow.$schema.proxypath || '';
+		flow.cloning = flow.$schema.cloning != false;
 		flow.proxy.send(makemeta(), 0);
 	};
 
