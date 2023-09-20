@@ -1,11 +1,11 @@
 <ui-component name="searchinput" path="%flowsearch" config="type:search;placeholder:@(Search components);autofocus:2"></ui-component>
 <ui-component name="viewbox" config="scrollbar:1;visibleY:1;parent:auto;margin:28;initdelay:500;scrollbarshadow:1" class="invisible">
 
-	<ui-component name="empty" path="flow.components2" config="parent:auto">
+	<ui-component name="empty" path="flow.components2" config="parent:auto;icon:ti ti-plug">
 
 		<script type="text/html">
 			<ui-bind path="common.tms" config="hide" class="hidden">
-				<div style="padding:10px 20px">@(You don't have installed any Flow components)</div>
+				<div style="padding:10px 20px">@(You don't have installed any FlowStream components)</div>
 				<button class="exec button button-inline" data-exec="flow/components"><i class="ti ti-download"></i>@(Download)</button>
 			</ui-bind>
 		</script>
