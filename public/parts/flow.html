@@ -128,7 +128,7 @@
 <script>
 
 	if (!W.flow)
-		W.flow = { data: {}, note: {}, config: {}, variables: {}, variables2: {}, status: {}, errors: {}, calls: {}, callbacks: {}, head: {} };
+		W.flow = { data: {}, note: {}, config: {}, variables: {}, variables2: {}, status: {}, errors: {}, calls: {}, callbacks: {}, head: {}, regexp: {} };
 
 	Thelpers.instancecount = function(id) {
 		var count = 0;
@@ -1042,6 +1042,14 @@
 			var allowed = [' ', '\'', '"', '.', '>', '<', '=', '+', '-', ',', ';', '!', '\n', '\t', ':', ' ', '_'];
 
 			for (var key in keywords) {
+
+				var reg = flow.regexp[key];
+
+				if (!reg)
+					reg = flow.regexp[key] = new RegExp('\\$' + key, 'g');
+
+				str = str.replace(reg, keywords[key]);
+
 				var index = 0;
 				while (true) {
 					index = str.indexOf(key, index);

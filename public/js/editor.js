@@ -884,6 +884,9 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 						return 'variable-R';
 				}
 
+				if (stream.match(/\$(ICON|NAME|UID|ID|CONFIG|CLASS|STATUS)/, true))
+					return 'variable-R';
+
 				stream.next();
 				return null;
 			}
