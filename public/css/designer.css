@@ -32,7 +32,7 @@ body.ui-dark { background-color: #202020 !important; }
 .header button b i { font-size: 8px; }
 .header button.apply { padding: 0 15px 0 13px !important; font-weight: bold; }
 .header button.apply i { margin-right: 7px; color: #68B25B; }
-.header button.highlight { background-color: var(--color) !important; color: #FFF; }
+.header button.highlight { background-color: var(--color) !important; color: #FFF !important; }
 .header button.highlight i { color: #FFF !important; }
 .header button.paused { background-color: red !important; color: #FFF; }
 .header button.paused i { color: #FFF !important; }
