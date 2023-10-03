@@ -20,8 +20,9 @@
 	PLUGIN(function(exports) {
 
 		exports.reload = function(com) {
-			// var model = exports.model;
-			CACHEPATH(exports.name + '.meta', '1 year');
+			var meta = CACHE('review');
+			if (meta)
+				exports.set('meta', meta);
 		};
 
 		exports.submit = function(hide) {
@@ -33,6 +34,7 @@
 			form.data = model.data;
 			form.projectid = model.id;
 			form.version = model.version;
+			CACHE('review', exports.form.meta, '1 year');
 			AJAX('POST https://review.totaljs.com/review/', form, ASETTER('message/response', '@(Your component source code will be reviewed.)', hide));
 		};
 

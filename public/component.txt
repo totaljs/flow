@@ -1,5 +1,6 @@
 <script total>
 
+	// exports.id = 'youridentifier';
 	exports.name = 'Your component name';
 	exports.icon = 'ti ti-code';
 	exports.author = 'Total.js';
