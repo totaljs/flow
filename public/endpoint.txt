@@ -1,0 +1,63 @@
+<script total>
+
+	exports.id = '{{ id }}';
+	exports.name = '{{ name }}';
+	exports.icon = '{{ icon }}';
+	exports.author = 'Total.js';
+	exports.version = '1';
+	exports.group = '{{ group }}';
+	exports.config = {};
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }, { id: 'error', name: 'Error' }];
+
+	exports.make = function(instance, config) {
+		instance.message = function($) {
+
+			var data = $.data;
+			var opt = {};
+			opt.method = '{{ method }}';
+			opt.url = '{{ url }}';
+			opt.keepalive = true;
+			opt.dnscache = true;
+			opt.type = '{{ type }}';
+			{{ if compress }}
+			opt.compress = '{{ compress }}';
+			{{ fi }}
+
+			{{ if method === 'GET' }}
+			opt.query = $.data;
+			{{ else if type === 'json' }}
+			opt.body = JSON.stringify($.data);
+			{{ else if type === 'urlencoded' }}
+			opt.body = U.toURLEncode($.data);
+			{{ fi }}
+
+			{{ if headers }}
+			opt.headers = {};
+			{{ foreach m in headers }}
+			opt.headers['{{ m.id }}'] = '{{ m.value }}';
+			{{ end }}
+			{{ fi }}
+
+			opt.callback = function(err, response) {
+				if (err)
+					$.send('error', err.toString());
+				else
+					$.send(response.status >= 400 ? 'error' : 'output', typeof(response.body) === 'string' && response.body.isJSON() ? response.body.parseJSON(true) : response.body);
+			};
+
+			REQUEST(opt);
+		};
+	};
+
+</script>
+
+<readme>
+{{ readme }}
+</readme>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+</body>

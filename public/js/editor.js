@@ -272,8 +272,12 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
 		options.scrollbarStyle = 'simple';
-		options.gutters = ['CodeMirror-lint-markers', 'CodeMirror-linenumbers'];
-		options.rulers = [{ column: 130, lineStyle: 'dashed' }, { column: -20, lineStyle: 'dashed' }];
+
+		if (options.lineNumbers) {
+			options.gutters = ['CodeMirror-lint-markers', 'CodeMirror-linenumbers'];
+			options.rulers = [{ column: 130, lineStyle: 'dashed' }, { column: -20, lineStyle: 'dashed' }];
+		}
+
 		options.viewportMargin = 500;
 		// options.foldGutter = true;
 		//options.matchTags = { bothTags: true };

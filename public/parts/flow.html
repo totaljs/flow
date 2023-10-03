@@ -124,6 +124,7 @@
 <ui-component name="importer" path="common.form" config="if:newflow;url:@{#}/forms/new.html"></ui-component>
 <ui-component name="importer" path="common.form" config="if:noteform;url:@{#}/forms/note.html"></ui-component>
 <ui-component name="importer" path="common.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
+<ui-component name="importer" path="common.form" config="if:formendpoint;url:@{#}/forms/endpoint.html"></ui-component>
 
 <script>
 
@@ -214,12 +215,16 @@
 
 			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'ti ti-code' });
 			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'ti ti-download' });
+			opt.items.push({ id: 'link', name: '@(Link endpoint)', icon: 'ti ti-network' });
 			opt.items.push('-');
 			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
 
 			opt.callback = function(item) {
 
 				switch (item.id) {
+					case 'link':
+						exports.link();
+						break;
 					case 'create':
 						exports.create();
 						break;
@@ -269,6 +274,13 @@
 			AJAX('GET /component.txt @showloading', function(response) {
 				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
 				SET('common.page @hideloading', 'componenteditor');
+			});
+		};
+
+		exports.link = function() {
+			AJAX('GET /endpoint.txt @showloading', function(response) {
+				SET('formendpoint @default', { flowstreamid: flowstreamid, body: response });
+				SET('common.form @hideloading', 'formendpoint');
 			});
 		};
 

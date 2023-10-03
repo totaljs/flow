@@ -1,0 +1,83 @@
+<ui-component name="box" path="common.form" config="if:~PATH~;title:@(Link endpoint);icon:ti ti-network;autofocus:true;scrollbar:1;submit:?/submit;width:700" class="hidden ~PATH~" plugin="~PATH~">
+	<div class="padding">
+
+		<p>@(The FlowStream designer will create a new independent component that you can use multiple times in the FlowStream.)</p>
+		<hr />
+
+		<div class="grid-3">
+			<div class="m">
+				<ui-component name="input" path="?.name" config="required:1" default="''"><b>@(Name)</b></ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.group">@(Group name)</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.icon" config="type:icon" default="'ti ti-totaljs'">@(Icon)</ui-component>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="grid-3">
+			<div class="m">
+				<ui-component name="input" path="?.method" config="dirsource:POST,GET,PUT,PATCH,DELETE;required:1" default="'POST'">@(HTTP method)</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.type" config="dirsource:json|JSON,urlencoded|URL encode;required:1" default="'json'">@(Data serialization)</ui-component>
+			</div>
+		</div>
+
+		<div class="padding bg-smoke m" style="border-radius:var(--radius)">
+			<ui-component name="input" path="?.url" config="required:1;type:url" default="'https://'"><b>@(URL address)</b></ui-component>
+		</div>
+
+		<ui-component name="keyvalue" path="?.headers" config="placeholderkey:@(Header name);placeholdervalue:@(Enter value and press enter)">@(Custom headers)</ui-component>
+
+		<ui-component name="input" path="?.compress" config="type:checkbox" default="false" style="margin-top:20px">@(Compress data via GZIP)</ui-component>
+
+		<hr />
+
+		<div class="b fs12" style="margin-bottom:5px">@(Read me):</div>
+		<ui-component name="codemirror" path="?.readme" config="height:200;monospace:1;type:markdown;linenumbers:0"></ui-component>
+
+	</div>
+	<nav>
+		<ui-component name="validate" path="?">
+			<button name="submit" disabled><i class="ti ti-plus-circle"></i>@(CREATE)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
+	</nav>
+</ui-component>
+
+<script>
+
+	PLUGIN(function(exports) {
+		exports.submit = function(hide) {
+
+			var model = exports.form;
+			var reg = /("|')/g;
+
+			model.id = FUNC.makeid('e');
+			model.name = model.name.replace(reg, '');
+
+			if (model.group)
+				model.group = model.group.replace(reg, '');
+
+			if (model.url)
+				model.url = model.url.replace(reg, '');
+
+			var headers = [];
+			if (model.headers) {
+				for (var key in model.headers)
+					headers.push({ id: key.replace(reg, ''), value: model.headers[key].replace(reg, '') });
+			}
+
+			model.headers = headers;
+
+			var component = Tangular.render(model.body, model).replace(/\n{2,}/g, '\n');
+			SETTER('websocket/send @showloading', { TYPE: 'component_save', id: model.id, data: component, callback: ASETTER('message/response @hideloading', hide) });
+		};
+
+	});
+
+</script>

@@ -128,7 +128,7 @@ var total = 'Hello world!';
 
 <body>
 	<header>
-		<i class="ICON"></i>NAME
+		<i class="$ICON"></i>$NAME
 	</header>
 	<footer>Learn from existing components</footer>
 </body>
