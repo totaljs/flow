@@ -1,4 +1,11 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden" plugin="~PATH~">
+<style>
+	.CLASS .ui-search-used .listing-caption { display: none; }
+	.CLASS .ui-search-used .endsection { display: none; }
+	.CLASS .endsection { margin-bottom: 15px; }
+	.CLASS .ui-search-used .lastclear { margin-bottom: 20px; }
+</style>
+
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
 	<nav>
 		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs green"></i>@(Enterprise)</button>
 		<button class="exec" data-exec="?/update" is="is-button" path="?.newupdates" config="enable"><i class="ti ti-sync"></i>@(Update all)</button>
@@ -41,25 +48,23 @@
 					</div>
 				</div>
 				<ui-component name="search" path="?.search" config="selector:figure;datasource:?.items">
-					<ui-bind path="?.items" config="template" id="flowstreamcomponents">
+					<ui-bind path="?.items" config="template" id="flowstreamcomponents" class="flowstreamcomponents block">
 						<script type="text/html">
 							{{ foreach n in value }}
 								{{ if n.name && n.name !== '0' }}
-								<div class="listing-caption">{{ n.name }}</div>
+								<div class="listing-caption" data-search="">{{ n.name }}</div>
 								{{ fi }}
-								<div class="listing-download">
-									{{ foreach m in n.items }}
-									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-										<section{{ if m.enterprise }} title="Total.js Enterprise"{{ else if m.community }} title="@(Community)"{{ fi }}>
-											<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-											<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
-										</section>
-									</figure>
-									{{ end }}
-									<div class="clearfix"></div>
-								</div>
-								<br />
+								{{ foreach m in n.items }}
+								<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+									<section{{ if m.enterprise }} title="Total.js Enterprise"{{ else if m.community }} title="@(Community)"{{ fi }}>
+										<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
+										<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
+									</section>
+								</figure>
+								{{ end }}
+								<div class="clearfix endsection"></div>
 							{{ end }}
+							<div class="clearfix lastclear">&nbsp;</div>
 						</script>
 					</ui-bind>
 				</ui-component>
