@@ -285,22 +285,6 @@ FUNC.makeid = function(type) {
 	return type + Date.now().toString(36).slice(4) + Math.random().toString(16).slice(10);
 };
 
-FUNC.trigger = function(el, data) {
-	if (data && data.constructor !== Object)
-		data = null;
-	var isel = el instanceof jQuery;
-	if (!data || typeof(data) !== 'object')
-		data = isel ? { data: el.attrd('data') } : {};
-	setTimeout(function(id, data) {
-		if (id && flow.data[id] && flow.data[id].connected) {
-			data.TYPE = 'trigger';
-			data.id = id;
-			SETTER('websocket/send', data);
-		}
-	}, 10, isel ? el.attrd2('id') : el, data);
-	return data;
-};
-
 FUNC.send = function(msg, callback, loading) {
 	loading && SETTER('loading/show');
 	if (callback)

@@ -1233,6 +1233,7 @@
 			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'ti ti-list' });
 			opt.items.push({ id: 'version', name: '@(Version)', icon: 'ti ti-info-circle' });
 			opt.items.push('-');
+			opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-download' });
 			opt.items.push({ id: 'export', name: '@(Export)', icon: 'ti ti-file-export' });
 			opt.items.push({ id: 'exportascomponent', name: '@(Export to component)', icon: 'ti ti-plug' });
 			opt.items.push({ id: 'exportasbase64', name: '@(Export to BASE64)', icon: 'ti ti-plug' });
@@ -1300,10 +1301,16 @@
 						exports.importascomponent();
 						break;
 					case 'export':
-						SETTER('websocket/send', { TYPE: 'export', callback: ASETTER('message/response', function(response) {
+					case 'download':
+						SETTER('websocket/send', { TYPE: 'export', callback: ERROR(function(response) {
 							delete response.data.origin;
-							navigator.clipboard.writeText(JSON.stringify(response.data, null, '\t')).catch(err => console.error(err));
-							SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
+							var data = JSON.stringify(response.data, null, '\t');
+							if (item.id === 'download') {
+								SETTER('filesaver/save', flow.head.name + '.json', data, 'json');
+							} else {
+								navigator.clipboard.writeText(data).catch(err => console.error(err));
+								SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
+							}
 						})});
 						break;
 					case 'restart':
@@ -2094,6 +2101,28 @@
 	Thelpers.url = function(val) {
 		var index = val.indexOf('/', 10);
 		return index === -1 ? val : val.substring(0, index);
+	};
+
+	FUNC.trigger = function(el, data) {
+
+		if (flow.changed) {
+			SETTER('message/warning', '@(While the FlowStream contains unapplied changes, this action is not permitted.)');
+			return;
+		}
+
+		if (data && data.constructor !== Object)
+			data = null;
+		var isel = el instanceof jQuery;
+		if (!data || typeof(data) !== 'object')
+			data = isel ? { data: el.attrd('data') } : {};
+		setTimeout(function(id, data) {
+			if (id && flow.data[id] && flow.data[id].connected) {
+				data.TYPE = 'trigger';
+				data.id = id;
+				SETTER('websocket/send', data);
+			}
+		}, 10, isel ? el.attrd2('id') : el, data);
+		return data;
 	};
 
 </script>

@@ -81,7 +81,7 @@
 		common.socket = '@{query.socket}';
 		common.root = '@{#}';
 		common.logs = {};
-		common.logs.errors = { icon: 'ti ti-exclamation-circle', name: '@(Errors)', encode: false, items: [] };
+		common.logs.errors = { icon: 'ti ti-bug', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
 
 		ON('@flag showloading', function() {
