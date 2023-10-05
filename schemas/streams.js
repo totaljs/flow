@@ -117,11 +117,14 @@ NEWSCHEMA('Streams', function(schema) {
 						PROXY(item.proxypath, null);
 
 					item.proxypath = model.proxypath;
+
 					var instance = MAIN.flowstream.instances[model.id];
 					if (instance) {
 						// Registers a new proxy
-						if (CONF.flowstream_worker && item.proxypath)
+						if (CONF.flowstream_worker && item.proxypath) {
 							PROXY(item.proxypath, item.unixsocket, false);
+							restart = true;
+						}
 						instance.refresh(model.id, 'meta', CLONE(model), restart);
 					}
 
