@@ -590,7 +590,7 @@
 				settings_current = instance;
 				$('#flow_settings').rclass('invisible', 1000);
 				SETTER('#settingsvalidation/setPath', path);
-				SET('flow.settings.{0} @reset'.format(id), config);
+				SET('flow.settings.{0} @default'.format(id), config);
 				SET('common.form', 'settings');
 			};
 
@@ -1340,7 +1340,7 @@
 
 				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: body, callback: function(){
 					SETTER('loading/hide', 1000);
-					SETTER('notify/success', '@(Component has been successfuly imported)');
+					SETTER('notify/success', '@(The component has been successfuly imported)');
 				}});
 
 			}).catch(err => console.error(err));
