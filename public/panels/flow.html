@@ -1,5 +1,5 @@
 <ui-component name="searchinput" path="%flowsearch" config="type:search;placeholder:@(Search components);autofocus:2"></ui-component>
-<ui-component name="viewbox" config="scrollbar:1;visibleY:1;parent:auto;margin:28;initdelay:500;scrollbarshadow:1" class="invisible">
+<ui-component name="viewbox" config="scrollbar:1;visibleY:1;parent:auto;margin:28;initdelay:500;scrollbarshadow:1" class="invisible flowcomponentscontainer">
 
 	<ui-component name="empty" path="flow.components2" config="parent:auto;icon:ti ti-plug">
 
@@ -11,12 +11,11 @@
 		</script>
 
 		<div>
-			<ui-component name="search" path="%flowsearch" config="selector:figure">
+			<ui-component name="search" path="%flowsearch" config="selector:.exec3">
 				<ui-bind path="!flow.components2" config="template" class="flowcomponents block">
 					<script type="text/html">
 					<ui-bind path="flow.head.total" config="show:value>=4050" class="hidden block">
-						<div class="caption">@(Designer)</div>
-						<figure data-id="group" draggable="true" data-search="@(Group)">
+						<figure data-id="group" draggable="true" data-search="@(Group)" style="margin:10px 10px 5px">
 							<i class="ti ti-object-group"></i>
 							<div class="name"><div>@(Group)</div></div>
 						</figure>
@@ -40,7 +39,6 @@
 			</ui-component>
 			<br />
 		</div>
-
 	</ui-component>
 
 </ui-component>
