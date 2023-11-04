@@ -14,15 +14,6 @@ Tagsor7        : Geçersiz veri
 T1mq6mt1       : Proxy uç noktası rezerve bir yol içerir
 T141bbyf       : Örnek çalışmıyor
 
-
-// tmp/merged_js_lojmyub912364965462.min.js, public/js/editor.min@1.js
-T1cfqx3j       : ?:[^\\>]|\\.
-T1wpy2k6       : context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph
-Tqqpj6         : -moz-
-T1vltmuu       : media|supports|(-moz-)?document|import
-T1p779b        : font-face|counter-style
-T1va4ive       : -(moz|ms|o|webkit)-
-
 // views/designer.html, views/index.html, public/forms/import.html, public/forms/note.html, public/forms/password.html, public/forms/publish.html, public/forms/review.html, public/forms/settings.html, public/forms/source.html, public/forms/sources.html, public/forms/stream.html, public/forms/variables.html, public/forms/version.html, public/parts/component.html, public/parts/flow.html
 Tx9d2fu        : İptal
 
@@ -106,36 +97,6 @@ Thuo6tp        : <b>Total.js</b> tarafından geliştirildi
 // views/login.html, public/forms/password.html
 T11si7c0       : Kullanıcı adı
 Tl71ry3        : Şifre
-
-// node_modules/glob/glob.js, node_modules/glob/sync.js
-T1g7kdl5       : .foo|.bar
-
-// node_modules/glob/glob.js
-prd2           : prd2
-pgs2           : pgs2
-ps2            : ps2
-
-// node_modules/total4/503.html, flowstream/fIVtJe01cf61f/node_modules/total4/503.html
-T1r4o0cr       : Lütfen bekleyin
-T14ratqj       : Uygulama başlıyor &hellip;
-T2p7d47        : YENİDEN YÜKLENİYOR
-
-// node_modules/total4/index.js, public/js/spa.min@19.js, flowstream/fIVtJe01cf61f/node_modules/total4/index.js
-T13            : '
-
-// node_modules/total4/index.js, flowstream/fIVtJe01cf61f/node_modules/total4/index.js
-T1xsdwik       : ÇEVİRİLECEK METİN
-jsonschema     : jsonschema
-
-// node_modules/total4/internal.js, flowstream/fIVtJe01cf61f/node_modules/total4/internal.js
-Tay69xz        : ', indeks
-
-// node_modules/total4/test.html, flowstream/fIVtJe01cf61f/node_modules/total4/test.html
-Tujlvns        : Test sonuçları
-T6wp898        : BAŞARISIZ (@{model.failed}x)
-T12wv59s       : BAŞARILI
-Tyoexct        : Başarısız
-T13f1ocw       : Başarılı
 
 // public/forms/components.html, public/panels/flow.html, public/parts/flow.html
 Tscs5q         : Bileşenleri İndir
@@ -332,10 +293,6 @@ Tp5payj        : <b>Total.js Flow</b> adı verilen JavaScript Görsel Programlam
 T3i77bj        : Sınırsız sayıda Flow oluşturabilir ve IoT cihazlarınızı, işlemlerinizi veya iş akışlarınızı otomatik hale getirebilirsiniz.
 Tibjq9e        : <b>Total.js Flow</b> kullanımınız için teşekkür ederiz.
 
-// public/js/spa.min@19.js
-Tu27           : ',t
-Tjso48d        : xs|sm|md|lg|dark|light
-
 // public/panels/flow.html
 Tk8sgpz        : Yüklenmiş herhangi bir FlowStream bileşeni yok
 Thzt98r        : Tasarımcı
@@ -438,15 +395,3 @@ T1q4g6b6       : FlowStream oluşturun
 T19fvgfc       : Toplam çalışan FlowStream'ler
 T1j8rl         : Boyut
 T1a2p8u        : Proxy
-
-// node_modules/semver/internal/debug.js
-SEMVER         : SEMVER
-
-// node_modules/@mapbox/node-pre-gyp/lib/main.js
-stack          : yığın
-System         : Sistem
-command        : komut
-cwd            : çalışma dizini
-
-// node_modules/@mapbox/node-pre-gyp/lib/publish.js
-publish        : yayınla

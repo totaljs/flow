@@ -256,14 +256,6 @@ Tp5payj      : Bienvenue dans l&#39;interface de programmation visuelle JavaScri
 T3i77bj      : Créez un nombre illimité de flux et automatisez vos appareils, processus ou flux de travail IoT.
 Tibjq9e      : Merci d&#39;avoir choisi <b>Total.js Flow</b>.
 
-// public/js/editor.min@1.js
-T1cfqx3j     : ?:[^\\>]|\\.
-T1wpy2k6     : context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph
-Tqqpj6       : -moz-
-T1vltmuu     : media|supports|(-moz-)?document|import
-T1p779b      : font-face|counter-style
-T1va4ive     : -(moz|ms|o|webkit)-
-
 // public/panels/flow.html
 Ti08av       : Vous n&#39;avez installé aucun composant Flow
 Thzt98r      : Designer
