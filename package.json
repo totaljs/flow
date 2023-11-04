@@ -7,10 +7,14 @@
     "url": "https://github.com/totaljs/flow"
   },
   "dependencies": {
+    "mysql2": "^3.6.1",
+    "node-schedule": "^2.1.1",
+    "qrcode": "^1.5.3",
+    "querybuilderpg": "^1.0.21",
     "total4": "latest"
   },
   "scripts": {
-    "start": "node index.js 8000"
+    "start": "node index.js --release 8005"
   },
   "keywords": [
     "flow",
