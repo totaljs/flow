@@ -374,7 +374,7 @@
 					switch (opt.id) {
 						case 'newtab':
 							var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id);
-							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '')) + (common.openplatform ? ('&' + common.openplatform.substring(1)) : ''));
+							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url + (common.openplatform ? ((url.indexOf('?') === -1 ? '?' : '&') + common.openplatform.substring(1)) : '')), encodeURIComponent(common.components || '')) + (common.openplatform ? ('&' + common.openplatform.substring(1)) : ''));
 							break;
 						case 'pause':
 						case 'play':
