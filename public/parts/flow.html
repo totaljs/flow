@@ -179,7 +179,7 @@
 
 		exports.init = function() {
 
-			ADD('websocket__null__url:{0};encoder:false'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')));
+			ADD({ name: 'websocket', config: 'url:{0};encoder:false'.format(common.socket.replace(/^http/, 'ws').replace(/:/g, '\\:')) });
 			var index = common.socket.indexOf('openplatform=');
 			enterprise.init('/fapi/?' + (index === -1 ? '' : common.socket.substring(index)));
 
@@ -554,6 +554,7 @@
 					move = true;
 
 				flow.settingsid = component.id;
+				flow.settingsinstanceid = instance.id;
 				RECONFIGURE('#flowsettings', { title: '@(Configuration): ' + component.name, width: (component.meta ? component.meta.settingswidth : 0) || 800 });
 
 				var name = component.name.slug().replace(/\-/g, '');
@@ -570,7 +571,8 @@
 
 				var config = response;
 				var path = 'flow.settings.' + id;
-				var eventdata = { id: instance.id, name: name, path: path, config: config, component: component };
+				var touchinstance = flowinstances.instances[instance.id];
+				var eventdata = { id: instance.id, name: name, path: path, config: config, component: component, instance: touchinstance };
 
 				eventdata.call = function(data, callback, globalcall) {
 
