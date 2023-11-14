@@ -26,6 +26,7 @@
 	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
 	<ui-component name="LAZY message" config="style:2"></ui-component>
 	<ui-component name="LAZY notify" config="position:bottom right"></ui-component>
+	<ui-component name="LAZY spotlight"></ui-component>
 	<ui-component name="LAZY fileuploader"></ui-component>
 	<ui-component name="LAZY clipboard"></ui-component>
 	<ui-component name="LAZY icons" config="list:@{#}/icons-db.html"></ui-component>
@@ -42,6 +43,7 @@
 
 	<header>
 
+		<span class="console exec pull-right" data-exec="common/search"><i class="ti ti-search"></i></span>
 		<span class="console exec pull-right" data-exec="common/console"><i class="ti ti-bug"></i></span>
 
 		<ui-bind path="common.env" config="template" title="@(Environment)" class="env">
@@ -51,10 +53,11 @@
 		</ui-bind>
 
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
+
 		<ui-bind path="common.tabs" config="template:div" class="tabs block">
 			<script type="text/html">
 				{{ foreach m in value }}
-					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
+					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
 				{{ end }}
 			</script>
 		</ui-bind>
@@ -177,6 +180,7 @@
 			}, true);
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
+			com.register('F1', AEXEC('common/search'), true);
 		});
 
 		EXEC(true, '-loading/hide', 500);
@@ -308,6 +312,7 @@
 
 				item = {};
 				item.id = id;
+				item.icon = flow.icon;
 				item.name = flow.name;
 				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '', common.language);
 				item.focus = 'common/focusiframe';
@@ -639,6 +644,9 @@
 								EXEC('-!datepicker/hide');
 								EXEC('-infowindows/focus', win.id);
 							}
+							break;
+						case 'F1':
+							EXEC('common/search');
 							break;
 						case 'edit':
 							exports.tapi('streams_read/{id} @showloading ERROR'.arg(data), function(response) {

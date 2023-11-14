@@ -187,9 +187,8 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .flows .paused section { border-color: red !important; }
 .flows figure { padding: 10px; width: 25%; position: relative; display: inline-block; vertical-align: top; }
 .flows figure section { border: 1px solid #E0E0E0; background-color: #FFF; cursor: pointer; border-radius: var(--radius); }
-.flows figure section:hover { border-color: #C0C0C0; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-.flows figure section:hover .icon { background-color: #F8F8F8; }
-.flows figure .icon { height: 130px; font-size: 40px; text-align: center; line-height: 140px; border-bottom: 1px solid #E0E0E0; overflow: hidden; }
+.flows figure section:hover { border-color: #B0B0B0; }
+.flows figure .icon { height: 120px; font-size: 34px; text-align: center; line-height: 120px; border-bottom: 1px solid #E0E0E0; overflow: hidden;  background-color: #F8F8F8; border-radius: var(--radius) var(--radius) 0 0; }
 .flows figure .meta { padding: 10px; font-size: 12px; }
 .flows figure .meta .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 15px; font-weight: bold; }
 .flows figure .meta .name span { color: #FFF; border-radius: var(--radius); line-height: 12px; font-size: 11px; padding: 1px 3px; float: right; margin: 4px 5px 0 0; font-weight: normal; }
@@ -207,9 +206,8 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .flows figure section { border-color: #404040; background-color: #282828; }
 .ui-dark .flows figure .proxy { border-top-color: #404040; }
 .ui-dark .flows figure .proxy span { background-color: #111; color: #FFF; }
-.ui-dark .flows figure section:hover { border-color: #606060; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-.ui-dark .flows figure section:hover .icon { background-color: #303030; }
-.ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; }
+.ui-dark .flows figure section:hover { border-color: #606060; }
+.ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; background-color: #303030; }
 .ui-dark .flows figure .meta .name span { color: #FFF; }
 .ui-dark .flows figure .size { color: #888; }
 .ui-dark .flows figure .author { color: #FFF; }

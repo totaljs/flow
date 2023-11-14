@@ -133,6 +133,10 @@
 			is && e && e.preventDefault();
 		}
 
+		SETTER(true, 'shortcuts/register', 'F1', function() {
+			W.parent.postMessage(STRINGIFY({ TYPE: 'F1', SOURCE: 'flow' }));
+		}, true);
+
 		SETTER(true, 'shortcuts/register', 'CMD+F, CTRL+F', function(e) {
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				$('.ui-layout-left').find('input').focus();
@@ -198,15 +202,10 @@
 			if (c === '=' || c === '/') {
 				var id = ATTRD(el);
 				var instance = flowinstances.instances[id];
-
-				if (!instance && common.form === 'settings')
-					instance = flowinstances.instances[flow.settingsinstanceid];
-
 				if (instance) {
 					attr = attr.substring(1);
 					instance[attr] && instance[attr](el, e);
 				}
-
 				return true;
 			}
 		});
