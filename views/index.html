@@ -43,14 +43,14 @@
 
 	<header>
 
-		<span class="console exec pull-right" data-exec="common/search"><i class="ti ti-search"></i></span>
-		<span class="console exec pull-right" data-exec="common/console"><i class="ti ti-bug"></i></span>
-
 		<ui-bind path="common.env" config="template" title="@(Environment)" class="env">
 			<script type="text/html">
 				<span class="badge badge-medium badge-{{ if value === 'dev' }}red{{ else if value === 'test' }}orange{{ else }}green{{ fi }}">{{ value }}</span>
 			</script>
 		</ui-bind>
+
+		<span class="search exec pull-right" data-exec="common/search" title="@(Search) (F1)"><i class="ti ti-search"></i></span>
+		<span class="console exec pull-right" data-exec="common/console" title="@(Server log)"><i class="ti ti-bug"></i></span>
 
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
 
@@ -475,6 +475,7 @@
 					items.push({ id: 'import', name: '@(Import FlowStream)', icon: 'ti ti-download' });
 				}
 
+				items.push({ id: 'search', name: '@(Search)', icon: 'ti ti-search' });
 				items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download' });
 				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 				items.push('-');
@@ -484,7 +485,6 @@
 					items.push({ id: 'password', name: '@(Change credentials)', icon: 'ti ti-key' });
 
 				items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
-				items.push('-');
 				items.push({ id: 'support', name: '@(Support)', icon: 'ti ti-support' });
 
 				if (common.bundle)
@@ -563,6 +563,9 @@
 						break;
 					case 'templates':
 						enterprise.load(() => SET('common.form', 'templatesform'));
+						break;
+					case 'search':
+						exports.search();
 						break;
 				}
 			};

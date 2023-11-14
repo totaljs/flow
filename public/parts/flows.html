@@ -31,7 +31,7 @@
 				<div>
 
 					<div class="padding npb help nmt">
-						<span class="exec" data-exec="?/search" style="font-size:12px"><i class="ti ti-search"></i></span><ui-bind path="common.items" config="text b:value ? value.length : 0">@(Total running FlowStreams): <b></b></ui-bind>
+						<span class="exec" data-exec="?/search" style="font-size:12px" title="@(Search)"><i class="ti ti-search"></i></span><ui-bind path="common.items" config="text b:value ? value.length : 0">@(Total running FlowStreams): <b></b></ui-bind>
 					</div>
 
 					<ui-bind path="common.groups" config="template" class="flowstreams">
