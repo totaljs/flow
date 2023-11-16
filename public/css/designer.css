@@ -25,8 +25,8 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-dockable-layout { z-index: 1; }
 .ui-flow-h .input > span { margin-left: 0; }
 
-.header { background-color: #FFF; height: 45px; border-bottom: 1px solid #E0E0E0; padding-left: 8px; position: absolute; z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); left: 0; right: 0; }
-.header-empty { height: 45px; }
+.header { background-color: #FFF; height: 50px; border-bottom: 1px solid #E0E0E0; padding-left: 8px; position: absolute; z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.05); left: 0; right: 0; }
+.header-empty { height: 50px; }
 .header button, .header a { margin: 0 2px 0 0; float: left; border: 0; background-color: transparent; border-radius: var(--radius); padding: 0; min-width: 34px; height: 32px; font-size: 16px; line-height: 32px; text-decoration: none !important; text-align: center; color: #000; }
 .header button b { position: absolute; margin: 12px 0 0 4px; }
 .header button b i { font-size: 8px; }
@@ -45,7 +45,7 @@ body.ui-dark { background-color: #202020 !important; }
 .header button:disabled { color: #D0D0D0; cursor: not-allowed; background-color: transparent !important; }
 .header button.selected { background-color: #F0F0F0; }
 .header button.special, header a.special { color: #99982F; }
-.header > div { float: left; margin: 6px 0 0 8px; padding-right: 6px; border-right: 1px solid #E0E0E0; height: 32px; }
+.header > div { float: left; margin: 9px 0 0 8px; padding-right: 6px; border-right: 1px solid #E0E0E0; height: 32px; }
 .header-special { border-left: 1px solid #E0E0E0; border-right: 0 !important; float: right !important; }
 .header .pull-right { border-right: 0; }
 .header .apply-button { margin-left: 0; }

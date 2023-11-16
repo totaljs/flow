@@ -38,7 +38,7 @@
 			<button title="@(Options)" class="exec" data-exec="?/options"><i class="ti ti-cog"></i></button>
 		</div>
 
-		<div style="border-right:0">
+		<div style="border-right:0;margin-top:4px">
 			<ui-bind path="?.selected" config="show:value&&value.component;template" class="help pull-left mr10">
 				<script type="text/html">
 					<div>{{ value.Component.name }} ({{ value.component | instancecount }})</div>
@@ -49,7 +49,7 @@
 	</header>
 	<div class="header-empty"></div>
 
-	<ui-component name="layout" path="?.layout" config="margin:45">
+	<ui-component name="layout" path="?.layout" config="margin:50">
 
 		<script type="text/plain">
 			{
