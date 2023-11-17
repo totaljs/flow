@@ -33,8 +33,6 @@ NEWACTION('Auth/exec', {
 	input: '*login,*password',
 	action: function($, model) {
 
-		console.log(model);
-
 		if (BLOCKED($, 10)) {
 			$.invalid('@(Invalid credentials)');
 			return;
