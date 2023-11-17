@@ -1,9 +1,6 @@
-NEWSCHEMA('CDN', function(schema) {
-
-	schema.action('clear', {
-		name: 'Clear cdn',
-		action: function($) {
-			MODULE('cdn').clear($.done());
-		}
-	});
+NEWACTION('CDN/Clear', {
+	name: 'Clear cdn',
+	action: function($) {
+		MODS.cdn.clear($.done());
+	}
 });

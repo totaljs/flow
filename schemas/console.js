@@ -1,8 +1,8 @@
-NEWSCHEMA('Console', function(schema) {
+(function() {
 
 	var filename = F.isBundle ? PATH.root('../logs/debug.log') : PATH.root('logs/debug.log');
 
-	schema.action('read', {
+	NEWACTION('Console/read', {
 		name: 'Read app logs',
 		action: function($) {
 
@@ -20,11 +20,12 @@ NEWSCHEMA('Console', function(schema) {
 		}
 	});
 
-	schema.action('clear', {
+	NEWACTION('Console/clear', {
 		name: 'Clear console logs',
 		action: function($) {
 			F.Fs.truncate(filename, NOOP);
 			$.success();
 		}
 	});
+
 });

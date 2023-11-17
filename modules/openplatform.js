@@ -7,20 +7,20 @@ Data.sessions = {};
 Data.permissions = [];
 
 // Meta file
-ROUTE('FILE /openplatform.json', function(req, res) {
+ROUTE('FILE /openplatform.json', function($) {
 
 	var model = {};
 
 	model.name = CONF.op_name || CONF.name;
 	model.icon = CONF.op_icon;
 	model.color = CONF.op_color;
-	model.url = CONF.op_url || req.hostname();
+	model.url = CONF.op_url || $.hostname();
 	model.permissions = Data.permissions;
 
 	if (CONF.op_path)
 		model.url += CONF.op_path;
 
-	res.json(model);
+	$.json(model);
 });
 
 // Auth method

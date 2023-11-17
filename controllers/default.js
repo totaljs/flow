@@ -4,9 +4,9 @@ exports.install = function() {
 	ROUTE('-GET /', login);
 };
 
-function login() {
+function login($) {
 	if (CONF.op_reqtoken && CONF.op_restoken)
-		this.throw401();
+		$.fallback(401);
 	else
-		this.view('login');
+		$.view('login');
 }

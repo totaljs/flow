@@ -1,0 +1,1 @@
+global.PREF = MEMORIZE('preferences');

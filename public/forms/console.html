@@ -18,7 +18,7 @@
 
 		var refresh = function() {
 			if (!HIDDEN(el)) {
-				WAPI('console', function(response) {
+				TAPI('console', function(response) {
 					el.find('pre').html(response.encode());
 					if (!scrolling)
 						scrollbar.scrollTop = scrollbar.scrollHeight;
