@@ -202,7 +202,7 @@
 			if (c === '=' || c === '/') {
 				var id = ATTRD(el);
 				var instance = flowinstances.instances[id];
-				if (!instance)
+				if (!instance && common.form === 'settings')
 					instance = flowinstances.instances[flow.settingsinstanceid];
 				if (instance) {
 					attr = attr.substring(1);
