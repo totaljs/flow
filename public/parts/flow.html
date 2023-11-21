@@ -361,6 +361,7 @@
 
 			type = info.type;
 			var component = item.isconnection ? null : flow.components.findItem('id', item.component);
+			var meta = (component ? component.meta : null) || EMPTYOBJECT;
 
 			var opt = {};
 			opt.x = e.pageX;
@@ -392,7 +393,8 @@
 						opt.items.push({ id: 'exportcomponents', name: '@(Copy)', icon: 'ti ti-copy' });
 						single && opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-save' });
 						single && opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
-						opt.items.push('-');
+						if (meta.remove !== false)
+							opt.items.push('-');
 					}
 				}
 			} else if (info.type === 'group') {
@@ -410,7 +412,8 @@
 				opt.items.push({ name: '@(Color)', icon: 'ti ti-paint-brush colorize', children: submenu, classname: 'b' });
 			}
 
-			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
+			if (!component || (!meta.readonly && meta.remove !== false))
+				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 
 			opt.callback = function(opt) {
 				switch (opt.id) {
@@ -1121,6 +1124,9 @@
 				if (!colors[com.groupclass])
 					colors[com.groupclass] = Thelpers.color(g);
 
+				if (com.meta && com.meta.secret)
+					continue;
+
 				if (groups[g])
 					groups[g].push(com);
 				else
@@ -1600,6 +1606,8 @@
 			component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'ti ti-info-circle blue' });
 
 			var meta = component.meta || EMPTYOBJECT;
+			if (meta.secret)
+				return;
 
 			if (!meta.readonly && !TYPES[component.type]) {
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-laptop-code' });
@@ -1609,7 +1617,7 @@
 				opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 			}
 
-			if (!TYPES[component.type] && (!meta || meta.remove !== false)) {
+			if (!TYPES[component.type] && (!meta || meta.protected !== false)) {
 				opt.items.push('-');
 				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 			}
