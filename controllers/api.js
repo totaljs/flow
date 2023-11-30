@@ -21,10 +21,6 @@ exports.install = function() {
 	ROUTE('+API    /fapi/    -console_clear                    --> Console/clear');
 	ROUTE('+API    /fapi/    -cdn_clear                        --> CDN/clear');
 
-	// Enterprise
-	ROUTE('+API    /fapi/    -enterprise_read                  --> Enterprise/read');
-	ROUTE('+API    /fapi/    +enterprise_save                  --> Enterprise/save');
-
 	// Common
 	ROUTE('+API    /fapi/    -auth                             --> Auth/read');
 

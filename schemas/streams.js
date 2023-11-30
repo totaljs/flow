@@ -78,8 +78,11 @@ NEWACTION('Streams/save', {
 			model.variables = {};
 			model.sources = {};
 			model.dtcreated = NOW;
-			Flow.db[model.id] = model;
-			Flow.load(model, ERROR('FlowStream.init'));
+
+			TRANSFORM('flowstream.create', model, function(err, model) {
+				Flow.db[model.id] = model;
+				Flow.load(model, ERROR('FlowStream.init'));
+			});
 
 		} else {
 			var item = Flow.db[model.id];
@@ -99,7 +102,10 @@ NEWACTION('Streams/save', {
 				item.cloning = model.cloning;
 				item.readme = model.readme;
 				item.proxypath = model.proxypath;
-				Flow.reload(item);
+
+				TRANSFORM('flowstream.update', item, function(err, item) {
+					Flow.reload(item);
+				});
 
 			} else {
 				$.invalid(404);
@@ -132,6 +138,7 @@ NEWACTION('Streams/remove', {
 
 			F.Fs.rm(PATH.join(path, id), { recursive: true, force: true }, NOOP);
 			Flow.remove(id);
+			Flow.emit('save');
 
 			$.audit(item.name);
 			$.success();

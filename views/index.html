@@ -128,7 +128,6 @@
 		(function() {
 			var url = '@{#}/fapi/' + common.openplatform;
 			DEF.api = url;
-			enterprise.init(url);
 		})();
 
 		ON('@flag showloading', function() {
@@ -562,7 +561,7 @@
 						});
 						break;
 					case 'templates':
-						enterprise.load(() => SET('common.form', 'templatesform'));
+						SET('common.form', 'templatesform');
 						break;
 					case 'search':
 						exports.search();
@@ -693,8 +692,6 @@
 			exports.mainmenu();
 
 		});
-
-		enterprise.init('@{#}/fapi/');
 
 	</script>
 
