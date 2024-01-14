@@ -8,7 +8,7 @@
 	exports.group = 'Common';
 	exports.config = {};
 	exports.inputs = [{ id: 'input', name: 'Input' }];
-	exports.outputs = [{ id: 'output', name: 'Output' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }, { id: 'error', name: 'Error' }];
 
 	// exports.npm = ['npm_module_1', 'npm_module_2@version'];
 	// exports.meta = { readonly: false, singleton: false, hidden: false };
@@ -24,6 +24,7 @@
 		instance.message = function($) {
 			var data = $.data;
 			$.send('output', data);
+			// or $.send('error', data);
 			// or $.destroy();
 		};
 
