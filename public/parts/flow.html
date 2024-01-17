@@ -1028,8 +1028,12 @@
 			} else
 				content = el.find('.content');
 
-			content.append('<summ' + 'ary class="hidden" is="is-summary" path="flow.note.' + self.id + '" config="show;html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
-			var target = el.closest('.component').attr('is', 'is-div').attr('path', 'flow.errors.' + self.id).attr('config', '.iserror:value&&value.length__title:value?value[0].error:\'\'').tclass('isnewbie', !self.connected);
+			content.append('<summ' + 'ary class="hidden" path="flow.note.' + self.id + '" config="show;html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-tiny"></div></summ' + 'ary>');
+			var target = el.closest('.component').attr('path', 'flow.errors.' + self.id).attr('config', '.iserror:value&&value.length;title:value?value[0].error\:\'\'').tclass('isnewbie', !self.connected);
+
+			NEWUIBIND(content.find('> summary'));
+			NEWUIBIND(target);
+
 			var com = flow.components.findItem('id', self.component);
 			if (com) {
 
