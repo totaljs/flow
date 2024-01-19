@@ -31,6 +31,15 @@ NEWACTION('Clipboard/import', {
 		delete data.variables2;
 		delete data.origin;
 
+		data.env = PREF.env || 'dev';
+		data.directory = CONF.directory || PATH.root('/flowstream/');
+		data.variables2 = Flow.db.variables || {};
+		data.worker = CONF.flowstream_worker;
+		data.asfiles = CONF.flowstream_asfiles === true;
+
+		if (!data.memory)
+			data.memory = CONF.flowstream_memory || 0;
+
 		if (!data.design)
 			data.design = {};
 
@@ -44,9 +53,9 @@ NEWACTION('Clipboard/import', {
 
 		if (data.proxypath) {
 			var db = Flow.db;
-			for (var key in db) {
-				if (db[key].proxypath === data.proxypath) {
-					data.proxypath = '';
+			for (let key in db) {
+				if (db[key].proxypath && db[key].proxypath === data.proxypath) {
+					data.proxypath = '/' + U.random_string(5).toLowerCase() + '/';
 					break;
 				}
 			}
