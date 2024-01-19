@@ -78,6 +78,14 @@ NEWACTION('Streams/save', {
 			model.variables = {};
 			model.sources = {};
 			model.dtcreated = NOW;
+			model.asfiles = CONF.flowstream_asfiles === true;
+			model.worker = CONF.flowstream_worker;
+			model.variables2 = Flow.db.variables || {};
+			model.directory = CONF.directory || PATH.root('/flowstream/');
+			model.env = PREF.env || 'dev';
+
+			if (!model.memory)
+				model.memory = CONF.flowstream_memory || 0;
 
 			TRANSFORM('flowstream.create', model, function(err, model) {
 				Flow.db[model.id] = model;
