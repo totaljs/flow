@@ -11,20 +11,20 @@ exports.install = function() {
 	ROUTE('FILE /cdn/*.html', cdn);
 };
 
-function cdn(req, res) {
+function cdn($) {
 
-	var filename = req.split[1];
+	var filename = $.split[1];
 	var key = filename;
 
 	if (Cache[key] === 1) {
-		setTimeout(cdn, 500, req, res);
+		setTimeout(cdn, 500, $);
 		return;
 	}
 
 	var path = PATH.join(Directory, filename);
 
 	if (Cache[key] === 2) {
-		res.file(path);
+		$.file(path);
 		return;
 	}
 
@@ -32,12 +32,12 @@ function cdn(req, res) {
 	PATH.exists(path ,function(err, response) {
 		if (response) {
 			Cache[key] = 2;
-			res.file(path);
+			$.file(path);
 		} else {
 			// Download
 			DOWNLOAD('https://cdn.componentator.com/' + filename, path, function() {
 				Cache[key] = 2;
-				res.file(path);
+				$.file(path);
 			});
 		}
 	});

@@ -7,7 +7,6 @@
 
 <ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
 	<nav>
-		<button class="exec" data-exec="?/enterprise"><i class="ti ti-totaljs green"></i>@(Enterprise)</button>
 		<button class="exec" data-exec="?/update" is="is-button" path="?.newupdates" config="enable"><i class="ti ti-sync"></i>@(Update all)</button>
 	</nav>
 	<div>
@@ -17,23 +16,6 @@
 		<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
 			<div class="padding">
 				<div style="margin:0 0 15px 8px">
-
-					<!--
-					<ui-bind path="enterprise.is" config="hide" class="block hidden">
-						<div class="message message-success center" style="margin-bottom:15px;font-size:14px;padding:15px">
-							<i class="ti ti-totaljs mr5"></i><b>@(Make Total.js Platform better.)</b> @(Join Total.js Enterprise and download premium open-source components and other parts for free.)
-						</div>
-					</ui-bind>
-					-->
-
-					<ui-bind path="enterprise.account" config="template;show:value && value.status=='ok'" class="block">
-						<script type="text/html">
-							<div class="bg-smoke padding m" style="border-radius:var(--radius)">
-								<i class="ti ti-totaljs mr5 green"></i>@(Your Total.js Enterprise Account expires on) <i class="ti ti-bull"></i> <b>{{ value.dtexpire | format('[date]') }}</b>
-							</div>
-						</script>
-					</ui-bind>
-
 					<div class="pull-right">
 						<span class="link fs12 exec" data-exec="flow/create"><i class="ti ti-plus-circle green mr5"></i>@(Create component)</span>
 					</div>
@@ -55,8 +37,8 @@
 								<div class="listing-caption" data-search="">{{ n.name }}</div>
 								{{ fi }}
 								{{ foreach m in n.items }}
-								<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}{{ if m.enterprise }} enterprise{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-									<section{{ if m.enterprise }} title="Total.js Enterprise"{{ else if m.community }} title="@(Community)"{{ fi }}>
+								<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+									<section{{ if m.community }} title="@(Community)"{{ fi }}>
 										<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
 										<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
 									</section>
@@ -114,12 +96,6 @@
 			});
 		};
 
-		exports.enterprise = function() {
-			enterprise.edit(function(response) {
-				response && exports.reload();
-			});
-		};
-
 		exports.reload = function() {
 
 			var opt = {};
@@ -134,9 +110,6 @@
 
 			if (common.components2)
 				queue.push(next => refresh(common.components2, opt, next));
-
-			if (enterprise.is)
-				queue.push(next => refresh('https://enterprise.totaljs.com/download/flowcomponents/?token=' + enterprise.token, opt, next));
 
 			queue.async(function() {
 

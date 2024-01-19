@@ -1,65 +1,62 @@
-NEWSCHEMA('Clipboard', function(schema) {
+NEWACTION('Clipboard/export', {
+	name: 'Export stream',
+	params: '*id',
+	action: function($) {
+		var id = $.params.id;
+		var item = Flow.db[id];
+		if (item)
+			$.success(JSON.stringify(item));
+		else
+			$.invalid(404);
+	}
+});
 
-	schema.define('data', String, true);
+NEWACTION('Clipboard/import', {
+	name: 'Import stream',
+	input: '*data:String',
+	action: function($, model) {
 
-	schema.action('export', {
-		name: 'Export stream',
-		action: function($) {
-			var id = $.id;
-			var item = MAIN.flowstream.db[id];
-			if (item)
-				$.success(true, JSON.stringify(item));
-			else
-				$.invalid(404);
+		var data = model.data.parseJSON(true);
+
+		if (!data) {
+			$.invalid('@(Invalid data)');
+			return;
 		}
-	});
 
-	schema.action('import', {
-		name: 'Import stream',
-		action: function($, model) {
+		data.id = 'f' + UID();
 
-			var data = model.data.parseJSON(true);
+		delete data.unixsocket;
+		delete data.directory;
+		delete data.size;
+		delete data.variables2;
+		delete data.origin;
 
-			if (!data) {
-				$.invalid('@(Invalid data)');
-				return;
-			}
+		if (!data.design)
+			data.design = {};
 
-			data.id = 'f' + UID();
+		if (!data.components)
+			data.components = {};
 
-			delete data.unixsocket;
-			delete data.directory;
-			delete data.size;
-			delete data.variables2;
-			delete data.origin;
+		if (!data.variables)
+			data.variables = {};
 
-			if (!data.design)
-				data.design = {};
+		data.dtcreated = NOW;
 
-			if (!data.components)
-				data.components = {};
-
-			if (!data.variables)
-				data.variables = {};
-
-			data.dtcreated = NOW;
-
-			if (data.proxypath) {
-				var db = MAIN.flowstream.db;
-				for (var key in db) {
-					if (db[key].proxypath === data.proxypath) {
-						data.proxypath = '';
-						break;
-					}
+		if (data.proxypath) {
+			var db = Flow.db;
+			for (var key in db) {
+				if (db[key].proxypath === data.proxypath) {
+					data.proxypath = '';
+					break;
 				}
 			}
-
-			delete data.dtupdated;
-			MAIN.flowstream.db[data.id] = data;
-			MAIN.flowstream.init(data.id, function(err) {
-				$.callback({ success: true, value: data.id, error: err ? err.toString() : null });
-				MAIN.flowstream.save();
-			});
 		}
-	});
+
+		delete data.dtupdated;
+		Flow.db[data.id] = data;
+		Flow.load(data, function(err) {
+			$.callback({ success: true, value: data.id, error: err ? err.toString() : null });
+			Flow.save();
+		});
+	}
 });

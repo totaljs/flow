@@ -45,7 +45,7 @@ body.ui-dark { background-color: #202020 !important; }
 .header button:disabled { color: #D0D0D0; cursor: not-allowed; background-color: transparent !important; }
 .header button.selected { background-color: #F0F0F0; }
 .header button.special, header a.special { color: #99982F; }
-.header > div { float: left; margin: 9px 0 0 8px; padding-right: 6px; border-right: 1px solid #E0E0E0; height: 32px; }
+.header > div { float: left; margin: 6px 0 0 8px; padding-right: 6px; border-right: 1px solid #E0E0E0; height: 32px; }
 .header-special { border-left: 1px solid #E0E0E0; border-right: 0 !important; float: right !important; }
 .header .pull-right { border-right: 0; }
 .header .apply-button { margin-left: 0; }
@@ -332,7 +332,6 @@ body.ui-dark { background-color: #202020 !important; }
 .flowstreamcomponents .name { font-size: 12px; }
 .flowstreamcomponents .readme { font-size: 11px; float: right; cursor: pointer; color: #777; font-weight: normal; margin-top: 1px; }
 .flowstreamcomponents .readme:hover { text-decoration: underline; }
-.flowstreamcomponents .enterprise > section { border-left: 3px solid #EA706B !important; }
 .flowstreamcomponents .community > section { border-left: 3px solid #62C9CA !important; background-color: rgba(98,201,202,0.1); }
 .flowstreamcomponents .installed section { border-color: var(--color); background-color: var(--color); color: #FFF; font-weight: bold; }
 .flowstreamcomponents .installed section .readme { color: #FFF; }

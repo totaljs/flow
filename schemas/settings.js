@@ -1,107 +1,93 @@
-NEWSCHEMA('Settings', function(schema) {
+const Fields = '*name,*components,components2,*templates,token,darkmode:Boolean,notify:Boolean,*env:{dev|test|prod},op_reqtoken,op_restoken'.toJSONSchema();
 
-	schema.define('name', String, true);
-	schema.define('components', String, true);
-	schema.define('components2', String);
-	schema.define('templates', String, true);
-	schema.define('token', String);
-	schema.define('darkmode', Boolean);
-	schema.define('backup', Boolean);
-	schema.define('notify', Boolean);
-	schema.define('env', ['dev', 'test', 'prod'], true)('test');
-
-	schema.define('op_reqtoken', String);
-	schema.define('op_restoken', String);
-
-	schema.action('read', {
-		name: 'Read Settings',
-		action: function($) {
-
-			if (UNAUTHORIZED($))
-				return;
-
-			var model = {};
-			for (var key of schema.fields)
-				model[key] = PREF[key];
-			$.callback(model);
-		}
-	});
-
-	schema.action('save', {
-		name: 'Save settings',
-		action: function($, model) {
-
-			if (UNAUTHORIZED($))
-				return;
-
-			var restartall = model.env !== PREF.env;
-
-			for (var key in model)
-				PREF.set(key, model[key]);
-
-			CONF.name = model.name;
-			CONF.backup = model.backup;
-			CONF.op_reqtoken = model.op_reqtoken;
-			CONF.op_restoken = model.op_restoken;
-
-			$.success();
-
-			// Changed mode, needs to be restarted all FlowStreams
-			if (restartall) {
-				var instances = [];
-				for (var key in MAIN.flowstream.instances) {
-					var item = MAIN.flowstream.instances[key];
-					if (item) {
-						// Is worker?
-						if (item.flow) {
-							instances.push(item.flow);
-						} else {
-							item.env = model.env;
-							for (var id of item.meta.flow)
-								item.meta.flow[id].env = model.env;
-						}
-					}
-				}
-
-				// Restart workers step-by-step
-				instances.length && instances.wait(function(item, next) {
-					item.$schema.env = model.env;
-					if (item.terminate)
-						item.terminate();
-					else
-						item.kill(9);
-					setTimeout(next, 1000);
-				});
-			}
-		}
-	});
+NEWACTION('Settings/read', {
+	name: 'Read Settings',
+	sa: true,
+	action: function($) {
+		var model = {};
+		for (let key in Fields.properties)
+			model[key] = PREF[key];
+		$.callback(model);
+	}
 });
 
-if (PREF.notify == null)
-	PREF.notify = true;
+NEWACTION('Settings/save', {
+	name: 'Save settings',
+	input: Fields,
+	sa: true,
+	action: function($, model) {
 
-CONF.op_icon = 'ti ti-object';
+		var restartall = model.env !== PREF.env;
 
-// Initialization
-if (PREF.name)
-	CONF.name = PREF.name;
-else
-	PREF.name = CONF.name;
+		for (let key in model)
+			PREF.set(key, model[key]);
 
-if (!PREF.env)
-	PREF.env = 'dev';
+		CONF.name = model.name;
+		CONF.backup = model.backup;
+		CONF.op_reqtoken = model.op_reqtoken;
+		CONF.op_restoken = model.op_restoken;
 
-if (PREF.backup)
-	CONF.backup = PREF.backup;
+		$.success();
 
-if (!PREF.components)
-	PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
+		// Changed mode, needs to be restarted all FlowStreams
+		if (restartall) {
+			var instances = [];
+			for (var key in MAIN.flowstream.instances) {
+				var item = MAIN.flowstream.instances[key];
+				if (item) {
+					// Is worker?
+					if (item.flow) {
+						instances.push(item.flow);
+					} else {
+						item.env = model.env;
+						for (var id of item.meta.flow)
+							item.meta.flow[id].env = model.env;
+					}
+				}
+			}
 
-if (!PREF.templates)
-	PREF.templates = 'https://cdn.totaljs.com/flowstream/templates/db.json';
+			// Restart workers step-by-step
+			instances.length && instances.wait(function(item, next) {
+				item.$schema.env = model.env;
+				if (item.terminate)
+					item.terminate();
+				else
+					item.kill(9);
+				setTimeout(next, 1000);
+			});
+		}
+	}
+});
 
-if (!PREF.token)
-	PREF.token = GUID(30);
+ON('ready', function() {
 
-CONF.op_reqtoken = PREF.op_reqtoken;
-CONF.op_restoken = PREF.op_restoken;
+	if (PREF.notify == null)
+		PREF.notify = true;
+
+	CONF.op_icon = 'ti ti-object';
+
+	// Initialization
+	if (PREF.name)
+		CONF.name = PREF.name;
+	else
+		PREF.name = CONF.name;
+
+	if (!PREF.env)
+		PREF.env = 'dev';
+
+	if (PREF.backup)
+		CONF.backup = PREF.backup;
+
+	if (!PREF.components)
+		PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
+
+	if (!PREF.templates)
+		PREF.templates = 'https://cdn.totaljs.com/flowstream/templates/db.json';
+
+	if (!PREF.token)
+		PREF.token = GUID(30);
+
+	CONF.op_reqtoken = PREF.op_reqtoken;
+	CONF.op_restoken = PREF.op_restoken;
+
+});

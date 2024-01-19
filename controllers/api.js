@@ -1,57 +1,50 @@
 exports.install = function() {
 
 	// REST API
-	ROUTE('-POST    /fapi/auth/        *Auth       --> exec');
-	ROUTE('+GET     /fapi/logout/      *Auth       --> logout');
-	ROUTE('+POST    /fapi/password/    *Auth       --> save');
-	ROUTE('+POST    /fapi/update/',    updatebundle, ['upload'], 1024 * 10); // Flow updater
-	ROUTE('GET      /private/',        privatefiles);
-	ROUTE('GET      /notify/{id}/',    notify);
-	ROUTE('POST     /notify/{id}/',    notify, 1024); // 1 MB
+	ROUTE('-POST    /fapi/auth/        --> Auth/exec');
+	ROUTE('+GET     /fapi/logout/      --> Auth/logout');
+	ROUTE('+POST    /fapi/password/    --> Auth/save');
+	ROUTE('+POST    /fapi/update/ @upload <10MB', updatebundle); // Flow updater
+	ROUTE('GET      /private/',          privatefiles);
+	ROUTE('GET      /notify/{id}/',      notify);
+	ROUTE('POST     /notify/{id}/ <1MB', notify); // 1 MB
 
 	// FlowStream
-	ROUTE('+API    @api    -streams                          *Streams      --> query');
-	ROUTE('+API    @api    -streams_read/{id}                *Streams      --> read');
-	ROUTE('+API    @api    +streams_save                     *Streams      --> save');
-	ROUTE('+API    @api    -streams_remove/{id}              *Streams      --> remove');
-	ROUTE('+API    @api    -streams_stats                    *Streams      --> stats');
-	ROUTE('+API    @api    -streams_pause/{id}               *Streams      --> pause');
-	ROUTE('+API    @api    -streams_restart/{id}             *Streams      --> restart');
-	ROUTE('+API    @api    -console                          *Console      --> read');
-	ROUTE('+API    @api    -console_clear                    *Console      --> clear');
-	ROUTE('+API    @api    -cdn_clear                        *CDN          --> clear');
-
-	// Enterprise
-	ROUTE('+API    /fapi/  -enterprise_read                  *Enterprise   --> read');
-	ROUTE('+API    /fapi/  +enterprise_save                  *Enterprise   --> save');
+	ROUTE('+API    /fapi/    -streams                          --> Streams/query');
+	ROUTE('+API    /fapi/    -streams_read/{id}                --> Streams/read');
+	ROUTE('+API    /fapi/    +streams_save                     --> Streams/save');
+	ROUTE('+API    /fapi/    -streams_remove/{id}              --> Streams/remove');
+	ROUTE('+API    /fapi/    -streams_stats                    --> Streams/stats');
+	ROUTE('+API    /fapi/    -streams_pause/{id}               --> Streams/pause');
+	ROUTE('+API    /fapi/    -streams_restart/{id}             --> Streams/restart');
+	ROUTE('+API    /fapi/    -console                          --> Console/read');
+	ROUTE('+API    /fapi/    -console_clear                    --> Console/clear');
+	ROUTE('+API    /fapi/    -cdn_clear                        --> CDN/clear');
 
 	// Common
-	ROUTE('+API    @api    -auth                             *Auth         --> read');
+	ROUTE('+API    /fapi/    -auth                             --> Auth/read');
 
 	// Variables
-	ROUTE('+API    @api    -settings                         *Settings     --> read');
-	ROUTE('+API    @api    +settings_save                    *Settings     --> save');
+	ROUTE('+API    /fapi/    -settings                         --> Settings/read');
+	ROUTE('+API    /fapi/    +settings_save                    --> Settings/save');
 
 	// Variables
-	ROUTE('+API    @api    -variables                        *Variables    --> read');
-	ROUTE('+API    @api    +variables_save                   *Variables    --> save');
+	ROUTE('+API    /fapi/    -variables                        --> Variables/read');
+	ROUTE('+API    /fapi/    +variables_save                   --> Variables/save');
 
 	// Clipboard
-	ROUTE('+API    @api    -clipboard_export/id              *Clipboard    --> export');
-	ROUTE('+API    @api    +clipboard_import                 *Clipboard    --> import', [60000 * 5]);
+	ROUTE('+API    /fapi/    -clipboard_export/id              --> Clipboard/export');
+	ROUTE('+API    /fapi/    +clipboard_import       <300s     --> Clipboard/import');
 
 	// Socket
-	ROUTE('+SOCKET  /fapi/  @api',  1024 * 8); // max. 8 MB
-	ROUTE('+SOCKET  /flows/{id}/',  socket, 1024 * 8); // max. 8 MB
+	ROUTE('+SOCKET  /flows/{id}/ <8MB', socket); // max. 8 MB
 };
 
-function socket(id) {
-	var self = this;
-	MODULE('flowstream').socket(id, self);
+function socket($) {
+	Flow.socket($.params.id, $);
 }
 
-function privatefiles() {
-	var $ = this;
+function privatefiles($) {
 
 	if (!PREF.token) {
 		$.invalid(401);
@@ -94,7 +87,7 @@ function privatefiles() {
 			var stream = F.Fs.createReadStream(path, opt);
 
 			$.nocache();
-			$.stream(stream, U.getContentType(U.getExtension(path)), filename, { 'x-size': stat.size, 'last-modified': stat.mtime.toUTCString() });
+			$.stream(stream, U.contentTypes[U.getExtension(path)], filename, { 'x-size': stat.size, 'last-modified': stat.mtime.toUTCString() });
 
 		});
 
@@ -111,9 +104,8 @@ function privatefiles() {
 	}, q);
 }
 
-function updatebundle() {
+function updatebundle($) {
 
-	var $ = this;
 	var file = $.files[0];
 
 	if (!F.isBundle) {
@@ -121,7 +113,7 @@ function updatebundle() {
 		return;
 	}
 
-	if (file && file.extension === 'bundle') {
+	if (file && file.ext === 'bundle') {
 		file.move(PATH.join(PATH.root(), '../bundles/app.bundle'), function(err) {
 			if (err) {
 				$.invalid(err);
@@ -134,36 +126,6 @@ function updatebundle() {
 		$.invalid('Invalid file');
 }
 
-function notify(id) {
-
-	var $ = this;
-
-	if (PREF.notify) {
-		var arr = id.split('-');
-		var instance = MAIN.flowstream.instances[arr[0]];
-		if (instance) {
-			var obj = {};
-			obj.id = arr[1];
-			obj.method = $.req.method;
-			obj.headers = $.headers;
-			obj.query = $.query;
-			obj.body = $.body;
-			obj.url = $.url;
-			obj.ip = $.ip;
-			obj.params = arr.length > 2 ? arr.slice(2) : EMPTYOBJECT;
-			arr[1] && instance.notify(arr[1], obj);
-			instance.flow && instance.flow.$socket && instance.flow.$socket.send({ TYPE: 'flow/notify', data: obj });
-		}
-	}
-
-	if ($.query.REDIRECT) {
-		$.redirect($.query.REDIRECT);
-		return;
-	}
-
-	var accept = $.headers.accept;
-	if (accept && accept.indexOf('html') !== -1)
-		$.html('<html><body style="font-family:Arial;font-size:11px;color:#777;background-color:#FFF">Close the window<script>window.close();</script></body></html>');
-	else
-		$.success();
+function notify($) {
+	Flow.notify($, $.params.id);
 }

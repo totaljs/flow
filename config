@@ -1,5 +1,4 @@
 name                        : Total.js Flow v10
-allow_custom_titles         : true
 flowstream_worker           : fork
 
 cookie          (generate)  : 6
@@ -18,8 +17,3 @@ default_uid                 : f
 
 // Memory size for forked processes (in MB)
 // flowstream_memory           : 4069
-
-// default_root                : subdomain
-
-// allow_compile_script        : false
-// allow_compile_html          : false

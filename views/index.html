@@ -10,7 +10,7 @@
 	<meta name="robots" content="all,follow" />
 	@{import('spa.min@19.css', 'spa.min@19.js')}
 	<script src="@{REPO.ui}"></script>
-	@{import('meta', 'head', 'default.css + editor.min@1.css + editor.css', 'filesaver.min.js + editor.min@1.js + editor.js + func.js', 'favicon.ico')}
+	@{import('meta', 'head', 'default.css + editor.min@1.css + editor.css', 'filesaver.min.js + editor.min@1.js + uibuilder.min@1.js + editor.js + func.js', 'favicon.ico')}
 </head>
 <body@{if PREF.darkmode} class="ui-dark"@{fi}>
 
@@ -95,7 +95,7 @@
 	<script>
 
 		DEF.fallback = '@{#}/cdn/j-{0}.html';
-		DEF.versionhtml = '@{MAIN.flowstream.version}';
+		DEF.versionhtml = '@{Flow.version}';
 
 		var common = {};
 		var user = PARSE('#userdata');
@@ -127,8 +127,7 @@
 
 		(function() {
 			var url = '@{#}/fapi/' + common.openplatform;
-			WAPI({ url: url });
-			enterprise.init(url);
+			DEF.api = url;
 		})();
 
 		ON('@flag showloading', function() {
@@ -395,7 +394,7 @@
 							});
 							break;
 						case 'variables':
-							WAPI('variables?id=' + id, AEXEC('-message/response', function(response) {
+							TAPI('variables?id=' + id, AEXEC('-message/response', function(response) {
 								var model = {};
 								model.variables = response;
 								model.callback = function(model) {
@@ -562,7 +561,7 @@
 						});
 						break;
 					case 'templates':
-						enterprise.load(() => SET('common.form', 'templatesform'));
+						SET('common.form', 'templatesform');
 						break;
 					case 'search':
 						exports.search();
@@ -601,7 +600,7 @@
 				} else {
 					exports.push('windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<ui-import config="url:/forms/console.html"></ui-import>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
 						el.closest('.ui-windows-item').find('pre').empty();
-						WAPI('console_clear', NOOP);
+						TAPI('console_clear', NOOP);
 					}, make: function(el) {
 						el.parent().find('.ui-windows-lastbutton').rclass2('ti').aclass('ti ti-remove');
 						el.closest('.ui-windows-item').css('z-index', 50);
@@ -693,8 +692,6 @@
 			exports.mainmenu();
 
 		});
-
-		enterprise.init('@{#}/fapi/');
 
 	</script>
 
