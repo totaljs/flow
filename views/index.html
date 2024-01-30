@@ -337,9 +337,17 @@
 			};
 
 			exports.close = function(el, e) {
+
 				e.stopPropagation();
 				e.preventDefault();
+
 				EXEC('-parts/close', ATTRD(el));
+
+				setTimeout(function() {
+					if (model.tabs.length === 1 && model.page !== 'flows')
+						exports.set('page', 'flows');
+				}, 80);
+
 			};
 
 			exports.open = function(el) {
