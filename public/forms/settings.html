@@ -1,4 +1,4 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:cog;title:@(Settings);autofocus:true;scrollbar:1;submit:?/submit;width:740;scrollbarshadow:1" class="hidden" plugin="~PATH~">
+<ui-component name="box" path="common.form" config="if:~PATH~;icon:cog;title:@(Settings);autofocus:true;scrollbar:1;reload:?/reload;submit:?/submit;width:740;scrollbarshadow:1" class="hidden" plugin="~PATH~">
 	<div>
 		<div class="padding npb">
 
@@ -25,11 +25,11 @@
 			<ui-component name="input" path="?.name" config="required:1;innerlabel:1" default="document.title" class="m">@(Name)</ui-component>
 			<div class="row">
 				<div class="col-md-6 m">
-					<ui-component name="input" path="?.components" config="required:1;innerlabel:1;type:url">@(Main components)</ui-component>
+					<ui-component name="input" path="?.components" config="required:1;type:url">@(Main components)</ui-component>
 					<div class="help">@(We don't recommend to change it)</div>
 				</div>
 				<div class="col-md-6 m">
-					<ui-component name="input" path="?.components2" config="type:url;innerlabel:1;placeholder:@(URL address to list of components)">@(Custom components)</ui-component>
+					<ui-component name="input" path="?.components2" config="type:url;placeholder:@(URL address to list of components)">@(Custom components)</ui-component>
 					<div class="help"><a href="https://github.com/totaljs/flowstreamcomponents/blob/main/db.json" target="_blank"><i class="ti ti-link"></i>@(Follow this file structure)</a></div>
 				</div>
 			</div>
@@ -68,8 +68,13 @@
 				<div class="b"><i class="ti ti-warning mr5"></i>@(Warning)</div>
 				@(You will be automatically logged out if you enter tokens for the OpenPlatform.)
 			</div>
-
 		</div>
+		<ui-bind path="?.items" config="show:value&&value.length" class="block hidden">
+			<hr class="nmt nmb" />
+			<div style="padding:var(--gap)">
+				<ui-component name="configuration" path="?.data" config="style:1;$assign:?|configuration"></ui-component>
+			</div>
+		</ui-bind>
 	</div>
 	<nav>
 		<ui-component name="validate" path="?">
@@ -83,6 +88,11 @@
 
 	PLUGIN(function(exports) {
 
+		exports.reload = function() {
+			var model = exports.model;
+			exports.configuration.rebind(model.items);
+		};
+
 		exports.generate = function() {
 			exports.set('token', GUID(35), 'show');
 		};
@@ -92,7 +102,15 @@
 		};
 
 		exports.submit = function(hide) {
-			var model = exports.form;
+			var model = CLONE(exports.form);
+			var items = [];
+
+			for (var key in model.data)
+				items.push({ id: key, value: model.data[key] });
+
+			delete model.data;
+			model.items = items;
+
 			exports.tapi('settings_save ERROR', model, function() {
 
 				hide();

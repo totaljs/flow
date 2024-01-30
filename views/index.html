@@ -17,10 +17,7 @@
 	<ui-component name="exec"></ui-component>
 	<ui-component name="locale" config="requests:1;language:@{controller.language}"></ui-component>
 	<ui-component name="windows" path="common.windows" config="zindex:50"></ui-component>
-
-	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
-		@(Drag &amp; Drop FlowStream)
-	</ui-component>
+	<ui-component name="imageviewer" config="unknown:@(Unknown image)"></ui-component>
 
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
 	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
@@ -30,14 +27,21 @@
 	<ui-component name="LAZY fileuploader"></ui-component>
 	<ui-component name="LAZY clipboard"></ui-component>
 	<ui-component name="LAZY icons" config="list:@{#}/icons-db.html"></ui-component>
-	<ui-component name="LAZY datepicker"></ui-component>
-	<ui-component name="LAZY directory" config="placeholder:@(Search)"></ui-component>
+	<ui-component name="LAZY directory" config="placeholder:@(Search);create:@(Create)"></ui-component>
 	<ui-component name="LAZY colorpicker"></ui-component>
+	<ui-component name="LAZY prompt" config="cancel:@(Cancel);submit:@(OK)"></ui-component>
 
+	<ui-component name="datepicker" config="today:@(Today);days:@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday);clear:@(Clear);months:@(January,February,March,April,May,Juny,July,August,September,October,November,December)"></ui-component>
+	<ui-component name="edit"></ui-component>
 	<ui-component name="paste"></ui-component>
 	<ui-component name="shortcuts"></ui-component>
 	<ui-component name="loading" config="style:2"></ui-component>
 	<ui-component name="markdown" config="highlight:false;charts:false"></ui-component>
+	<ui-component name="errorhandler"></ui-component>
+
+	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
+		@(Drag &amp; Drop FlowStream)
+	</ui-component>
 
 	<ui-component name="importer" path="common.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
 
@@ -61,9 +65,30 @@
 				{{ end }}
 			</script>
 		</ui-bind>
-		<ui-component name="virtualwire" path="common.page"></ui-component>
+		<div class="pull-right">
+			<ui-component name="virtualwire" path="common.page" class="toolbar"></ui-component>
+		</div>
 	</header>
-	<div>
+
+	<div class="appmenu">
+		<ui-component name="noscrollbar" config="parent:window;margin:60" class="invisible">
+			<ui-component name="selected" path="common.page" config="selector:.exec;attr:id">
+				<ui-bind path="common.menu" config="template" class="block">
+					<script type="text/html">
+						{{ foreach m in value }}
+							{{ if m === '-' }}
+							<hr />
+							{{ else if m.hidden !== true }}
+							<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
+							{{ fi }}
+						{{ end }}
+					</script>
+				</ui-bind>
+			</ui-component>
+		</ui-component>
+	</div>
+
+	<div class="appmain">
 
 		<ui-component name="ready" config="rclass:invisible" class="invisible">
 
@@ -90,12 +115,16 @@
 
 	</div>
 
+	@{json(model, 'pluginsdata')}
 	@{json(user.json ? user.json() : user, 'userdata')}
 
 	<script>
 
 		DEF.fallback = '@{#}/cdn/j-{0}.html';
 		DEF.versionhtml = '@{Flow.version}';
+
+		// Due to plugins
+		W.BREADCRUMB = { add: NOOP };
 
 		var common = {};
 		var user = PARSE('#userdata');
@@ -110,6 +139,9 @@
 			})();
 		}
 
+		common.clientid = GUID(5) + Date.now().toString(36);
+		common.breadcrumb = [];
+		common.plugins = PARSE('#pluginsdata');
 		common.language = '@{controller.language}';
 		common.tabs = [{ id: 'main', name: '@(Flows)', icon: 'ti ti-home', noclose: true, import: '@{#}/parts/flows.html' }];
 		common.secret = 'flowstream';
@@ -123,11 +155,11 @@
 		common.templates = '@{PREF.templates}';
 		common.bundle = '@{F.isBundle}' === 'true';
 		common.cl = {}; // for additional codelists
+
 		document.title += ' (' + common.env + ')';
 
 		(function() {
-			var url = '@{#}/fapi/' + common.openplatform;
-			DEF.api = url;
+			DEF.api = '@{#}@{CONF.$api}' + common.openplatform;
 		})();
 
 		ON('@flag showloading', function() {
@@ -208,7 +240,16 @@
 
 		PLUGIN('common', function(exports) {
 
+			var model = exports.model;
 			var checksum;
+
+			(function() {
+				model.plugins.quicksort('position');
+				model.plugins.forEach(function(plugin) {
+					plugin.url = model.root + plugin.id + '/';
+					plugin.import && $(document.body).append('<ui-import config="url:{0};id:_{1}"></ui-import>'.format('@{#}/_' + plugin.id + '/' + plugin.import, plugin.id));
+				});
+			})();
 
 			exports.refresh = function() {
 				exports.tapi('streams ERROR', function(response) {
@@ -246,19 +287,26 @@
 			exports.focus = function(el) {
 				var id = ATTRD(el);
 
-				if (id === 'main' && common.tabs[0].focused) {
+				if (id === 'main') {
+
+					if (model.page !== 'flows') {
+						exports.set('page', 'flows');
+						EXEC('-parts/focus', id);
+						return;
+					}
+
 					var opt = {};
 					opt.element = el;
 					opt.align = 'left';
-					opt.items = CLONE(exports.model.menu);
+					opt.items = CLONE(model.menu);
 					var index = opt.items.findIndex('id', 'settings');
 					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
 					opt.callback = exports.menu;
 					EXEC('-menu/show', opt);
-					return;
+				} else {
+					exports.nul('page');
+					EXEC('-parts/focus', id);
 				}
-
-				EXEC('-parts/focus', id);
 			};
 
 			exports.dragdrop = function(files) {
@@ -297,14 +345,19 @@
 			exports.open = function(el) {
 
 				var id = ATTRD(el);
-				var model = exports.model;
 				var item = model.tabs.findItem('id', id);
+
+				if (id !== 'main')
+					exports.nul('page');
 
 				if (item) {
 					if (!item.focused)
 						EXEC('-parts/focus', item.id);
 					return;
 				}
+
+				if (!model.appmenuwidth)
+					model.appmenuwidth = $('.appmenu').width();
 
 				var flow = model.items.findItem('id', id);
 				var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id) + common.openplatform;
@@ -313,7 +366,7 @@
 				item.id = id;
 				item.icon = flow.icon;
 				item.name = flow.name;
-				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '', common.language);
+				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0" class="iflowstream" style="width:{5}px"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '', common.language, WW - model.appmenuwidth);
 				item.focus = 'common/focusiframe';
 				EXEC('-loading/show');
 				EXEC('-loading/hide', 2000);
@@ -461,6 +514,15 @@
 
 			exports.settings = function() {
 				exports.tapi('settings @showloading ERROR', function(response) {
+
+					var data = {};
+
+					for (var m of response.items) {
+						if (m.type !== 'group')
+							data[m.id] = m.value;
+					}
+
+					response.data = data;
 					SET('settingsform @reset @hideloading', response);
 					SET('common.form', 'settingsform');
 				});
@@ -471,25 +533,36 @@
 
 				if (user.sa || user.permissions.include('create')) {
 					items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
-					items.push({ id: 'import', name: '@(Import FlowStream)', icon: 'ti ti-download' });
+					items.push({ id: 'import', name: '@(Import FlowStream)', icon: 'ti ti-download', hidden: true });
 				}
 
 				items.push({ id: 'search', name: '@(Search)', icon: 'ti ti-search' });
-				items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download' });
-				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
+				items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download', hidden: true });
+				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b', hidden: true });
 				items.push('-');
 				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'ti ti-cloud-download' });
 
-				if (!common.openplatform)
+				if (!model.openplatform)
 					items.push({ id: 'password', name: '@(Change credentials)', icon: 'ti ti-key' });
 
 				items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
-				items.push({ id: 'support', name: '@(Support)', icon: 'ti ti-support' });
 
-				if (common.bundle)
+				if (model.bundle)
 					items.push({ id: 'update', name: '@(Update bundle)', icon: 'ti ti-sync', hidden: true });
 
-				if (!common.openplatform) {
+				if (model.plugins.length) {
+					var tmp = [];
+					for (var plugin of model.plugins) {
+						if (!plugin.hidden)
+							tmp.push({ id: 'plugin' + plugin.id, name: plugin.name, icon: plugin.icon });
+					}
+					if (tmp.length) {
+						items.push('-');
+						items.push.apply(items, tmp);
+					}
+				}
+
+				if (!model.openplatform) {
 					items.push('-');
 					items.push({ id: 'logout', name: '@(Sign out)', icon: 'ti ti-sign-out red' });
 				}
@@ -501,11 +574,15 @@
 				var id = ATTRD(el);
 				switch (id) {
 
+					case 'flows':
+						exports.set('page', 'flows');
+						break;
+
 					case 'update':
 						EXEC('-approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
-							opt.url = '/fapi/update/' + common.openplatform;
+							opt.url = '/fapi/update/' + model.openplatform;
 							opt.callback = function(response, err) {
 								if (err) {
 									EXEC('-message/warning', err);
@@ -516,10 +593,6 @@
 							};
 							EXEC('-fileuploader/upload', opt);
 						});
-						break;
-
-					case 'support':
-						W.open('https://www.totaljs.com/contact/');
 						break;
 
 					case 'logout':
@@ -556,15 +629,21 @@
 						exports[id]();
 						break;
 					case 'cdnclear':
-						EXEC('-approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', '"ti ti-recycle" @(Clear)', function() {
-							exports.tapi('cdn_clear ERROR', AEXEC('-message/success', '@(The CDN cache has been cleared successfully)'));
-						});
+						EXEC('-approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', ':ti ti-recycle: @(Clear)', () => exports.tapi('cdn_clear ERROR', AEXEC('-message/success', '@(The CDN cache has been cleared successfully)')));
 						break;
 					case 'templates':
 						SET('common.form', 'templatesform');
 						break;
 					case 'search':
 						exports.search();
+						break;
+					default:
+
+						if (id.substring(0, 6) === 'plugin') {
+							EXEC('-parts/focus', 'main');
+							exports.set('page', id);
+						}
+
 						break;
 				}
 			};
@@ -595,7 +674,7 @@
 
 			exports.console = function() {
 				var winid = 'console';
-				if (common.windows.findItem('id', winid)) {
+				if (model.windows.findItem('id', winid)) {
 					EXEC('-windows/hide', winid);
 				} else {
 					exports.push('windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<ui-import config="url:/forms/console.html"></ui-import>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
@@ -614,6 +693,10 @@
 			exports.stats = function() {
 				exports.tapi('streams_stats', 'stats');
 			};
+
+			ON('resize + resize2', function() {
+				$('.iflowstream').css({ width: WW - model.appmenuwidth });
+			});
 
 			ON('ready', exports.stats);
 

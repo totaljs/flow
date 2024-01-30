@@ -23,14 +23,17 @@ COMPONENT('codemirror', 'linenumbers:true;required:false;trim:false;tabs:true;ma
 	};
 
 	self.resizeforce = function() {
-		if (config.height) {
-			editor.setSize('100%', config.height + 'px');
-		} else {
+		if (config.parent) {
 			var parent = self.parent(config.parent);
-			var h = parent.height();
-			editor.setSize('100%', (h - config.margin) + 'px');
-			self.css('height', h - config.margin);
-		}
+			var h = parent.height() - config.margin;
+
+			if (h < config.minheight)
+				h = config.minheight;
+
+			editor.setSize('100%', h + 'px');
+			self.css('height', h);
+		} else
+			editor.setSize('100%', config.height + 'px');
 	};
 
 	function autocomplete_sort(a, b) {

@@ -1,40 +1,40 @@
 exports.install = function() {
 
 	// REST API
-	ROUTE('-POST    /fapi/auth/        --> Auth/exec');
-	ROUTE('+GET     /fapi/logout/      --> Auth/logout');
-	ROUTE('+POST    /fapi/password/    --> Auth/save');
-	ROUTE('+POST    /fapi/update/ @upload <10MB', updatebundle); // Flow updater
-	ROUTE('GET      /private/',          privatefiles);
-	ROUTE('GET      /notify/{id}/',      notify);
-	ROUTE('POST     /notify/{id}/ <1MB', notify); // 1 MB
+	ROUTE('-POST    ?/auth/        --> Auth/exec');
+	ROUTE('+GET     ?/logout/      --> Auth/logout');
+	ROUTE('+POST    ?/password/    --> Auth/save');
+	ROUTE('+POST    ?/update/ @upload <10MB', updatebundle); // Flow updater
+	ROUTE('GET       /private/',          privatefiles);
+	ROUTE('GET       /notify/{id}/',      notify);
+	ROUTE('POST      /notify/{id}/ <1MB', notify); // 1 MB
 
 	// FlowStream
-	ROUTE('+API    /fapi/    -streams                          --> Streams/query');
-	ROUTE('+API    /fapi/    -streams_read/{id}                --> Streams/read');
-	ROUTE('+API    /fapi/    +streams_save                     --> Streams/save');
-	ROUTE('+API    /fapi/    -streams_remove/{id}              --> Streams/remove');
-	ROUTE('+API    /fapi/    -streams_stats                    --> Streams/stats');
-	ROUTE('+API    /fapi/    -streams_pause/{id}               --> Streams/pause');
-	ROUTE('+API    /fapi/    -streams_restart/{id}             --> Streams/restart');
-	ROUTE('+API    /fapi/    -console                          --> Console/read');
-	ROUTE('+API    /fapi/    -console_clear                    --> Console/clear');
-	ROUTE('+API    /fapi/    -cdn_clear                        --> CDN/clear');
+	ROUTE('+API     ?    -streams                          --> Streams/query');
+	ROUTE('+API     ?    -streams_read/{id}                --> Streams/read');
+	ROUTE('+API     ?    +streams_save                     --> Streams/save');
+	ROUTE('+API     ?    -streams_remove/{id}              --> Streams/remove');
+	ROUTE('+API     ?    -streams_stats                    --> Streams/stats');
+	ROUTE('+API     ?    -streams_pause/{id}               --> Streams/pause');
+	ROUTE('+API     ?    -streams_restart/{id}             --> Streams/restart');
+	ROUTE('+API     ?    -console                          --> Console/read');
+	ROUTE('+API     ?    -console_clear                    --> Console/clear');
+	ROUTE('+API     ?    -cdn_clear                        --> CDN/clear');
 
 	// Common
-	ROUTE('+API    /fapi/    -auth                             --> Auth/read');
+	ROUTE('+API     ?    -auth                             --> Auth/read');
 
 	// Variables
-	ROUTE('+API    /fapi/    -settings                         --> Settings/read');
-	ROUTE('+API    /fapi/    +settings_save                    --> Settings/save');
+	ROUTE('+API     ?    -settings                         --> Settings/read');
+	ROUTE('+API     ?    +settings_save                    --> Settings/save');
 
 	// Variables
-	ROUTE('+API    /fapi/    -variables                        --> Variables/read');
-	ROUTE('+API    /fapi/    +variables_save                   --> Variables/save');
+	ROUTE('+API     ?    -variables                        --> Variables/read');
+	ROUTE('+API     ?    +variables_save                   --> Variables/save');
 
 	// Clipboard
-	ROUTE('+API    /fapi/    -clipboard_export/id              --> Clipboard/export');
-	ROUTE('+API    /fapi/    +clipboard_import       <300s     --> Clipboard/import');
+	ROUTE('+API     ?    -clipboard_export/id              --> Clipboard/export');
+	ROUTE('+API     ?    +clipboard_import       <300s     --> Clipboard/import');
 
 	// Socket
 	ROUTE('+SOCKET  /flows/{id}/ <8MB', socket); // max. 8 MB

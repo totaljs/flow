@@ -48,7 +48,7 @@ function init(id, next) {
 	});
 }
 
-ON('ready', function() {
+ON('init', function() {
 
 	PATH.fs.readFile(PATH.join(DIRECTORY, DB_FILE), function(err, data) {
 

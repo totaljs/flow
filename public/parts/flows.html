@@ -1,22 +1,21 @@
-<div class="appmenu">
-	<ui-component name="noscrollbar" config="parent:window;margin:60" class="invisible">
-		<ui-bind path="common.menu" config="template">
-			<script type="text/html">
-				{{ foreach m in value }}
-					{{ if m === '-' }}
-					<hr />
-					{{ else if m.hidden !== true }}
-					<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
-					{{ fi }}
+<ui-bind path="common.plugins" config="template" class="block">
+	<script type="text/html">
+		{{ foreach m in value }}
+			{{ if !m.hidden }}
+			<ui-component name="page" path="common.page" config="if:plugin{{ m.id }};url:/_{{ m.id }}/index.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
+			{{ if m.routes }}
+				{{ foreach route in m.routes }}
+				<ui-component name="page" path="common.page" config="if:plugin{{ m.id }}{{ route.html }};url:/_{{ m.id }}/{{ route.html }}.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
 				{{ end }}
-			</script>
-		</ui-bind>
-	</ui-component>
-</div>
+			{{ fi }}
+			{{ fi }}
+		{{ end }}
+	</script>
+</ui-bind>
 
-<div class="appmain">
+<ui-bind path="common.page" config="show:value === 'flows'" class="block">
 	<ui-plugin path="common">
-		<ui-component name="viewbox" config="parent:window;scrollbar:1;scrollbarshadow:1;margin:90" class="invisible">
+		<ui-component name="viewbox" config="parent:window;scrollbar:1;scrollbarshadow:1;margin:90" class="invisible" style="margin-right:64px">
 
 			<ui-component name="empty" path="common.groups" config="parent:auto" class="invisible">
 
@@ -81,31 +80,48 @@
 			</ui-bind>
 		</footer>
 	</ui-plugin>
-</div>
+</ui-bind>
 
 <script>
 	EXTENSION('@common', function(exports) {
 
+		var model = exports.model;
+
 		exports.search = function(el) {
-			var model = exports.model;
 			var opt = {};
 			opt.cache = false;
 			opt.recent = false;
 			opt.init = true;
 			opt.clear = true;
 			opt.search = function(value, next) {
+
 				var output = [];
+
 				value = value.toSearch();
+
 				for (let item of model.items) {
 					if (item.name.toSearch().indexOf(value) !== -1) {
-						if (output.push({ id: item.id, name: item.name + '<span class="badge badge-color badge-medium ml5">@(FlowStream)</span>', icon: item.icon, color: item.color }) > 15)
+						if (output.push({ id: item.id, name: item.name + '<span class="badge badge-color badge-medium ml5">@(FlowStream)</span>', icon: item.icon, color: item.color }) > 10)
 							break;
 					}
 				}
+
+				for (let item of model.plugins) {
+					if (item.name.toSearch().indexOf(value) !== -1) {
+						if (output.push({ id: 'plugin' + item.id, name: item.name, icon: item.icon }) > 10)
+							break;
+					}
+				}
+
 				output.quicksort('name');
 				next(output);
 			};
-			opt.callback = exports.open;
+			opt.callback = function(selected) {
+				if (selected.id.substring(0, 6) === 'plugin')
+					exports.menu(selected);
+				else
+					exports.open(selected);
+			};
 			SETTER('spotlight/show', opt);
 		};
 
