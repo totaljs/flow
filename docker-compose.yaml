@@ -3,3 +3,9 @@ services:
     build: .
     ports:
       - "8000:8000"
+    volumes:
+      - databases:/www/.src/databases/
+      - flowstream:/www/.src/flowstream/
+volumes:
+  databases:
+  flowstream:
