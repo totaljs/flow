@@ -10,9 +10,8 @@ cp -a ../views/ views
 cp -a ../resources/ resources
 
 # cd ..
-total4 --bundle app.bundle
+total5 --bundle app.bundle
 cp app.bundle ../app.bundle
 
 cd ..
 rm -rf .bundle
-echo "DONE"
