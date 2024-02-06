@@ -212,6 +212,7 @@
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
 			com.register('F1', AEXEC('common/search'), true);
+			com.register('F10', AEXEC('common/console'), true);
 		});
 
 		EXEC(true, '-loading/hide', 500);
@@ -740,6 +741,9 @@
 							break;
 						case 'F1':
 							EXEC('common/search');
+							break;
+						case 'F10':
+							EXEC('common/console');
 							break;
 						case 'edit':
 							exports.tapi('streams_read/{id} @showloading ERROR'.arg(data), function(response) {

@@ -116,7 +116,13 @@
 		});
 
 		function saveshortcut(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			var is = false;
+
 			if (common.page === 'componenteditor' && !common.form && !common.form2) {
 				EXEC('componenteditor/submit');
 				is = true;
@@ -137,7 +143,18 @@
 			W.parent.postMessage(STRINGIFY({ TYPE: 'F1', SOURCE: 'flow' }));
 		}, true);
 
+		SETTER(true, 'shortcuts/register', 'F10', function(e) {
+			W.parent.postMessage(STRINGIFY({ TYPE: 'F10', SOURCE: 'flow' }));
+			e.preventDefault();
+			e.stopPropagation();
+		});
+
 		SETTER(true, 'shortcuts/register', 'CMD+F, CTRL+F', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				$('.ui-layout-left').find('input').focus();
 				e.preventDefault();
@@ -147,6 +164,11 @@
 		EXEC(true, '-shortcuts/register', 'CMD+ENTER, CTRL+ENTER', saveshortcut);
 
 		EXEC(true, '-shortcuts/register', 'CMD+D, CTRL+D', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				EXEC('flow/clone');
 				e.preventDefault();
@@ -155,6 +177,11 @@
 		}, true);
 
 		EXEC(true, '-shortcuts/register', 'CMD+C, CTRL+C', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			if (!window.getSelection().toString() && common.page === 'flow' && !common.form && !common.form2 && flow.selected) {
 				EXEC('flow/copy_components');
 				e.preventDefault();
@@ -163,6 +190,11 @@
 		});
 
 		EXEC(true, '-shortcuts/register', 'CMD+V, CTRL+V', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			if (common.page === 'flow' && !common.form && !common.form2 && (e.target.nodeName !== 'INPUT' && e.target.nodeName !== 'TEXTAREA')) {
 				EXEC('flow/paste_components', { x: 0, y: 0 }, true);
 				e.preventDefault();
@@ -171,6 +203,11 @@
 		});
 
 		EXEC(true, '-shortcuts/register', 'remove', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			if (common.page === 'flow' && !common.form && !common.form2) {
 				Designer.CMD('flow.selected.clear');
 				SET('flow.changed', true);
@@ -181,6 +218,11 @@
 		EXEC(true, '-shortcuts/register', 'save', saveshortcut, true);
 
 		EXEC(true, '-shortcuts/register', 'CMD+A, CTRL+A', function(e) {
+
+			var tag = e.target.tagName;
+			if (tag === 'INPUT' || tag === 'TEXTAREA')
+				return;
+
 			var designer = FIND('flow');
 			var selected = designer.selected();
 			if (!selected.components.length) {
