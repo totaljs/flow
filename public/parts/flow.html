@@ -22,6 +22,7 @@
 			<button title="@(Variables)" class="exec" data-exec="?/variables"><i class="ti ti-variables"></i></button>
 			<button title="@(Console)" class="exec" data-exec="?/console" is="is-button" path="common.logs.errors.items.length" config=".red"><i class="ti ti-bug"></i></button>
 			<!-- <button title="@(Reset)" class="exec hidden" data-exec="?/reset" is="is-button" path="common.logs.errors.items.length" config="show"><i class="ti ti-clean"></i></button> -->
+			<button title="@(Search)" class="exec" data-exec="?/search"><i class="ti ti-file-search"></i></button>
 		</div>
 
 		<div>
@@ -863,6 +864,18 @@
 			}, 500, add);
 		};
 
+		exports.search = function() {
+			var id = 'search';
+
+			if (common.windows.findItem('id', id)) {
+				SETTER('windows/focus', id);
+				return;
+			}
+
+			PUSH('common.windows', { id: id, cachekey: id, html: '<ui-import config="url:@{#}/forms/search.html"></ui-import>', title: '@(Search in configuration)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 250) >> 0, y: ((WH / 2) - 300) >> 0, width: 500, height: 600, minwidth: 200, minheight: 300, maxwidth: 500, maxheight: 800 }});
+
+		};
+
 		exports.sources = function() {
 			SET('common.form', 'sourcesform');
 		};
@@ -1244,6 +1257,7 @@
 			opt.element = el;
 			opt.items = [];
 			opt.items.push({ id: 'nodes', name: '@(Active nodes)', icon: 'ti ti-list' });
+			opt.items.push({ id: 'search', name: '@(Search in configuration)', icon: 'ti ti-file-search' });
 			opt.items.push({ id: 'version', name: '@(Version)', icon: 'ti ti-info-circle' });
 			opt.items.push('-');
 			opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-download' });
@@ -1296,22 +1310,18 @@
 						SET('common.form', 'versionform');
 						break;
 					case 'nodes':
-						exports.nodes();
+					case 'search':
+					case 'exportasbase64':
+					case 'exportascomponent':
+					case 'importascomponent':
+					case 'clear':
+						exports[item.id]();
 						break;
 					case 'curvedlines':
 						TOGGLE('common.curvedlines');
 						break;
 					case 'reset_stats':
 						SETTER('websocket/send', { TYPE: 'reset_stats' });
-						break;
-					case 'exportascomponent':
-						exports.exportascomponent();
-						break;
-					case 'exportasbase64':
-						exports.exportasbase64();
-						break;
-					case 'importascomponent':
-						exports.importascomponent();
 						break;
 					case 'export':
 					case 'download':
@@ -1328,9 +1338,6 @@
 						break;
 					case 'restart':
 						SETTER('approve/show', '@(Are you sure you want to restart this FlowStream process?)', '"ti ti-sync" @(Restart)', ASETTER('websocket/send', { TYPE: 'restart' }));
-						break;
-					case 'clear':
-						exports.clear();
 						break;
 				}
 

@@ -1,0 +1,105 @@
+--PATH=searchform--
+
+<style>
+	.--PATH-- .item { height: 28px; border-bottom: 1px solid #E0E0E0; font-size: 12px; line-height: 27px; cursor: pointer; }
+	.--PATH-- .item:hover { background-color: rgba(0,0,0,.03); }
+	.--PATH-- .monospace { float: left; margin: 6px 5px 0 5px; padding: 0 3px; color: #777; font-size: 11px; background-color: rgba(0,0,0,.08); line-height: 16px; border-radius: var(--radius); }
+	.--PATH-- .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+	.--PATH-- .name i { width: 13px; text-align: center; margin-right: 5px; }
+	.--PATH-- .name code { font-size: 11px; color: #999; margin-left: 5px; }
+	.--PATH-- .ishidden { color: #E73323; }
+	.--PATH-- .singleton { color: #5C1DC4; }
+	.--PATH-- .controls span { margin-left: 7px; cursor: pointer; }
+	.ui-dark .--PATH-- .monospace { background-color: rgba(200,200,200,.08); }
+	.ui-dark .--PATH-- .item { border-bottom-color: #444; }
+	.ui-dark .--PATH-- .item:hover { background-color: rgba(200,200,200,.04); }
+</style>
+
+<ui-plugin path="--PATH--" class="--PATH--">
+	<ui-component name="searchinput" path="?.search" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
+	<ui-component name="viewbox" path="common.windows" config="parent:auto;margin:29" class="invisible">
+		<ui-bind path="?.response" config="template" class="block">
+			<script type="text/html">
+				{{ if !value || !value.length }}
+				<div class="padding" style="padding-top:10px">
+					<div class="help">
+						<i class="ti ti-database-alt"></i>@(0 matches)
+					</div>
+				</div>
+				{{ fi }}
+				{{ foreach m in value }}
+					<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }} {{ m.value.note }}" data-id="{{ m.key }}">
+						<div class="controls">
+							{{ if m.value.Component.settings }}<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="ti ti-wrench"></i></span>{{ fi }}
+							{{ if !m.value.Component.meta || m.value.Component.meta.remove !== false }}
+							<span class="exec" data-exec="?/remove" data-prevent="true" title="@(Remove)"><i class="ti ti-trash red"></i></span>
+							{{ fi }}
+						</div>
+						<span class="monospace">{{ m.key }}</span>
+						<div class="name{{ if m.value.Component.meta && m.value.Component.meta.singleton }} singleton{{ fi }}{{ if m.value.Component.meta && m.value.Component.meta.hidden }} ishidden{{ fi }}"><i class="{{ m.value.Component.icon }}"></i><b>{{ m.value.Component.name }}</b> <code>{{ m.text }}</code></div>
+					</div>
+				{{ end }}
+			</script>
+		</ui-bind>
+	</ui-component>
+</ui-plugin>
+
+<script>
+	PLUGIN('--PATH--', function(exports) {
+
+		exports.remove = function(el) {
+			var id = ATTRD(el);
+			EXEC('-approve/show', '@(Are you sure you want to remove selected node?)', '"ti ti-trash" @(Remove)', function() {
+				Designer.op.remove(id);
+				SET('flow.changed', true);
+			});
+		};
+
+		exports.findinvalue = function(val, search) {
+			if (val) {
+				val = val.toString();
+				var index = val.toLowerCase().indexOf(search);
+				if (index !== -1) {
+					var beg = index - 20;
+					if (beg < 0)
+						beg = 0;
+					return val.substring(beg, index + search.length + 20);
+				}
+			}
+		};
+
+		exports.watch('search', function(value) {
+
+			var arr = [];
+
+			if (!value) {
+				exports.set('response', arr);
+				return;
+			}
+
+			value = value.toLowerCase();
+
+			for (var instance of flow.instances) {
+				var values = Object.values(instance.config);
+				for (var val of values) {
+					var res = null;
+					if (val instanceof Array) {
+						for (var m of val) {
+							var values2 = Object.values(m);
+							for (var val2 of values2) {
+								res = exports.findinvalue(val2, value);
+								res && arr.push({ key: instance.id, value: instance, text: res });
+							}
+						}
+					} else {
+						res = exports.findinvalue(val, value);
+						res && arr.push({ key: instance.id, value: instance, text: res });
+					}
+				}
+			}
+
+			exports.set('response', arr);
+		});
+
+	});
+</script>

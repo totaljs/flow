@@ -19,7 +19,7 @@
 	<ui-component name="searchinput" path="%searchinstances" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
 	<ui-component name="viewbox" path="common.windows" config="parent:auto;margin:29" class="invisible">
 		<ui-component name="search" path="%searchinstances" config="selector:.item;datasource:flow.data">
-			<ui-bind path="flow.data" config="template:.item">
+			<ui-bind path="flow.data" config="template:.item" class="block">
 				<script type="text/html">
 					{{ foreach m in value }}
 						{{ if m.key !== 'groups' && m.key !== 'paused' && m.key !== 'tabs' }}
