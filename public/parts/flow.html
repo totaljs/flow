@@ -1116,7 +1116,7 @@
 				com.html = replacekeywords(com.html || '', { UID: '{0}', ID: com.id, ICON: com.icon, NAME: com.name, TOUCH: 'flowinstances.instances.{0}', STATUS: 'flow.status.{0}', CONFIG: 'flow.config.{0}', [clsname]: 'f-' + name });
 
 				if (com.js) {
-					var tmp = replacekeywords(com.js, { ID: com.id, [clsname]: name, ICON: com.icon, NAME: com.name });
+					var tmp = replacekeywords(com.js, { ID: com.id, [clsname]: 'f-' + name, ICON: com.icon, NAME: com.name });
 					js.push('W.flowinstances.current=\'' + name + '\';W.flowinstances.checksum=\'' + HASH(tmp).toString(36) + '\';try{' + tmp + '}catch(e){W.loadcomponenterror(e)}');
 				}
 
