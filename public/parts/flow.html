@@ -819,7 +819,8 @@
 				newbie.component = instance.component;
 				newbie.config = CLONE(instance.config);
 				newbie.connected = false;
-				newbie.connections = CLONE(instance.connections);
+				// newbie.connections = CLONE(instance.connections);
+				newbie.connections = {};
 				newbie.name = instance.name.slug().replace(/\-/g, '');
 				newbie.html = instance.html.replace(new RegExp(instance.id, 'g'), newbie.id);
 				newbie.$outputs = instance.$outputs;
