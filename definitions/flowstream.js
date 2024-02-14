@@ -27,7 +27,6 @@ Flow.on('save', function() {
 		PATH.fs.writeFile(PATH.join(DIRECTORY, DB_FILE), JSON.stringify(Flow.db, skip, '\t'), ERROR('FlowStream.save'));
 });
 
-
 function init(id, next) {
 
 	var flow = Flow.db[id];
