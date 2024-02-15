@@ -415,6 +415,9 @@
 			if (!component || meta.remove !== false)
 				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 
+			if (opt.items.last() === '-')
+				opt.items.pop();
+
 			opt.callback = function(opt) {
 				switch (opt.id) {
 
