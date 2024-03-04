@@ -18,7 +18,7 @@
 .CodeMirror-overlayscroll-vertical { right: 0; top: 0; width: 6px; }
 .CodeMirror-overlayscroll-vertical div { right: 0; width: 100%; }
 .CodeMirror-search-hint { font-family: Arial; font-size: 12px; color: #888; float:right; }
-.CodeMirror-hints { z-index: 30; }
+.CodeMirror-hints { z-index: 100; }
 .CodeMirror-search-label { font-family: Arial; font-size: 12px; float: left; width: 70px; text-align: right; }
 .CodeMirror-search-field { font-size: 12px; width: 100%; margin: 0 0 0 80px; padding: 0; display: block; }
 .cm-variable-T { background-color: rgba(104,178,91,.3); color: black; }
