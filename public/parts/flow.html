@@ -1369,6 +1369,21 @@
 			}).catch(err => console.error(err));
 		};
 
+		exports.refreshvariables = function() {
+			Designer.CMD('flow.refresh');
+			var keys = {};
+			var arr = flow.variables ? Object.keys(flow.variables) : EMPTYARRAY;
+			for (var key of arr)
+				keys[key] = 1;
+			arr = flow.variables2 ? Object.keys(flow.variables2) : EMPTYARRAY;
+			for (var key of arr)
+				keys[key] = 1;
+			var cl = [];
+			for (var key in keys)
+				cl.push({ id: '{' + key + '}', name: key });
+			SET('#variables', cl);
+		};
+
 		// WebSocket messages
 		ON('message', function(msg) {
 
@@ -1557,13 +1572,13 @@
 				case 'flow/variables':
 					SET('flow.variables', msg.data);
 					W.flowinstances.exec('*', 'variables', msg.data);
-					Designer.CMD('flow.refresh');
+					exports.refreshvariables();
 					break;
 
 				case 'flow/variables2':
 					SET('flow.variables2', msg.data);
 					W.flowinstances.exec('*', 'variables2', msg.data);
-					Designer.CMD('flow.refresh');
+					exports.refreshvariables();
 					break;
 
 				case 'flow/notify':
