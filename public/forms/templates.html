@@ -34,7 +34,7 @@
 								<div class="listing-download" style="margin:0 -8px">
 									{{ foreach m in n.items }}
 									<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.community }} community{{ fi }}" data-id="{{ m.id }}" data-name="{{ m.name }}" data-url="{{ m.url }}" data-exec="?/install">
-										<section{{ if m.community }} title="@(Community)"{{ fi }}>
+										<section title="{{ m.name }}">
 											<div class="icon"><span class="icon" style="background-color:{{ m.color | empty('#4285F4') }}"><i class="{{ m.icon }}"></i></span></div>
 											<div class="text">
 												<div class="header"><span class="name hellip">{{ m.name }}</span><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span></div>
@@ -153,7 +153,7 @@
 				});
 			};
 
-			EXEC('-approve/show', '@(Are you sure you want to import selected template <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(IMPORT)', download);
+			EXEC('-approve/show', '@(Are you sure you want to import selected template <b>"{0}"</b>?)'.format(el.attrd2('name')), '"ti ti-cloud-download" @(IMPORT)', download);
 		};
 
 	});
