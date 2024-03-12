@@ -3,6 +3,8 @@
 	.CLASS .ui-search-used .endsection { display: none; }
 	.CLASS .endsection { margin-bottom: 15px; }
 	.CLASS .ui-search-used .lastclear { margin-bottom: 20px; }
+	.CLASS .badge-community { background-color: #62AECA; }
+	.ui-dark .CLASS .badge-community { background-color: #567e84; }
 </style>
 
 <ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
@@ -38,9 +40,9 @@
 								{{ fi }}
 								{{ foreach m in n.items }}
 								<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
-									<section{{ if m.community }} title="@(Community)"{{ fi }}>
+									<section title="{{ m.name }}">
 										<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
-										<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ m.name }}</div>
+										<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ if m.community }}<span class="badge badge-community badge-small mr5">@(Community)</span>{{ fi }}{{ m.name }}</div>
 									</section>
 								</figure>
 								{{ end }}
@@ -224,7 +226,7 @@
 			};
 
 			if (exports.data.approve)
-				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"fas fa-cloud-download" @(IMPORT)', download);
+				EXEC('-approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), '"ti ti-cloud-download" @(IMPORT)', download);
 			else
 				download();
 		};
