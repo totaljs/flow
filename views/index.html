@@ -300,8 +300,11 @@
 					opt.element = el;
 					opt.align = 'left';
 					opt.items = CLONE(model.menu);
+
 					var index = opt.items.findIndex('id', 'settings');
-					opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
+					if (index !== -1)
+						opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
+
 					opt.callback = exports.menu;
 					EXEC('-menu/show', opt);
 				} else {
@@ -405,7 +408,9 @@
 				var parent = el.closest('.flowstreams');
 
 				opt.items = [];
-				opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
+
+				if (user.sa)
+					opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 
 				if (common.totalversion > 4045 && item.stats) {
 					if (item.stats.paused) {
@@ -415,13 +420,17 @@
 						opt.items.push({ id: 'pause', name: '@(Pause)', icon: 'ti ti-pause red' });
 				}
 
-				opt.items.push('-');
+				if (opt.items.length)
+					opt.items.push('-');
 
 				if (top === W)
 					opt.items.push({ id: 'newtab', name: '@(Open in new tab)', icon: 'ti ti-window-alt' });
 
 				opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'ti ti-pencil' });
-				opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+
+				if (user.sa || user.permissions.includes('create'))
+					opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+
 				// opt.items.push({ id: 'copy', name: '@(Copy to clipboard)', icon: 'ti ti-copy' });
 				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'ti ti-copy' });
 				opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-download' });
@@ -429,9 +438,8 @@
 				if (common.workers)
 					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'ti ti-sync' });
 
-				opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
-
-				if (user.sa || user.permissions.include('remove')) {
+				if (user.sa || user.permissions.includes('remove')) {
+					opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 					opt.items.push('-');
 					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 				}
@@ -540,24 +548,29 @@
 			exports.mainmenu = function() {
 				var items = [];
 
-				if (user.sa || user.permissions.include('create')) {
+				if (user.sa || user.permissions.includes('create')) {
 					items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
 					items.push({ id: 'import', name: '@(Import FlowStream)', icon: 'ti ti-download', hidden: true });
 				}
 
 				items.push({ id: 'search', name: '@(Search)', icon: 'ti ti-search' });
-				items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download', hidden: true });
-				items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b', hidden: true });
-				items.push('-');
-				// items.push({ id: 'opensource', name: '@(Download templates)', icon: 'ti ti-cloud-download' });
+
+				if (user.sa) {
+					items.push({ id: 'templates', name: '@(Templates)', icon: 'ti ti-cloud-download', hidden: true });
+					items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b', hidden: true });
+				}
+
+				if (items.length)
+					items.push('-');
 
 				if (!model.openplatform)
 					items.push({ id: 'password', name: '@(Change credentials)', icon: 'ti ti-key' });
 
-				items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
-
-				if (model.bundle)
-					items.push({ id: 'update', name: '@(Update bundle)', icon: 'ti ti-sync', hidden: true });
+				if (user.sa) {
+					items.push({ id: 'settings', name: '@(Settings)', icon: 'ti ti-cog' });
+					if (model.bundle)
+						items.push({ id: 'update', name: '@(Update bundle)', icon: 'ti ti-sync', hidden: true });
+				}
 
 				if (model.plugins.length) {
 					var tmp = [];
@@ -575,6 +588,9 @@
 					items.push('-');
 					items.push({ id: 'logout', name: '@(Sign out)', icon: 'ti ti-sign-out red' });
 				}
+
+				if (items.last() === '-')
+					items.pop();
 
 				exports.set('menu', items);
 			};
