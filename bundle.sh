@@ -11,7 +11,7 @@ cp -a ../resources/ resources
 
 # cd ..
 total5 --bundle app.bundle
-cp app.bundle ../app.bundle
+cp app.bundle ../--bundles--/app.bundle
 
 cd ..
 rm -rf .bundle
