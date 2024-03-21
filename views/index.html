@@ -563,7 +563,7 @@
 				if (items.length)
 					items.push('-');
 
-				if (!model.openplatform)
+				if (!model.openplatform && !user.openplatform)
 					items.push({ id: 'password', name: '@(Change credentials)', icon: 'ti ti-key' });
 
 				if (user.sa) {

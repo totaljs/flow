@@ -42,6 +42,7 @@ ON('init', function() {
 		PREF.set('user', { id: UID(), login: GUID(10), password: password.sha256(CONF.cookie_secret), raw: password });
 	}
 
+	CONF.op_cookie = CONF.cookie;
 });
 
 ON('service', function(counter) {
