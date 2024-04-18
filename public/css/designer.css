@@ -169,7 +169,7 @@ body.ui-dark { background-color: #202020 !important; }
 .ui-flow .output[data-index="error"] { color: #E8483F; }
 
 .ui-dark .ui-flow .output-transform { background-color: rgba(255,255,255,0.04); }
-.ui-dark .ui-flow footer { border-top-color: rgba(62,62,62,0.9); }
+.ui-dark .ui-flow footer { border-top-color: rgba(62,62,62,0.5); }
 .ui-dark .ui-flow-h .input.connected { color: #FFF; }
 .ui-dark .ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.25); }
 .ui-dark .ui-flow-h summary .towindow { color: #D0D0D0; }
