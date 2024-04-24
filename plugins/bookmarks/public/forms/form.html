@@ -1,0 +1,49 @@
+<ui-component name="miniform" path="*form" config="if:CLASS;icon:ti ti-code;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:500" class="hidden CLASS" plugin="CLASS">
+	<div class="padding">
+		<ui-component name="input" path="?.name" config="required:1" class="m">@(Name)</ui-component>
+		<ui-component name="input" path="?.url" config="required:1;type:url" class="m" default="'https://'">@(URL address)</ui-component>
+		<div class="grid-3">
+			<div class="m">
+				<ui-component name="input" path="?.group" config="dirsource:?|groups;dircustom:1;dirempty:@(Without group)">@(Group)</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.icon" config="type:icon" default="'ti ti-link'">@(Icon)</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
+			</div>
+		</div>
+	</div>
+	<div class="padding bg-smoke">
+		<ui-component name="input" path="?.note">@(Note)</ui-component>
+	</div>
+	<nav>
+		<button name="submit"><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+		<button name="cancel">@(Cancel)</button>
+	</nav>
+</ui-component>
+
+<script>
+
+	PLUGIN(function(exports) {
+
+		var caller;
+
+		exports.reload = function(form) {
+			caller = exports.caller;
+			exports.set('|groups', caller.model.groups);
+			var model = exports.model;
+			form.reconfigure({ title: model.id ? '@(Update bookmark)' : '@(Create bookmark)' });
+		};
+
+		exports.submit = function(hide) {
+			var model = exports.model;
+			exports.tapi('bookmarks_{0} ERROR'.format(model.id ? 'update' : 'create'), model, function() {
+				caller.exec('refresh');
+				NUL('*form');
+			});
+		};
+
+	});
+
+</script>

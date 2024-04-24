@@ -1,0 +1,169 @@
+<style>
+	.CLASS .listing2 { column-gap: 7px; }
+	.CLASS .listing2 figure { margin-bottom: 7px; }
+	.CLASS .listing2 figure:hover { filter:brightness(0.9); }
+	.CLASS .controls { border-left: 1px solid rgba(0,0,0,0.1); border-right: 1px solid rgba(0,0,0,0.1); padding: 0 10px; }
+	.CLASS .icon { border-right: 1px solid rgba(0,0,0,0.1); margin-right: 8px; padding-right: 8px; }
+</style>
+
+<div class="virtualwire hidden" data-if="CLASS">
+	<ui-plugin>
+		<div class="pull-right">
+			<button class="exec b" data-exec="?/create"><i class="ti ti-plus-circle"></i>@(Create)</button>
+			<button class="exec" data-exec="?/refresh"><i class="ti ti-sync"></i>@(Refresh)</button>
+		</div>
+	</ui-plugin>
+</div>
+
+<ui-plugin config="aclass:1">
+	<ui-component name="viewbox" config="parent:auto;margin:0" class="invisible">
+		<div>
+			<ui-component name="empty" path="?.items" config="parent:auto">
+
+				<script type="text/html">
+					<div>@(You have not specified any bookmarks.)</div>
+					<div class="mt5">
+						<span class="link exec" data-exec="?/create"><i class="ti ti-plus-circle green mr5"></i>@(Create first)</span>
+					</div>
+				</script>
+
+				<div class="padding">
+
+					<div class="m">
+						<div style="max-width:250px;width:100%">
+							<ui-component name="searchinput" path="?.search" config="autofocus:1;placeholder:@(Search)"></ui-component>
+						</div>
+					</div>
+					<ui-component name="search" path="?.search" config="selector:figure;datasource:?.list">
+						<ui-bind path="?.list" config="template" class="block">
+							<script type="text/html">
+								{{ foreach g in value }}
+									{{ if g.name }}
+									<div class="caption m">
+										<label>{{ g.name }}</label>
+									</div>
+									{{ else }}
+									<div style="height:10px"></div>
+									{{ fi }}
+									<div class="listing2 m grid-4 grid-md-2 grid-sm-2 grid-xs-1">
+									{{ foreach m in g.items }}
+										<figure class="exec" data-exec="?/open" data-id="{{ m.id }}" data-search="{{ m.name }}">
+											<section>
+												<div class="pull-right ml10">
+													<span class="exec" data-exec="?/options" data-prevent="true"><i class="ti ti-cog"></i></span>
+												</div>
+												<div>
+													<div class="pull-left icon" style="{{ if m.color }}color:{{ m.color }}{{ fi }}"><i class="{{ m.icon }}"></i></div>
+													<div class="name">{{ m.name }}</div>
+													{{ if m.note }}<div class="help">{{ m.note }}</div>{{ fi }}
+												</div>
+											</section>
+										</figure>
+									{{ end }}
+									</div>
+								{{ end }}
+							</script>
+						</ui-bind>
+					</ui-component>
+				</div>
+
+			</ui-component>
+		</div>
+	</ui-component>
+</ui-plugin>
+
+<ui-component name="importer" path="*form" config="if:formCLASS;url:/~ID~/forms/form.html"></ui-component>
+
+<script>
+	PLUGIN(function(exports) {
+
+		exports.reload = function() {
+			BREADCRUMB.add('@(Bookmarks)', NAV.url);
+			exports.refresh();
+		};
+
+		exports.refresh = function() {
+
+			exports.tapi('bookmarks ERROR', function(response) {
+
+				var groups = {};
+
+				for (var item of response) {
+					if (!item.group)
+						item.group = '$';
+					if (groups[item.group])
+						groups[item.group].push(item);
+					else
+						groups[item.group] = [item];
+				}
+
+				var items = [];
+				var def = { name: '', items: groups.$ || [] };
+
+				delete groups.$;
+
+				for (var key in groups)
+					items.push({ name: key, items: groups[key] });
+
+				items.quicksort('name');
+
+				if (def.items.length)
+					items.unshift(def);
+
+				response.quicksort('name');
+				exports.set('groups', Object.keys(groups));
+				exports.set('list', items);
+				exports.set('items @hideloading', response);
+			});
+		};
+
+		exports.create = function() {
+			var path = exports.format('form');
+			SET(path + ' @default', {});
+			SET('*form', path);
+		};
+
+		exports.options = function(el) {
+
+			var model = exports.model;
+			var opt = {};
+			var id = ATTRD(el);
+			var item = model.items.findItem('id', id);
+
+			opt.element = el;
+			opt.items = [];
+
+			opt.items.push({ id: 'update', name: '@(Edit)', icon: 'ti ti-pencil' });
+			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-trash red' });
+
+			opt.align = 'right';
+			opt.callback = function(selected) {
+				switch(selected.id) {
+					case 'update':
+						var path = exports.format('form');
+						item = CLONE(item);
+						if (item.group === '$')
+							item.group = '';
+						SET(path + ' @reset', item);
+						SET('*form', path);
+						break;
+					case 'remove':
+						SETTER('approve/show', '@(Are you sure you want to remove <b>"{name}"</b>?)'.args(item), ':ti ti-trash: @(Remove)', function() {
+							exports.tapi('bookmarks_remove ERROR', { id: id }, () => exports.refresh());
+						});
+						break;
+				}
+			};
+
+			SETTER('menu/show', opt);
+		};
+
+		exports.open = function(el) {
+			var model = exports.model;
+			var id = ATTRD(el);
+			var item = model.items.findItem('id', id);
+			item && W.open(item.url);
+		};
+
+	});
+</script>
