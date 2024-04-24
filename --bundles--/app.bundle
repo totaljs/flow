@@ -1,6 +1,7 @@
 /controllers/                                                                                       : #
 /definitions/                                                                                       : #
 /modules/                                                                                           : #
+/plugins/                                                                                           : #
 /public/                                                                                            : #
 /resources/                                                                                         : #
 /schemas/                                                                                           : #
