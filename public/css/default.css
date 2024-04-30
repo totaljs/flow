@@ -162,7 +162,7 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 
 .landing .listing .icon { float: left; width: 50px; height: 50px; font-size: 25px; }
 .landing footer { height: 30px; background-color: #FFF; line-height: 30px; padding: 0; font-size: 11px; border-top: 1px solid #E0E0E0; }
-.landing footer span { float: left; padding: 0 0 0 10px; width: 20%; }
+.landing footer span { float: left; padding: 0 0 0 10px; width: 16%; }
 .landing footer span b { float: right; border-right: 1px solid #E0E0E0; padding-right: 10px; }
 .landing footer span:last-child b { border-right: 0; }
 

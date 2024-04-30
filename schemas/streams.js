@@ -181,8 +181,13 @@ NEWACTION('Streams/stats', {
 		internalstats.mm = 0;
 		internalstats.memory = process.memoryUsage().heapUsed;
 
-		for (var key in Flow.instances) {
-			var flow = Flow.instances[key];
+		internalstats.online = 0;
+
+		for (let key in Total.connections)
+			internalstats.online += Total.connections[key].online;
+
+		for (let key in Flow.instances) {
+			let flow = Flow.instances[key];
 			if (flow.flow && flow.flow.stats) {
 				internalstats.messages += flow.flow.stats.messages;
 				internalstats.mm += flow.flow.stats.mm;
