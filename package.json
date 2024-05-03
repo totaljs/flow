@@ -7,7 +7,7 @@
     "url": "https://github.com/totaljs/flow"
   },
   "dependencies": {
-    "total5": "beta"
+    "total5": "latest"
   },
   "scripts": {
     "start": "node index.js 8000"
@@ -19,8 +19,7 @@
   ],
   "author": "Total.js",
   "contributors": [
-    "Peter Širka",
-    "Martin Smola"
+    "Peter Širka"
   ],
   "license": "MIT"
 }
