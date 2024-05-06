@@ -3,6 +3,7 @@ exports.name = '@(Bookmarks)';
 exports.position = 6;
 exports.permissions = [{ id: 'bookmarks', name: 'Components' }];
 exports.visible = user => user.sa || user.permissions.includes('bookmarks');
+exports.import = 'toolbar.html';
 
 exports.install = function() {
 
