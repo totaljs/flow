@@ -42,24 +42,9 @@
 			<div>
 				<ui-component name="autofill">
 
-					@{if PREF.user.raw}
-					<div class="alert" style="margin-bottom:20px">
-						<div><i class="ti ti-user"></i>@(Default account:)</div>
-						<div class="kv" style="margin-top:10px">
-							<div class="key">@(User name)</div>
-							<div class="value b">@{PREF.user.login}</div>
-						</div>
-						<div class="kv">
-							<div class="key">@(Password)</div>
-							<div class="value b">@{PREF.user.raw}</div>
-						</div>
-						<button name="submit" class="button exec mt10" data-exec="?/fill">@(Fill in the form)</button>
-					</div>
-					@{fi}
-
 					<h2><i class="ti ti-totaljs mr5"></i>@{'%name'}</h2>
 					<ui-component name="enter" path="?">
-						<ui-component name="input" path="?.login" config="required:1;autofocus:1;autofill:1" default="''" class="m">@(User name)</ui-component>
+						<ui-component name="input" path="?.username" config="required:1;autofocus:1;autofill:1" default="''" class="m">@(User name)</ui-component>
 						<ui-component name="input" path="?.password" config="required:1;type:password;autofill:1" default="''" class="m">@(Password)</ui-component>
 						<ui-bind path="%error" config="show;template" class="error">
 							<script type="text/html">
