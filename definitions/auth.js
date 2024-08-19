@@ -16,12 +16,15 @@ AUTH(function($) {
 
     // Get the token from cookies
     var token = $.cookie(CONF.cookie);
+
     if (token) {
         var session = DECRYPTREQ($, token, CONF.cookie_secret);
 		console.log('session', session);
         
         // Fetch user data from NoSQL database
-        DB().one("nosql/users").where('username', session.username).callback(function(err, user) {
+        DB().one("nosql/users").where('id', session.id).callback(function(err, user) {
+            // console.log("CHECK USER", user);
+
             if (err || !user) {
                 BLACKLIST[$.ip] = (BLACKLIST[$.ip] || 0) + 1;
                 $.invalid();
@@ -29,7 +32,7 @@ AUTH(function($) {
             }
 
             // Check session validity
-            if (session && user.id === session.username && session.expire > NOW) {
+            if (session && user.id === session.id && session.expire > NOW) {
                 $.success({ sa: true });
                 return;
             } else {
@@ -61,11 +64,11 @@ ON('init', function() {
         if (err || !user) {
 			var users = {};
 			    users.id        = `U${UID()}`;
-			    users.username  = "ardiwijaya";
-			    users.password  = "123456".sha256(CONF.cookie_secret);
+			    users.username  = "admin";
+			    users.password  = "admin".sha256(CONF.cookie_secret);
 			    users.firstname = "Ardi";
 			    users.lastname  = "Wijaya";
-			    users.email     = "ardiwijaya@gmail.com"
+			    users.email     = "admin@admin.com"
 			    users.search    = (users.firstname + " " + users.lastname + " " + users.email).toLowerCase();
 			    users.dtcreated = NOW;
 			    users.role      = "admin";
