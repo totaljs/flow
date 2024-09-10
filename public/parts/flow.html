@@ -272,7 +272,7 @@
 		exports.create = function() {
 			common.form && NUL('common.form');
 			AJAX('GET /component.txt @showloading', function(response) {
-				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response });
+				SET('componenteditor @default', { flowstreamid: flowstreamid, body: response.args({ id: FUNC.makeid('c') }) });
 				SET('common.page @hideloading', 'componenteditor');
 			});
 		};
