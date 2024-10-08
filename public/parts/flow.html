@@ -1331,11 +1331,10 @@
 						SETTER('websocket/send', { TYPE: 'export', callback: ERROR(function(response) {
 							delete response.data.origin;
 							var data = JSON.stringify(response.data, null, '\t');
-							// cplipboard not supported on HTTP (ex.: localhost)
-							if (item.id === 'download' || !navigator?.clipboard?.writeText) {
+							if (item.id === 'download') {
 								SETTER('filesaver/save', flow.head.name + '.json', data, 'json');
 							} else {
-								navigator.clipboard.writeText(data).catch(err => console.error(err));
+								SETTER('clipboard/copy', data);
 								SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 							}
 						})});
