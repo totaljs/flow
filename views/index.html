@@ -622,7 +622,7 @@
 						break;
 
 					case 'logout':
-						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '/');
+						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '/?login=1');
 						break;
 
 					case 'import':
