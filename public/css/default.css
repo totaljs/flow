@@ -10,22 +10,18 @@ p { font-size: 13px; line-height: 16px; }
 
 .ui-dockable-layout { z-index: 1; }
 
-.mainmenu { width: 34px; height: 34px; float: left; font-size: 18px; line-height: 34px; text-align: center; margin: 11px 12px 0 0; cursor: pointer; background-color: #F0F0F0; border-radius: var(--radius); }
-.mainmenu:hover { background-color: #F5F5F5; }
+.mainmenu { width: 32px; height: 32px; float: left; font-size: 18px; line-height: 32px; text-align: center; margin: 14px 12px 0 0; cursor: pointer; background-color: var(--color); border-radius: var(--radius); }
+.mainmenu i { transform: scale(1); color: #FFF; }
 
-.ui-dark .mainmenu { background-color: #404040; }
-.ui-dark .mainmenu:hover { background-color: #484848; }
-
-header { height: 58px !important; line-height: 56px !important; background-color: #FFF; border: 0; border-bottom: 1px solid #E0E0E0; border-radius: 0; padding-left: 15px; padding-right: 15px; }
-
+header { height: 60px !important; line-height: 59px !important; background-color: #FBFBFD; border: 0; border-bottom: 1px solid #E0E0E0; border-radius: 0; padding-left: 15px; padding-right: 15px; }
 header .env { float: right; font-size: 14px; text-transform: uppercase; margin: 11px 0 0 10px; height: 34px; line-height: 34px; }
 header .console, header .search { width: 26px; height: 26px; float: right; font-size: 13px; line-height: 26px; text-align: center; margin: 16px 0 0 3px; cursor: pointer; border-radius: var(--radius); color: #999; }
 header .console:hover, header .search:hover { background-color: #F5F5F5; color: #000; }
 .ui-dark header .console, .ui-dark header .search { color: #777; }
 .ui-dark header .console:hover, .ui-dark header .search:hover { background-color: #484848; color: #FFF; }
 
-header > .tabs { float: left; font-size: 13px; margin: 11px 0 0 2px; line-height: 0; user-select: none; }
-header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 34px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
+header > .tabs { float: left; font-size: 13px; margin: 14px 0 0 2px; line-height: 0; user-select: none; }
+header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 32px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
 header > .tabs > div i { margin-right: 7px; color: #999; }
 header > .tabs > div .ti-times:hover { color: #E73323 !important; }
 header > .tabs > div.selected { background-color: #E9E9E9; color: #000; }
@@ -275,11 +271,11 @@ header label span { display: block; color: #999; font-size: 11px; font-weight: n
 .ui-dark .message-alert { border-color: #DEBA31; color: #D2BA62; }
 .ui-dark .message-success { border-color: #68B25B; color: #6DAD63; }
 
-.appmenu { width: 65px; border-right: 1px solid #E0E0E0; float: left; padding: 5px 0 0; background-color: #FFF; color: #777; }
-.appmenu .exec { height: 34px; width: 34px; font-size: 18px; line-height: 34px; text-align: center; margin: 11px 15px 0 15px; cursor: pointer; border-radius: var(--radius); }
+.appmenu { width: 60px; border-right: 1px solid #E0E0E0; float: left; padding: 5px 0 0; background-color: #FFF; color: #777; }
+.appmenu .exec { height: 32px; width: 32px; font-size: 14px; line-height: 32px; text-align: center; margin: 11px 15px 0 15px; cursor: pointer; border-radius: var(--radius); }
 .appmenu .selected, .appmenu .exec:hover { background-color: #F0F0F0; color: #000; }
 .appmenu hr { margin: 10px 10px; }
-.appmain { margin-left: 65px; }
+.appmain { margin-left: 60px; }
 
 .ui-dark .appmenu { border-right-color: #404040; background-color: #222; color: #777; }
 .ui-dark .appmenu .selected, .ui-dark .appmenu .exec:hover  { background-color: #303030; color: #FFF; }

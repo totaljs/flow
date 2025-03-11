@@ -86,6 +86,8 @@
 		common.logs.errors = { icon: 'ti ti-bug', name: '@(Errors)', encode: false, items: [] };
 		common.page = common.socket ? 'flow' : '';
 
+		@{if user.color}APPEARANCE({ color: '@{user.color}' });@{fi}
+
 		ON('@flag showloading', function() {
 			SETTER('loading/show');
 		});

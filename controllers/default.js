@@ -36,10 +36,12 @@ function index($) {
 	$.view('index', plugins);
 }
 
-
 function login($) {
-	if (CONF.op_reqtoken && CONF.op_restoken)
-		$.fallback(401);
-	else
+	if (CONF.op_reqtoken && CONF.op_restoken) {
+		if ($.query.login && CONF.openplatform)
+			$.redirect(CONF.openplatform);
+		else
+			$.fallback(401);
+	} else
 		$.view('login');
 }

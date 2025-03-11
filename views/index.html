@@ -57,7 +57,11 @@
 		<span class="search exec pull-right" data-exec="common/search" title="@(Search) (F1)"><i class="ti ti-search"></i></span>
 		<span class="console exec pull-right" data-exec="common/console" title="@(Server log)"><i class="ti ti-bug"></i></span>
 
+		@{if user.openplatform}
+		<span class="mainmenu"><a href="@{user.openplatform}"><i class="ti ti-menu"></i></a></span>
+		@{else}
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
+		@{fi}
 
 		<ui-bind path="common.tabs" config="template:div" class="tabs block">
 			<script type="text/html">
@@ -156,6 +160,9 @@
 		common.templates = '@{PREF.templates}';
 		common.bundle = '@{F.isBundle}' === 'true';
 		common.cl = {}; // for additional codelists
+
+		if (user.color)
+			APPEARANCE({ color: user.color });
 
 		document.title += ' (' + common.env + ')';
 
@@ -548,6 +555,8 @@
 
 			exports.mainmenu = function() {
 				var items = [];
+
+				items.push({ id: 'flows', name: '@(Flow)', icon: 'ti ti-home' });
 
 				if (user.sa || user.permissions.includes('create')) {
 					items.push({ id: 'create', name: '@(Create new)', icon: 'ti ti-plus-circle green' });
