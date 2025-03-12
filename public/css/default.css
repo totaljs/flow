@@ -3,6 +3,11 @@ body { background-color: #FFF; }
 body.ui-dark { background-color: #202020 !important; }
 p { font-size: 13px; line-height: 16px; }
 .monospace { font-family: Menlo, Consolas, monospace; }
+
+:root {
+	--radius: 5px;
+}
+
 .color { color: var(--color); }
 
 .ml5 { margin-left: 5px; }

@@ -18,6 +18,7 @@ body.ui-dark { background-color: #202020 !important; }
 
 :root {
 	--monospace: Menlo, Consolas, monospace;
+	--radius: 5px;
 }
 
 .color { color: var(--color); }
