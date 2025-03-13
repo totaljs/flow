@@ -26,10 +26,10 @@ header .console:hover, header .search:hover { background-color: #F5F5F5; color: 
 .ui-dark header .console:hover, .ui-dark header .search:hover { background-color: #484848; color: #FFF; }
 
 header > .tabs { float: left; font-size: 13px; margin: 14px 0 0 2px; line-height: 0; user-select: none; }
-header > .tabs > div { position: relative; display: inline-block; background-color: #F8F8F8; line-height: 32px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #777; }
+header > .tabs > div { position: relative; display: inline-block; background-color: #F1F1F1; line-height: 32px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 5px; color: #999; }
 header > .tabs > div i { margin-right: 7px; color: #999; }
 header > .tabs > div .ti-times:hover { color: #E73323 !important; }
-header > .tabs > div.selected { background-color: #E9E9E9; color: #000; }
+header > .tabs > div.selected { background-color: #E0E0E0; color: #000; }
 header .ui-searchinput { line-height: 24px; height: 26px; border-radius: var(--radius); width: 180px; float: right; margin: 12px 0 0 10px; background-color: #F8F8F8; border: 1px solid #E0E0E0 !important; }
 header .ui-searchinput input { line-height: 24px; height: 24px; }
 header .ui-searchinput span { line-height: 24px; }

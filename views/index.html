@@ -39,6 +39,7 @@
 	<ui-component name="loading" config="style:2"></ui-component>
 	<ui-component name="markdown" config="highlight:false;charts:false"></ui-component>
 	<ui-component name="errorhandler"></ui-component>
+	<ui-component name="hashchange"></ui-component>
 
 	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
 		@(Drag &amp; Drop FlowStream)
@@ -98,7 +99,7 @@
 		<ui-component name="ready" config="rclass:invisible" class="invisible">
 
 			<div class="landing">
-				<ui-component name="parts" path="common.tabs" config="parent:window;margin:60"></ui-component>
+				<ui-component name="parts" path="common.tabs" config="parent:window;margin:60;focus:common/selected"></ui-component>
 			</div>
 
 			<ui-component name="importer" path="common.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
@@ -251,6 +252,7 @@
 
 			var model = exports.model;
 			var checksum;
+			var loaded = false;
 
 			(function() {
 				model.plugins.quicksort('position');
@@ -290,10 +292,22 @@
 					exports.set('groups', arr);
 					exports.set('groupsform', form);
 					exports.set('items', response);
+
+					if (!loaded) {
+						loaded = true;
+						if (location.hash) {
+							let item = response.findItem('id', location.hash.substring(1));
+							if (item)
+								setTimeout(() => exports.open(item), 500);
+						}
+					}
+
+
 				});
 			};
 
 			exports.focus = function(el) {
+
 				var id = ATTRD(el);
 
 				if (id === 'main') {
@@ -316,8 +330,20 @@
 					opt.callback = exports.menu;
 					EXEC('-menu/show', opt);
 				} else {
+					location.hash = id;
 					exports.nul('page');
 					EXEC('-parts/focus', id);
+				}
+			};
+
+			exports.selected = function(tab) {
+				if (tab) {
+					if (tab.id === 'main') {
+						location.hash = '';
+						if (model.page !== 'flows')
+							exports.set('page', 'flows');
+					} else
+						location.hash = tab.id;
 				}
 			};
 
@@ -353,6 +379,7 @@
 				e.stopPropagation();
 				e.preventDefault();
 
+				location.hash = '';
 				EXEC('-parts/close', ATTRD(el));
 
 				setTimeout(function() {
@@ -382,6 +409,7 @@
 				var flow = model.items.findItem('id', id);
 				var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id) + common.openplatform;
 
+				location.hash = id;
 				item = {};
 				item.id = id;
 				item.icon = flow.icon;
@@ -610,7 +638,9 @@
 				switch (id) {
 
 					case 'flows':
+						location.hash = '';
 						exports.set('page', 'flows');
+						EXEC('-parts/focus', 'main');
 						break;
 
 					case 'update':
@@ -813,6 +843,7 @@
 			exports.mainmenu();
 
 		});
+
 
 	</script>
 
