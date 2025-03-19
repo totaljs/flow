@@ -58,7 +58,7 @@
 		<span class="search exec pull-right" data-exec="common/search" title="@(Search) (F1)"><i class="ti ti-search"></i></span>
 		<span class="console exec pull-right" data-exec="common/console" title="@(Server log)"><i class="ti ti-bug"></i></span>
 
-		@{if user.openplatform}
+		@{if user.openplatform && !user.iframe}
 		<span class="mainmenu"><a href="@{user.openplatform}"><i class="ti ti-menu"></i></a></span>
 		@{else}
 		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
