@@ -25,6 +25,20 @@ ROUTE('FILE /openplatform.json', function($) {
 	$.json(model);
 });
 
+ROUTE('#401', function($) {
+
+	// Auto redirect for the OpenPlatform
+	if (!$.user && (CONF.op_reqtoken || CONF.op_restoken)) {
+		if (!$.query.login && CONF.openplatform) {
+			$.redirect(QUERIFY(CONF.openplatform, { redirect: $.address }));
+			return;
+		}
+	}
+
+	$.invalid(401);
+
+});
+
 // Auth method
 Data.auth = function($) {
 
@@ -93,6 +107,7 @@ Data.auth = function($) {
 			session.notification = Notification;
 			var hostname = opt.url.substring(0, opt.url.indexOf('/', 10));
 			session.iframe = session.iframe === false ? null : (hostname + '/iframe.js');
+			CONF.openplatform = hostname;
 			Data.sessions[token] = session;
 			Data.oncreate && Data.oncreate(session);
 			$.success(session);
