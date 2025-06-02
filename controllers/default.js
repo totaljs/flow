@@ -12,16 +12,16 @@ function index($) {
 		return;
 	}
 
-	var plugins = [];
-	var hostname = $.hostname();
+	let plugins = [];
+	let hostname = $.hostname();
 
 	if (CONF.url !== hostname)
 		CONF.url = hostname;
 
-	for (var key in F.plugins) {
-		var item = F.plugins[key];
+	for (let key in F.plugins) {
+		let item = F.plugins[key];
 		if (!item.visible || item.visible($.user)) {
-			var obj = {};
+			let obj = {};
 			obj.id = item.id;
 			obj.position = item.position;
 			obj.name = TRANSLATE($.user.language || '', item.name);
