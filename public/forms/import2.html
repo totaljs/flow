@@ -1,0 +1,61 @@
+<ui-component name="miniform" path="*form" config="if:CLASS;title:@(Link component);icon:ti ti-file-import;autofocus:true;closeesc:1;submit:?/submit;width:400" class="hidden invisible CLASS" plugin="CLASS">
+	<div class="padding">
+		<ui-component name="input" path="?.url" config="type:url;monospace:1;required:1" default="'https://'" class="m">@(URL address)</ui-component>
+		<p>@(Enter the URL of a component or your external integration.)</p>
+	</div>
+	<nav>
+		<ui-component name="validate" path="?" config="changes:1;output:?.is">
+			<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+			<button name="cancel">@(Cancel)</button>
+		</ui-component>
+	</nav>
+</ui-component>
+
+<script>
+	PLUGIN(function(exports) {
+
+		var caller;
+
+		exports.reload = function(com) {
+			if (!caller)
+				caller = exports.caller;
+		};
+
+		exports.checkhtml = function(html) {
+			var m = html.match(/exports\.(id|name|version|icon)(\s)?\=.*?;/g);
+			if (m) {
+				var opt = {};
+				try {
+					new Function('exports', m.join('\n'))(opt);
+					if (opt.name && opt.version && opt.icon)
+						return opt;
+				} catch {}
+			}
+		};
+
+		exports.submit = function(hide) {
+			let model = exports.model;
+			exports.ajax('GET ' + model.url, function(response) {
+				if (typeof(response) === 'string') {
+					let meta = exports.checkhtml(response);
+					if (meta) {
+						let model = {};
+						model.id = meta.id || '';
+						model.body = response.trim();
+						SETTER('websocket/send @showloading', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
+							SETTER('loading/hide', 200);
+							if (response.error) {
+								SETTER('notify/warning', '@(The component <b>"{0}"</b> is invalid: {1}.)'.format(meta.name.encode(), response.error.encode()));
+							} else {
+								SETTER('notify/success', '@(The component <b>"{0}"</b> has been installed.)'.format(meta.name.encode()));
+								hide();
+							}
+						}});
+					} else
+						SETTER('notify/warning', '@(Invalid response)'.format(meta.name.encode()));
+				}
+			});
+		};
+
+	});
+</script>

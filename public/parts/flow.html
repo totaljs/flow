@@ -121,11 +121,12 @@
 <!-- A temporary repository for components settings -->
 <div id="flow_repo" class="hidden"></div>
 
-<ui-component name="importer" path="common.form" config="if:groupform;url:@{#}/forms/group.html"></ui-component>
-<ui-component name="importer" path="common.form" config="if:newflow;url:@{#}/forms/new.html"></ui-component>
-<ui-component name="importer" path="common.form" config="if:noteform;url:@{#}/forms/note.html"></ui-component>
-<ui-component name="importer" path="common.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
-<ui-component name="importer" path="common.form" config="if:formendpoint;url:@{#}/forms/endpoint.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:groupform;url:@{#}/forms/group.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:flowimport;url:@{#}/forms/import2.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:newflow;url:@{#}/forms/new.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:noteform;url:@{#}/forms/note.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
+<ui-component name="importer" path="*form" config="if:formendpoint;url:@{#}/forms/endpoint.html"></ui-component>
 
 <script>
 
@@ -215,6 +216,7 @@
 
 			opt.items.push({ id: 'create', name: '@(Create component)', icon: 'ti ti-code' });
 			opt.items.push({ id: 'opensource', name: '@(Download components)', icon: 'ti ti-download' });
+			opt.items.push({ id: 'import', icon: 'ti ti-share-alt', name: '@(Link component)' });
 			opt.items.push({ id: 'link', name: '@(Link endpoint)', icon: 'ti ti-network' });
 			opt.items.push('-');
 			opt.items.push({ id: 'sources', name: '@(TMS sources)', icon: 'ti ti-code-branch' });
@@ -222,6 +224,10 @@
 			opt.callback = function(item) {
 
 				switch (item.id) {
+					case 'import':
+						SET('flowimport @default', {});
+						SET('*form', 'flowimport');
+						break;
 					case 'link':
 						exports.link();
 						break;
