@@ -1,4 +1,4 @@
-const Fields = '*name,*components,components2,*templates,token,darkmode:Boolean,notify:Boolean,*env:{dev|test|prod},op_reqtoken,op_restoken,items:[*id:String, value:Object]'.toJSONSchema();
+const Fields = '*name,*components,components2,*templates,token,darkmode:Boolean,backup:Boolean,notify:Boolean,*env:{dev|test|prod},op_reqtoken,op_restoken,items:[*id:String, value:Object]'.toJSONSchema();
 
 NEWACTION('Settings/read', {
 	name: 'Read Settings',
