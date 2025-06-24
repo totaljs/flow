@@ -1660,7 +1660,7 @@
 				opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 			}
 
-			if (!TYPES[component.type] && (!meta || meta.protected !== false)) {
+			if (!TYPES[component.type] && (!meta || meta.protected !== true)) {
 				opt.items.push('-');
 				opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 			}
