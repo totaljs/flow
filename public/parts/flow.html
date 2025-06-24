@@ -1081,7 +1081,7 @@
 			W.flowinstances.init(self.name, self, el);
 		};
 
-		var replacekeywords = function(str, keywords) {
+		var replacekeywords = function(str, keywords, dollar) {
 
 			var allowed = [' ', '\'', '"', '.', '>', '<', '=', '+', '-', ',', ';', '!', '\n', '\t', ':', ' ', '_'];
 
@@ -1093,19 +1093,21 @@
 					reg = flow.regexp[key] = new RegExp('\\$' + key, 'g');
 
 				str = str.replace(reg, keywords[key]);
-
-				var index = 0;
-				while (true) {
-					index = str.indexOf(key, index);
-					if (index === -1)
-						break;
-					var b = str.charAt(index - 1);
-					var e = str.charAt(index + key.length);
-					if ((!b || allowed.includes(b)) && (!e || allowed.includes(e))) {
-						str = str.substring(0, index) + keywords[key] + str.substring(index + key.length);
-						index += keywords[key].length;
-					} else
-						index += key.length;
+				// Old declaration without "$" character
+				if (!dollar) {
+					var index = 0;
+					while (true) {
+						index = str.indexOf(key, index);
+						if (index === -1)
+							break;
+						var b = str.charAt(index - 1);
+						var e = str.charAt(index + key.length);
+						if ((!b || allowed.includes(b)) && (!e || allowed.includes(e))) {
+							str = str.substring(0, index) + keywords[key] + str.substring(index + key.length);
+							index += keywords[key].length;
+						} else
+							index += key.length;
+					}
 				}
 			}
 
@@ -1135,9 +1137,13 @@
 
 				var com = response[i];
 				var name = com.name.slug().replace(/\-/g, '');
+				var vars = { UID: '{0}', ID: com.id, ICON: com.icon, NAME: com.name, TOUCH: 'flowinstances.instances.{0}', STATUS: 'flow.status.{0}', CONFIG: 'flow.config.{0}', [clsname]: 'f-' + name };
 
 				checksums_tmp[com.id] = HASH(com.html);
-				com.html = replacekeywords(com.html || '', { UID: '{0}', ID: com.id, ICON: com.icon, NAME: com.name, TOUCH: 'flowinstances.instances.{0}', STATUS: 'flow.status.{0}', CONFIG: 'flow.config.{0}', [clsname]: 'f-' + name });
+				com.html = replacekeywords(com.html || '', vars);
+
+				if (com.settings)
+					com.settings = replacekeywords(com.settings || '', vars, true);
 
 				if (com.js) {
 					var tmp = replacekeywords(com.js, { ID: com.id, [clsname]: 'f-' + name, ICON: com.icon, NAME: com.name });
