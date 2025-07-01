@@ -34,7 +34,7 @@ exports.install = function() {
 
 	// Clipboard
 	ROUTE('+API     ?    -clipboard_export/id              --> Clipboard/export');
-	ROUTE('+API     ?    +clipboard_import       <300s     --> Clipboard/import');
+	ROUTE('+API     ?    +clipboard_import    <10MB <300s  --> Clipboard/import');
 
 	// Socket
 	ROUTE('+SOCKET  /flows/{id}/ <8MB', socket); // max. 8 MB
