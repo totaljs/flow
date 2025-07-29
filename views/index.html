@@ -661,7 +661,7 @@
 						break;
 
 					case 'logout':
-						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '/?login=1');
+						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '@{#}/?login=1');
 						break;
 
 					case 'import':
