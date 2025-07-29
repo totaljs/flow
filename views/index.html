@@ -168,7 +168,7 @@
 		document.title += ' (' + common.env + ')';
 
 		(function() {
-			DEF.api = '@{#}@{CONF.$api}' + common.openplatform;
+			DEF.api = '@{CONF.$api}' + common.openplatform;
 		})();
 
 		ON('@flag showloading', function() {
