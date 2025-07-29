@@ -84,7 +84,7 @@
 
 			exports.submit = function() {
 				AJAX('POST @{#}/fapi/auth/', exports.form, ERROR(function(response) {
-					location.href = '/' + ($('.alert').length ? '?welcome=1' : '');
+					location.href = '@{#}/' + ($('.alert').length ? '?welcome=1' : '');
 				}, function(response) {
 					SET('%error', response[0].error);
 				}));
