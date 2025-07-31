@@ -2,10 +2,10 @@
 	<script type="text/html">
 		{{ foreach m in value }}
 			{{ if !m.hidden }}
-			<ui-component name="page" path="common.page" config="if:plugin{{ m.id }};url:/_{{ m.id }}/index.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
+			<ui-component name="page" path="common.page" config="if:plugin{{ m.id }};url:@{#}/_{{ m.id }}/index.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
 			{{ if m.routes }}
 				{{ foreach route in m.routes }}
-				<ui-component name="page" path="common.page" config="if:plugin{{ m.id }}{{ route.html }};url:/_{{ m.id }}/{{ route.html }}.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
+				<ui-component name="page" path="common.page" config="if:plugin{{ m.id }}{{ route.html }};url:@{#}/_{{ m.id }}/{{ route.html }}.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
 				{{ end }}
 			{{ fi }}
 			{{ fi }}
