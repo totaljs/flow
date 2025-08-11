@@ -128,17 +128,37 @@ ON('ready', function() {
 	else
 		PREF.name = CONF.name;
 
-	if (!PREF.env)
-		PREF.env = 'dev';
+	if (PREF.env) {
+		CONF.env = PREF.env;
+	} else {
+		if (CONF.env)
+			PREF.env = CONF.env;
+		else
+			PREF.env = 'dev';
+	}
 
 	if (PREF.backup)
 		CONF.backup = PREF.backup;
 
-	if (!PREF.components)
-		PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
+	if (PREF.components) {
+		CONF.components = PREF.components;
+	} else {
+		if (CONF.components) {
+			PREF.components = CONF.components;
+		} else {
+			PREF.components = 'https://cdn.totaljs.com/flowstream/webcomponents/db.json';
+		}
+	}
 
-	if (!PREF.templates)
-		PREF.templates = 'https://cdn.totaljs.com/flowstream/templates/db.json';
+	if (PREF.templates) {
+		CONF.templates = PREF.templates;
+	} else {
+		if (CONF.templates) {
+			PREF.templates = CONF.templates;
+		} else {
+			PREF.templates = 'https://cdn.totaljs.com/flowstream/templates/db.json';
+		}
+	}
 
 	if (!PREF.token)
 		PREF.token = GUID(30);
