@@ -7,6 +7,10 @@ cookie_secret   (generate)  : 10
 $api                        : /fapi/
 $customtitles               : true
 
+// env                         : dev
+// components                  : https://cdn.totaljs.com/flowstream/templates/db.json
+// templates                   : https://cdn.totaljs.com/flowstream/webcomponents/db.json
+
 // directory                   : /absolute/path/to/flow/database/
 
 // Disables: Worker/Fork
