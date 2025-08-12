@@ -83,7 +83,7 @@
 				});
 			};
 
-			queue.push(next => download('https://cdn.totaljs.com/flowstream/templates/db.json', next));
+			queue.push(next => download(common.templates, next));
 
 			queue.wait(function(fn, next) {
 				fn(next);
