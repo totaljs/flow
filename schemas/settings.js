@@ -131,10 +131,11 @@ ON('ready', function() {
 	if (PREF.env) {
 		CONF.env = PREF.env;
 	} else {
-		if (CONF.env)
+		if (CONF.env) {
 			PREF.env = CONF.env;
-		else
+		} else {
 			PREF.env = 'dev';
+		}
 	}
 
 	if (PREF.backup)
