@@ -1139,6 +1139,9 @@
 				var name = com.name.slug().replace(/\-/g, '');
 				var vars = { UID: '{0}', ID: com.id, ICON: com.icon, NAME: com.name, TOUCH: 'flowinstances.instances.{0}', STATUS: 'flow.status.{0}', CONFIG: 'flow.config.{0}', [clsname]: 'f-' + name };
 
+				if (!com.html)
+					com.html = '<header><i class="$ICON"></i>$NAME</header>';
+
 				checksums_tmp[com.id] = HASH(com.html);
 				com.html = replacekeywords(com.html || '', vars);
 
