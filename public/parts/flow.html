@@ -131,7 +131,7 @@
 <script>
 
 	if (!W.flow)
-		W.flow = { data: {}, note: {}, config: {}, variables: {}, variables2: {}, status: {}, errors: {}, calls: {}, callbacks: {}, head: {}, regexp: {} };
+		W.flow = { data: {}, note: {}, config: {}, variables: {}, variables2: {}, status: {}, errors: {}, calls: {}, actions: {}, callbacks: {}, head: {}, regexp: {} };
 
 	Thelpers.instancecount = function(id) {
 		var count = 0;
@@ -206,6 +206,16 @@
 			}
 			flow.calls[callbackid] = callback;
 			SETTER('websocket/send', { TYPE: 'call', id: id, data: data, callbackid: callbackid });
+		};
+
+		exports.action = function(id, data, callback) {
+			var callbackid = GUID(10);
+			if (typeof(data) === 'function') {
+				callback = data;
+				data = null;
+			}
+			flow.actions[callbackid] = callback;
+			SETTER('websocket/send', { TYPE: 'action', id: id, data: data, callbackid: callbackid });
 		};
 
 		exports.add = function(el) {
@@ -1480,6 +1490,14 @@
 					if (fn) {
 						fn(msg.data);
 						delete flow.calls[msg.id];
+					}
+					break;
+
+				case 'flow/action':
+					var fna = flow.actions[msg.id];
+					if (fna) {
+						fna(msg.error, msg.data);
+						delete flow.actions[msg.id];
 					}
 					break;
 
