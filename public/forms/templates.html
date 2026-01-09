@@ -17,12 +17,12 @@
 	.ui-dark .CLASS .listing-download section { border-color: #404040; background-color: #303030; }
 </style>
 
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-flow green;title:@(Templates);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden ~PATH~" plugin="~PATH~">
+<ui-component name="box" path="*form" config="if:CLASS;icon:ti ti-flow green;title:@(Templates);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
 	<div>
 		<div class="search">
 			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search components)"></ui-component>
 		</div>
-		<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
+		<ui-component name="viewbox" path="*form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
 			<div class="padding">
 				<ui-component name="search" path="?.search" config="selector:figure;datasource:?.list">
 					<ui-bind path="?.list" config="template">
@@ -139,21 +139,21 @@
 				exports.ajax('GET ' + url, function(response) {
 					if (response && response.components && response.id && response.name && response.design) {
 						var data = STRINGIFY(response);
-						exports.tapi('clipboard_import @showloading ERROR', { data: data }, function(response) {
+						exports.tapi('Streams|import @showloading ERROR', { data: data }, function(response) {
 							caller.refresh();
 							setTimeout(function() {
-								exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+								exports.tapi('Streams|read ERROR', { id: response.value }, function(response) {
 									SET('streamform @reset @hideloading', response);
-									SET('common.form', 'streamform');
+									SET('*form', 'streamform');
 								});
 							}, 1000);
 						});
 					} else
-						EXEC('-message/warning', '@(Invalid data)');
+						SETTER('message/warning', '@(Invalid data)');
 				});
 			};
 
-			EXEC('-approve/show', '@(Are you sure you want to import selected template <b>"{0}"</b>?)'.format(el.attrd2('name')), '"ti ti-cloud-download" @(IMPORT)', download);
+			SETTER('approve/show', '@(Are you sure you want to import selected template <b>"{0}"</b>?)'.format(name), '"ti ti-cloud-download" @(IMPORT)', download);
 		};
 
 	});

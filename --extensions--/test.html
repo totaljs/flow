@@ -1,0 +1,31 @@
+<!-- This extension will be applied for all FlowStreams -->
+
+<script total>
+
+	NEWACTION('Click', {
+		action: function($, model) {
+			$.success();
+		}
+	});
+
+</script>
+
+<script>
+
+	ON('start', function(flow) {
+		flow.push('toolbar', { name: 'Test', icon: 'ti ti-flask', callback: () => flow.action('Click', (err, res) => alert(JSON.stringify(res))) });
+	});
+
+	ON('menu', function(flow, opt) {
+		opt.items.push({ name: 'Test plugin', icon: 'ti ti-flask', callback: () => alert('TEST') });
+	});
+
+	ON('contextmenu', function(flow, opt) {
+		opt.items.push({ name: 'Test plugin', icon: 'ti ti-flask', callback: () => alert('TEST') });
+	});
+
+	ON('contextmenu2', function(flow, opt) {
+		opt.items.push({ name: 'Test plugin', icon: 'ti ti-flask', callback: () => alert('TEST') });
+	});
+
+</script>

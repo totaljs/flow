@@ -1,0 +1,3345 @@
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>---</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+	<meta name="robots" content="all,follow" />
+	<link rel="stylesheet" href="/spa.min@20.css" />
+	<script src="/spa.min@20.js"></script>
+	<script src="@{REPO.ui}"></script>
+	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+	<style>
+
+		html,body { padding: 0; margin: 0; overflow: hidden; }
+		body { background-color: #FFF; }
+
+		:root {
+			--radius: 5px;
+		}
+
+		.button { background-color: #F6F6F6; border-radius: var(--radius); border: 1px solid #E0E0E0; outline: 0; cursor: pointer; width: 100%; display: block; color: #000; user-select: none; height: 28px; font-size: 12px; }
+		.button-inline { position: relative; display: inline-block; width: auto; padding: 0 20px; }
+		.button i { margin-right: 5px; }
+		.button:hover { background-color: #F0F0F0; }
+		.button:disabled { background-color: #E0E0E0; color: #777; cursor: not-allowed; box-shadow: none; border-color: #E0E0E0; }
+
+		.ui-flow header .button { width: auto; }
+		.ui-flow header { padding: 8px; font-size: 13px; }
+		.ui-flow header > i { color: #FFF; margin-right: 5px; width: 18px; height: 18px; line-height: 18px; border-radius: 3px; text-align: center; font-size: 11px; vertical-align: middle; }
+		.ui-flow header > i.ti { transform: scale(1); font-size: 14px; }
+		.ui-flow .component { box-shadow: 2px 2px 13px rgba(0,0,0,0.15); border-width: 0; max-width: 250px; border-color: #FFF; }
+		.ui-flow .component.isnewbie:before { content: '\ea05'; color: #E8483F; position: absolute; left: 0; top: -25px; font-family: 'totaljs'; }
+		.ui-flow .component.iserror { border-color: #E8483F; border-bottom-width: 2px; }
+		.ui-flow .component.iserror:before { content: '\e93a'; color: #E8483F; position: absolute; left: 0; top: -25px; font-family: 'totaljs'; }
+		.ui-flow .component-selected { outline: 2px solid var(--color) !important; }
+		.ui-dark .ui-flow .component-selected { border-color: var(--color) !important; }
+		.ui-flow-h summary { padding: 5px 8px 12px; font-size: 13px; font-style: normal; border-top: 3px solid rgba(0,0,0,0.1); display: block; position: relative; }
+		.ui-flow-h summary > div { max-height: 200px; }
+		.ui-flow-h summary .towindow { position: absolute; top: 5px; right: 5px; color: #000; cursor: pointer; }
+		.ui-flow-h summary > div { padding-top: 7px; width: auto; }
+		.ui-flow-h summary > span { font-size: 11px; color: #777; }
+		.ui-flow-h .output { line-height: 22px; font-size: 11px; }
+		.ui-flow-h .output .component-io { line-height: 22px; margin-top: 5px; margin-right: -13px; }
+		.ui-flow-h .input { line-height: 22px; font-size: 11px; }
+		.ui-flow-h .input .component-io { line-height: 22px; margin-top: 5px; margin-left: -13px; }
+		.ui-flow-h .input.connected { font-weight: bold; }
+		.ui-flow-h .output.connected { font-weight: bold; }
+		.ui-flow .connection { stroke-width: 2.5px; }
+		.ui-flow .content { padding: 0; min-width: 150px; }
+		.ui-flow footer { border-top: 1px solid rgba(0,0,0,0.1); }
+		.ui-flow .output.connected .component-io.disabled, .ui-flow .input.connected .component-io.disabled, .ui-flow .output .component-io.disabled, .ui-flow .input .component-io.disabled { width: 12px !important; height: 12px !important; margin-top: 5px !important; }
+		.ui-flow .output-transform { background-color: rgba(0,0,0,0.04); }
+		.ui-flow .output[data-index="error"] { color: #E8483F; }
+		.ui-flow .component-io { transition: 0.3s all; width: 11px; height: 11px; line-height: 11px; }
+		.ui-flow .output.connected .component-io.disabled,.ui-flow .input.connected .component-io.disabled,.ui-flow .output .component-io.disabled,.ui-flow .input .component-io.disabled { background-color: red !important; color: #FFF; border-radius: 100px; width: 16px; height: 16px; margin-top: 6px; }
+		.ui-flow-grid { stroke: #F3F3F3; }
+		.ui-flow .area { border-radius: var(--radius); }
+		.ui-dark .ui-flow-grid { stroke: #202020; }
+
+		.connection-type-transform.highlight.connection-selected { stroke-dasharray: 4; }
+		.connection-type-transform.connection-selected { stroke-dasharray: 10; }
+
+		.ui-windows-item { box-shadow: 0 2px 20px rgba(0,0,0,0.1); background: #FFF url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzgiIGhlaWdodD0iMzgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IHgxPSI4LjA0MiUiIHkxPSIwJSIgeDI9IjY1LjY4MiUiIHkyPSIyMy44NjUlIiBpZD0iYSI+PHN0b3Agc3RvcC1jb2xvcj0iI0EwQTBBMCIgc3RvcC1vcGFjaXR5PSIwIiBvZmZzZXQ9IjAlIi8+PHN0b3Agc3RvcC1jb2xvcj0iI0EwQTBBMCIgc3RvcC1vcGFjaXR5PSIuNjMxIiBvZmZzZXQ9IjYzLjE0NiUiLz48c3RvcCBzdG9wLWNvbG9yPSIjQTBBMEEwIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxIDEpIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOCIgc3Ryb2tlPSJ1cmwoI2EpIiBzdHJva2Utd2lkdGg9IjIiPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBmcm9tPSIwIDE4IDE4IiB0bz0iMzYwIDE4IDE4IiBkdXI9IjAuOXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+PC9wYXRoPjxjaXJjbGUgZmlsbD0iI0EwQTBBMCIgY3g9IjM2IiBjeT0iMTgiIHI9IjEiPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBmcm9tPSIwIDE4IDE4IiB0bz0iMzYwIDE4IDE4IiBkdXI9IjAuOXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+PC9jaXJjbGU+PC9nPjwvc3ZnPg==) no-repeat 50% 50%; background-size: 80px 80px; }
+		.ui-windows-item .ui-viewbox { background-color: #FFF; }
+		.ui-dark .ui-windows-item .ui-viewbox { background-color: #151515; }
+
+		.clickable { cursor: pointer; }
+		.component figure > header > .button { float: right; height: 20px; font-size: 11px; padding: 0 5px; }
+		.component figure > header > .button { background-color: #FFF; color: #111; border-color: #A0A0A0; }
+		.ui-dark .component figure > header > .button { background-color: #202020; color: #FFF; border-color: #888; }
+
+		.markdown p { color: #000; }
+		.markdown pre { background-color: #F8F8F8; padding: 10px; border-radius: var(--radius); margin: 0; }
+		.markdown-small .markdown p { font-size: 14px !important; }
+
+		.ui-dark .markdown p { color: #999; }
+		.ui-dark .markdown pre { background-color: #404040; }
+
+		.controls { float: right; margin-right: 10px; }
+		.controls button { width: 22px; height: 22px; border: 0; background-color: #FFF; line-height: 22px; padding: 0 5px; border-radius: var(--radius); margin-left: 2px; }
+		.controls button:first-child { margin-left: 0; }
+		.controls button:hover { background-color: #F0F0F0; }
+
+		.colorize { animation: colorize 1.3s infinite alternate; }
+
+		@keyframes colorize {
+			0% { color: #d7cd17; }
+			15% { color: #83c83c; }
+			30% { color: #2e67c5; }
+			45% { color: #b92865; }
+			60% { color: #62c9ca; }
+			75% { color: #FFF; }
+			100% { color: #8c42f6; }
+		}
+
+		.feditor { background: #F8F8F8; }
+		.ui-dark .feditor { background: #181818; }
+
+		.fheader { height: 50px; padding: 0 10px; border-bottom: 1px solid #E0E0E0; background-color: transparent; }
+		.fheader .info { float: right; font-size: 11px; color: #999; text-align: right; line-height: 14px; padding-top: 10px; }
+		.fheader label, .fheader > span { line-height: 50px; font-weight: bold; font-size: 15px; float: left; color: #000; }
+		.fheader > span:hover { text-decoration: none; }
+		.fheader label i, .fheader > span i { margin-right: 7px; }
+		.fheader > span { font-size: 16px; }
+		.fheader > span i { background-color: var(--color); padding: 7px; color: #FFF; border-radius: var(--radius); font-size: 18px; margin-right: 10px; }
+		.fheader .apply { font-weight: bold; color: #000; font-size: 14px; }
+		.fheader .apply i { color: #68B25B; }
+		.fheader .buttons { padding: 8px 0 0; text-align: center; display: block; font-size: 16px; }
+		.fheader .buttons button { border: 0; margin-left: 5px; float: left; border-radius: var(--radius); height: 32px; min-width: 28px; padding: 0 8px; background-color: transparent; color: #888; }
+		.fheader .buttons button:hover { background-color: #F0F0F0; color: #000; }
+		.fheader .buttons button:first-child { margin-left: 0; }
+
+		.ui-dark .ui-columns > section { border-color: #303030 !important; }
+		.ui-dark .fheader { border-bottom-color: #303030; background-color: transparent; }
+		.ui-dark .fheader label, .ui-dark .fheader > span { color: #FFF; }
+		.ui-dark .fheader .apply { color: #FFF; }
+		.ui-dark .fheader .apply i { color: #68B25B; }
+		.ui-dark .fheader .buttons button:hover { background-color: #303030; color: #FFF; }
+
+		.ispaused .fheader .buttons .pause { background-color: #ff00001c; color: #e63b3b; }
+
+		/* .fheader .apply button { border: 1px solid transparent; background-color: transparent; height: 30px; padding: 0 5px; border-radius: var(--radius); width: 150px; color: #888; } */
+		/* .fheader .apply button:hover { background-color: #F0F0F0; color: #000; } */
+		/* .fheader .apply button i { margin-right: 5px; color: #68B25B; } */
+		.fheader button.highlight { background-color: var(--color) !important; color: #FFF; border-color: var(--color); }
+		.fheader button.highlight:hover { color: #FFF !important; }
+		.fheader button.highlight i { color: #FFF; }
+		.fheader button.alert i { color: #E73323; }
+		.fheader button.alert { background-color: rgba(231,51,35,0.05) !important; }
+
+		.ffooter { height: 30px; border-top: 1px solid #E0E0E0; font-size: 12px; background-color: #FFF; }
+		.ffooter > div { line-height: 30px; border-left: 1px solid #E0E0E0; padding: 0 10px; text-align: center; }
+		.ffooter > div:first-child { border-left: 0; }
+		.ffooter span { color: #888; }
+		.ffooter i { margin-right: 5px; }
+
+		.ui-dark .ffooter { border-top-color: #303030; background-color: #202020; }
+		.ui-dark .ffooter > div { border-left-color: #303030; }
+		.ui-dark .ffooter span { color: #888; }
+
+		.fcomponents .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 5px; }
+		.ui-dark .fcomponents .ui-searchinput { border-bottom-color: #303030; }
+
+		.fcomponents2 { padding: 10px 15px; display: block; }
+		.fcomponents2 > .group { line-height: 20px; font-size: 12px; padding: 0; color: #999; margin-bottom: 4px; margin-top: 10px; }
+		.fcomponents2 > .group:first-child { margin-top: 0; }
+		.fcomponents2 > .com { line-height: 26px; cursor: pointer; font-size: 12px; padding: 0 5px; margin-bottom: 2px; background-color: #F9F9F9; border-radius: var(--radius); }
+		.fcomponents2 > .com span { float: right; font-size: 11px; color: #777; max-width: 60px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+		.fcomponents2 > .com:hover { opacity: 0.8; }
+		.fcomponents2 > .com i { margin-right: 5px; color: var(--color); }
+		.fcomponents2 > .comgroup { border: 1px solid #E0E0E0; background-color: transparent; }
+		.ui-dark .fcomponents2 > .comgroup { border: 1px solid #303030; }
+
+		.flowsearchwindow { background-color: #FFF; }
+		.flowsearchwindow .item { height: 28px; border-bottom: 1px solid #E0E0E0; font-size: 12px; line-height: 27px; cursor: pointer; }
+		.flowsearchwindow .item:hover { background-color: rgba(0,0,0,.03); }
+		.flowsearchwindow .monospace { float: left; margin: 6px 5px 0 5px; padding: 0 3px; color: #777; font-size: 11px; background-color: rgba(0,0,0,.08); line-height: 16px; border-radius: var(--radius); }
+		.flowsearchwindow .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+		.flowsearchwindow .name i { width: 13px; text-align: center; margin-right: 5px; }
+		.flowsearchwindow .name code { font-size: 11px; color: #999; margin-left: 5px; }
+		.flowsearchwindow .ishidden { color: #E73323; }
+		.flowsearchwindow .singleton { color: #5C1DC4; }
+		.flowsearchwindow .controls span { margin-left: 7px; cursor: pointer; }
+
+		.fsettings { background-color: #FFF; }
+		.fsettings > nav { padding: 0 15px 0; border-top: 1px solid #E0E0E0; background-color: #FFF; border-radius: 0 0 3px 3px; line-height: 65px; height: 65px; display: block; float: none; width: 100%; }
+		.fsettings > nav button { border: 0; margin: 15px 0 0; background-color: #F0F0F0; height: 34px; padding: 0 20px; color: #000; cursor: pointer; font-family: Arial; line-height: 34px; vertical-align: middle; outline: 0; font-size: 14px; text-decoration: none; transition: all 0.3s; float: left; width: 50%; }
+		.fsettings > nav button i { width: 15px; text-align: center; margin-right: 5px; }
+		.fsettings > nav button:hover { opacity: 0.8; }
+		.fsettings > nav button:active { background-color: #D0D0D0; }
+		.fsettings > nav button:disabled { background-color: #F5F5F5 !important; border-color: #E0E0E0 !important; color: silver !important; cursor: not-allowefsettings-shadow: none; }
+		.fsettings > nav button:disabled i { color: silver !important; }
+		.fsettings > nav button:first-child { border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+		.fsettings > nav button:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+		.fsettings > nav button[name='submit'] { font-weight: bold; background-color: var(--color); color: #FFF; }
+
+		.fsettings > .actions ui-component { float: right; }
+		.fsettings > .actions { border-bottom: 1px solid #E0E0E0; padding: 10px; height: 42px; background-color: #F7F7F7; }
+		.fsettings > .actions button { border: 0; height: 24px; padding: 0 5px; font-size: 12px; background-color: transparent; border-radius: var(--radius); margin-right: 5px; }
+		.fsettings > .actions button:hover { background-color: #FFF; }
+
+		.ui-dark .fsettings > .actions { border-bottom-color: #303030; background-color: #202020; }
+		.ui-dark .fsettings > .actions button { background-color: transparent; }
+		.ui-dark .fsettings > .actions button:hover { background-color: #FFF; }
+
+		.ui-dark .fsettings { background-color: #202020; }
+		.ui-dark .fsettings > nav { border-top-color: #303030; background-color: #202020; }
+		.ui-dark .fsettings > nav button { background-color: #303030; color: #FFF; }
+		.ui-dark .fsettings > nav button[name='submit']:active { background-color: #404040; }
+		.ui-dark .fsettings > nav button[name='submit']:disabled { background-color: #353535 !important; border-color: #404040 !important; color: silver !important; }
+		.ui-dark .fsettings > nav button[name='submit']:disabled i { color: silver !important; }
+		.ui-dark .fsettings > nav button[name='submit'] { background-color: var(--color) !important; color: #FFF !important; }
+
+
+	</style>
+</head>
+<body@{if model.darkmode} class="ui-dark"@{fi}>
+
+	<ui-component name="LAZY approve" config="cancel:@(Cancel)"></ui-component>
+	<ui-component name="LAZY autocomplete"></ui-component>
+	<ui-component name="LAZY clipboard"></ui-component>
+	<ui-component name="LAZY colorpicker"></ui-component>
+	<ui-component name="LAZY datepicker" config="today:@(Today);days:@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday);clear:@(Clear);months:@(January,February,March,April,May,Juny,July,August,September,October,November,December)"></ui-component>
+	<ui-component name="LAZY directory" config="placeholder:@(Search);create:@(Create)"></ui-component>
+	<ui-component name="LAZY filereader"></ui-component>
+	<ui-component name="LAZY filesaver"></ui-component>
+	<ui-component name="LAZY fileuploader"></ui-component>
+	<ui-component name="LAZY floatingbox"></ui-component>
+	<ui-component name="LAZY icons" config="list:/icons-db.html"></ui-component>
+	<ui-component name="LAZY menu" config="style:2"></ui-component>
+	<ui-component name="LAZY message" config="button:@(OK)"></ui-component>
+	<ui-component name="LAZY notify" config="position:bottom right"></ui-component>
+	<ui-component name="LAZY printer"></ui-component>
+	<ui-component name="LAZY prompt" config="cancel:@(Cancel);submit:@(OK);zindex:200"></ui-component>
+
+	<ui-component name="edit"></ui-component>
+	<ui-component name="errorhandler"></ui-component>
+	<ui-component name="exec"></ui-component>
+	<ui-component name="imageviewer" config="unknown:@(Unknown image)"></ui-component>
+	<ui-component name="loading"></ui-component>
+	<ui-component name="locale" config="requests:1;language:@{language}"></ui-component>
+	<ui-component name="markdown"></ui-component>
+	<ui-component name="shortcuts"></ui-component>
+	<ui-component name="windows" path="*windows" config="zindex:50"></ui-component>
+
+	<ui-plugin path="flow" class="flow">
+
+		<ui-component name="dropfiles" config="exec:?/dropfiles;check:?/checkdrop" class="hidden">
+			@(Drag &amp; Drop files here)
+		</ui-component>
+
+		<ui-component name="title" path="?.head.name" config="plus:0;empty:---"></ui-component>
+		<ui-component name="console2" path="?.console" config="name:@(Console);datasource:?.logs;clear:?/resetlogs;autoshow:0"></ui-component>
+
+		<ui-bind path="?.head.id" config="visible" class="invisible">
+
+			<header class="fheader">
+
+				<ui-bind path="?.info.selected" config="template" class="info">
+					<script type="text/html">
+						{{ if value && value.component }}
+						<div>{{ value.Component.name }}<i class="{{ value.Component.icon }} ml5"></i></div>
+						<span class="monospace b">{{ value.id }}</span>
+						{{ fi }}
+					</script>
+				</ui-bind>
+
+				<ui-bind path="?.changed" config=".highlight .apply">
+					<ui-bind path="?.logs" config=".alert .errors:value && value.length">
+						<ui-bind class="buttons" path="?.toolbar" config="template:button">
+							<script type="text/html">
+								{{ foreach m in value }}
+									<button class="exec{{ if m.class }} {{ m.class }}{{ fi }}" data-index="{{ $index }}" data-exec="{{ if m.callback }}?/toolbar{{ else }}{{ m.id }}{{ fi }}"{{ if m.title }} title="{{ m.title }}"{{ fi }}><i class="{{ m.icon }}{{ if m.name }} mr5{{ fi }}"></i>{{ if m.name }}<span>{{ m.name }}</span>{{ fi }}</button>
+								{{ end }}
+							</script>
+						</ui-bind>
+					</ui-bind>
+				</ui-bind>
+			</header>
+
+			<ui-component name="columns" config="parent:window;margin:50" class="hidden invisible">
+
+				<section data-size="200" class="fcomponents">
+					<ui-component name="searchinput" path="?.search" config="type:search;placeholder:@(Search components);autofocus:2"></ui-component>
+					<ui-component name="viewbox" config="parent:auto;margin:30" class="invisible">
+						<ui-component name="search" path="?.search" config="datasource:?.components2;selector:.exec,.group;attribute:title">
+							<ui-bind path="?.components2" config="template:div" class="fcomponents2">
+								<script type="text/html">
+
+									<div class="com comgroup" data-id="group" draggable="true" data-search="@(Group)">
+										<i class="ti ti-object-group"></i>
+										@(Group)
+									</div>
+
+									{{ foreach g in value }}
+										<div class="group" title="">{{ g.name }}</div>
+										{{ foreach m in g.items }}
+											<div data-id="{{ m.id }}" class="com exec exec3 hellip{{ if m.type }} type-{{ m.type }}{{ fi }}" data-exec3="?/contextmenu2" data-id="{{ m.id }}" draggable="true" data-search="{{ m.name }}{{ if m.schema }} {{ m.schema }}{{ fi }}" data-exec="?/readme" title="{{ if m.schema }}{{ m.name }} / {{ m.schema }}{{ else }}{{ m.name }}{{ fi }}"{{ if g.color }} style="background-color:{{ g.color | rgba(0.15) }}"{{ fi }}>{{ if m.schema }}<span>{{ m.name }}</span>{{ fi }}<i class="{{ m.icon | empty('ti ti-dot-circle') }}" style="color:{{ g.color }}"></i>{{ if m.schema }}{{ m.schema }}{{ else }}{{ m.name }}{{ fi }}</div>
+										{{ end }}
+									{{ end }}
+								</script>
+							</ui-bind>
+						</ui-component>
+					</ui-component>
+				</section>
+
+				<section class="feditor">
+					<ui-component name="viewbox" config="parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:30;scrollbarshadow:0;$id:flowviewbox">
+						<ui-component name="flow" path="?.data" config="width:10000;height:10000;markers:0;grid:18;horizontal:1;snapping:0;=curvedlines:?.options.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:1;inputoffsetY:1;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/group;animationlimit:300;animationlimitconnection:3"></ui-component>
+					</ui-component>
+					<ui-bind class="ffooter grid-6" path="!?.stats" config="template:div;visible">
+						<script type="text/html">
+							<div><i class="ti ti-calculator"></i>@(Messages): <span>{{ value.messages | format(0) | empty }}</span></div>
+							<div><i class="ti ti-spinner"></i>@(Pending): <span>{{ value.pending | format(0) | empty }}</span></div>
+							<div><i class="ti ti-stopwatch"></i>@(Per minute): <span>{{ value.mm | format(0) | empty }}</span></div>
+							<div><i class="ti ti-bug"></i>@(Errors): <span>{{ value.errors | format(0) | empty }}</span></div>
+							<div><i class="ti ti-microchip"></i>@(Memory): <span>{{ value.memory | filesize2 | empty }}</span></div>
+							<div><i class="ti ti-arrow-down{{ value.socket.receivedcolor }}"></i>{{ value.socket.received | filesize2 }} <i class="ti ti-arrow-up ml5{{ value.socket.sentcolor }}"></i>{{ value.socket.sent | filesize2 }}</div>
+						</script>
+					</ui-bind>
+				</section>
+			</ui-component>
+
+		</ui-bind>
+	</ui-plugin>
+
+	<ui-component name="importer" path="*form" config="if:flowvariablesform">
+		<script type="text/html">
+			<ui-component name="box" path="*form" config="if:CLASS;title:@(Variables);icon:ti ti-variables;autofocus:true;scrollbar:1;submit:?/submit;width:900" class="hidden" plugin="CLASS">
+				<div class="padding">
+					<ui-component name="keyvalue" path="?.variables" config="placeholderkey:@(Type a key);placeholdervalue:@(Type a value and press enter)"></ui-component>
+					<div class="help"><i class="ti ti-exclamation-triangle"></i>@(If you enter a variable, you need to confirm it by pressing the <b>ENTER</b> key.)</div>
+				</div>
+				<nav>
+					<ui-component name="validate" path="?" config="changes:1">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowgroupform">
+		<script type="text/html">
+			<ui-component name="miniform" path="*form" config="if:CLASS;title:@(Edit group);icon:ti ti-object-group;autofocus:true;submit:?/submit;width:400" class="hidden" plugin="CLASS">
+				<div class="padding">
+					<ui-component name="input" path="?.name" config="maxlength:50;required:1" class="m">@(Group name)</ui-component>
+					<div class="row">
+						<div class="col-md-6 m">
+							<ui-component name="input" path="?.background" config="type:color">@(Background)</ui-component>
+						</div>
+						<div class="col-md-6 m">
+							<ui-component name="input" path="?.color" config="type:color">@(Font color)</ui-component>
+						</div>
+					</div>
+				</div>
+				<nav>
+					<button name="submit" style="width:100%"><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowsourcecodeform">
+		<script type="text/html">
+			<ui-component name="box" path="*form" config="if:flowsourcecodeform;title:@(Source code);width:1600;scrollbar:0;icon:ti ti-cog;reload:?/reload;submit:?/submit" class="hidden invisible" plugin="CLASS">
+				<ui-component name="code" path="?.source" config="realtime:1;type:clientside;contextmenu:?/contextmenu"></ui-component>
+				<nav>
+					<ui-component name="validate" path="?" config="$assign:?|validation">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(APPLY)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flownoteform">
+		<script type="text/html">
+			<style>
+				.CLASS .ui-input-control { border: 0 !important; }
+				.CLASS .ui-input-input { padding: 15px 15px 0 !important; }
+			</style>
+			<ui-component name="miniform" path="*form" config="if:CLASS;title:@(Note);icon:ti ti-comment;autofocus:true;closeesc:1;submit:?/submit;width:500" class="hidden invisible CLASS" plugin="CLASS">
+				<div>
+					<ui-component name="input" path="?.note" config="height:150;type:multiline;monospace:1;placeholder:@(Enter a note)"></ui-component>
+				</div>
+				<nav>
+					<ui-component name="validate" path="?" config="changes:1;output:?.is">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowimport">
+		<script type="text/html">
+			<ui-component name="miniform" path="*form" config="if:CLASS;title:@(Link component);icon:ti ti-file-import;autofocus:true;closeesc:1;submit:?/submit;width:400" class="hidden invisible CLASS" plugin="CLASS">
+				<div class="padding">
+					<ui-component name="input" path="?.url" config="type:url;monospace:1;required:1" default="'https://'" class="m">@(URL address)</ui-component>
+					<p>@(Enter the URL of a component or your external integration.)</p>
+				</div>
+				<nav>
+					<ui-component name="validate" path="?" config="changes:1;output:?.is">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flownew">
+		<script type="text/html">
+			<ui-component name="intro" path="*form" config="if:CLASS;close:@(Done);next:@(Next);exec:flow/components" class="hidden">
+				<figure>
+					<div class="padding black">
+						<div class="m" style="font-size:55px"><i class="ti green ti-flag"></i></div>
+						<div>@(Welcome to <b>Total.js FlowStream</b>. With the editor, you can create your Flow design.)</div>
+					</div>
+				</figure>
+				<figure>
+					<div class="padding black">
+						<div class="m" style="font-size:55px"><i class="ti ti-plug"></i></div>
+						<div>@(First, you need to install some FlowStream components or create your own in real-time.)</div>
+					</div>
+				</figure>
+				<figure>
+					<div class="padding black">
+						<div class="m" style="font-size:55px"><i class="ti ti-code-branch"></i></div>
+						<div>@(Then drag & drop components to the FlowStream and join them between each other.)</div>
+					</div>
+				</figure>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowcomponentsform">
+		<script type="text/html">
+			<style>
+				.CLASS figure { margin-bottom: var(--margin); display: block; }
+				.CLASS section { border: 1px solid #E0E0E0; background-color: #F8F8F8; padding: 5px; border-radius: var(--radius); cursor: pointer; }
+				.CLASS section:hover { opacity: 0.8; }
+				.CLASS .icon { float: left; width: 18px; height: 18px; line-height: 18px; font-size: 11px; text-align: center; margin-right: 5px; color: #FFF; border-radius: 3px; }
+				.CLASS .author { font-size: 11px; color: #777; }
+				.CLASS .version { float: right; font-size: 11px; color: #777; margin: 10px 0 0; }
+				.CLASS .name { font-size: 12px; }
+				.CLASS .readme { font-size: 11px; float: right; cursor: pointer; color: #777; font-weight: normal; margin-top: 1px; }
+				.CLASS .readme:hover { text-decoration: underline; }
+				.CLASS .community > section { border-color: #62C9CA !important; border-left-width: 3px; background-color: rgba(98,201,202,0.1); }
+				.CLASS .installed section { border-color: var(--color); background-color: var(--color); color: #FFF; font-weight: bold; }
+				.CLASS .installed section .readme { color: #FFF; }
+				.CLASS .search { height: 30px; }
+				.CLASS .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 12px; }
+			</style>
+			<ui-component name="box" path="*form" config="if:CLASS;icon:ti ti-database;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
+				<div>
+					<div class="search">
+						<ui-component name="searchinput" path="?.search" config="placeholder:@(Search components)"></ui-component>
+					</div>
+					<ui-component name="viewbox" path="*form" config="parent:auto;margin:30;scrollbar:1;scrollbarshadow:1">
+						<ui-component name="search" path="?.search" config="selector:figure;datasource:?.items" class="padding" style="padding-top:10px">
+							<ui-bind path="?.items" config="template" class="block">
+								<SCR type="text/html">
+									{{ foreach n in value }}
+										{{ if n.name && n.name !== '0' }}
+										<div class="caption m" data-search="">
+											<label>{{ n.name }}</label>
+										</div>
+										{{ fi }}
+										<div class="grid-4">
+										{{ foreach m in n.items }}
+										<figure data-search="{{ m.name }} {{ m.author }}" class="exec{{ if m.kind }} kind-{{ m.kind }}{{ fi }}{{ if m.installed }} installed{{ fi }}{{ if m.community }} community{{ fi }}" data-exec="?/install" data-id="{{ m.id }}" data-name="{{ m.name }}" data-version="{{ m.version }}" data-url="{{ m.url }}">
+											<section title="{{ m.name }}">
+												<div class="icon" style="background:{{ if m.color }}{{ m.color }}{{ else }}{{ m.groupcolor }}{{ fi }}"><i class="{{ m.icon | empty('fas fa-plug') }}"></i></div>
+												<div class="name hellip"><span class="exec readme" data-exec="?/readme" data-prevent="true">@(Read me)</span>{{ if m.newupdate }}<span class="badge badge-green badge-small mr5 newupdate">@(update)</span>{{ fi }}{{ if m.community }}<span class="badge badge-community badge-small mr5">@(Community)</span>{{ fi }}{{ m.name }}</div>
+											</section>
+										</figure>
+										{{ end }}
+										</div>
+										<div class="clearfix endsection"></div>
+									{{ end }}
+									<div class="clearfix lastclear">&nbsp;</div>
+								</SCR>
+							</ui-bind>
+						</ui-component>
+					</ui-component>
+				</div>
+				<nav>
+					<button name="cancel" style="width:100%">@(Close)</button>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowendpointform">
+		<script type="text/plain">
+			<ui-component name="box" path="*form" config="if:CLASS;title:@(Link endpoint);icon:ti ti-network;autofocus:true;scrollbar:1;submit:?/submit;width:700" class="hidden CLASS" plugin="CLASS">
+				<div class="padding">
+
+					<p>@(The FlowStream designer will create a new independent component that you can use multiple times in the FlowStream.)</p>
+					<hr />
+
+					<div class="grid-3">
+						<div class="m">
+							<ui-component name="input" path="?.name" config="required:1" default="''"><b>@(Name)</b></ui-component>
+						</div>
+						<div class="m">
+							<ui-component name="input" path="?.group">@(Group name)</ui-component>
+						</div>
+						<div class="m">
+							<ui-component name="input" path="?.icon" config="type:icon" default="'ti ti-totaljs'">@(Icon)</ui-component>
+						</div>
+					</div>
+
+					<hr />
+
+					<div class="grid-3">
+						<div class="m">
+							<ui-component name="input" path="?.method" config="dirsource:POST,GET,PUT,PATCH,DELETE;required:1" default="'POST'">@(HTTP method)</ui-component>
+						</div>
+						<div class="m">
+							<ui-component name="input" path="?.type" config="dirsource:json|JSON,urlencoded|URL encode;required:1" default="'json'">@(Data serialization)</ui-component>
+						</div>
+					</div>
+
+					<div class="padding bg-smoke m" style="border-radius:var(--radius)">
+						<ui-component name="input" path="?.url" config="required:1;type:url" default="'https://'"><b>@(URL address)</b></ui-component>
+					</div>
+
+					<ui-component name="keyvalue" path="?.headers" config="placeholderkey:@(Header name);placeholdervalue:@(Enter value and press enter)">@(Custom headers)</ui-component>
+					<ui-component name="input" path="?.compress" config="type:checkbox" default="false" style="margin-top:20px">@(Compress data via GZIP)</ui-component>
+
+					<hr />
+
+					<div class="b fs12" style="margin-bottom:5px">@(Read me):</div>
+					<div style="height:200px;border:1px solid #E0E0E0">
+						<ui-component name="code" path="?.readme" config="parent:auto;monospace:1;type:markdown;linenumbers:0"></ui-component>
+						<div class="help">@(Markdown format)</div>
+					</div>
+
+				</div>
+				<nav>
+					<ui-component name="validate" path="?">
+						<button name="submit" disabled><i class="ti ti-plus-circle"></i>@(CREATE)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowsourcesform">
+		<script type="text/plain">
+			<style>
+				.CLASS .search { height: 30px; }
+				.CLASS .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 12px; }
+				.CLASS .item { height: 38px; border-bottom: 1px solid #E0E0E0; line-height: 38px; }
+				.CLASS .item:hover { background: #F8F8F8; }
+				.CLASS .item .code { float: right; width: 120px; color: #E73323; }
+				.CLASS .item .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding: 0 10px 0 20px; }
+				.CLASS .item .name i { margin-right: 5px; }
+			</style>
+			<ui-component name="box" path="*form" config="if:CLASS;title:@(TMS sources);icon:ti ti-code-branch;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden CLASS" plugin="CLASS">
+				<nav>
+					<button class="exec" data-exec="?/add"><i class="ti ti-plus green"></i>@(Add source)</button>
+				</nav>
+				<div>
+					<div class="search">
+						<ui-component name="searchinput" path="%sourcessearch" config="placeholder:@(Search apps)"></ui-component>
+					</div>
+					<ui-component name="viewbox" path="common.form" config="parent:auto;margin:30;scrollbar:1" class="invisible">
+						<ui-component name="empty" path="?.items" config="parent:auto" class="invisible">
+
+							<SCR type="text/html">
+								@(You don't have any external TMS sources)
+							</SCR>
+
+							<ui-component name="search" path="%sourcessearch" config="selector:.search">
+								<ui-bind path="?.items" config="template:.item" class="block">
+									<SCR type="text/html">
+										{{ foreach m in value }}
+											<div class="item search" data-search="{{ m.url }}" data-id="{{ m.id }}">
+												<div class="controls">
+													<button title="@(Edit)" class="exec" data-exec="?/edit"><i class="ti ti-pencil"></i></button>
+													<button class="red exec" data-exec="?/remove" title="@(Remove)"><i class="ti ti-trash"></i></button>
+												</div>
+												{{ if m.error }}<div class="code">Error code: <b>{{ m.error }}</b></div>{{ fi }}
+												<div class="name"><i class="ti ti-circle-alt {{ if m.online }}green{{ else }}red{{ fi }}"></i> {{ m.name }} <b>{{ m.url | url }}</b></div>
+											</div>
+										{{ end }}
+									</SCR>
+								</ui-bind>
+							</ui-component>
+						</ui-component>
+					</ui-component>
+				</div>
+				<nav>
+					<button name="cancel" style="width:100%">@(Cancel)</button>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form2" config="if:flowsourceform">
+		<script type="text/plain">
+			<ui-component name="miniform" path="*form2" config="if:CLASS;icon:ti ti-globe;autofocus:true;reload:?/reload;submit:?/submit;width:450;zindex:20" class="hidden" plugin="CLASS">
+				<div class="padding">
+					<ui-component name="input" path="?.url" config="required:1" default="'https://'">@(TMS endpoint)</ui-component>
+					<div class="help m">@(Enter absolute URL address to TMS endpoint for your app)</div>
+					<ui-component name="input" path="?.token" config="camouflage:*" default="''">@(Token)</ui-component>
+					<div class="help">@(Optional, enter the security token)</div>
+				</div>
+				<nav>
+					<ui-component name="validate" path="?">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<script type="text/html" id="template_readme">
+		<ui-component name="viewbox" config="parent:auto" class="invisible bg-white">
+			<div class="padding markdown-small"><div>
+		</ui-component>
+	</script>
+
+	<script type="text/plain" id="template_nodes">
+		<div class="flownodeswindow">
+			<ui-component name="searchinput" path="%searchinstances" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
+			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:29" class="invisible">
+				<ui-component name="search" path="%searchinstances" config="selector:.item;datasource:flow.data">
+					<ui-bind path="flow.data" config="template:.item" class="block">
+						<SCR type="text/html">
+							{{ foreach m in value }}
+								{{ if m.key !== 'groups' && m.key !== 'paused' && m.key !== 'tabs' }}
+									<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }} {{ m.value.note }}" data-id="{{ m.key }}">
+										<div class="controls">
+											{{ if m.value.Component.settings }}<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="ti ti-wrench"></i></span>{{ fi }}
+										</div>
+										<span class="monospace">{{ m.key }}</span>
+										<div class="name{{ if m.value.Component.meta && m.value.Component.meta.singleton }} singleton{{ fi }}{{ if m.value.Component.meta && m.value.Component.meta.hidden }} ishidden{{ fi }}"><i class="{{ m.value.Component.icon }}"></i><b>{{ m.value.Component.name }}</b>{{ if m.value.note }}<span>{{ m.value.note }}</span>{{ fi }}</div>
+									</div>
+								{{ fi }}
+							{{ end }}
+						</SCR>
+					</ui-bind>
+				</ui-component>
+			</ui-component>
+		</div>
+	</script>
+
+	<script type="text/plain" id="template_search">
+		<ui-plugin path="flowsearchwindow" class="flowsearchwindow">
+			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
+			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:29" class="invisible">
+				<ui-bind path="?.response" config="template" class="block">
+					<SCR type="text/html">
+						{{ if !value || !value.length }}
+						<div class="padding" style="padding-top:10px">
+							<div class="help">
+								<i class="ti ti-database-alt"></i>@(0 matches)
+							</div>
+						</div>
+						{{ fi }}
+						{{ foreach m in value }}
+							<div class="item exec" data-exec="flow/find" data-search="{{ m.key }} {{ m.value.Component.name }} {{ m.value.note }}" data-id="{{ m.key }}">
+								<div class="controls">
+									{{ if m.value.Component.settings }}<span class="exec" data-exec="flow/settings" data-prevent="true" title="@(Settings)"><i class="ti ti-wrench"></i></span>{{ else }}<span class="silver" title="@(Settings)" style="cursor:not-allowed"><i class="ti ti-wrench"></i></span>{{ fi }}
+								</div>
+								{{ if m.type }}<span class="pull-right fs11 gray">{{ m.type }}</span>{{ fi }}
+								<span class="monospace">{{ m.key }}</span>
+								<div class="name{{ if m.value.Component.meta && m.value.Component.meta.singleton }} singleton{{ fi }}{{ if m.value.Component.meta && m.value.Component.meta.hidden }} ishidden{{ fi }}"><i class="{{ m.value.Component.icon }}"></i><b>{{ m.value.Component.name }}</b>{{ if m.text }} <code>{{ m.text }}</code>{{ fi }}</div>
+							</div>
+						{{ end }}
+					</SCR>
+				</ui-bind>
+			</ui-component>
+		</ui-plugin>
+	</script>
+
+	<script type="text/plain" id="template_settings">
+		<ui-plugin path="{0} flowsettingsform" class="fsettings invisible" config="class:invisible">
+			<div class="actions">
+				<ui-component name="input" path="%autoclosesettings" config="type:checkbox" default="true">@(Close after applying)</ui-component>
+				<button class="exec b" data-exec="?/readme"><i class="ti ti-info-circle mr5"></i>@(Read me)</button>
+				<button class="exec" data-exec="?/copy""><i class="ti ti-copy mr5"></i>@(Copy)</button>
+				<button class="exec" data-exec="?/paste"><i class="ti ti-paste mr5"></i>@(Paste)</button>
+			</div>
+			<ui-component name="viewbox" config="parent:auto;margin:110" class="invisible">
+				<ui-bind path="?.settings" config="html ui-plugin" class="block">
+					<ui-plugin path="?.config" data-id="{1}"></ui-plugin>
+				</ui-bind>
+			</ui-component>
+			<nav>
+				<ui-component name="validate" path="?.config" config="$assign:?|validation">
+					<button name="submit" class="exec" data-exec="?/submit" disabled><i class="ti ti-check-circle"></i>@(APPLY)</button>
+					<button name="cancel" class="exec" data-exec="?/cancel">@(Cancel)</button>
+				</ui-component>
+			</nav>
+		</ui-plugin>
+	</script>
+
+	<script type="text/plain" id="template_component">
+<SCR total>
+
+	exports.id = '{id}';
+	exports.name = 'Your component name';
+	exports.icon = 'ti ti-code';
+	exports.author = 'Total.js';
+	exports.version = '1';
+	exports.group = 'Common';
+	exports.config = {};
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }, { id: 'error', name: 'Error' }];
+
+	// exports.npm = ['npm_module_1', 'npm_module_2@version'];
+	// exports.meta = { readonly: false, singleton: false, hidden: false };
+
+	exports.make = function(instance, config) {
+
+		// instance.main.variables {Object}
+		// instance.main.variables2 {Object}
+		// instance.save();
+		// instance.replace(str); // replaces {variable_name} for values from "variables" and "variables2"
+		// instance.status(obj, [refresh_delay_in_ms]);
+
+		instance.message = function($) {
+			var data = $.data;
+			$.send('output', data);
+			// or $.send('error', data);
+			// or $.destroy();
+		};
+
+		instance.configure = function() {
+			// "config" is changed
+		};
+
+		instance.close = function() {
+			// this instance is closed
+		};
+
+		instance.vary = function(type) {
+			// @type {String} variables|variables2|secrets
+			// FlowStream variables are changed
+		};
+
+		instance.configure();
+
+	};
+
+</SCR>
+
+<readme>
+Markdown readme
+
+```js
+var total = 'Hello world!';
+```
+</readme>
+
+<settings>
+	<div class="padding">
+		SETTINGS for this component (optional)
+	</div>
+</settings>
+
+<CSS>
+	.CLASS footer { padding: 10px; font-size: 12px; }
+</CSS>
+
+<SCR>
+
+	// Client-side SCR
+	// Optional, you can remove it
+
+	// A custom helper for the component instances
+	// The method below captures each instance of this component
+	TOUCH(function(exports, reinit) {
+
+		var name = exports.name + ' --> ' + exports.id;
+
+		console.log(name, 'initialized' + (reinit ? ' : UPDATE' : ''));
+
+		exports.settings = function(meta) {
+			// Triggered when the user opens settings
+			console.log(name, 'settings', meta);
+		};
+
+		exports.configure = function(config, isinit) {
+			// Triggered when the config is changed
+			console.log(name, 'configure', config);
+		};
+
+		exports.status = function(status, isinit) {
+			// Triggered when the status is changed
+			console.log(name, 'status', status);
+		};
+
+		exports.note = function(note, isinit) {
+			// Triggered when the note is changed
+			console.log(name, 'note', note);
+		};
+
+		exports.variables = function(variables) {
+			// Triggered when the variables are changed
+			console.log(name, 'variables', variables);
+		};
+
+		exports.variables2 = function(variables) {
+			// Triggered when the variables2 are changed
+			console.log(name, 'variables2', variables);
+		};
+
+		exports.redraw = function() {
+			// Flow design has been redrawn
+			console.log(name, 'redraw');
+		};
+
+		exports.move = function() {
+			// Instance has changed position
+			console.log(name, 'move');
+		};
+
+		exports.close = function() {
+			// Triggered when the instance is closing due to some reasons
+			console.log(name, 'close');
+		};
+
+	});
+
+</SCR>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+	<footer>Learn from existing components</footer>
+</body>
+	</script>
+
+<script type="text/plain" id="template_endpoint">
+<SCR total>
+
+	exports.id = '{{ id }}';
+	exports.name = '{{ name }}';
+	exports.icon = '{{ icon }}';
+	exports.author = 'Total.js';
+	exports.version = '1';
+	exports.group = '{{ group }}';
+	exports.config = {};
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+	exports.outputs = [{ id: 'output', name: 'Output' }, { id: 'error', name: 'Error' }];
+
+	exports.make = function(instance, config) {
+		instance.message = function($) {
+
+			var data = $.data;
+			var opt = {};
+			opt.method = '{{ method }}';
+			opt.url = '{{ url }}';
+			opt.keepalive = true;
+			opt.dnscache = true;
+			opt.type = '{{ type }}';
+			{{ if compress }}
+			opt.compress = '{{ compress }}';
+			{{ fi }}
+
+			{{ if method === 'GET' }}
+			opt.query = $.data;
+			{{ else if type === 'json' }}
+			opt.body = JSON.stringify($.data);
+			{{ else if type === 'urlencoded' }}
+			opt.body = U.toURLEncode($.data);
+			{{ fi }}
+
+			{{ if headers }}
+			opt.headers = {};
+			{{ foreach m in headers }}
+			opt.headers['{{ m.id }}'] = '{{ m.value }}';
+			{{ end }}
+			{{ fi }}
+
+			opt.callback = function(err, response) {
+				if (err)
+					$.send('error', err.toString());
+				else
+					$.send(response.status >= 400 ? 'error' : 'output', typeof(response.body) === 'string' && response.body.isJSON() ? response.body.parseJSON(true) : response.body);
+			};
+
+			REQUEST(opt);
+		};
+	};
+
+</SCR>
+
+<readme>
+{{ readme }}
+</readme>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+</body>
+</script>
+
+	<script>
+
+		// @TAG: Core
+
+		DEF.headers['X-Flow'] = '1';
+
+		var common = {};
+
+		common.windows = [];
+		common.form = '';
+		common.form2 = '';
+		common.form3 = '';
+
+		CONFIG('code', 'url:/1.min.html');
+
+		(function() {
+			let openplatform = NAV.query.openplatform || '';
+			if (openplatform)
+				openplatform = '?openplatform=' + encodeURIComponent(openplatform);
+			common.openplatform = openplatform;
+		})();
+
+		var flow = {};
+
+		flow.socket = '@{model.socket}' + common.openplatform;
+		flow.current = ''; // temporary
+		flow.checksum = ''; // temporary
+		flow.editable = { pause: @{model.permit.pause}, config: @{model.permit.config}, trigger: @{model.permit.trigger}, design: @{model.permit.design}, download: @{model.permit.download}, tms: @{model.permit.tms}, restart: @{model.permit.restart}, variables: @{model.permit.variables}, components: { create: @{model.permit.components}, update: @{model.permit.components}, remove: @{model.permit.components}, download: '@{model.components}' }};
+
+		flow.options = {};
+		flow.options.curvedlines = true;
+		flow.toolbar = [];
+
+		if (flow.editable.design)
+			flow.toolbar.push({ id: '?/submit', class: 'apply', icon: 'ti ti-play', name: '@(APPLY)' });
+
+		if (flow.editable.components.create || flow.editable.design)
+			flow.toolbar.push({ id: '?/add', icon: 'ti ti-plus', title: '@(Add)' });
+
+		if (flow.editable.variables)
+			flow.toolbar.push({ id: '?/variables', icon: 'ti ti-variables', title: '@(Variables)' });
+
+		flow.toolbar.push({ id: '?/logs', icon: 'ti ti-bug', title: '@(Errors)', class: 'errors' });
+		flow.toolbar.push({ id: '?/search', icon: 'ti ti-file-search', title: '@(Search in nodes)' });
+		flow.toolbar.push({ id: '?/zoom', icon: 'ti ti-search-minus', title: '@(Zoom)' });
+
+		if (flow.editable.pause)
+			flow.toolbar.push({ id: '?/pause', class: 'pause', icon: 'ti ti-pause', title: '@(Pause)' });
+
+		@{if user.logout && !user.iframe}
+		flow.toolbar.push({ id: '?/logout', icon: 'ti ti-power-off red', title: '@(Logout)' });
+		@{fi}
+
+		@{if user.color}
+		APPEARANCE({ color: '@{user.color}' });
+		@{fi}
+
+		// flow.toolbar.push({ id: '?/info', icon: 'ti ti-info', title: '@(Information)' });
+
+		flow.console = false;
+		flow.logs = [];
+		flow.head = {};
+		flow.data = {};
+		flow.stats = {};
+		flow.notes = {};
+		flow.calls = {};
+		flow.actions = {};
+		flow.regexp = {};
+		flow.status = {};
+		flow.config = {};
+		flow.errors = {};
+		flow.settings = {};
+		flow.instances = [];
+		flow.variables = {};
+		flow.variables2 = {};
+		flow.components = [];
+		flow.callbacks = {};
+
+		EXTENSION('websocket', function(com) {
+			com.send2 = com.send;
+			com.send = function(data) {
+				if (data.callback) {
+					data.callbackid = GUID(10);
+					flow.callbacks[data.callbackid] = { timeout: Date.now(), callback: data.callback };
+					data.callback = undefined;
+				}
+				com.send2(data);
+			}
+		});
+
+		SETTER('websocket/send @important', { TYPE: 'flow' });
+
+		// {"TYPE":"trigger","id":"ilvox7ull"}
+		// {"TYPE":"move","id":"ilvez7gni","data":{"x":568,"y":446}}
+		// {"TYPE":"reconfigure","id":"ilvey9nn2","data":{"url":"https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-rss-slovakia"}}
+
+		PLUGIN('flow', function(exports) {
+
+			var init = false;
+			var model = exports.model;
+			var checksum = {};
+
+			var TYPES = { pub: 1, sub: 1, call: 1 };
+			var EDITABLE = CLONE(model.editable);
+
+			exports.on('message', function(msg) {
+
+				if (msg.callbackid) {
+					var cb = model.callbacks[msg.callbackid];
+					if (cb) {
+						delete model.callbacks[msg.callbackid];
+						if (msg.error)
+							cb.callback([{ error: msg.error }]);
+						else
+							cb.callback(msg);
+					}
+				}
+
+				let com;
+
+				switch (msg.TYPE) {
+
+					// meta
+					case 'flow/flowstream':
+
+						let socket = model.socket.replace(/^ws/, 'http');
+						let index = socket.indexOf('/', 9);
+						let origin = index === -1 ? socket : socket.substring(0, index);
+
+						if (origin.charAt(0) === '/')
+							origin = location.origin + origin;
+
+						origin = origin.replace(/\/$/, '');
+
+						if (origin && msg.origin !== origin) {
+							msg.origin = origin;
+							SETTER('websocket/send', { TYPE: 'origin', body: origin });
+						}
+
+						msg.color && APPEARANCE({ color: msg.color });
+						exports.set('head @hideloading', msg);
+						// msg.cloning {Boolean}
+						// msg.id {String}
+						// msg.name {String}
+						// msg.node {String}
+						// msg.notify {String}
+						// msg.origin {String}
+						// msg.paused {Boolean}
+						// msg.proxypath {String}
+						// msg.total {Number}
+						// msg.version {Number}
+						// msg.worker {Boolean}
+						break;
+
+					case 'flow/variables':
+					case 'flow/variables2':
+						// msg.data; {Object}
+						exports.set(msg.TYPE.substring(5), msg.data || {});
+						model.main.exec('*', 'variables2', msg.data);
+						Designer.CMD('flow.refresh');
+						let keys = {};
+						let arr = Object.keys(model.variables);
+						for (let key of arr)
+							keys[key] = 1;
+						arr = Object.keys(model.variables2);
+						for (let key of arr)
+							keys[key] = 1;
+						let cl = [];
+						for (let key in keys)
+							cl.push({ id: '{' + key + '}', name: key });
+						SET('#variables', cl);
+						break;
+
+					case 'flow/components':
+						// msg.data {Array}
+						// |-- item.author {String}
+						// |-- item.config {Object}
+						// |-- item.group {String}
+						// |-- item.html {String}
+						// |-- item.icon {String}
+						// |-- item.id {String}
+						// |-- item.inuts {Array}
+						// |-- item.js {String}
+						// |-- item.meta {Object}
+						// |-- item.name {String}
+						// |-- item.outputs {Array}
+						// |-- item.readme {String}
+						// |-- item.settings {String}
+						// |-- item.version {String}
+						exports.load_components(msg.data);
+						break;
+
+					case 'flow/design':
+						// msg.data {Object}
+						// |-- item.component {String}
+						// |-- item.config {Object}
+						// |-- item.connected {Boolean}
+						// |-- item.connections {Object}
+						// |-- item.id {String}
+						// |-- item.stats {Object}
+						// |-- item.x {Number}
+						// |-- item.y {Number}
+						// |-----
+						// |-- groups {Array}
+						exports.load_design(msg.data);
+						break;
+
+					case 'flow/error':
+						com = msg.id ? model.data[msg.id] : null;
+						exports.log('error', msg.ts.format('[ts]') + ' - ' + Thelpers.encode(msg.error) + (com ? ' <b>(' + com.name + ' component)</b>' : '') + (com ? '<span class="exec ml5" data-exec="?/find" data-id="{0}"><i class="ti ti-search"></i></span>'.format(msg.id) : ''));
+						if (com) {
+							let comerr = { type: 'error', error: msg.error };
+							if (model.errors[com.id])
+								model.errors[com.id].push(comerr);
+							else
+								model.errors[com.id] = [comerr];
+							com.element && com.element.closest('.component').aclass('iserror');
+							exports.upd('errors.' + com.id);
+							model.main.exec(com.id, 'error', comerr);
+						}
+						break;
+
+					case 'flow/errors':
+
+						// msg.data {Array}
+
+						msg.data.reverse();
+						for (let err of msg.data) {
+							com = err.id ? model.data[err.id] : null;
+							err.type = 'error';
+							err.body = err.ts.format('[ts]') + ' - ' + Thelpers.encode(err.error) + (com ? ' <b>(' + com.name + ' component)</b>' : '') + (com ? '<span class="exec ml5" data-exec="?/find" data-id="{0}"><i class="ti ti-search"></i></span>'.format(err.id) : '');
+							if (com) {
+								if (model.errors[err.id])
+									model.errors[err.id].push(err);
+								else
+									model.errors[err.id] = [err];
+								model.main.exec(err.id, 'error', err);
+								com && com.element && com.element.aclass('iserror');
+							}
+							exports.log('error', err.body);
+						}
+
+						exports.upd('errors');
+						break;
+
+					case 'flow/status':
+						// msg.id {String}
+						// msg.data {Object}
+						exports.set('status.' + msg.id, msg.data == '' ? '' : msg.data == null ? null : msg.data);
+						model.main.exec(msg.id, 'status', msg.data);
+						setTimeout2('flow.refresh', () => Designer.CMD('flow.refresh'), 500, 2 * 8);
+						break;
+
+					case 'flow/stats':
+						// msg.errors {Number}
+						// msg.memory {Number}
+						// msg.messages {Number}
+						// msg.minutes {Number}
+						// msg.mm {Number}
+						// msg.paused {Boolean}
+						// msg.pending {Number}
+						// msg.traffic {Array}
+
+						COPY(msg, model.stats);
+						exports.upd('stats');
+
+						$('body').tclass('ispaused', msg.paused).tclass('iserror', msg.errors > 0);
+
+						msg.traffic.priority.wait(function(key, next, index) {
+							var sleep = index * 50; // 500
+							Designer.CMD('flow.traffic', key, { delay: 100, count: msg.traffic[key], speed: 3, limit: 30 });
+							setTimeout(next, sleep);
+						});
+
+						break;
+
+					case 'flow/move':
+						// msg.id {String}
+						// msg.data { x: Number, y: Number }
+						var item = model.data[msg.id];
+						item.x = msg.data.x;
+						item.y = msg.data.y;
+						item.element.closest('.component').css({ left: item.x, top: item.y });
+						model.main.exec(msg.id, 'move', msg.data);
+						Designer.CMD('flow.refresh');
+						break;
+
+					case 'flow/config':
+						// msg.id {String}
+						// msg.data {Object}
+						let cfg = msg.data || {};
+						if (model.data[msg.id]) {
+							model.data[msg.id].config = cfg;
+							exports.set('config.' + msg.id, cfg);
+							model.main.exec(msg.id, 'configure', cfg);
+						}
+						break;
+
+					case 'flow/call':
+						let fn = model.calls[msg.id];
+						if (fn) {
+							fn(msg.data);
+							delete model.calls[msg.id];
+						}
+						break;
+
+					case 'flow/action':
+						let fna = model.actions[msg.id];
+						if (fna) {
+							fna(msg.error, msg.data);
+							delete model.actions[msg.id];
+						}
+						break;
+
+					case 'flow/note':
+						model.data[msg.id].note = msg.data;
+						exports.set('notes.' + msg.id, msg.data);
+						model.main.exec(msg.id, 'note', msg.data);
+						setTimeout(() => Designer.CMD('flow.refresh'), 100);
+						break;
+
+					case 'flow/reset':
+						exports.set('errors', {});
+						$('.iserror').rclass('iserror');
+						break;
+
+					case 'flow/redraw':
+
+						let node = model.data[msg.id];
+						if (!node) {
+							WARN('Instance {0} not found'.format(msg.id));
+							return;
+						}
+
+						com = model.components.findItem('id', node.component);
+
+						if (!msg.data.outputs && com)
+							msg.data.outputs = com.outputs ? CLONE(com.outputs) : null;
+
+						if (!msg.data.inputs && com)
+							msg.data.inputs = com.inputs ? CLONE(com.inputs) : null;
+
+						COPY(msg.data, model.data[msg.id]);
+						model.config[msg.id] = msg.data.config;
+						exports.upd('data');
+						exports.upd('config.' + msg.id);
+						Designer.CMD('flow.refresh');
+						setTimeout(msg => model.main.exec(msg.id, 'redraw'), 100, msg);
+						break;
+
+					case 'flow/pause':
+						let is = false;
+						if (msg.is) {
+							if (!model.data.paused)
+								model.data.paused = {};
+							model.data.paused[msg.id] = 1;
+							is = true;
+						} else if (model.data.paused) {
+							delete model.data.paused[msg.id];
+							is = true;
+						}
+
+						is && exports.upd('data');
+						break;
+
+					case 'flow/notify':
+						model.main.exec(msg.data.id || '*', 'notify', msg.data);
+						break;
+				}
+			});
+
+			exports.log = function(type, body) {
+				model.logs.unshift({ type: type, body: body });
+				setTimeout2('console', () => exports.upd('logs'), 100);
+			};
+
+			exports.resetlogs = function() {
+				SETTER('websocket/send', { TYPE: 'reset' });
+			};
+
+			exports.load_components = function(response) {
+
+				let groups = {};
+				let checksums_tmp = {};
+				let clsname = 'CLA' + 'SS';
+				let colors = {};
+				let css = [];
+				let js = [];
+
+				response.quicksort('name');
+
+				for (let com of response) {
+
+					let name = com.name.slug().replace(/\-/g, '');
+
+					if (!com.html)
+						com.html = '<header><i class="$ICON"></i>$NAME</header>';
+
+					checksums_tmp[com.id] = HASH(com.html);
+					com.cls = 'f-' + name;
+
+					let vars = { UID: '{0}', ID: com.id, ICON: com.icon, NAME: com.name, TOUCH: 'flowinstances.instances.{0}', STATUS: 'flow.status.{0}', CONFIG: 'flow.config.{0}', [clsname]: com.cls };
+
+					com.html = flowreplacekeywords(com.html || '', vars);
+
+					if (com.settings)
+						com.settings = flowreplacekeywords(com.settings || '', vars, true);
+
+					if (com.js) {
+						let tmp = flowreplacekeywords(com.js, { ID: com.id, [clsname]: com.cls, ICON: com.icon, NAME: com.name });
+						js.push('W.flow.current=\'' + name + '\';W.flow.checksum=\'' + HASH(tmp).toString(36) + '\';try{' + tmp + '}catch(e){flowcomponenterror(e)}');
+					}
+
+					com.css && css.push(flowreplacekeywords(com.css, { [clsname]: com.cls }));
+
+					let g = com.group || '@(Common)';
+
+					com.groupclass = 'group_' + HASH(g).toString(36);
+
+					if (!colors[com.groupclass])
+						colors[com.groupclass] = Thelpers.color(g);
+
+					if (com.meta && com.meta.secret)
+						continue;
+
+					if (groups[g])
+						groups[g].push(com);
+					else
+						groups[g] = [com];
+				}
+
+				new Function(js.join('\n'))();
+				model.current = '';
+
+				let arr = [];
+				for (let key in groups) {
+					groups[key].quicksort('name');
+					arr.push({ name: key, color: Thelpers.color(key), items: groups[key] });
+				}
+
+				for (let key in colors)
+					css.push('.' + key + ' header > i{background:' + colors[key] + '}');
+
+				arr.quicksort('name');
+				STYLE(css.join(''), 'flowcomponents');
+
+				exports.set('components', response);
+				exports.set('components2', arr);
+
+				let rebuild = false;
+
+				if (model.data) {
+					for (let key in model.data) {
+						let instance = model.data[key];
+						let com = response.findItem('id', instance.component);
+						if (com) {
+							let a = checksums_tmp[com.id];
+							let b = checksums[com.id];
+							let parent = instance.element ? instance.element.closest('.component') : null;
+
+							if (a !== b) {
+								instance.html = com.html.format(key);
+								rebuild = true;
+							}
+
+							if (parent) {
+								parent.rclass('f-' + instance.name);
+								instance.name = com.name.slug().replace(/\-/g, '');
+								parent.aclass('f-' + instance.name);
+							}
+						} else {
+							rebuild = true;
+							delete model.data[key];
+						}
+					}
+				}
+
+				checksums = checksums_tmp;
+
+				if (rebuild) {
+					// exports.upd('data', 'update');
+					// setTimeout(ASETTER('websocket/send', { TYPE: 'refresh' }), 1000);
+				}
+
+				if (!init) {
+					init = true;
+					if (!response.length)
+						SET('*form', 'flownew');
+				}
+
+			};
+
+			exports.onmake = function(el) {
+
+				let t = this;
+				let footer = el.find('footer');
+				let content;
+
+				if (footer.length) {
+					let area = footer.closest('.area');
+					let span = area.find('.meta').find('span');
+					area[0].appendChild(footer[0]);
+					area.parent();
+					content = area.find('.content');
+				} else
+					content = el.find('.content');
+
+				content.append('<summ' + 'ary class="hidden" path="?.notes.' + t.id + '" config="show;html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-small"></div></summ' + 'ary>');
+
+				let target = el.closest('.component').attr('path', '?.errors.' + t.id).attr('config', '.iserror:value&&value.length;title:value?value[0].error\:\'\'').tclass('isnewbie', !t.connected).tclass('iserror', !!model.errors[t.id]);
+
+				NEWUIBIND(content.find('> summary')[0]);
+				NEWUIBIND(target[0]);
+
+				let com = model.components.findItem('id', t.component);
+				if (com) {
+
+					el.aclass(com.groupclass);
+
+					if (com.type === 'pub' || com.type === 'sub' || com.type === 'call' || com.type === 'input2' || com.type === 'output2' || com.type === 'input' || com.type === 'output') {
+						let span = el.find('.meta').find('span');
+						if (span.length)
+							span.css('background-color', Thelpers.color(span.html()));
+						let arr = el.find('.schema span');
+						let type = com.type === 'input2' || com.type === 'input' ? 'pub' : com.type === 'output2' || com.type === 'output' ? 'sub' : com.type;
+						for (let m of arr)
+							$(m).css('background-color', Thelpers.color(m.innerHTML));
+						target.aclass('tms-' + type);
+					}
+
+					let meta = com.meta || EMPTYOBJECT;
+					el.tclass('transparent', meta.hidden ? true : false).tclass('singleton', meta.singleton ? true : false);
+					target.aclass('f-' + t.name);
+				}
+
+				model.main.init(t.name, t, el);
+			};
+
+			exports.onremove = function() {
+				let t = this;
+				let id = t.id;
+				model.main.remove(id);
+			};
+
+			exports.readme = function(el) {
+				let id = ATTRD(el);
+				let model = exports.model;
+				let com = model.components.findItem('id', id);
+				FUNC.readme(com.name, com.readme);
+			};
+
+			exports.sumchecksum = function(data) {
+				let builder = [];
+				for (let key in data) {
+					let instance = data[key];
+					builder.push(key + HASH(JSON.stringify(instance.connections)));
+				}
+
+				return HASH(builder.join('|'));
+			};
+
+			exports.readme = function(el) {
+				let id = ATTRD(el);
+				let model = exports.model;
+				let com = model.components.findItem('id', id);
+				FUNC.readme(com.name, com.readme);
+			};
+
+			exports.load_design = function(response) {
+
+				let uninitializedcount = 0;
+				let count = 0;
+				let blacklist = { tabs: 1, paused: 1, groups: 1 };
+				let instances = [];
+
+				model.checksum = exports.sumchecksum(response);
+				exports.set('ready', false);
+
+				for (let key in response) {
+					if (key !== 'paused' && key !== 'groups' && key !== 'tabs')
+						response[key].connected = true;
+				}
+
+				for (let key in model.data) {
+					if (!blacklist[key]) {
+						let instance = model.data[key];
+						if (instance.changes && instance.changes.newbie) {
+							let item = {};
+							item.id = key;
+							item.changes = instance.changes;
+							item.connections = instance.connections;
+							item.config = instance.config;
+							item.component = instance.component;
+							item.x = instance.x;
+							item.y = instance.y;
+							item.note = instance.note;
+							item.tab = instance.tab;
+							item.connected = false;
+							response[key] = item;
+							uninitializedcount++;
+						}
+					}
+				}
+
+				for (let key in response) {
+
+					if (blacklist[key])
+						continue;
+
+					let obj = response[key];
+					let com = model.components.findItem('id', obj.component);
+
+					if (com == null) {
+						// component not found
+						WARN('Component "{0}" not found'.format(obj.component));
+						delete response[key];
+						continue;
+					}
+
+					obj.Component = com;
+					obj.name = com.name.slug().replace(/\-/g, '');
+					obj.html = '<figure>' + com.html.format(key) + '</figure>';
+					obj.$outputs = !!obj.outputs;
+					obj.outputs = obj.outputs || (com.outputs ? CLONE(com.outputs) : null);
+					obj.$inputs = !!obj.inputs;
+					obj.inputs = obj.inputs || (com.inputs ? CLONE(com.inputs) : null);
+					obj.template = com.template ? Tangular.compile(com.template) : null;
+					obj.onmake = exports.onmake;
+					obj.onremove = exports.onremove;
+
+					if (obj.connected !== false) {
+						obj.connected = true;
+						count++;
+					}
+
+					model.notes[obj.id] = obj.note;
+					model.config[obj.id] = obj.config;
+					instances.push(obj);
+				}
+
+				exports.set('connected', count);
+				exports.set('data', response);
+				exports.set('changed', uninitializedcount > 0);
+				exports.set('instances', instances);
+
+				setTimeout2(exports.id + 'ready', function() {
+					exports.set('ready', true);
+					exports.upd('config');
+				}, 500);
+
+				Designer.CMD('flow.refresh');
+				setTimeout(() => model.main.exec('*', 'redraw'), 200);
+			};
+
+			exports.group = function(item) {
+				let path = 'flowgroupform';
+				SET(path + ' @reset', CLONE(item));
+				SET('*form', path);
+			};
+
+			exports.settings = function(instance, e) {
+
+				if (e && e.target && (e.target.tagName === 'BUTTON' || e.target.tagName === 'A'))
+					return;
+
+				if (!EDITABLE.config)
+					return;
+
+				if (common.windows.findItem('id', instance.id)) {
+					SETTER('windows/focus', instance.id);
+					return;
+				}
+
+				let id = ATTRD(instance);
+
+				if (instance instanceof jQuery) {
+					instance = model.data[id];
+					if (!instance)
+						return;
+				}
+
+				let component = model.components.findItem('id', instance.component);
+				if (!component || !component.settings) {
+					SETTER('notify/warning', '@(No settings available)');
+					return;
+				}
+
+				model.settingsid = component.id;
+				model.settingsinstanceid = instance.id;
+
+				let name = component.name.slug().replace(/\-/g, '');
+				let cfg = model.config[id];
+				let config = cfg ? CLONE(cfg) : CLONE(component.config);
+				let path = 'flow.settings.' + id;
+				let touchinstance = model.main.instances[instance.id];
+				let eventdata = { id: instance.id, name: name, path: path, config: config, component: component, instance: touchinstance };
+
+				eventdata.call = function(data, callback, globalcall) {
+
+					if (typeof(data) === 'function') {
+						globalcall = callback;
+						callback = data;
+						data = null;
+					}
+
+					exports.call(globalcall ? ('@' + this.component.id) : this.id, data, callback);
+				};
+
+				let data = {};
+				data.component = component;
+				data.instance = instance;
+				data.config = config;
+
+				model.main.exec(instance.id, 'settings', eventdata);
+				EMIT('configure_' + name, eventdata);
+				EMIT('configure_read_' + name, eventdata);
+
+				let title = '<i class="ti ti-wrench"></i>' + component.name;
+				let p = 'flowsettings' + id;
+				let width = (component.meta ? component.meta.settingswidth : 0) || 800;
+				let height = WH / 1.5 >> 0;
+				let regcls = new RegExp('CL' + 'ASS', 'g');
+				let maxwidth = (WW / 1.2) >> 0;
+
+				if (width > maxwidth)
+					width = maxwidth;
+
+				data.settings = component.settings.replace(regcls, component.cls);
+
+				SET(p + ' @default'.format(id), data);
+
+				PUSH('*windows', { id: instance.id, instanceid: instance.id, componentid: component.id, cache: id, html: $('#template_settings').html().format(p, instance.id), title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - (width / 2)) >> 0, y: ((WH / 2) - (height / 2)) >> 0, width: width, height: height, minwidth: width / 1.5 >> 0, minheight: 300 }, make: el => el.closest('.ui-windows-item').css('z-index', 50).aclass('loading'), destroy: function() {
+					// Clear components and data
+					model.settings[instance.id] = 1;
+					setTimeout(function() {
+						FREE();
+						setTimeout(function() {
+							delete W[p];
+							delete model.settings[instance.id];
+						}, 200);
+					}, 100);
+				}});
+
+			};
+
+			exports.toolbar = function(el) {
+				let index = +ATTRD(el, 'index');
+				let button = model.toolbar[index];
+				button.callback(exports);
+			};
+
+			exports.action = function(id, data, callback) {
+				var callbackid = GUID(10);
+				if (typeof(data) === 'function') {
+					callback = data;
+					data = null;
+				}
+				model.actions[callbackid] = callback;
+				SETTER('websocket/send @important', { TYPE: 'action', id: id, data: data, callbackid: callbackid });
+			};
+
+			exports.call = function(id, data, callback) {
+				var callbackid = GUID(10);
+				if (typeof(data) === 'function') {
+					callback = data;
+					data = null;
+				}
+				model.calls[callbackid] = callback;
+				SETTER('websocket/send', { TYPE: 'call', id: id, data: data, callbackid: callbackid });
+			};
+
+			exports.trigger = function(el, data) {
+
+				if (!EDITABLE.trigger)
+					return data;
+
+				if (model.changed) {
+					SETTER('message/warning', '@(While the FlowStream contains unapplied changes, this action is not permitted.)');
+					return data;
+				}
+
+				if (data && data.constructor !== Object)
+					data = null;
+				var isel = el instanceof jQuery;
+				if (!data || typeof(data) !== 'object')
+					data = isel ? { data: el.attrd('data') } : {};
+				setTimeout(function(id, data) {
+					if (id && model.data[id] && model.data[id].connected) {
+						data.TYPE = 'trigger';
+						data.id = id;
+						SETTER('websocket/send', data);
+					}
+				}, 10, isel ? ATTRD(el) : el, data);
+
+				return data;
+			};
+
+			exports.reconfigure = function(el, config) {
+
+				if (!EDITABLE.config)
+					return;
+
+				let id = ATTRD(el);
+				let instance = model.data[id];
+				if (instance) {
+					if (instance.connected) {
+						SETTER('websocket/send', { TYPE: 'reconfigure', id: id, data: config });
+					} else {
+						exports.set('data.' + id + '.config', config);
+						exports.set('config.' + id, config);
+						model.main.exec(id, 'configure', config);
+						Designer.CMD('flow.refresh');
+					}
+					FLAGS('@saved');
+				}
+			};
+
+			exports.sourcecode = function(code, callback) {
+				let path = 'flowsourcecodeform';
+				SET(path + ' @reset', { source: code, callback: callback });
+				SET('*form', path);
+			};
+
+			exports.contextmenu = function(e, type, meta) {
+
+				let info = model.info;
+				let item = info.selected;
+
+				if (!item || (type === 'map' && info.type !== 'group'))
+					return;
+
+				let count = Designer.selected().components.length;
+				let single = count === 1;
+				let component = item.isconnection ? null : model.components.findItem('id', item.component);
+				let opt = {};
+				opt.x = e.pageX;
+				opt.y = e.pageY;
+				opt.items = [];
+
+				meta = (component ? component.meta : null) || EMPTYOBJECT;
+				type = info.type;
+
+				if (component) {
+
+					if (single) {
+						opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.args(component) : ''));
+						component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'ti ti-info-circle blue' });
+
+						if (EDITABLE.design)
+							opt.items.push({ id: 'note', name: '@(Set a note)', icon: 'ti ti-file' });
+
+					} else {
+						opt.items.push(count + ' @(components selected)');
+					}
+
+					if (!TYPES[component.type]) {
+
+						let meta = component.meta || EMPTYOBJECT;
+
+						if (EDITABLE.config && component.settings && single) {
+							opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'ti ti-wrench', classname: 'b' });
+							opt.items.push('-');
+						}
+
+						if (!meta.readonly) {
+							single && EDITABLE.components.update && opt.items.push({ id: 'edit', name: '@(Edit source code)', icon: 'ti ti-laptop-code' });
+							EDITABLE.design && opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+							if (meta.remove !== false)
+								opt.items.push('-');
+						}
+					}
+				} else if (info.type === 'group') {
+					if (EDITABLE.design) {
+						opt.items.push(item.name);
+						opt.items.push({ id: 'settings', name: '@(Configure)', icon: 'ti ti-wrench', classname: 'b' });
+					}
+				} else if (info.type === 'connection') {
+					if (EDITABLE.design) {
+						let selector = '.conn__' + item.fromid + '__' + item.toid + '__' + item.fromindex + '__' + item.toindex;
+						let colors = ['E73323', 'EC8632', 'FFFD54', '68B25B', '7CFBFD', '4285F4', 'E73CF7', 'E8357E', '73197B', '91683C'];
+						let submenu = [{ id: 'color', color: '', name: '@(None)' }];
+						let selectedcolor = $(selector).attrd('color');
+						for (let m of colors) {
+							let color = '#' + m;
+							submenu.push({ id: 'color', selected: color === selectedcolor, color: color, name: '<div style="height:20px;background-color:#{0};border-radius:var(--radius);width:100px"></div>'.format(m) });
+						}
+						opt.items.push({ name: '@(Color)', icon: 'ti ti-paint-brush colorize', children: submenu, classname: 'b' });
+					}
+				}
+
+				if (!component || meta.remove !== false)
+					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
+
+				if (opt.items.last() === '-')
+					opt.items.pop();
+
+				opt.selected = item;
+				opt.info = info;
+				opt.type = type;
+
+				EMIT('contextmenu', exports, opt);
+
+				opt.callback = function(opt) {
+
+					if (opt.callback) {
+						opt.callback(item);
+						return;
+					}
+
+					switch (opt.id) {
+
+						case 'readme':
+							FUNC.readme(item.Component.name, item.Component.readme);
+							break;
+
+						case 'note':
+
+							let data = {};
+							data.note = model.notes[item.id] || '';
+							data.callback = function(value) {
+								if (item.connected) {
+									SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
+								} else {
+									item.note = value;
+									exports.set('note.' + item.id, value);
+								}
+							};
+
+							SET('flownoteform @reset', data);
+							SET('*form', 'flownoteform');
+							break;
+
+						case 'settings':
+							if (info.type === 'group')
+								exports.group(item);
+							else
+								exports.settings(item);
+							break;
+
+						case 'edit':
+							EDITABLE.components.update && SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: function(response) {
+								exports.sourcecode(response.data, function(value) {
+									exports.updatesourcecode(item.component, value);
+								});
+							}});
+							break;
+
+						case 'remove':
+
+							Designer.CMD('flow.selected.clear');
+
+							if (type === 'group') {
+								SETTER('websocket/send', { TYPE: 'groups', data: model.data.groups });
+							} else {
+								let checksum = exports.sumchecksum(model.data);
+								exports.set('changed', checksum !== model.checksum);
+							}
+
+							break;
+
+						case 'clone':
+							exports.clone();
+							break;
+
+						case 'color':
+							(function() {
+								var conn = info.selected;
+								var selector = '.conn__' + conn.fromid + '__' + conn.toid + '__' + conn.fromindex + '__' + conn.toindex;
+								var instance = model.data[conn.fromid];
+								if (instance) {
+									var arr = instance.connections[conn.fromindex];
+									if (arr) {
+										for (var item of arr) {
+											if (item.id === conn.toid && item.index === conn.toindex)
+												item.color = opt.color ? opt.color : undefined;
+										}
+									}
+									exports.set('changed', true);
+								}
+								$(selector).attrd('color', opt.color).css({ stroke: opt.color });
+							})();
+							break;
+					}
+				};
+				SETTER('menu/show', opt);
+			};
+
+			exports.contextmenu2 = function(el, e) {
+
+				let id = ATTRD(el);
+				let component = model.components.findItem('id', id);
+
+				let opt = {};
+				opt.x = e.pageX;
+				opt.y = e.pageY;
+				opt.items = [];
+
+				opt.items.push(component.name + (component.schema ? ' / <b>{schema}</b>'.args(component) : ''));
+				component.readme && opt.items.push({ id: 'readme', name: '@(Read information)', icon: 'ti ti-info-circle blue' });
+
+				var meta = component.meta || EMPTYOBJECT;
+				if (meta.secret)
+					return;
+
+				if (EDITABLE.components.update && !meta.readonly && !TYPES[component.type])
+					opt.items.push({ id: 'edit', name: '@(Edit source code)', icon: 'ti ti-laptop-code' });
+
+				if (EDITABLE.components.remove && !TYPES[component.type] && (!meta || meta.protected !== true)) {
+					opt.items.push('-');
+					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
+				}
+
+				if (opt.items.length <= 1)
+					return;
+
+				opt.selected = component;
+				EMIT('contextmenu2', exports, opt);
+
+				opt.callback = function(item) {
+
+					if (item.callback) {
+						item.callback(component);
+						return;
+					}
+
+					switch (item.id) {
+						case 'readme':
+							FUNC.readme(component.name, component.readme);
+							break;
+						case 'edit':
+							SETTER('websocket/send', { TYPE: 'component_read', id: id, callback: function(response) {
+								exports.sourcecode(response.data, function(value) {
+									exports.updatesourcecode(id, value);
+								});
+							}});
+							break;
+						case 'remove':
+							var com = model.components.findItem('id', id);
+							SETTER('approve/show', '@(Are you sure you want to remove selected the "{0}" component?)'.format(com.name), '"ti ti-remove" @(Remove)', ASETTER('websocket/send @removed', { TYPE: 'component_remove', id: id }));
+							break;
+					}
+				};
+
+				SETTER('menu/show', opt);
+			};
+
+			exports.modules = function() {
+				location.href = '@{user.openplatform}';
+			};
+
+			exports.refreshinfo = function(data) {
+				if (model.selected !== data.selected)
+					exports.set('selected', data.selected);
+				exports.set('info', data);
+			};
+
+			exports.drop = function(e, grid) {
+
+				if (!EDITABLE.design)
+					return;
+
+				FLAGS('@showloading');
+
+				let id = ATTRD(e.el);
+				let offsetX = e.clickX || 0;
+				let offsetY = e.clickY || 0;
+
+				if (id === 'group') {
+					let obj = {};
+					obj.id = 'g' + Date.now().toString(36);
+					obj.x = e.offsetX - offsetX;
+					obj.y = e.offsetY - offsetY;
+					obj.width = 400;
+					obj.height = 400;
+					obj.name = '@(Group)';
+					Designer.CMD('flow.groups.add', obj);
+					SETTER('websocket/send @hideloading', { TYPE: 'groups', data: model.data.groups });
+				} else {
+					let com = model.components.findItem('id', id);
+					let obj = {};
+
+					if (com.meta && com.meta.singleton) {
+
+						// check
+						let cancel = (function() {
+							for (let key in model.data) {
+								let f = model.data[key];
+								if (f.component === com.id)
+									return true;
+							}
+						})();
+
+						if (cancel) {
+							SETTER('message/warning', '@(The <b>"{0}"</b> component is already in use)'.format(com.name.encode()));
+							return;
+						}
+
+					}
+
+					obj.id = 'i' + Date.now().toString(36);
+					obj.Component = com;
+					obj.component = id;
+					obj.x = e.offsetX - offsetX;
+					obj.y = e.offsetY - offsetY;
+					obj.name = com.name.slug().replace(/\-/g, '');
+					obj.outputs = com.outputs ? CLONE(com.outputs) : null;
+					obj.inputs = com.inputs ? CLONE(com.inputs) : null;
+					obj.config = CLONE(com.config);
+					obj.html = '<figure>' + com.html.format(obj.id) + '</figure>';
+					obj.template = com.template ? Tangular.compile(com.template) : null;
+					obj.onmake = exports.onmake;
+					obj.onremove = exports.onremove;
+					exports.set('changed', true);
+					exports.set('config.' + obj.id, obj.config);
+					Designer.CMD('flow.components.add', obj);
+					FLAGS('@hideloading');
+				}
+
+			};
+
+			exports.updatesourcecode = function(id, value) {
+
+				if (id) {
+
+					if (!EDITABLE.components.update)
+						return;
+
+					var com = model.components.findItem('id', model.id);
+					com && OFF('configure_' + com.name.slug());
+					FREE();
+
+				} else if (!EDITABLE.components.create)
+					return;
+
+				var m = value.match(/exports\.id(\s=).*?;/);
+				if (m) {
+					try {
+						id = new Function('exports', 'return ' + m[0])({});
+					} catch {}
+				}
+
+				if (!id)
+					id = FUNC.makeid('c');
+
+				value = FUNC.rtrim(value);
+				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: value, callback: ASETTER('message/response @hideloading', NOOP) });
+				return id;
+			};
+
+			exports.pause = function() {
+
+				if (!EDITABLE.design)
+					return;
+
+				let is = model.stats.paused;
+				let done = function() {
+					SETTER('loading/show');
+					SETTER('websocket/send', { TYPE: 'pause', is: is === true ? false : true });
+					SETTER('loading/hide', 3000);
+				};
+
+				if (is)
+					done();
+				else
+					SETTER('approve/show', '@(Are you sure you want to pause Flow?)', ':ti ti-pause: @(Pause)', done);
+			};
+
+			exports.onconnect = function(meta) {
+				if (model.ready && !meta.init)
+					exports.set('changed', true);
+			};
+
+			exports.onpause = function(key, is) {
+				if (EDITABLE.design) {
+					let id = key.split('__')[1];
+					if (model.data[id] && (!model.data[id].changes || !model.data[id].changes.newbie))
+						SETTER('websocket/send', { TYPE: 'pause', id: key, is: is });
+				}
+			};
+
+			exports.onmove = function(el, item, type) {
+
+				if (!EDITABLE.design)
+					return;
+
+				if (type === 'group') {
+					SETTER('websocket/send', { TYPE: 'groups', data: model.data.groups });
+				} else {
+					item.connected && SETTER('websocket/send', { TYPE: 'move', id: item.id, data: { x: item.x, y: item.y }});
+					model.main.exec(item.id, 'move', { x: item.x, y: item.y });
+				}
+			};
+
+			exports.submit = function() {
+
+				if (!EDITABLE.design)
+					return;
+
+				SETTER('approve/show', '@(Are you sure you want to apply the current design?)', '"ti ti-check-circle" @(Continue)', function() {
+
+					if (BLOCKED('save', 2000))
+						return;
+
+					let checkio = function(a, b) {
+						if (!a)
+							return;
+						if (!b)
+							return a;
+						if (a.length !== b.length)
+							return a;
+						for (let i = 0; i < a.length; i++) {
+							if (a[i].id !== b[i].id || a[i].name !== b[i].name)
+								return a;
+						}
+					};
+
+					let output = {};
+					let keys = Object.keys(model.data);
+
+					for (let i = 0; i < keys.length; i++) {
+						let key = keys[i];
+						let com = model.data[key];
+
+						if (key === 'paused' || key === 'groups' || key === 'tabs') {
+							output[key] = com;
+							continue;
+						}
+
+						let item = {};
+						item.id = com.id;
+						item.connections = com.connections;
+						item.config = com.config;
+						item.component = com.component;
+
+						// Check if the component exists
+						var c = model.components.findItem('id', com.component);
+						if (!c)
+							continue;
+
+						if (com.outputs)
+							item.outputs = checkio(com.outputs, c.outputs);
+
+						if (com.inputs)
+							item.inputs = checkio(com.inputs, c.inputs);
+
+						item.x = com.x;
+						item.y = com.y;
+						item.note = com.note;
+						item.tab = com.tab;
+						item.connected = true;
+						com.changes = null;
+						com.connected = true;
+						output[item.id] = item;
+					}
+
+					$('.isnewbie').rclass('isnewbie');
+					exports.set('changed', false);
+					SETTER('websocket/send', { TYPE: 'save', data: output });
+					Designer.CMD('flow.reset');
+				});
+
+			};
+
+			exports.clone = function() {
+
+				let selected = Designer.selected();
+				let add = [];
+				let cloned = {};
+				let now = Date.now();
+
+				for (let item of selected.components) {
+					let instance = model.data[item.id];
+					let newbie = {};
+					newbie.id = 'i' + now.toString(36);
+					newbie.x = instance.x + 50;
+					newbie.y = instance.y + 50;
+					newbie.name = instance.name;
+					newbie.Component = instance.Component;
+					newbie.component = instance.component;
+					newbie.config = CLONE(instance.config);
+					newbie.connected = false;
+					newbie.connections = {};
+					newbie.name = instance.name.slug().replace(/\-/g, '');
+					newbie.html = instance.html.replace(new RegExp(instance.id, 'g'), newbie.id);
+					newbie.$outputs = instance.$outputs;
+					newbie.outputs = instance.outputs ? CLONE(instance.outputs) : undefined;
+					newbie.$inputs = instance.$inputs;
+					newbie.inputs = instance.inputs ? CLONE(instance.inputs) : undefined;
+					newbie.template = instance.template;
+					newbie.onmake = exports.onmake;
+					newbie.onremove = exports.onremove;
+					newbie.tab = instance.tab;
+					cloned[instance.id] = newbie.id;
+					add.push(newbie);
+					exports.set('note.' + newbie.id, model.notes[item.id]);
+					exports.set('config.' + newbie.id, newbie.config);
+					now++;
+				}
+
+				for (let item of add) {
+					for (let key in item.connections) {
+						for (let output of item.connections[key]) {
+							if (cloned[output.id])
+								output.id = cloned[output.id];
+						}
+					}
+					model.data[item.id] = item;
+				}
+
+				Designer.find('.component-focused').rclass('component-focused');
+				Designer.op.unselect();
+
+				exports.set('changed', true);
+
+				for (let item of add)
+					Designer.CMD('flow.components.add', item);
+
+				setTimeout(function(add) {
+					for (let item of add)
+						Designer.op.select(item.id, true);
+				}, 500, add);
+			};
+
+			exports.logout = function() {
+				location.href = '?logout=1';
+			};
+
+			exports.logs = function() {
+				exports.toggle('console');
+			};
+
+			exports.checkdrop = function(e) {
+				return EDITABLE.components.create || EDITABLE.flow.replace;
+			};
+
+			exports.dropfiles = function(files) {
+
+				let arr = [];
+				for (let m of files)
+					arr.push(m);
+
+				arr.wait(function(file, next) {
+					let reader = new FileReader();
+					reader.onload = function() {
+						if (file.type === 'application/json') {
+
+							// replace design
+							if (EDITABLE.flow.replace) {
+
+							}
+
+							next = null;
+							arr.length = 0;
+
+						} else {
+							if (EDITABLE.components.create) {
+								let id = exports.updatesourcecode('', reader.result);
+								id && SETTER('notify/success', '@(Installed: <b>{0}</b>)'.format(id.encode()));
+							}
+							setTimeout(next, 500);
+						}
+					};
+					reader.readAsText(file);
+				});
+			};
+
+			exports.search = function() {
+				let winid = 'search';
+
+				if (common.windows.findItem('id', winid)) {
+					SETTER('windows/focus', winid);
+					return;
+				}
+
+				PUSH('*windows', { id: winid, cache: 'search', html: $('#template_search').html().replace(/SCR/, 'scr' + 'ipt'), title: '@(Search in nodes)', actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: el => el.closest('.ui-windows-item').css('z-index', 50) });
+
+			};
+
+			exports.download = function() {
+
+				if (!EDITABLE.download)
+					return;
+
+				SETTER('websocket/send', { TYPE: 'export', callback: ERROR(function(response) {
+					delete response.data.origin;
+					var data = JSON.stringify(response.data, null, '\t');
+					SETTER('filesaver/save', model.head.name + '.json', data, 'json');
+				})});
+
+			};
+
+			exports.clear = function() {
+
+				if (!EDITABLE.design)
+					return;
+
+				SETTER('approve/show', '@(Are you sure you want to clear the current design?)', '"trash-o" @(Clear)', function() {
+					$('.isnewbie').rclass('isnewbie');
+					exports.set('changed', false);
+					SETTER('websocket/send @done', { TYPE: 'save', data: {} });
+				});
+			};
+
+			exports.variables = function() {
+
+				let data = {};
+
+				data.variables = CLONE(model.variables);
+				data.callback = function(data) {
+					SETTER('websocket/send @saved', { TYPE: 'variables', data: data });
+				};
+
+				SET('flowvariablesform @reset', data);
+				SET('*form', 'flowvariablesform');
+			};
+
+			exports.find = function(el) {
+				var id = ATTRD(el);
+				Designer.CMD('flow.find', id);
+			};
+
+			exports.notewindow = function(el) {
+				let id = ATTRD(el);
+				let note = model.notes[id];
+				let instance = model.data[id];
+				note && FUNC.readme(instance.Component.name, note);
+			};
+
+			exports.add = function(el) {
+
+				let opt = {};
+				opt.element = el;
+				opt.items = [];
+				opt.offsetY = 13;
+
+				if (EDITABLE.components.create) {
+					opt.items.push({ id: 'create', name:'@(Create new component)', icon: 'ti ti-pencil-paintbrush' });
+
+					if (EDITABLE.components.download)
+						opt.items.push({ id: 'download2', name: '@(Download components)', icon: 'ti ti-database' });
+
+					opt.items.push({ id: 'import', icon: 'ti ti-share-alt', name: '@(Link component)' });
+					opt.items.push({ id: 'link', name: '@(Link endpoint)', icon: 'ti ti-link' });
+
+					if (EDITABLE.tms)
+						opt.items.push({ id: 'tms', name: '@(TMS sources)', icon: 'ti ti-totaljs-alt' });
+				}
+
+				if (EDITABLE.download)
+					opt.items.push({ id: 'download', icon: 'ti ti-download', name: '@(Download design)' });
+
+				if (EDITABLE.restart && model.head.worker)
+					opt.items.push({ id: 'restart', name: '@(Restart worker)', icon: 'ti ti-sync', callback: () => SETTER('approve/show', '@(Are you sure you want to restart this FlowStream process?)', '"ti ti-sync" @(Restart)', () => exports.restart()) });
+
+				if (EDITABLE.design) {
+					if (opt.items.length)
+						opt.items.push('-');
+					opt.items.push({ id: 'clear', name: '@(Clear)', icon: 'ti ti-recycle red', disabled: Object.keys(model.data).length == 0 });
+				}
+
+				EMIT('menu', exports, opt);
+
+				opt.callback = function(selected) {
+
+					if (selected.callback) {
+						selected.callback();
+						return;
+					}
+
+					switch (selected.id) {
+						case 'create':
+							exports.sourcecode($('#template_component').html().trim().replace('{id}', FUNC.makeid('c')).replace(/SCR/g, 'scr' + 'ipt').replace(/CSS|STYLE/g, 'style'), function(value) {
+								exports.updatesourcecode('', value);
+							});
+							break;
+						case 'import':
+							SET('flowimport @default', {});
+							SET('*form', 'flowimport');
+							break;
+						case 'download2':
+							exports.components();
+							break;
+						case 'link':
+							SET('flowendpointform @default', {});
+							SET('*form', 'flowendpointform');
+							break;
+						case 'tms':
+							SET('*form', 'flowsourcesform');
+							break;
+						default:
+							exports[selected.id]();
+							break;
+					}
+				};
+				SETTER('menu/show', opt);
+			};
+
+			exports.components = function() {
+				console.log('SOM TU');
+				if (EDITABLE.components.download)
+					SET('*form', 'flowcomponentsform');
+			};
+
+			exports.zoom = function() {
+				Designer.CMD('flow.zoom', model.info.zoom === 100 ? 60 : 100);
+			};
+
+			var socketstats = {};
+
+			exports.stats = function(stats) {
+				stats.receivedcolor = stats.received > socketstats.received ? ' red' : '';
+				stats.sentcolor = stats.sent > socketstats.sent ? ' red' : '';
+				exports.set('stats.socket', stats);
+				socketstats.received = stats.received;
+				socketstats.sent = stats.sent;
+			};
+
+			exports.restart = function() {
+				SETTER('websocket/send', { TYPE: 'restart' });
+			};
+
+			exports.action('Extensions', function(err, response) {
+				let body = $('body');
+				for (let m of response)
+					body.append(m.html);
+				EMIT('start', exports);
+			});
+
+		});
+
+		PLUGIN('flowvariablesform', function(exports) {
+
+			exports.submit = function(hide) {
+				var model = exports.model;
+				model.callback && model.callback(model.variables);
+				hide();
+			};
+
+		});
+
+		PLUGIN('flowendpointform', function(exports) {
+			exports.submit = function(hide) {
+
+				var model = exports.form;
+				var reg = /("|')/g;
+
+				model.id = FUNC.makeid('e');
+				model.name = model.name.replace(reg, '');
+
+				if (model.group)
+					model.group = model.group.replace(reg, '');
+
+				if (model.url)
+					model.url = model.url.replace(reg, '');
+
+				var headers = [];
+				if (model.headers) {
+					for (var key in model.headers)
+						headers.push({ id: key.replace(reg, ''), value: model.headers[key].replace(reg, '') });
+				}
+
+				model.headers = headers;
+
+				var component = Tangular.render($('#template_endpoint').html().replace(/SCR/g, 'scr' + 'ipt'), model).replace(/\n{2,}/g, '\n');
+				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: model.id, data: component, callback: ASETTER('message/response @hideloading', hide) });
+			};
+		});
+
+		PLUGIN('flowsettingsform', function(exports) {
+
+			exports.reload = function(com) {
+				let model = exports.model;
+				com.reconfigure({ title: '@(Settings): ' + model.component.name });
+			};
+
+			exports.copy = function() {
+				let model = exports.model;
+				flow.settingsclipboard = STRINGIFY(model.config);
+				FLAGS('@copied');
+			};
+
+			exports.paste = function() {
+				let model = exports.model;
+				let cfg = flow.settingsclipboard;
+				if (cfg) {
+					cfg = PARSE(cfg);
+					if (cfg) {
+						for (let key in model.config) {
+							let val = cfg[key];
+							if (val != undefined)
+								model.config[key] = val;
+						}
+						exports.upd('config @change');
+					}
+				}
+			};
+
+			exports.readme = function() {
+				let model = exports.model;
+				FUNC.readme(model.component.name, model.component.readme || '');
+			};
+
+			exports.cancel = function() {
+				let model = exports.model;
+				SETTER('windows/close', model.instance.id);
+			};
+
+			exports.submit = function() {
+				let model = exports.form;
+				let autoclose = GET('%autoclosesettings');
+
+				FUNC.reconfigure(model.instance, CLONE(model.config));
+
+				if (autoclose == true || autoclose == null)
+					SETTER('windows/close', model.instance.id);
+			};
+
+		});
+
+		PLUGIN('flowsourcecodeform', function(exports) {
+
+			exports.reload = function(com) {
+				// let model = exports.model;
+				// com.reconfigure({ title: '@(Source-code)' + model.component.name });
+			};
+
+			exports.readme = function() {
+				let model = exports.model;
+				FUNC.readme(model.component.name, model.component.readme || '');
+			};
+
+			exports.contextmenu = function(obj) {
+				var opt = {};
+				opt.x = obj.x;
+				opt.y = obj.y;
+				opt.items = [];
+				opt.items.push({ id: 'icon', name: '@(Insert icon)', icon: 'ti ti-icons' });
+				opt.items.push({ id: 'color', name: '@(Insert color)', icon: 'ti ti-paint-brush' });
+				opt.callback = function(selected) {
+					switch (selected.id) {
+						case 'icon':
+							opt.callback = val => obj.instance.insert(val);
+							SETTER('icons/show', opt);
+							break;
+						case 'color':
+							opt.callback = val => obj.instance.insert(val);
+							SETTER('colorpicker/show', opt);
+							break;
+					}
+				};
+				SETTER('menu/show', opt);
+			};
+
+			exports.submit = function(hide) {
+				let model = exports.model;
+				FLAGS('@showloading');
+				setTimeout(function(model) {
+					FLAGS('@hideloading');
+					model.callback(model.source);
+					hide();
+				}, 1000, model);
+			};
+
+		});
+
+		PLUGIN('flownoteform', function(exports) {
+			exports.submit = function(hide) {
+				let model = exports.model;
+				model.is && model.callback(model.note);
+				hide();
+			};
+		});
+
+		PLUGIN('flowcomponentsform', function(exports) {
+
+			var refresh = function(url, opt, callback) {
+				exports.ajax('GET {0} @showloading ERROR'.format(url), function(response) {
+
+					FLAGS('@hideloading');
+
+					if (!(response instanceof Array))
+						return;
+
+					for (var item of response) {
+
+						var com = flow.components.findItem('name', item.name);
+						item.newupdate = com ? item.version.localeCompare(com.version, { numeric: true }) > 0 : false;
+						item.installed = com != null;
+						item.community = item.author ? !(/total\.js/i).test(item.author) : true;
+
+						if (!item.group)
+							item.group = '0';
+
+						if (item.newupdate)
+							opt.updates++;
+
+						if (opt.groups[item.group])
+							opt.groups[item.group].items.push(item);
+						else
+							opt.groups[item.group] = { name: item.group, color: Thelpers.color(item.group), items: [item] };
+
+						item.groupcolor = opt.groups[item.group].color;
+						item.download = '';
+						opt.components.push(item);
+					}
+
+					callback(opt.components);
+				});
+			};
+
+			exports.reload = function() {
+
+				var opt = {};
+
+				opt.groups = {};
+				opt.components = [];
+
+				flow.editable.components.download.split(',').wait(function(url, next) {
+					refresh(url, opt, next);
+				}, function() {
+					let arr = [];
+					let keys = Object.keys(opt.groups);
+
+					keys.quicksort();
+
+					for (let key of keys) {
+						opt.groups[key].items.quicksort('name');
+						arr.push(opt.groups[key]);
+					}
+
+					exports.set('components', opt.components);
+					exports.set('items', arr);
+				});
+			};
+
+			exports.readme = function(el) {
+				var id = ATTRD(el);
+				var item = exports.data.components.findItem('id', id);
+				FUNC.readme(item.name, item.readme);
+			};
+
+			exports.checkhtml = function(html) {
+				var m = html.match(/exports\.(id|name|version|icon)(\s)?\=.*?;/g);
+				if (m) {
+					var opt = {};
+					try {
+						new Function('exports', m.join('\n'))(opt);
+						if (opt.name && opt.version && opt.icon)
+							return opt;
+					} catch {}
+				}
+			};
+
+			exports.install = function(el) {
+
+				var id = el.attrd2('id');
+				var name = el.attrd2('name');
+				var com = flow.components.findItem('name', name);
+
+				if (com) {
+					$('#settings_f' + com.id).remove();
+					FREE();
+				}
+
+				var url = el.attrd2('url');
+				var download = function() {
+					exports.ajax('GET ' + url, function(response) {
+						if (typeof(response) === 'string') {
+							var meta = exports.checkhtml(response);
+							if (meta) {
+								var model = {};
+								model.id = com ? com.id : (meta.id || '');
+								model.body = response.trim();
+								SETTER('websocket/send @showloading', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
+									SETTER('loading/hide', 200);
+									if (response.error)
+										SETTER('notify/warning', '@(The component <b>"{0}"</b> is invalid: {1})'.format(name.encode(), response.error.encode()));
+									else
+										el.aclass('installed');
+								}});
+							} else
+								SETTER('notify/warning', '@(The HTML body of the component <b>"{0}"</b> is invalid)'.format(name.encode()));
+						}
+					});
+				};
+
+				SETTER('approve/show', '@(Are you sure you want to import selected component <b>"{0}"</b>?)'.format(el.attrd2('name')), ':ti ti-cloud-download: @(IMPORT)', download);
+			};
+
+		});
+
+		PLUGIN('flowsearchwindow', function(exports) {
+
+			exports.findinvalue = function(val, search) {
+				if (val) {
+					val = val.toString();
+					var index = val.toLowerCase().indexOf(search);
+					if (index !== -1) {
+						var beg = index - 20;
+						if (beg < 0)
+							beg = 0;
+						return val.substring(beg, index + search.length + 20);
+					}
+				}
+			};
+
+			exports.watch('search', function(value) {
+
+				var arr = [];
+
+				if (!value) {
+					for (let key in flow.data) {
+						if (key !== 'groups' && key !== 'paused' && key !== 'tabs')
+							arr.push({ key: key, value: flow.data[key], text: '' });
+					}
+					exports.set('response', arr);
+					return;
+				}
+
+				value = value.toLowerCase();
+
+				for (let key in flow.data) {
+
+					if (key === 'groups' || key === 'paused' || key === 'tabs')
+						continue;
+
+					let instance = flow.data[key];
+
+					let res = exports.findinvalue(instance.Component.name, value);
+					if (res)
+						arr.push({ key: instance.id, value: instance, text: '', type: '@(name)' });
+
+					res = exports.findinvalue(instance.id, value);
+					if (res)
+						arr.push({ key: instance.id, value: instance, text: '', type: '@(ID)' });
+
+					if (instance.note) {
+						res = exports.findinvalue(instance.note, value);
+						if (res)
+							arr.push({ key: instance.id, value: instance, text: res, type: '@(note)' });
+					}
+
+					let values = Object.values(instance.config);
+					for (let val of values) {
+						if (val instanceof Array) {
+							for (let m of val) {
+								let values2 = Object.values(m);
+								for (let val2 of values2) {
+									res = exports.findinvalue(val2, value);
+									res && arr.push({ key: instance.id, value: instance, text: res, type: '@(configuration)' });
+								}
+							}
+						} else {
+							res = exports.findinvalue(val, value);
+							res && arr.push({ key: instance.id, value: instance, text: res, type: '@(configuration)' });
+						}
+					}
+				}
+
+				exports.set('response', arr);
+			}, true);
+
+		});
+
+		PLUGIN('flowgroupform', function(exports) {
+			exports.submit = function(hide) {
+				var model = exports.model;
+				var group = flow.data.groups.findItem('id', model.id);
+				group.name = model.name;
+				group.background = model.background ? model.background.charAt(0) === '#' ? FUNC.hex2rgba(model.background, 0.3) : model.background : undefined;
+				group.color = model.color ? model.color : undefined;
+				UPD('flow.data');
+				SETTER('websocket/send', { TYPE: 'groups', data: flow.data.groups });
+				hide();
+			};
+
+		});
+
+		PLUGIN('flowsourcesform', function(exports) {
+
+			exports.reload = function(com) {
+				exports.refresh();
+			};
+
+			exports.add = function() {
+				SET('flowsourceform @default', {});
+				SET('*form2', 'flowsourceform');
+			};
+
+			exports.refresh = function() {
+
+				let msg = { TYPE: 'sources' };
+
+				msg.callback = ERROR(function(response) {
+
+					let arr = [];
+					for (let key in response.data) {
+						let item = response.data[key];
+						item.id = key;
+						arr.push(item);
+					}
+					arr.quicksort('url');
+					exports.set('items @hideloading', arr);
+
+				});
+
+				SETTER('websocket/send @showloading', msg);
+			};
+
+			exports.edit = function(el) {
+
+				let id = ATTRD(el);
+				let msg = { TYPE: 'source_read', id: id };
+
+				msg.callback = function(response) {
+					SET('flowsourceform @reset @hideloading', response.data);
+					SET('*form2', 'flowsourceform');
+				};
+
+				SETTER('websocket/send @showloading', msg);
+			};
+
+			exports.remove = function(el) {
+				SETTER('approve/show', '@(Are you sure you want to remove selected source?)', ':remove: @(Remove)', function() {
+					let id = ATTRD(el);
+					let msg = { TYPE: 'source_remove', id: id };
+					msg.callback = ASETTER('message/response', exports.refresh);
+					SETTER('websocket/send @showloading', msg);
+				});
+			};
+
+		});
+
+		PLUGIN('flowimport', function(exports) {
+
+			var caller;
+
+			exports.reload = function(com) {
+				if (!caller)
+					caller = exports.caller;
+			};
+
+			exports.checkhtml = function(html) {
+				var m = html.match(/exports\.(id|name|version|icon)(\s)?\=.*?;/g);
+				if (m) {
+					var opt = {};
+					try {
+						new Function('exports', m.join('\n'))(opt);
+						if (opt.name && opt.version && opt.icon)
+							return opt;
+					} catch {}
+				}
+			};
+
+			exports.submit = function(hide) {
+				let model = exports.model;
+				exports.ajax('GET ' + model.url, function(response) {
+					if (typeof(response) === 'string') {
+						let meta = exports.checkhtml(response);
+						if (meta) {
+							let model = {};
+							model.id = meta.id || '';
+							model.body = response.trim();
+							SETTER('websocket/send @showloading', { TYPE: 'component_save', id: model.id || FUNC.makeid('c'), data: model.body, callback: function(response) {
+								SETTER('loading/hide', 200);
+								if (response.error) {
+									SETTER('notify/warning', '@(The component <b>"{0}"</b> is invalid: {1}.)'.format(meta.name.encode(), response.error.encode()));
+								} else {
+									SETTER('notify/success', '@(The component <b>"{0}"</b> has been installed.)'.format(meta.name.encode()));
+									hide();
+								}
+							}});
+						} else
+							SETTER('notify/warning', '@(Invalid response)'.format(meta.name.encode()));
+					}
+				});
+			};
+
+		});
+
+		PLUGIN('flowsourceform', function(exports) {
+
+			var caller;
+
+			exports.reload = function(com) {
+
+				if (!caller)
+					caller = exports.caller;
+
+				let model = exports.model;
+				let id = model ? model.id : null;
+
+				com.reconfigure({ title: id ? '@(Update source)' : '@(Add source)' });
+			};
+
+			exports.submit = function(hide) {
+
+				let model = exports.form;
+				let msg = { TYPE: 'source_save', data: model };
+
+				if (!model.id)
+					model.id = FUNC.makeid('src');
+
+				FLAGS('@showloading');
+				msg.callback = function(response) {
+					if (!ERROR(response)) {
+						setTimeout(() => caller.exec('refresh'), 1500);
+						hide();
+					}
+				};
+				SETTER('websocket/send', msg);
+			};
+
+		});
+
+		W.flowcomponenterror = function(e) {
+
+			let msg = (new Date()).format('[ts]') + ' - <b>{0} component</b>: failed client-side code execution - '.format(W.flow.current) + Thelpers.encode(e + '');
+			let a = { type: 'error', body: msg };
+
+			console.error(a);
+
+			// PUSH('^common.logs.errors.items', a);
+			// cleanlogs();
+			// W.console && W.console.error('Component: "' + com.name + '"', e);
+			// if (!common.console)
+			// 	SET('common.console', true);
+		};
+
+		W.flowreplacekeywords = function(str, keywords, dollar) {
+
+			let allowed = [' ', '\'', '"', '.', '>', '<', '=', '+', '-', ',', ';', '!', '\n', '\t', ':', ' ', '_', '#'];
+
+			for (let key in keywords) {
+
+				let reg = flow.regexp[key];
+
+				if (!reg)
+					reg = flow.regexp[key] = new RegExp('\\$' + key, 'g');
+
+				str = str.replace(reg, keywords[key]);
+
+				// Old declaration without "$" character
+				if (!dollar) {
+					let index = 0;
+					while (true) {
+						index = str.indexOf(key, index);
+						if (index === -1)
+							break;
+						let b = str.charAt(index - 1);
+						let e = str.charAt(index + key.length);
+						if ((!b || allowed.includes(b)) && (!e || allowed.includes(e))) {
+							str = str.substring(0, index) + keywords[key] + str.substring(index + key.length);
+							index += keywords[key].length;
+						} else
+							index += key.length;
+					}
+				}
+			}
+
+			return str;
+		};
+
+		SETTER('exec/register @important', function(attr, el, e, type) {
+			var c = attr.charAt(0);
+			if (c === '=' || c === '/') {
+				var id = ATTRD(el);
+				var instance = flow.main.instances[id];
+				if (instance) {
+					attr = attr.substring(1);
+					instance[attr] && instance[attr](el, e);
+				}
+				return true;
+			}
+		});
+
+	</script>
+
+	<script>
+
+		// @TAG: Events
+
+		ON('online', function(is) {
+			if (!is)
+				FLAGS('@showloading');
+		});
+
+		ON('@flag saved', function() {
+			SETTER('notify/success', '@(Saved.)');
+		});
+
+		ON('@flag done', function() {
+			SETTER('notify/info', '@(Done.)');
+		});
+
+		ON('@flag copied', function() {
+			SETTER('notify/success', '@(Copied.)');
+		});
+
+		ON('@flag removed', function() {
+			SETTER('notify/success', '@(Removed.)');
+		});
+
+		$(W).on('message', function(e) {
+			var data = e.originalEvent.data;
+			if (data) {
+				var msg = PARSE(data);
+				if (msg && msg.TYPE) {
+					switch (msg.TYPE) {
+						case 'shortcut':
+							SETTER('shortcuts/exec', msg.key);
+							break;
+						case 'darkmode':
+							APPEARANCE({ darkmode: msg.value === true });
+							break;
+						case 'components':
+							flow.editable.components.download = msg.value;
+							break;
+						case 'EXEC':
+						case 'SETTER':
+						case 'EMIT':
+							W[msg.TYPE](msg.name, msg.a, msg.b, msg.c, msg.d);
+							break;
+					}
+				}
+			}
+		});
+
+	</script>
+
+	<script>
+
+		// @TAG: TOUCH
+
+		(function() {
+
+			var meta = {};
+
+			function inDOM(el) {
+				if (!el)
+					return;
+				if (el.tagName === 'BODY')
+					return true;
+				var parent = el.parentNode;
+				while (parent) {
+					if (parent.tagName === 'BODY')
+						return true;
+					parent = parent.parentNode;
+				}
+			}
+
+			function Instance(instance, el) {
+				var t = this;
+				t.id = instance.id;
+				t.name = instance.name;
+				t.instance = instance;
+				t.element = el;
+				t.dom = el[0];
+				if (meta.pending[t.id]) {
+					clearTimeout(meta.pending[t.id]);
+					delete meta.pending[t.id];
+				}
+				el.on('click', 'button,.clickable', function() {
+					t.click && t.click($(this));
+				});
+			}
+
+			Instance.prototype = {
+
+				get config() {
+					return flow.config[this.instance.id];
+				},
+
+				set config(val) {
+					this.instance.config = flow.config[this.instance.id] = val;
+					UPD('flow.config.' + this.instance.id);
+				}
+
+			};
+
+			Instance.prototype.draft = function(path, value) {
+
+				if (common.form !== 'settings')
+					return;
+
+				if (flow.settingsid !== this.instance.component)
+					return;
+
+				if (path && typeof(path) === 'object') {
+					value = path;
+					path = '';
+				}
+
+				var p = 'flow.settings.settings_f' + this.instance.component + (path ? ('.' + path) : '');
+				if (value === undefined)
+					return GET(p);
+				SET(p, value);
+			};
+
+			Instance.prototype.rebind = function(type) {
+				type && UPD('flow.' + type + '.' + this.instance.id);
+			};
+
+			Instance.prototype.reconfigure = function(val) {
+				FUNC.reconfigure(this.id, val || this.instance.config);
+			};
+
+			Instance.prototype.trigger = function(data) {
+				FUNC.trigger(this.id, data);
+			};
+
+			Instance.prototype.call = function(data, callback, globalcall) {
+				var callbackid = GUID(10);
+				if (typeof(data) === 'function') {
+					callback = data;
+					data = null;
+				}
+				flow.calls[callbackid] = callback;
+				SETTER('websocket/send', { TYPE: 'call', id: globalcall ? ('@' + this.instance.component) : this.id, data: data, callbackid: callbackid });
+			};
+
+			Instance.prototype.$destroy = function() {
+				var t = this;
+				delete meta.instances[t.id];
+				t.close && t.close();
+			};
+
+			meta.components = {};
+			meta.instances = {};
+			meta.current = '';
+			meta.pending = {};
+
+			function reinit(id) {
+				var instance = flow.data[id];
+				if (instance)
+					meta.init(instance.name, instance, $('.component[data-id="' + id + '"]'), true);
+				delete meta.pending[id];
+			}
+
+			W.TOUCH = function(fn) {
+				var name = flow.current;
+				var checksum = flow.checksum;
+				if (name) {
+					if (meta.components[name]) {
+						if (meta.components[name].checksum !== checksum) {
+							for (var key in flow.data) {
+								if (key !== 'groups' && key !== 'paused' && key !== 'tabs') {
+									var tmp = flow.data[key];
+									if (tmp.name === name)
+										meta.pending[tmp.id] = setTimeout(reinit, 1000, tmp.id);
+								}
+							}
+						}
+					}
+					meta.components[name] = { fn: fn, checksum: checksum };
+				}
+			};
+
+			meta.exec = function(id, type, val) {
+				if (id === '*') {
+					for (var key in meta.instances)
+						meta.exec(key, type, val);
+				} else {
+					var instance = meta.instances[id];
+					if (instance && instance[type])
+						instance[type](val);
+				}
+			};
+
+			meta.init = function(name, instance, el, reinit) {
+				var tmp = meta.components[name];
+				if (tmp) {
+					if (meta.instances[instance.id])
+						meta.instances[instance.id].$destroy();
+					var obj = new Instance(instance, el);
+					meta.instances[instance.id] = obj;
+					tmp.fn(obj, reinit);
+					obj.configure && obj.configure(flow.config[instance.id], true);
+					obj.status && obj.status(flow.status[instance.id], true);
+					obj.note && obj.note(flow.notes[instance.id], true);
+				}
+			};
+
+			meta.remove = function(id) {
+				var instance = meta.instances[id];
+				instance && instance.$destroy();
+			};
+
+			ON('service', function() {
+				for (var key in meta.instances) {
+					var instance = meta.instances[key];
+					if (!inDOM(instance.dom))
+						instance.$destroy();
+				}
+			});
+
+			W.flowinstances = flow.main = meta;
+
+		})();
+
+	</script>
+
+	<script>
+
+		// Helpers
+
+		function pSBC(p,c0,c1,l) {
+			let r,g,b,P,f,t,h,m=Math.round,a=typeof(c1)=='string';
+			if(typeof(p)!='number'||p<-1||p>1||typeof(c0)!='string'||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
+			h=c0.length>9,h=a?c1.length>9?true:c1=='c'?!h:false:h,f=pSBC.pSBCr(c0),P=p<0,t=c1&&c1!='c'?pSBC.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
+			if(!f||!t)return null;
+			if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
+			else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
+			a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
+			if(h)return'rgb'+(f?'a(':'(')+r+','+g+','+b+(f?','+m(a*1000)/1000:'')+')';
+			else return'#'+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2);
+		}
+
+		pSBC.pSBCr=(d)=>{
+			const i=parseInt;
+			let n=d.length,x={};
+			if(n>9){
+				var [r, g, b, a] = (d = d.split(','));n = d.length;
+				if(n<3||n>4)return null;
+				x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1;
+			}else{
+				if(n==8||n==6||n<4)return null;
+				if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
+				d=i(d.slice(1),16);
+				if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=Math.round((d&255)/0.255)/1000;
+				else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1;
+			}return x;
+		};
+
+		Thelpers.color = function(value) {
+			var hash = HASH(value, true);
+			var color = '#';
+			for (var i = 0; i < 3; i++) {
+				var value = (hash >> (i * 8)) & 0xFF;
+				color += ('00' + value.toString(16)).substr(-2);
+			}
+			return pSBC(0.2, color);
+		};
+
+		Thelpers.highlight = function(val, colorize) {
+
+			if (!val)
+				return val;
+
+			return val.replace(/\{.*?\}/g, function(text) {
+				return '<code' + (colorize ? ' style="color:{0}"'.format(Thelpers.color(text)) : '') + '>' + text + '</code>';
+			});
+
+		};
+
+		Thelpers.filesize2 = function(value) {
+			return typeof(value) === 'number' ? value.filesize(1) : DEF.empty;
+		};
+
+		Thelpers.url = function(val) {
+			var index = val.indexOf('/', 10);
+			return index === -1 ? val : val.substring(0, index);
+		};
+
+		FUNC.trigger = function(el, data) {
+			return PLUGINS.flow.trigger(el, data);
+		};
+
+		FUNC.readme = function(title, text) {
+
+			let winid = 'readme' + HASH(text);
+
+			if (common.windows.findItem('id', winid)) {
+				SETTER('windows/focus', winid);
+				return;
+			}
+
+			let html = $($('#template_readme').html());
+			html.find('.markdown-small').html(Thelpers.markdown(FUNC.strim(text || ''), { el: html }));
+			PUSH('*windows', { id: winid, cache: 'readme', html: html, title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: el => el.closest('.ui-windows-item').css('z-index', 50) });
+
+		};
+
+		FUNC.makeid = function(type) {
+			return type + Date.now().toString(36).slice(4) + Math.random().toString(16).slice(10);
+		};
+
+		FUNC.reconfigure = function(el, config) {
+			PLUGINS.flow.reconfigure(el, config);
+		};
+
+		FUNC.rtrim = function(value) {
+			let lines = value.split('\n');
+			let reg = /\s+$/;
+			for (let i = 0; i < lines.length; i++)
+				lines[i] = lines[i].replace(reg, '');
+			return lines.join('\n').replace(new RegExp(String.fromCharCode(160), 'g'), ' ');
+		};
+
+		FUNC.strim = function(value) {
+
+			let c = value.charAt(0);
+			if (c !== ' ' && c !== '\t')
+				return value;
+
+			for (let i = 0; i < value.length; i++) {
+				c = value.charAt(i);
+				if (c !== ' ' && c !== '\t')
+					break;
+			}
+
+			let count = i;
+			let lines = value.split('\n');
+
+			for (let i = 0; i < lines.length; i++) {
+				let line = lines[i];
+				if (line.length > count) {
+					if ((/^[\s\t]+$/g).test(line.substring(0, count)))
+						lines[i] = line.substring(count);
+				}
+			}
+
+			return lines.join('\n');
+		};
+
+		FUNC.hex2rgba = function(hex, opacity) {
+
+			var c = (hex.charAt(0) === '#' ? hex.substring(1) : hex).split('');
+
+			if(c.length === 3)
+				c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+
+			var a = c.splice(6);
+			if (a.length)
+				a = parseFloat(parseInt((parseInt(a.join(''), 16) / 255) * 1000) / 1000);
+			else
+				a = opacity || '1';
+
+			c = '0x' + c.join('');
+			return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')';
+		};
+
+		// Connect WS
+		$(document.body).append('<ui-component name="websocket" config="url:{0};stats:flow/stats;statsinterval:61000"></ui-component>'.format(flow.socket.replace(/\:/g, '\\:')));
+
+	</script>
+
+</body>
+</html>

@@ -9,7 +9,7 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
 	<meta name="robots" content="all,follow" />
-	@{import('spa.min@19.css', 'spa.min@19.js')}
+	@{import('/spa.min@20.css', '/spa.min@20.js')}
 	<script src="@{REPO.ui}"></script>
 	@{import('meta', 'head', 'favicon.ico')}
 	<style>
@@ -38,7 +38,7 @@
 	<ui-component name="exec"></ui-component>
 
 	<ui-component name="viewbox" config="centered:1;parent:window" class="invisible">
-		<div class="login" data-scope="signinform">
+		<ui-plugin path="signinform" class="login">
 			<div>
 				<ui-component name="autofill">
 
@@ -75,23 +75,24 @@
 			</div>
 			<br />
 			<footer>&copy; @{NOW.getFullYear()} - <a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a></footer>
-		</div>
+		</ui-plugin>
 	</ui-component>
 
 	<script>
 
+		DEF.api = '@{CONF.$api}';
+
 		PLUGIN('signinform', function(exports) {
 
 			exports.submit = function() {
-				AJAX('POST @{#}/fapi/auth/', exports.form, ERROR(function(response) {
+				let model = exports.form;
+				exports.tapi('Auth|login', model, ERROR(function(response) {
 					location.href = '@{#}/' + ($('.alert').length ? '?welcome=1' : '');
-				}, function(response) {
-					SET('%error', response[0].error);
-				}));
+				}, response => SET('%error', response[0].error)));
 			};
 
 			exports.fill = function() {
-				SET('signinform @change', { login: '@{PREF.user.login}', password: '@{PREF.user.raw}' });
+				exports.set('? @change', { login: '@{PREF.user.login}', password: '@{PREF.user.raw}' });
 			};
 		});
 

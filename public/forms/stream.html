@@ -1,63 +1,46 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:800" class="hidden" plugin="~PATH~">
-	<div class="padding bg-smoke npb">
-		<div class="grid-2">
-			<div class="m">
-				<ui-component name="input" path="?.name" config="required:1" default="''">@(Name)</ui-component>
-				<div class="help">@(Enter FlowStream name)</div>
-			</div>
-			<div class="m">
-				<ui-component name="input" path="?.url" default="'https://'">@(URL address for support)</ui-component>
-				<div class="help">@(Optional, you can enter the URL address for support)</div>
-			</div>
-		</div>
+<ui-component name="box" path="*form" config="if:CLASS;icon:ti ti-object-group;autofocus:true;reload:?/reload;scrollbar:1;submit:?/submit;width:600" class="hidden" plugin="CLASS">
+	<div class="padding bg-smoke">
+		<ui-component name="input" path="?.name" config="required:1" default="''">@(Name)</ui-component>
 	</div>
 	<div class="padding npb">
 
-		<div class="row">
-			<div class="col-md-3 m">
+		<div class="grid-3">
+			<div class="m">
+				<ui-component name="input" path="?.icon" config="required:1;type:icon" default="'ti ti-microchip'">@(Icon)</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
+			</div>
+			<div class="m">
 				<ui-component name="input" path="?.group" config="dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirminwidth:300;dirplaceholder:@(Choose or enter new)">@(Group)</ui-component>
-			</div>
-			<div class="col-md-3 m">
-				<ui-component name="input" path="?.reference" config="align:1">@(Reference)</ui-component>
-			</div>
-			<div class="col-md-3 m">
-				<ui-component name="input" path="?.version" config="align:1">@(Version)</ui-component>
-			</div>
-			<div class="col-md-3 m">
-				<ui-component name="input" path="?.author" config="align:1">@(Author)</ui-component>
 			</div>
 		</div>
 
-		<div class="row">
-			<div class="col-md-3 m">
-				<ui-component name="input" path="?.icon" config="required:1;type:icon" default="'ti ti-microchip'">@(Icon)</ui-component>
-			</div>
-			<div class="col-md-3 m">
-				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
-			</div>
-			<div class="col-md-6">
-				<ui-component name="input" path="?.proxypath" config="placeholder:@(/users/)"><i class="ti ti-server"></i><b>@(Proxy endpoint)</b></ui-component>
-				<div class="help">@(It will route all incoming requests to this FlowStream.)</div>
-			</div>
-		</div>
+		<hr style="margin-top:10px" />
+
+		<ui-component name="input" path="?.proxypath" config="placeholder:@(/users/)"><i class="ti ti-exchange"></i><b>@(Proxy endpoint)</b></ui-component>
+		<div class="help">@(The proxy endpoint routes all incoming requests to the FlowStream worker. This worker is an independent process that must be proxied by the main web server.)</div>
+
 		<hr />
 		<ui-component name="input" path="?.cloning" config="type:checkbox" default="true" class="b">@(Enable cloning of message data)</ui-component>
 		<div class="help">@(By disabling this option you can improve FlowStream performance because message data will not be cloned in the exchange. But on the other hand you may have trouble with object references.)</div>
 		<hr />
 		<div class="row">
-			<div class="col-md-3 m">
+			<div class="col-md-4 m">
 				<ui-component name="input" path="?.memory" config="type:number" default="0">@(Max. memory)</ui-component>
 			</div>
-			<div class="col-md-9 m">
+			<div class="col-md-8 m">
 				<div class="message message-alert"><i class="ti ti-microchip"></i>@(Maximum memory limit must be defined in megabytes. Memory management for a worker process. Zero (<b>0</b>) means auto memory limit.)</div>
 			</div>
 		</div>
 	</div>
 	<hr class="nmb nmt" />
 	<div class="padding">
-		<div class="ui-input-label">@(Additional information):</div>
-		<ui-component name="codemirror" path="?.readme" config="minheight:300;parent:auto;margin:600;monospace:1;type:markdown;linenumbers:0"></ui-component>
-		<div class="help">@(Markdown format)</div>
+		<div class="ui-input-label">@(Description):</div>
+		<div style="border:1px solid #E0E0E0">
+			<ui-component name="code" path="?.readme" config="minheight:300;parent:auto;margin:650;monospace:1;type:markdown"></ui-component>
+		</div>
+		<div class="help"><i class="ti ti-markdown"></i>@(Markdown format)</div>
 	</div>
 	<nav>
 		<ui-component name="validate" path="?">
@@ -71,10 +54,16 @@
 
 	PLUGIN(function(exports) {
 
+		let caller;
+
 		exports.reload = function(com) {
+
+			if (!caller)
+				caller = exports.caller;
+
 			var model = exports.model;
 			var id = model ? model.id : null;
-			com.reconfigure({ title: id ? '@(Update FlowStream)' : '@(Add FlowStream)' });
+			com.reconfigure({ title: id ? '@(Update FlowStream)' : '@(Create FlowStream)' });
 		};
 
 		exports.submit = function(hide) {
@@ -99,13 +88,13 @@
 				}
 
 				if (error) {
-					EXEC('-message/warning', error);
+					SETTER('message/warning', error);
 					return;
 				}
 			}
 
-			exports.tapi('streams_save ERROR', model, function() {
-				EXEC('common/refresh');
+			exports.tapi('Streams|save ERROR @showloading', model, function() {
+				caller.exec('refresh');
 				hide();
 			});
 		};

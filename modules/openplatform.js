@@ -47,25 +47,25 @@ Data.auth = function($) {
 		return;
 	}
 
-	var q = $.query;
-	var a = q.openplatform || (CONF.op_cookie ? $.cookie(CONF.op_cookie) : '');
+	let q = $.query;
+	let a = q.openplatform || (CONF.op_cookie ? $.cookie(CONF.op_cookie) : '');
 
 	if (!a) {
 		$.invalid();
 		return;
 	}
 
-	var m = a.match(/token=.*?(&|$)/);
+	let m = a.match(/token=.*?(&|$)/);
 	if (!m) {
 		$.invalid();
 		return;
 	}
 
 	// token~sign
-	var tmp = m[0].substring(6).split('~');
-	var token = tmp[0];
-	var sign = tmp[1];
-	var session = Data.sessions[token];
+	let tmp = m[0].substring(6).split('~');
+	let token = tmp[0];
+	let sign = tmp[1];
+	let session = Data.sessions[token];
 
 	if (session) {
 		Data.onread && Data.onread(session);
@@ -73,7 +73,7 @@ Data.auth = function($) {
 		return;
 	}
 
-	var checksum = a.replace('~' + sign, '').md5(CONF.op_reqtoken);
+	let checksum = a.replace('~' + sign, '').md5(CONF.op_reqtoken);
 
 	if (checksum !== sign) {
 		$.invalid();
@@ -119,8 +119,8 @@ Data.auth = function($) {
 };
 
 ON('service', function() {
-	for (var key in Data.sessions) {
-		var session = Data.sessions[key];
+	for (let key in Data.sessions) {
+		let session = Data.sessions[key];
 		if (session.dtexpire < NOW) {
 			delete Data.sessions[key];
 			Data.onremove && Data.onremove(session);
@@ -129,8 +129,8 @@ ON('service', function() {
 });
 
 function Json() {
-	var obj = {};
-	for (var key in this) {
+	let obj = {};
+	for (let key in this) {
 		switch (key) {
 			case 'token':
 			case 'dtexpired':
@@ -153,7 +153,7 @@ function Json() {
 
 function Notification(body, path, icon, color) {
 
-	var model = {};
+	let model = {};
 
 	model.body = body;
 	model.path = path;

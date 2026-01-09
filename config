@@ -13,12 +13,6 @@ $customtitles               : true
 
 // directory                   : /absolute/path/to/flow/database/
 
-// Disables: Worker/Fork
-// flowstream_worker           : false
-
-// Replaces WorkerThread for the ChildProcess/Fork
-// flowstream_worker           : fork
-
 // Memory size for forked processes (in MB)
 // flowstream_memory           : 4069
 

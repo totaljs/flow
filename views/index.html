@@ -8,15 +8,307 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<meta name="robots" content="all,follow" />
-	@{import('spa.min@19.css', 'spa.min@19.js')}
+	@{import('/spa.min@20.css', '/spa.min@20.js')}
 	<script src="@{REPO.ui}"></script>
-	@{import('meta', 'head', 'default.css + editor.min@1.css + editor.css', 'filesaver.min.js + editor.min@1.js + uibuilder.min@1.js + editor.js + func.js', 'favicon.ico')}
+	@{import('meta', 'head', 'favicon.ico')}
+	<style>
+		html,body { padding: 0; margin: 0; overflow: hidden; }
+		body { background-color: #FFF; }
+		body.ui-dark { background-color: #202020 !important; }
+		p { font-size: 13px; line-height: 16px; }
+		.monospace { font-family: Menlo, Consolas, monospace; }
+
+		:root {
+			--radius: 5px;
+		}
+
+		.color { color: var(--color); }
+
+		.ml5 { margin-left: 5px; }
+		.ml10 { margin-left: 10px; }
+
+		.ui-dockable-layout { z-index: 1; }
+
+		.mainmenu { width: 32px; height: 32px; float: left; font-size: 18px; line-height: 32px; text-align: center; margin: 14px 12px 0 0; cursor: pointer; background-color: var(--color); border-radius: var(--radius); }
+		.mainmenu i { transform: scale(1); color: #FFF; }
+
+		header { height: 60px !important; line-height: 59px !important; background-color: #FBFBFD; border: 0; border-bottom: 1px solid #E0E0E0; border-radius: 0; padding-left: 15px; padding-right: 15px; }
+		header .env { float: right; font-size: 14px; text-transform: uppercase; margin: 11px 0 0 10px; height: 34px; line-height: 34px; }
+		header .console, header .search { width: 28px; height: 28px; float: right; font-size: 14px; line-height: 28px; text-align: center; margin: 16px 0 0 3px; cursor: pointer; border-radius: var(--radius); color: #999; }
+		header .console:hover, header .search:hover { background-color: #F5F5F5; color: #000; }
+		.ui-dark header .console, .ui-dark header .search { color: #777; }
+		.ui-dark header .console:hover, .ui-dark header .search:hover { background-color: #484848; color: #FFF; }
+
+		header > .tabs { float: left; font-size: 13px; margin: 14px 0 0 2px; line-height: 0; user-select: none; }
+		header > .tabs > div { position: relative; display: inline-block; background-color: #F1F1F1; line-height: 32px; padding: 0 10px; width: 150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: pointer; border-radius: var(--radius); margin-right: 10px; color: #999; }
+		header > .tabs > div i { margin-right: 7px; color: #999; }
+		header > .tabs > div .ti-times:hover { color: #E73323 !important; }
+		header > .tabs > div.selected { background-color: #E0E0E0; color: #000; }
+		header .ui-searchinput { line-height: 24px; height: 26px; border-radius: var(--radius); width: 180px; float: right; margin: 12px 0 0 10px; background-color: #F8F8F8; border: 1px solid #E0E0E0 !important; }
+		header .ui-searchinput input { line-height: 24px; height: 24px; }
+		header .ui-searchinput span { line-height: 24px; }
+		header .tools { float: right; margin: 12px 0 0 0; line-height: 0; }
+
+		header .toolbar { margin: 16px 10px 0 !important; float: right; height: 30px; }
+		header label { float: left; font-size: 15px; font-weight: bold; line-height: 16px; margin: 12px 0 0; }
+		header label i { margin-right: 5px; }
+		header label span { display: block; color: #999; font-size: 11px; font-weight: normal; }
+
+		.ui-dark header > .tabs > div { background-color: #292929; color: #777; }
+		.ui-dark header > .tabs > div i { color: #999; }
+		.ui-dark header > .tabs > div.selected { background-color: #404040; color: #FFF; }
+
+		.ui-dark header { background-color: #202020; border-bottom-color: #404040; }
+		.ui-dark header .ui-searchinput { background-color: #333; border-color: #404040; }
+		.ui-dark header .tools button { background-color: transparent; }
+		.ui-dark header .tools button:hover { background-color: #353535; }
+		.ui-dark header label span { color: #999; }
+
+		.ui-layout-left { background-color: #FFF; border-right: 1px solid #E0E0E0; z-index: 1; }
+		.ui-layout-right { background-color: #FFF; }
+		.ui-layout-left .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 5px; }
+
+		.ui-dark .ui-layout-left { background-color: #222; border-right-color: #404040; }
+		.ui-dark .ui-layout-right { background-color: #222; }
+		.ui-dark .ui-layout-left .ui-searchinput { border-bottom-color: #404040; }
+
+		.ui-largeform-options { float: right; height: 30px; background-color: #F0F0F0; border: 1px solid #F0F0F0; line-height: 30px; font-size: 12px; border-radius: var(--radius); margin: 15px 18px 0 0; padding: 0 8px; cursor: pointer; }
+		.ui-largeform-options i { margin-right: 5px; }
+		.ui-largeform-options:hover { border-color: #E0E0E0; }
+
+		.ui-dark .ui-largeform-options { background-color: #333; border-color: #333; }
+		.ui-dark .ui-largeform-options:hover { border-color: #404040; }
+
+		.landing .body { background-color: #FFF; }
+		.bg-smoke { background-color: #F8F8F8; }
+		.ui-dark .bg-smoke { background-color: #282828; }
+
+		.panel { background-color: #FFF; border-radius: var(--radius); border: 1px solid #E0E0E0; }
+		.panel > .toolbar { float: right; margin: 10px 10px 0 10px; }
+		.panel > .toolbar button { height: 22px; line-height: 20px; min-width: 60px; }
+		.panel > label { display: block; padding: 10px 10px; border-bottom: 1px solid #E0E0E0; font-size: 15px; color: #000; font-weight: bold; border-radius: var(--radius) var(--radius) 0 0; }
+		.panel > label i { margin-right: 7px; }
+		.panel .padding { padding: 15px 10px; }
+		.ui-dark .panel { background-color: #202020; border-color: #404040; }
+		.ui-dark .panel > label { border-bottom-color: #404040; color: #FFF; }
+
+		.toolbar { height: 26px; }
+		.toolbar label { height: 26px; line-height: 26px; float: left; font-size: 16px; font-weight: bold; }
+		.toolbar button { outline: 0; background: #FFF; border: 1px solid #E0E0E0; border-left: 0; height: 26px; padding: 0 3px; color: #000; min-width: 80px; text-align: center; vertical-align: top; background-color: #FFF; line-height: 24px; float: left; text-align: center !important; }
+		.toolbar button i { margin-right: 5px; }
+		.toolbar button .ti-plus-circle, .toolbar button .ti-check-circle { color: #68B25B; }
+		.toolbar button:first-child { border-left: 1px solid #E0E0E0; border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+		.toolbar button:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+		.toolbar button:hover { border-color: #D0D0D0; }
+		.toolbar button:active { background: #F0F0F0; color: #888; border-color: #DFDFDF; }
+		.toolbar button:disabled { color: silver; cursor: not-allowed; border-color: #E0E0E0 !important; background: #F8F8F8; }
+		.toolbar button:disabled i { color: silver !important; }
+		.toolbar button.right { float: right; margin-left: 5px; margin-right: 0; text-align: center; }
+
+		.ui-dark .toolbar button { background: #202020; border-color: #333; color: #C0C0C0; }
+		.ui-dark .toolbar button:first-child { border-left-color: #333; }
+		.ui-dark .toolbar button:hover { border-color: #404040; color: #FFF; }
+		.ui-dark .toolbar button:active { background: #222; color: #A0A0A0; border-color: #333; }
+		.ui-dark .toolbar button:disabled { color: #666; border-color: #404040 !important; background: #303030; }
+		.ui-dark .toolbar button:disabled i { color: #666 !important; }
+
+		.toolbar-bg { height: 60px; padding: 0 20px 0; border-bottom: 1px solid #E0E0E0; background-color: #FFF; }
+		.toolbar-bg button { height: 34px; font-size: 12px; padding: 0 15px; margin: 12px 0 0; }
+		.toolbar-bg label { line-height: 60px; }
+		.ui-dark .toolbar-bg { border-bottom-color: #404040; }
+
+		.nav { background-color: #F0F0F0; }
+		.nav nav { padding: 10px 5px; display: block; }
+		.nav nav > div, .nav nav > a { display: block; height: 30px; margin: 0 5px 2px; line-height: 30px; padding: 0 10px; border-radius: var(--radius); cursor: pointer; font-size: 13px; color: #888; border: 0; text-decoration: none !important; }
+		.nav nav > div > i, .nav nav > div > a { width: 14px; text-align: center; margin-right: 10px; }
+		.nav nav > div:hover { background-color: rgba(0,0,0,0.05); color: #000; text-decoration: none !important; }
+		.nav nav > div.ui-disabled, .nav nav > a.ui-disabled, .nav nav > div.disabled, .nav nav > a.disabled { cursor: not-allowed; color: #C0C0C0; background-color: transparent !important; }
+		.nav nav .selected { background-color: rgba(100,100,100,0.1); color: #000; }
+		.nav label { font-size: 12px; color: #999; display: block; margin: 0 15px 10px; padding: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+		.nav label i { margin-right: 5px; }
+
+		.ui-dark .nav { background-color: #282828; }
+		.ui-dark .nav nav > div, .ui-dark .nav nav > a { color: #999; }
+		.ui-dark .nav nav > div:hover { background-color: rgba(255,255,255,0.05); color: #FFF; }
+		.ui-dark .nav nav > div.ui-disabled, .ui-dark .nav nav > a.ui-disabled, .ui-dark .nav nav > div.disabled, .ui-dark .nav nav > a.disabled { color: #555; background-color: transparent !important; }
+		.ui-dark .nav nav .selected { background-color: rgba(255,255,255,0.1); color: #FFF; }
+		.ui-dark .nav label { color: #777; }
+
+		.listing { z-index: 2; position: relative; overflow: hidden; }
+		.listing figure { cursor: pointer; }
+		.listing figure > section { margin: -1px 10px 0; border-bottom: 1px solid #E0E0E0; padding: 10px 0; }
+		.listing figure:first-child section { margin-top: 0; }
+		.listing figure:hover { background-color: #F0F0F0; border-radius: var(--radius); }
+		.listing figure:hover > section { border-bottom-color: transparent; }
+		.listing figure:last-child > section { border-bottom-color: transparent; }
+
+		.ui-dark .listing figure > section { border-color: #303030; }
+		.ui-dark .listing figure:hover > section { background-color: #303030; }
+		.ui-dark .listing figure:last-child > section { border-bottom-color: transparent; }
+		.ui-dark .listing figure:hover { background-color: #303030; }
+
+		.configuration { background-color: #FFF; border-radius: var(--radius); border: 1px solid #E0E0E0; }
+		.configuration p { margin: 0 0 15px 0; font-size: 13px; padding: 0; color: #666; }
+		.configuration > section > .toolbar { float: right; margin: 10px 10px 0 10px; }
+		.configuration > section > .toolbar button { height: 22px; line-height: 20px; min-width: 60px; }
+		.configuration > section label { display: block; padding: 10px; font-size: 15px; color: #000; font-weight: bold; border-top: 1px solid #E0E0E0; }
+		.configuration > section label i { margin: 3px 6px 0 0; width: 15px; text-align: center; float: left; }
+		.configuration > section:first-child label { border-top: 0; border-radius: var(--radius) var(--radius) 0 0; }
+		.configuration > section > article { border-top: 1px solid #E0E0E0; }
+		.configuration > section:first-child article:first-child { border-top: 0; border-radius: var(--radius) var(--radius) 0 0; }
+		.configuration .padding { padding: 15px 10px; }
+		.configuration > .toolbar { float: right; margin: 10px 10px 0 10px; }
+		.configuration > .toolbar button { height: 22px; line-height: 20px; min-width: 60px; }
+
+		.ui-dark .configuration p { color: #A0A0A0; }
+		.ui-dark .configuration { background-color: #202020; border-color: #404040; }
+		.ui-dark .configuration > section:first-child label { border-top-color: #404040; }
+		.ui-dark .configuration > section > article { border-top-color: #404040; }
+		.ui-dark .configuration > section label { color: #FFF; border-top-color: #404040; }
+		.markdown { overflow: hidden; }
+
+		.message { padding: 5px; border: 2px solid var(--color); border-radius: var(--radius); font-size: 12px; color: var(--color); margin-bottom: 10px; }
+		.message i { margin-right: 5px; }
+		.message-error { border-color: #D63A32; color: #D63A32; }
+		.message-alert { border-color: #DEBA31; color: #DEBA31; }
+		.message-success { border-color: #68B25B; color: #68B25B; }
+
+		.ui-parts-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
+
+		.landing .listing .icon { float: left; width: 50px; height: 50px; font-size: 25px; }
+		.landing footer { height: 30px; background-color: #FFF; line-height: 30px; padding: 0; font-size: 11px; border-top: 1px solid #E0E0E0; }
+		.landing footer span { float: left; padding: 0 0 0 10px; width: 16%; }
+		.landing footer span b { float: right; border-right: 1px solid #E0E0E0; padding-right: 10px; }
+		.landing footer span:last-child b { border-right: 0; }
+
+		.ui-dark .landing footer { background-color: #303030; border-top-color: #404040; }
+		.ui-dark .landing footer span b { border-right-color: #404040; }
+
+		.flows { padding: 0 10px 10px; }
+		.flows:first-child { padding-top: 10px; }
+		.flows h2 { margin: 0 0 0 10px; padding: 0 0 5px 0; font-size: 18px; color: #000; }
+		.flows h2 span { float: right; font-weight: normal; font-size: 14px; margin: 4px 0 0 0; color: #999; }
+		.ui-dark .flows h2 { color: #FFF; }
+
+		.flows .ispaused { display: none; }
+		.flows .paused .ispaused { display: block; position: absolute; margin: 15px 0 0 15px; font-size: 20px; color: red; }
+		.flows .paused section { border-color: red !important; }
+		.flows figure { padding: 10px; width: 25%; position: relative; display: inline-block; vertical-align: top; }
+		.flows figure section { border: 2px solid #E0E0E0; background-color: #FFF; cursor: pointer; border-radius: var(--radius); }
+		.flows figure section:hover { border-color: #B0B0B0; }
+		.flows figure .icon { height: 120px; font-size: 34px; text-align: center; line-height: 120px; border-bottom: 1px solid #E0E0E0; overflow: hidden;  background-color: #F8F8F8; border-radius: var(--radius) var(--radius) 0 0; }
+		.flows figure .meta { padding: 10px; font-size: 12px; }
+		.flows figure .meta .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 15px; font-weight: bold; }
+		.flows figure .meta .name span { color: #FFF; border-radius: var(--radius); line-height: 12px; font-size: 11px; padding: 1px 3px; float: right; margin: 4px 5px 0 0; font-weight: normal; }
+		.flows figure .size { font-size: 11px; color: #A0A0A0; margin-bottom: 4px; }
+		.flows figure .proxy { border-top: 1px dashed #E0E0E0; padding: 7px 0 0; }
+		.flows figure .proxy span { font-family: monospace; font-weight: bold; background-color: #F0F0F0; padding: 1px 2px; border-radius: var(--radius); }
+		.flows figure .author { font-size: 11px; color: #000; }
+		.flows figure .stats { padding: 10px; font-size: 11px; border-top: 1px solid #E0E0E0; line-height: 12px; }
+		.flows figure .stats label { display: block; font-size: 11px; color: #777; margin-bottom: 5px; }
+		.flows figure .stats label i { margin-right: 5px; }
+		.flows figure .stats span { float: right; }
+		.flows figure .options { position: absolute; right: 20px; top: 20px; cursor: pointer; width: 25px; text-align: center; font-size: 18px; }
+		.flows figure .reference { position: absolute; left: 22px; top: 25px; cursor: pointer; text-align: center; font-size: 16px; font-weight: bold; font-family: Menlo,Consolas,monospace; }
+
+		.ui-dark .flows figure section { border-color: #404040; background-color: #282828; }
+		.ui-dark .flows figure .proxy { border-top-color: #404040; }
+		.ui-dark .flows figure .proxy span { background-color: #111; color: #FFF; }
+		.ui-dark .flows figure section:hover { border-color: #606060; }
+		.ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; background-color: #303030; }
+		.ui-dark .flows figure .meta .name span { color: #FFF; }
+		.ui-dark .flows figure .size { color: #888; }
+		.ui-dark .flows figure .author { color: #FFF; }
+		.ui-dark .flows figure .stats { border-top-color: #404040; }
+		.ui-dark .flows figure .stats label { color: #888; }
+
+		.ui-windows-resizer { z-index: 100; }
+		.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.1); }
+		.ui-windows-body { overflow: hidden; }
+		.ui-windows-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
+		.ui-dark .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.5); }
+
+		@media (max-width:768px) {
+			.flows figure { width: 50%; }
+		}
+
+		@media (max-width:991px) and (min-width:768px) {
+			.flows figure { width: 33.33%; }
+		}
+
+		@media (max-width:1250px) and (min-width:992px) {
+			.flows figure { width: 25%; }
+		}
+
+		@media (min-width:1251px) {
+			.flows figure { width: 20%; }
+		}
+
+		@media (min-width:1600px) {
+			.flows figure { width: 16.6%; }
+		}
+
+		@media (min-width:2200px) {
+			.flows figure { width: 14.28%; }
+		}
+
+		@media (min-width:2500px) {
+			.flows figure { width: 12.5%; }
+		}
+
+		.ui-largeform .search { height: 30px; }
+		.ui-largeform .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; }
+
+		.listing-download .icon { float: left; width: 22px; height: 32px; line-height: 32px; font-size: 20px; text-align: center; margin-right: 15px; }
+		.listing-download .author { font-size: 11px; color: #777; }
+		.listing-download .version { float: right; font-size: 11px; color: #777; margin: 10px 0 0; }
+		.listing-download .name { font-weight: bold; font-size: 13px; }
+
+		.sources-header { height: 60px; background-color: #F8F8F8; border-bottom: 1px solid #E0E0E0; }
+		.sources-header .input { padding: 12px 15px 0; }
+		.ui-dark .sources-header { background-color: #252525; border-bottom-color: #404040; }
+
+		.sources-item { height: 30px; border-bottom: 1px solid #E0E0E0; font-size: 12px; line-height: 30px; }
+		.sources-item .code { float: right; width: 120px; color: #E73323; }
+		.sources-item .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding: 0 10px 0 15px; }
+		.sources-item .name i { margin-right: 5px; }
+		.ui-dark .sources-item { border-bottom-color: #404040; }
+
+		.button { background-color: var(--color); border-radius: var(--radius); color: #FFF; border: 0; outline: 0; cursor: pointer; width: 100%; display: block; user-select: none; height: 32px; font-size: 13px; }
+		.button i { margin-right: 5px; }
+		.button:hover { opacity: 0.8; }
+		.button:disabled { background-color: #F0F0F0 !important; color: #777 !important; cursor: not-allowed; opacity: 1 !important; }
+
+		.message { padding: 10px; border: 2px solid #E0E0E0; border-radius: var(--radius); font-size: 12px; margin-bottom: 10px; }
+		.message i { margin-right: 5px; }
+		.message-error { border-color: #D63A32; color: #A72C26; }
+		.message-alert { border-color: #DEBA31; color: #8c7727; }
+		.message-success { border-color: #68B25B; color: #4A7543; }
+
+		.ui-dark .message { border-color: #666; color: #999; }
+		.ui-dark .message-error { border-color: #D63A32; color: #DC7772; }
+		.ui-dark .message-alert { border-color: #DEBA31; color: #D2BA62; }
+		.ui-dark .message-success { border-color: #68B25B; color: #6DAD63; }
+
+		.appmenu { width: 60px; border-right: 1px solid #E0E0E0; float: left; padding: 5px 0 0; background-color: #FFF; color: #777; }
+		.appmenu .exec { height: 32px; width: 32px; font-size: 18px; line-height: 32px; text-align: center; margin: 11px 15px 0 15px; cursor: pointer; border-radius: var(--radius); }
+		.appmenu .selected, .appmenu .exec:hover { background-color: #F0F0F0; color: #000; }
+		.appmenu hr { margin: 10px 10px; }
+		.appmain { margin-left: 60px; }
+
+		.ui-dark .appmenu { border-right-color: #404040; background-color: #222; color: #777; }
+		.ui-dark .appmenu .selected, .ui-dark .appmenu .exec:hover  { background-color: #303030; color: #FFF; }
+		.ui-dark .ui-box .search .ui-searchinput { border-color: #404040; }
+
+		.noscrollbar { overflow-y: scroll !important; }
+		.ui-searchinput { border-radius: var(--radius); }
+	</style>
 </head>
 <body@{if PREF.darkmode} class="ui-dark"@{fi}>
 
 	<ui-component name="exec"></ui-component>
 	<ui-component name="locale" config="requests:1;language:@{controller.language}"></ui-component>
-	<ui-component name="windows" path="common.windows" config="zindex:50"></ui-component>
+	<ui-component name="windows" path="*windows" config="zindex:50"></ui-component>
 	<ui-component name="imageviewer" config="unknown:@(Unknown image)"></ui-component>
 
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
@@ -41,85 +333,93 @@
 	<ui-component name="errorhandler"></ui-component>
 	<ui-component name="hashchange"></ui-component>
 
-	<ui-component name="dropfiles" path="null" config="exec:common/dragdrop;check:common/dragdropcheck" class="hidden">
-		@(Drag &amp; Drop FlowStream)
-	</ui-component>
+	<ui-plugin path="*">
 
-	<ui-component name="importer" path="common.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
-
-	<header>
-
-		<ui-bind path="common.env" config="template" title="@(Environment)" class="env">
-			<script type="text/html">
-				<span class="badge badge-medium badge-{{ if value === 'dev' }}red{{ else if value === 'test' }}orange{{ else }}green{{ fi }}">{{ value }}</span>
-			</script>
-		</ui-bind>
-
-		<span class="search exec pull-right" data-exec="common/search" title="@(Search) (F1)"><i class="ti ti-search"></i></span>
-		<span class="console exec pull-right" data-exec="common/console" title="@(Server log)"><i class="ti ti-bug"></i></span>
-
-		@{if user.openplatform && !user.iframe}
-		<span class="mainmenu"><a href="@{user.openplatform}"><i class="ti ti-menu"></i></a></span>
-		@{else}
-		<span class="mainmenu exec" data-exec="common/focus" data-id="main"><i class="ti ti-menu"></i></span>
-		@{fi}
-
-		<ui-bind path="common.tabs" config="template:div" class="tabs block">
-			<script type="text/html">
-				{{ foreach m in value }}
-					{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="common/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
-				{{ end }}
-			</script>
-		</ui-bind>
-		<div class="pull-right">
-			<ui-component name="virtualwire" path="common.page" class="toolbar"></ui-component>
-		</div>
-	</header>
-
-	<div class="appmenu">
-		<ui-component name="noscrollbar" config="parent:window;margin:60" class="invisible">
-			<ui-component name="selected" path="common.page" config="selector:.exec;attr:id">
-				<ui-bind path="common.menu" config="template" class="block">
-					<script type="text/html">
-						{{ foreach m in value }}
-							{{ if m === '-' }}
-							<hr />
-							{{ else if m.hidden !== true }}
-							<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
-							{{ fi }}
-						{{ end }}
-					</script>
-				</ui-bind>
-			</ui-component>
+		<ui-component name="dropfiles" config="exec:?/dragdrop;check:common/dragdropcheck" class="hidden">
+			@(Drag &amp; Drop FlowStream)
 		</ui-component>
-	</div>
 
-	<div class="appmain">
+		<ui-component name="importer" path="?.form" config="if:importform;url:@{#}/forms/import.html"></ui-component>
+		<header>
 
-		<ui-component name="ready" config="rclass:invisible" class="invisible">
+			<ui-bind path="?.env" config="template" title="@(Environment)" class="env">
+				<script type="text/html">
+					<span class="badge badge-medium badge-{{ if value === 'dev' }}red{{ else if value === 'test' }}orange{{ else }}green{{ fi }}">{{ value }}</span>
+				</script>
+			</ui-bind>
 
-			<div class="landing">
-				<ui-component name="parts" path="common.tabs" config="parent:window;margin:60;focus:common/selected"></ui-component>
-			</div>
+			<span class="search exec pull-right" data-exec="?/search" title="@(Search) (F1)"><i class="ti ti-search"></i></span>
+			<span class="console exec pull-right" data-exec="?/console" title="@(Server log)"><i class="ti ti-bug"></i></span>
 
-			<ui-component name="importer" path="common.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
-			<ui-component name="importer" path="common.form" config="if:variablesform;url:@{#}/forms/variables.html"></ui-component>
-			<ui-component name="importer" path="common.form" config="if:welcomeform;url:@{#}/forms/welcome.html"></ui-component>
-
-			@{if user.sa}
-			<ui-component name="importer" path="common.form" config="if:templatesform;url:@{#}/forms/templates.html"></ui-component>
-			<ui-component name="importer" path="common.form" config="if:settingsform;url:@{#}/forms/settings.html"></ui-component>
-			<ui-component name="importer" path="common.form" config="if:passwordform;url:@{#}/forms/password.html"></ui-component>
-			<ui-component name="importer" path="common.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
+			@{if user.openplatform && !user.iframe}
+			<span class="mainmenu"><a href="@{user.openplatform}"><i class="ti ti-menu"></i></a></span>
+			@{else}
+			<span class="mainmenu exec" data-exec="?/focus" data-id="main"><i class="ti ti-menu"></i></span>
 			@{fi}
 
-			@{if user.sa || user.permissions.includes('create')}
-			<ui-component name="importer" path="common.form" config="if:newform;url:@{#}/forms/new.html"></ui-component>
-			@{fi }
+			<ui-bind path="?.tabs" config="template:div" class="tabs block">
+				<script type="text/html">
+					{{ foreach m in value }}
+						{{ if !m.noclose }}<div class="exec{{ if m.focused }} selected{{ fi }}" data-exec="?/focus" data-id="{{ m.id }}">{{ if !m.noclose }}<i class="ti ti-times exec" data-exec="common/close"></i>{{ fi }}{{ m.name }}</div>{{ fi }}
+					{{ end }}
+				</script>
+			</ui-bind>
+			<div class="pull-right">
+				<ui-component name="virtualwire" path="?.page" class="toolbar"></ui-component>
+			</div>
+		</header>
 
+		<div class="appmenu">
+			<ui-component name="noscrollbar" config="parent:window;margin:60" class="invisible">
+				<ui-component name="selected" path="?.page" config="selector:.exec;attr:id">
+					<ui-bind path="?.menu" config="template" class="block">
+						<script type="text/html">
+							{{ foreach m in value }}
+								{{ if m === '-' }}
+								<hr />
+								{{ else if m.hidden !== true }}
+								<div class="exec" data-exec="common/menu" title="{{ m.name }}" data-id="{{ m.id }}"><i class="{{ m.icon }}"></i></div>
+								{{ fi }}
+							{{ end }}
+						</script>
+					</ui-bind>
+				</ui-component>
+			</ui-component>
+		</div>
+
+		<div class="appmain">
+
+			<ui-component name="ready" config="rclass:invisible" class="invisible">
+
+				<div class="landing">
+					<ui-component name="parts" path="?.tabs" config="parent:window;margin:60;focus:?/selected"></ui-component>
+				</div>
+
+				<ui-component name="importer" path="?.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
+				<ui-component name="importer" path="?.form" config="if:variablesform;url:@{#}/forms/variables.html"></ui-component>
+				<ui-component name="importer" path="?.form" config="if:welcomeform;url:@{#}/forms/welcome.html"></ui-component>
+
+				@{if user.sa}
+				<ui-component name="importer" path="?.form" config="if:templatesform;url:@{#}/forms/templates.html"></ui-component>
+				<ui-component name="importer" path="?.form" config="if:settingsform;url:@{#}/forms/settings.html"></ui-component>
+				<ui-component name="importer" path="?.form" config="if:passwordform;url:@{#}/forms/password.html"></ui-component>
+				<ui-component name="importer" path="?.form" config="if:publishform;url:@{#}/forms/publish.html"></ui-component>
+				@{fi}
+
+				@{if user.sa || user.permissions.includes('create')}
+				<ui-component name="importer" path="?.form" config="if:newform;url:@{#}/forms/new.html"></ui-component>
+				@{fi }
+
+			</ui-component>
+
+		</div>
+	</ui-plugin>
+
+	<script type="text/html" id="template_readme">
+		<ui-component name="viewbox" config="parent:auto" class="invisible bg-white">
+			<div class="padding markdown-small"><div>
 		</ui-component>
-
-	</div>
+	</script>
 
 	@{json(model, 'pluginsdata')}
 	@{json(user.json ? user.json() : user, 'userdata')}
@@ -155,8 +455,9 @@
 		common.windows = [];
 		common.root = '@{#}';
 		common.page = 'flows';
-		common.designer = '@{#}/designer/';
+		common.editor = '@{#}/editor/';
 		common.totalversion = +'@{F.version}';
+		common.version = +'@{CONF.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
 		common.env = '@{PREF.env}';
 		common.templates = '@{PREF.templates}';
@@ -173,11 +474,11 @@
 		})();
 
 		ON('@flag showloading', function() {
-			EXEC('-loading/show');
+			SETTER('loading/show');
 		});
 
 		ON('@flag hideloading', function() {
-			EXEC('-loading/hide', 1000);
+			SETTER('loading/hide', 1000);
 		});
 
 		// Error handling
@@ -194,7 +495,7 @@
 				err.push(m.error);
 			}
 
-			EXEC('-message/warning @hideloading', err.join('<br />'));
+			SETTER('message/warning @hideloading', err.join('<br />'));
 			login && location.reload(true);
 		});
 
@@ -217,7 +518,7 @@
 			com.register('CMD+F, CTRL+F', shortcutsprocess('CMD+F'), true);
 			com.register('CMD+TAB, ALT+TAB', function() {
 				var index = common.tabs.findIndex('focused', true) + 1;
-				EXEC('-parts/focus', common.tabs[index] ? common.tabs[index].id : common.tabs[0].id);
+				SETTER('parts/focus', common.tabs[index] ? common.tabs[index].id : common.tabs[0].id);
 			}, true);
 			com.register('remove', shortcutsprocess('remove'));
 			com.register('save', shortcutsprocess('save'), true);
@@ -225,11 +526,11 @@
 			com.register('F10', AEXEC('common/console'), true);
 		});
 
-		EXEC(true, '-loading/hide', 500);
+		SETTER('loading/hide @important', 500);
 
 		FUNC.import = function(callback) {
 			SET('importform @default', { callback: callback });
-			SET('common.form', 'importform');
+			SET('*form', 'importform');
 		};
 
 		FUNC.cleanflow = function(data) {
@@ -249,7 +550,7 @@
 			return index === -1 ? val : val.substring(0, index);
 		};
 
-		PLUGIN('common', function(exports) {
+		PLUGIN('*', function(exports) {
 
 			var model = exports.model;
 			var checksum;
@@ -264,7 +565,7 @@
 			})();
 
 			exports.refresh = function() {
-				exports.tapi('streams ERROR', function(response) {
+				exports.tapi('Streams ERROR', function(response) {
 
 					var groups = {};
 
@@ -292,7 +593,7 @@
 					arr.quicksort('name');
 					exports.set('groups', arr);
 					exports.set('groupsform', form);
-					exports.set('items', response);
+					exports.set('items @hideloading', response);
 
 					if (!loaded) {
 						loaded = true;
@@ -302,7 +603,6 @@
 								setTimeout(() => exports.open(item), 500);
 						}
 					}
-
 
 				});
 			};
@@ -315,7 +615,7 @@
 
 					if (model.page !== 'flows') {
 						exports.set('page', 'flows');
-						EXEC('-parts/focus', id);
+						SETTER('parts/focus', id);
 						return;
 					}
 
@@ -329,11 +629,11 @@
 						opt.items.splice(index + 1, 0, { id: 'cdnclear', name: '@(Clear CDN cache)', icon: 'ti ti-recycle' });
 
 					opt.callback = exports.menu;
-					EXEC('-menu/show', opt);
+					SETTER('menu/show', opt);
 				} else {
 					location.hash = id;
 					exports.nul('page');
-					EXEC('-parts/focus', id);
+					SETTER('parts/focus', id);
 				}
 			};
 
@@ -353,18 +653,18 @@
 				reader.onload = function() {
 					var data = PARSE(reader.result);
 					if (data && data.components && data.design && data.id && data.name) {
-						exports.tapi('clipboard_import @showloading ERROR', { data: reader.result }, function(response) {
+						exports.tapi('Streams|import @showloading ERROR', { data: reader.result }, function(response) {
 							exports.refresh();
 							setTimeout(function() {
-								exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+								exports.tapi('Streams|read ERROR', { id: response.value }, function(response) {
 									SET('streamform @reset @hideloading', response);
-									SET('common.form', 'streamform');
+									exports.set('form', 'streamform');
 								});
 							}, 1000);
 						});
 						return;
 					}
-					EXEC('-message/warning', '@(Invalid file content)');
+					SETTER('message/warning', '@(Invalid file content)');
 				};
 				reader.readAsText(files[0]);
 			};
@@ -381,11 +681,12 @@
 				e.preventDefault();
 
 				location.hash = '';
-				EXEC('-parts/close', ATTRD(el));
+				SETTER('parts/close', ATTRD(el));
 
 				setTimeout(function() {
 					if (model.tabs.length === 1 && model.page !== 'flows')
 						exports.set('page', 'flows');
+					EMIT('resize');
 				}, 80);
 
 			};
@@ -400,7 +701,7 @@
 
 				if (item) {
 					if (!item.focused)
-						EXEC('-parts/focus', item.id);
+						SETTER('parts/focus', item.id);
 					return;
 				}
 
@@ -408,17 +709,17 @@
 					model.appmenuwidth = $('.appmenu').width();
 
 				var flow = model.items.findItem('id', id);
-				var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id) + common.openplatform;
+				var url = location.origin.replace(/^http/, 'ws') + '@{#}/fapi/{0}/'.format(id) + model.openplatform;
 
 				location.hash = id;
 				item = {};
 				item.id = id;
 				item.icon = flow.icon;
 				item.name = flow.name;
-				item.html = ('<iframe src="' + common.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0" class="iflowstream" style="width:{5}px"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(common.components || '') + common.openplatform ? ('&' + common.openplatform.substring(1)) : '', common.language, WW - model.appmenuwidth);
+				item.html = ('<iframe src="' + model.editor + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0" class="iflowstream" style="width:{5}px"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(model.components || '') + model.openplatform ? ('&' + model.openplatform.substring(1)) : '', model.language, WW - model.appmenuwidth);
 				item.focus = 'common/focusiframe';
-				EXEC('-loading/show');
-				EXEC('-loading/hide', 2000);
+				SETTER('loading/show');
+				SETTER('loading/hide', 2000);
 				exports.push('tabs', item);
 			};
 
@@ -449,7 +750,7 @@
 				if (user.sa)
 					opt.items.push({ id: 'variables', name: '@(Variables)', icon: 'ti ti-variables', classname: 'b' });
 
-				if (common.totalversion > 4045 && item.stats) {
+				if (model.totalversion > 4045 && item.stats) {
 					if (item.stats.paused) {
 						opt.items.push({ id: 'play', name: '@(Play)', icon: 'ti ti-play green' });
 						paused = true;
@@ -472,11 +773,10 @@
 				opt.items.push({ id: 'copy2', name: '@(Copy as JSON)', icon: 'ti ti-copy' });
 				opt.items.push({ id: 'download', name: '@(Download)', icon: 'ti ti-download' });
 
-				if (common.workers)
+				if (model.workers)
 					opt.items.push({ id: 'restart', name: '@(Restart)', icon: 'ti ti-sync' });
 
 				if (user.sa || user.permissions.includes('remove')) {
-					opt.items.push({ id: 'publish', name: '@(Publish to the community)', icon: 'ti ti-upload' });
 					opt.items.push('-');
 					opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'ti ti-remove red' });
 				}
@@ -484,38 +784,38 @@
 				opt.callback = function(opt) {
 					switch (opt.id) {
 						case 'newtab':
-							var url = location.origin.replace(/^http/, 'ws') + '@{#}/flows/{0}/'.format(id);
-							W.open(location.origin + common.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url + (common.openplatform ? ((url.indexOf('?') === -1 ? '?' : '&') + common.openplatform.substring(1)) : '')), encodeURIComponent(common.components || '')) + (common.openplatform ? ('&' + common.openplatform.substring(1)) : ''));
+							var url = location.origin.replace(/^http/, 'ws') + '@{#}/fapi/{0}/'.format(id);
+							W.open(location.origin + model.editor + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url + (model.openplatform ? ((url.indexOf('?') === -1 ? '?' : '&') + model.openplatform.substring(1)) : '')), encodeURIComponent(model.components || '')) + (model.openplatform ? ('&' + model.openplatform.substring(1)) : ''));
 							break;
 						case 'pause':
 						case 'play':
-							exports.tapi(QUERIFY('streams_pause/{0} ERROR'.format(id), { is: paused ? 0 : 1 }), function() {
+							exports.tapi('Streams|pause ERROR', { id: id, is: paused ? 0 : 1 }, function() {
 								parent.find('figure[data-id="{0}"]'.format(id)).tclass('paused', !paused);
 								if (item.stats)
 									item.stats.paused = !paused;
 							});
 							break;
 						case 'restart':
-							EXEC('-approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"ti ti-sync" @(Restart)', function() {
-								exports.tapi('streams_restart/{0} ERROR'.format(id), AEXEC('-notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name)));
+							SETTER('approve/show', '@(Are you sure you want to restart selected FlowStream "{0}"?)'.format(item.name), '"ti ti-sync" @(Restart)', function() {
+								exports.tapi('Streams|restart ERROR', { id: id }, ASETTER('notify/success', '@(FlowStream "{0}" is restarting ...)'.format(item.name)));
 							});
 							break;
 						case 'variables':
-							TAPI('variables?id=' + id, AEXEC('-message/response', function(response) {
+							exports.tapi('Variables|read ERROR', { id: id }, ASETTER('message/response', function(response) {
 								var model = {};
 								model.variables = response;
 								model.callback = function(model) {
-									exports.tapi('variables_save ERROR', { id: id, data: model }, AEXEC('-notify/success', '@(Variables have been changed successfully.)'));
+									exports.tapi('Variables|save ERROR', { id: id, data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
 								};
 								SET('variablesform @reset', model);
-								SET('common.form', 'variablesform');
+								exports.set('form', 'variablesform');
 							}));
 							break;
 						case 'copy':
 						case 'copy2':
 						case 'clone':
 						case 'download':
-							exports.tapi('clipboard_export/{0} ERROR'.format(id), function(response) {
+							exports.tapi('Streams|export ERROR', { id: id }, function(response) {
 
 								if (opt.id === 'download') {
 									var blob = new Blob([JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t')], { type: 'text/plain; charset=utf-8' });
@@ -524,15 +824,15 @@
 								}
 
 								if (opt.id === 'copy' || opt.id === 'copy2') {
-									EXEC('-clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t'));
-									EXEC('-notify/success', '@(The FlowStream has been copied into the clipboard)');
+									SETTER('clipboard/copy', opt.id === 'copy' ? ENCRYPT(response.value, common.secret, 'flow') : JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t'));
+									SETTER('notify/success', '@(The FlowStream has been copied into the clipboard)');
 								} else {
-									exports.tapi('clipboard_import @showloading ERROR', { data: response.value }, function(response) {
+									exports.tapi('Streams|import @showloading ERROR', { data: response.value }, function(response) {
 										exports.refresh();
 										setTimeout(function() {
-											exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+											exports.tapi('Streams|read ERROR', { id: response.value }, function(response) {
 												SET('streamform @reset @hideloading', response);
-												SET('common.form', 'streamform');
+												exports.set('form', 'streamform');
 											});
 										}, 1000);
 									});
@@ -540,34 +840,34 @@
 							});
 							break;
 						case 'edit':
-							exports.tapi('streams_read/{0} @showloading ERROR'.format(id), function(response) {
+							exports.tapi('Streams|read @showloading ERROR', { id: id }, function(response) {
 								SET('streamform @reset', response);
-								SET('common.form @hideloading', 'streamform');
+								exports.set('form @hideloading', 'streamform');
 							});
 							break;
 						case 'remove':
-							user.sa && EXEC('-approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"ti ti-remove" @(Remove)', function() {
-								exports.tapi('streams_remove/{0} ERROR'.format(id), exports.refresh);
+							user.sa && SETTER('approve/show', '@(Are you sure you want to remove selected FlowStream "{0}"?)'.format(item.name), '"ti ti-remove" @(Remove)', function() {
+								exports.tapi('Streams|remove ERROR', { id: id }, exports.refresh);
 							});
 							break;
 						case 'publish':
-							exports.tapi('clipboard_export/{0} ERROR'.format(id), function(response) {
+							exports.tapi('Streams|export ERROR', { id: id }, function(response) {
 								var data = {};
 								data.type = 'flowstream';
 								data.name = item.name;
 								data.email = CACHE('email') || '@';
 								data.data = JSON.stringify(FUNC.cleanflow(PARSE(response.value)), null, '\t');
 								SET('publishform @reset', data);
-								SET('common.form', 'publishform');
+								exports.set('form', 'publishform');
 							});
 							break;
 					}
 				};
-				EXEC('-menu/show', opt);
+				SETTER('menu/show', opt);
 			};
 
 			exports.settings = function() {
-				exports.tapi('settings @showloading ERROR', function(response) {
+				exports.tapi('Settings|read @showloading ERROR', function(response) {
 
 					var data = {};
 
@@ -578,7 +878,7 @@
 
 					response.data = data;
 					SET('settingsform @reset @hideloading', response);
-					SET('common.form', 'settingsform');
+					exports.set('form', 'settingsform');
 				});
 			};
 
@@ -632,6 +932,7 @@
 					items.pop();
 
 				exports.set('menu', items);
+				exports.update('page');
 			};
 
 			exports.menu = function(el) {
@@ -641,28 +942,28 @@
 					case 'flows':
 						location.hash = '';
 						exports.set('page', 'flows');
-						EXEC('-parts/focus', 'main');
+						SETTER('parts/focus', 'main');
 						break;
 
 					case 'update':
-						EXEC('-approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
+						SETTER('approve/show', '<i class="ti ti-warning red"></i><b>@(WARNING):</b> @(Are you sure you want to update bundle of the Total.js Flow? It is a hazardous step.)', '"ti ti-sync" @(Upload bundle)', function() {
 							var opt = {};
 							opt.multiple = false;
 							opt.url = '/fapi/update/' + model.openplatform;
 							opt.callback = function(response, err) {
 								if (err) {
-									EXEC('-message/warning', err);
+									SETTER('message/warning', err);
 								} else {
-									EXEC('-loading/show');
+									SETTER('loading/show');
 									setTimeout(() => location.reload(), 5000);
 								}
 							};
-							EXEC('-fileuploader/upload', opt);
+							SETTER('fileuploader/upload', opt);
 						});
 						break;
 
 					case 'logout':
-						AJAX('GET @{#}/fapi/logout/ @showloading', () => location.href = '@{#}/?login=1');
+						exports.tapi('Auth|logout @showloading', () => location.href = '@{#}/?login=1');
 						break;
 
 					case 'import':
@@ -671,18 +972,18 @@
 							var obj = PARSE(data);
 							if (obj && obj.components && obj.id && obj.name && obj.design) {
 								data = STRINGIFY(obj);
-								exports.tapi('clipboard_import @showloading ERROR', { data: data }, function(response) {
+								exports.tapi('Streams|import @showloading ERROR', { data: data }, function(response) {
 									exports.refresh();
 									setTimeout(function() {
-										exports.tapi('streams_read/{0} ERROR'.format(response.value), function(response) {
+										exports.tapi('Streams|read ERROR', { id: response.value }, function(response) {
 											SET('streamform @reset @hideloading', response);
-											SET('common.form', 'streamform');
+											exports.set('form', 'streamform');
 										});
 									}, 1000);
 								});
 								hide();
 							} else
-								EXEC('-message/warning', '@(Invalid data)');
+								SETTER('message/warning', '@(Invalid data)');
 						});
 						break;
 					case 'opensource':
@@ -695,10 +996,10 @@
 						exports[id]();
 						break;
 					case 'cdnclear':
-						EXEC('-approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', ':ti ti-recycle: @(Clear)', () => exports.tapi('cdn_clear ERROR', AEXEC('-message/success', '@(The CDN cache has been cleared successfully)')));
+						SETTER('approve/show', '@(Are you sure you want to clear the CDN cache for UI components?)', ':ti ti-recycle: @(Clear)', () => exports.tapi('CDN|clear ERROR', ASETTER('message/success', '@(The CDN cache has been cleared successfully)')));
 						break;
 					case 'templates':
-						SET('common.form', 'templatesform');
+						exports.set('form', 'templatesform');
 						break;
 					case 'search':
 						exports.search();
@@ -706,7 +1007,7 @@
 					default:
 
 						if (id.substring(0, 6) === 'plugin') {
-							EXEC('-parts/focus', 'main');
+							SETTER('parts/focus', 'main');
 							exports.set('page', id);
 						}
 
@@ -716,36 +1017,36 @@
 
 			exports.create = function() {
 				SET('streamform @default', {});
-				SET('common.form', 'streamform');
+				exports.set('form', 'streamform');
 			};
 
 			exports.password = function() {
-				exports.tapi('auth ERROR', function(response) {
+				exports.tapi('Auth|read ERROR', function(response) {
 					SET('passwordform @reset', response);
-					SET('common.form', 'passwordform');
+					exports.set('form', 'passwordform');
 				});
 			};
 
 			exports.variables = function() {
-				exports.tapi('variables ERROR', function(response) {
+				exports.tapi('Variables|read ERROR', function(response) {
 					var model = {};
 					model.variables = response;
 					model.callback = function(model) {
-						exports.tapi('variables_save ERROR', { data: model }, AEXEC('-notify/success', '@(Variables have been changed successfully.)'));
+						exports.tapi('Variables|save ERROR', { data: model }, ASETTER('notify/success', '@(Variables have been changed successfully.)'));
 					};
 					SET('variablesform @reset', model);
-					SET('common.form', 'variablesform');
+					exports.set('form', 'variablesform');
 				});
 			};
 
 			exports.console = function() {
 				var winid = 'console';
 				if (model.windows.findItem('id', winid)) {
-					EXEC('-windows/hide', winid);
+					SETTER('windows/hide', winid);
 				} else {
 					exports.push('windows', { id: winid, cachekey: winid + (screen.width + 'x' + screen.height), html: '<ui-import config="url:/forms/console.html"></ui-import>', title: '@(Real-time server console)', actions: { move: true, autosave: true, menu: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 200, minwidth: 200, minheight: 100, maxwidth: 800, maxheight: 1200 }, menu: function(el) {
 						el.closest('.ui-windows-item').find('pre').empty();
-						TAPI('console_clear', NOOP);
+						TAPI('Console|clear', NOOP);
 					}, make: function(el) {
 						el.parent().find('.ui-windows-lastbutton').rclass2('ti').aclass('ti ti-remove');
 						el.closest('.ui-windows-item').css('z-index', 50);
@@ -757,7 +1058,7 @@
 			exports.refresh();
 
 			exports.stats = function() {
-				exports.tapi('streams_stats', 'stats');
+				exports.tapi('Streams|stats', 'stats');
 			};
 
 			ON('resize + resize2', function() {
@@ -784,16 +1085,16 @@
 							if (data.id.charAt(0) === '@')
 								data.id = model.items.findValue('reference', data.id.substring(1), 'id');
 							data.id && exports.open(data.id);
-							EXEC('-!menu/hide');
-							EXEC('-!datepicker/hide');
+							SETTER('menu/hide');
+							SETTER('datepicker/hide');
 							break;
 						case 'focus':
 							var model = exports.model;
 							var win = model.windows.findItem('url', data.socket);
 							if (win) {
-								EXEC('-!menu/hide');
-								EXEC('-!datepicker/hide');
-								EXEC('-infowindows/focus', win.id);
+								SETTER('menu/hide');
+								SETTER('datepicker/hide');
+								SETTER('infowindows/focus', win.id);
 							}
 							break;
 						case 'F1':
@@ -803,9 +1104,9 @@
 							EXEC('common/console');
 							break;
 						case 'edit':
-							exports.tapi('streams_read/{id} @showloading ERROR'.arg(data), function(response) {
+							exports.tapi('Streams|read @showloading ERROR', { id: data.id }, function(response) {
 								SET('streamform @reset', response);
-								SET('common.form @hideloading', 'streamform');
+								exports.set('form @hideloading', 'streamform');
 							});
 							break;
 					}
@@ -813,21 +1114,20 @@
 			});
 
 			ON('paste', function(text) {
-				var data;
 				if (!common.form && text.substring(0, 4) === 'flow') {
-					data = DECRYPT(text, common.secret, 'flow');
+					var data = DECRYPT(text, common.secret, 'flow');
 					if (data) {
-						EXEC('-approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
-							TAPI('clipboard_import @showloading ERROR', { data: STRINGIFY(data) }, function(response) {
+						SETTER('approve/show', '@(Are you sure you want to import a Flow from the clipboard?)', '@(Import)', function() {
+							TAPI('Streams|import @showloading ERROR', { data: STRINGIFY(data) }, function(response) {
 
 								if (response.error)
-									EXEC('-message/warning', response.error);
+									SETTER('message/warning', response.error);
 
 								exports.exec('refresh');
 								setTimeout(function() {
-									TAPI('streams_read/{0} ERROR' + response.value, function(response) {
+									TAPI('Streams|read ERROR', { id: response.value }, function(response) {
 										SET('streamform @reset', response);
-										SET('common.form', 'streamform');
+										exports.set('form', 'streamform');
 									});
 								}, 1000);
 							});
@@ -844,6 +1144,48 @@
 			exports.mainmenu();
 
 		});
+
+		FUNC.readme = function(title, text) {
+
+			let winid = 'readme' + HASH(text);
+
+			if (common.windows.findItem('id', winid)) {
+				SETTER('windows/focus', winid);
+				return;
+			}
+
+			let html = $($('#template_readme').html());
+
+			html.find('.markdown-small').html(Thelpers.markdown(FUNC.strim(text || ''), { el: html }));
+			PUSH('*windows', { id: winid, cache: 'readme', html: html, title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: el => el.closest('.ui-windows-item').css('z-index', 50) });
+
+		};
+
+		FUNC.strim = function(value) {
+
+			let c = value.charAt(0);
+			if (c !== ' ' && c !== '\t')
+				return value;
+
+			for (let i = 0; i < value.length; i++) {
+				c = value.charAt(i);
+				if (c !== ' ' && c !== '\t')
+					break;
+			}
+
+			let count = i;
+			let lines = value.split('\n');
+
+			for (let i = 0; i < lines.length; i++) {
+				let line = lines[i];
+				if (line.length > count) {
+					if ((/^[\s\t]+$/g).test(line.substring(0, count)))
+						lines[i] = line.substring(count);
+				}
+			}
+
+			return lines.join('\n');
+		};
 
 
 	</script>

@@ -1,4 +1,4 @@
-<ui-component name="box" path="common.form" config="if:~PATH~;icon:cog;title:@(Settings);autofocus:true;scrollbar:1;reload:?/reload;submit:?/submit;width:740;scrollbarshadow:1" class="hidden" plugin="~PATH~">
+<ui-component name="box" path="common.form" config="if:CLASS;icon:cog;title:@(Settings);autofocus:true;scrollbar:1;reload:?/reload;submit:?/submit;width:740;scrollbarshadow:1" class="hidden CLASS" plugin="CLASS">
 	<div>
 		<div class="padding npb">
 
@@ -39,9 +39,9 @@
 			<ui-component name="input" path="?.token" config="camouflage:1;innerlabel:1;placeholder:@(Enter access token)">@(Access token)</ui-component>
 			<div class="help"><span class="link exec" data-exec="?/generate"><i class="ti ti-qrcode-alt"></i>@(Generate token)</span></div>
 			<hr />
-			<ui-component name="checkbox" path="?.notify">@(Enable <b>/notify/</b> endpoint for external data synchronization)</ui-component>
-			<ui-component name="checkbox" path="?.backup">@(Backup Flow database file after each change)</ui-component>
-			<ui-component name="checkbox" path="?.darkmode">@(Enable dark mode)</ui-component>
+			<ui-component name="input" path="?.notify" config="type:checkbox">@(Enable <b>/notify/</b> endpoint for external data synchronization)</ui-component>
+			<ui-component name="input" path="?.backup" config="type:checkbox">@(Backup Flow database file after each change)</ui-component>
+			<ui-component name="input" path="?.darkmode" config="type:checkbox">@(Enable dark mode)</ui-component>
 
 			<div class="caption m" style="margin-top:15px">
 				<label><i class="ti ti-openplatform color"></i>OpenPlatform</label>
@@ -89,8 +89,10 @@
 	PLUGIN(function(exports) {
 
 		exports.reload = function() {
-			var model = exports.model;
-			exports.configuration.rebind(model.items);
+			WAIT(() => exports.configuration, function() {
+				let model = exports.model;
+				exports.configuration.rebind(model.items);
+			});
 		};
 
 		exports.generate = function() {
@@ -111,12 +113,12 @@
 			delete model.data;
 			model.items = items;
 
-			exports.tapi('settings_save ERROR', model, function() {
+			exports.tapi('Settings|save ERROR', model, function() {
 
 				hide();
 				document.title = model.name + ' (' + model.env + ')';
 				$('body').tclass('ui-dark', model.darkmode == true);
-				SET('common.env', model.env);
+				SET('*env', model.env);
 
 				var win = $('.ui-parts-item');
 				for (var i = 0; i < win.length; i++) {
@@ -124,8 +126,7 @@
 					if (w) {
 						w = w.contentWindow;
 						w.postMessage(STRINGIFY({ TYPE: 'darkmode', value: model.darkmode === true }), '*');
-						w.postMessage(STRINGIFY({ TYPE: 'components', value: model.components }), '*');
-						w.postMessage(STRINGIFY({ TYPE: 'components2', value: model.components2 }), '*');
+						w.postMessage(STRINGIFY({ TYPE: 'components', value: model.components + (model.components2 ? (',' + model.components2) : '') }), '*');
 					}
 				}
 

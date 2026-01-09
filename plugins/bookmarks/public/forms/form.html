@@ -1,4 +1,4 @@
-<ui-component name="miniform" path="*form" config="if:CLASS;icon:ti ti-code;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:500" class="hidden CLASS" plugin="CLASS">
+<ui-component name="miniform" path="*form" config="if:CLASS;icon:ti ti-bookmark;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:500" class="hidden CLASS" plugin="CLASS">
 	<div class="padding">
 		<ui-component name="input" path="?.name" config="required:1" class="m">@(Name)</ui-component>
 		<ui-component name="input" path="?.url" config="required:1;type:url" class="m" default="'https://'">@(URL address)</ui-component>
@@ -30,7 +30,10 @@
 		var caller;
 
 		exports.reload = function(form) {
-			caller = exports.caller;
+
+			if (!caller)
+				caller = exports.caller;
+
 			exports.set('|groups', caller.model.groups);
 			var model = exports.model;
 			form.reconfigure({ title: model.id ? '@(Update bookmark)' : '@(Create bookmark)' });
@@ -38,7 +41,7 @@
 
 		exports.submit = function(hide) {
 			var model = exports.model;
-			exports.tapi('bookmarks_{0} ERROR'.format(model.id ? 'update' : 'create'), model, function() {
+			exports.tapi('Bookmarks|{0} ERROR'.format(model.id ? 'update' : 'create'), model, function() {
 				caller.exec('refresh');
 				NUL('*form');
 			});

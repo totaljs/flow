@@ -13,15 +13,15 @@ exports.install = function() {
 
 function cdn($) {
 
-	var filename = $.split[1];
-	var key = filename;
+	let filename = $.split[1];
+	let key = filename;
 
 	if (Cache[key] === 1) {
 		setTimeout(cdn, 500, $);
 		return;
 	}
 
-	var path = PATH.join(Directory, filename);
+	let path = PATH.join(Directory, filename);
 
 	if (Cache[key] === 2) {
 		$.file(path);
@@ -44,20 +44,27 @@ function cdn($) {
 }
 
 exports.clear = function(callback) {
-	F.Fs.readdir(Directory, function(err, files) {
+	Total.Fs.readdir(Directory, function(err, files) {
 
 		if (err) {
 			callback(err);
 			return;
 		}
 
-		for (var i = 0; i < files.length; i++) {
-			var file = files[i];
-			TOUCH('/cdn/' + file);
-			files[i] = PATH.join(Directory, file);
+		let rem = [];
+
+		for (let i = 0; i < files.length; i++) {
+			let file = files[i];
+			if (file.endsWith('.html')) {
+				TOUCH('/cdn/' + file);
+				rem.push(PATH.join(Directory, file));
+			}
 		}
 
 		Cache = {};
-		PATH.unlink(files, () => callback(null, files.length));
+		if (rem.length)
+			PATH.unlink(rem, () => callback(rem.length));
+		else
+			$.callback(0);
 	});
 };

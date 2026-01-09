@@ -1,7 +1,7 @@
 <script>
 	ON('ready', function() {
 
-		$('header').prepend('<div class="pull-right"><div class="toolbar"><button style="min-width:28px" class="exec" data-exec="showbookmarks"><i class="ti ti-bookmark nmr"></i></button></div></div>');
+		$('header').prepend('<div class="pull-right"><div class="toolbar"><button style="min-width:28px" class="exec" data-exec="showbookmarks" title="@(Bookmarks)"><i class="ti ti-bookmark nmr"></i></button></div></div>');
 
 		W.showbookmarks = function(el) {
 
@@ -15,7 +15,7 @@
 				W.open(selected.url);
 			};
 
-			TAPI('bookmarks', function(response) {
+			TAPI('Bookmarks', function(response) {
 				opt.items = [];
 				for (var m of response)
 					opt.items.push({ id: m.id, name: m.name, url: m.url });

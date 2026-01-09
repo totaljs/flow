@@ -1,11 +1,11 @@
-<ui-bind path="common.plugins" config="template" class="block">
+<ui-bind path="*plugins" config="template" class="block">
 	<script type="text/html">
 		{{ foreach m in value }}
 			{{ if !m.hidden }}
-			<ui-component name="page" path="common.page" config="if:plugin{{ m.id }};url:@{#}/_{{ m.id }}/index.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
+			<ui-component name="page" path="*page" config="if:plugin{{ m.id }};url:@{#}/_{{ m.id }}/index.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
 			{{ if m.routes }}
 				{{ foreach route in m.routes }}
-				<ui-component name="page" path="common.page" config="if:plugin{{ m.id }}{{ route.html }};url:@{#}/_{{ m.id }}/{{ route.html }}.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
+				<ui-component name="page" path="*page" config="if:plugin{{ m.id }}{{ route.html }};url:@{#}/_{{ m.id }}/{{ route.html }}.html;reload:?/reload;hidden:?/hide;id:_{{ m.id }}" class="hidden invisible"></ui-component>
 				{{ end }}
 			{{ fi }}
 			{{ fi }}
@@ -13,11 +13,11 @@
 	</script>
 </ui-bind>
 
-<ui-bind path="common.page" config="show:value === 'flows'" class="block">
+<ui-bind path="*page" config="show:value === 'flows'" class="block">
 	<ui-plugin path="common">
 		<ui-component name="viewbox" config="parent:window;scrollbar:1;scrollbarshadow:1;margin:90" class="invisible" style="margin-right:64px">
 
-			<ui-component name="empty" path="common.groups" config="parent:auto" class="invisible">
+			<ui-component name="empty" path="*groups" config="parent:auto" class="invisible">
 
 				<script type="text/html">
 					<div>@(This Total.js Flow application doesn't contain any FlowStream)</div>
@@ -47,7 +47,6 @@
 											<div class="icon"{{ if m.color }} style="color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
 											<div class="meta">
 												<div class="name">{{ if m.version }}<span style="background-color:{{ m.version | color }}" title="@(Version)">{{ m.version }}</span>{{ fi }}{{ m.name }}</div>
-												<div class="author">@(Author): {{ m.author | empty }}</div>
 												<div class="size">@(Size): {{ m.size | filesize }}</div>
 												<div class="proxy"><i class="ti ti-server mr5"></i>@(Proxy): {{ if m.proxypath }}<span>{{ m.proxypath }}</span>{{ else }}---{{ fi }}</div>
 											</div>
@@ -70,14 +69,14 @@
 			</ui-component>
 		</ui-component>
 		<footer>
-			<ui-bind path="common.stats" config="template;show" class="hidden">
+			<ui-bind path="*stats" config="template;show" class="hidden">
 				<script type="text/html">
 					<span><b>{{ value.memory | filesize }}</b>@(Memory)</span>
 					<span><b>{{ value.messages | format(0) }}</b>@(Messages)</span>
 					<span><b>{{ value.pending | format(0) }}</b>@(Pending)</span>
 					<span><b>{{ value.mm | format(0) }}</b>@(Per minute)</span>
 					<span><i class="ti ti-user green mr5"></i><b>{{ value.online | format(0) }}</b>@(Online clients)</span>
-					<span class="center" title="FlowStream: {{ value.version }}, Total.js: {{ value.total }}, Node.js: {{ value.node }}">FlowStream v{{ value.version }} | Total.js: v{{ value.total }}</span>
+					<span class="center" title="FlowStream: {{ value.version }}, Total.js: {{ value.total }}, Flow: {{ value.app }}, Node.js: {{ value.node }}">Flow v{{ value.app }} | Total.js: v{{ value.total }}</span>
 				</script>
 			</ui-bind>
 		</footer>

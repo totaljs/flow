@@ -7,12 +7,10 @@
 </style>
 
 <div class="virtualwire hidden" data-if="CLASS">
-	<ui-plugin>
-		<div class="pull-right">
-			<button class="exec b" data-exec="?/create"><i class="ti ti-plus-circle"></i>@(Create)</button>
-			<button class="exec" data-exec="?/refresh"><i class="ti ti-sync"></i>@(Refresh)</button>
-		</div>
-	</ui-plugin>
+	<div class="pull-right">
+		<button class="exec b" data-exec="CLASS/create"><i class="ti ti-plus-circle"></i>@(Create)</button>
+		<button class="exec" data-exec="CLASS/refresh"><i class="ti ti-sync"></i>@(Refresh)</button>
+	</div>
 </div>
 
 <ui-plugin config="aclass:1">
@@ -84,7 +82,7 @@
 
 		exports.refresh = function() {
 
-			exports.tapi('bookmarks ERROR', function(response) {
+			exports.tapi('Bookmarks ERROR @hideloading', function(response) {
 
 				var groups = {};
 
@@ -149,7 +147,7 @@
 						break;
 					case 'remove':
 						SETTER('approve/show', '@(Are you sure you want to remove <b>"{name}"</b>?)'.args(item), ':ti ti-trash: @(Remove)', function() {
-							exports.tapi('bookmarks_remove ERROR', { id: id }, () => exports.refresh());
+							exports.tapi('Bookmarks|remove ERROR @showloading', { id: id }, () => exports.refresh());
 						});
 						break;
 				}

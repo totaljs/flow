@@ -26,19 +26,19 @@ AUTH(function($) {
 	$.invalid();
 });
 
-ON('init', function() {
+ON('start', function() {
 
 	OpenPlatform.permissions.push({ name: 'Create Flows', value: 'create' });
 	OpenPlatform.permissions.push({ name: 'Remove Flows', value: 'remove' });
 
-	for (var key in F.plugins) {
-		var item = F.plugins[key];
+	for (let key in Total.plugins) {
+		let item = Total.plugins[key];
 		if (item.permissions)
 			OpenPlatform.permissions.push.apply(OpenPlatform.permissions, item.permissions);
 	}
 
 	if (!PREF.user) {
-		var password = GUID(10);
+		let password = GUID(10);
 		PREF.set('user', { id: UID(), login: GUID(10), password: password.sha256(CONF.cookie_secret), raw: password });
 	}
 
