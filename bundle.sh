@@ -26,7 +26,7 @@ Total.backup(path + '/app.bundle', PATH.root(), function() {
 }, function(path, isdir) {
 
 	if (!isdir)
-		return path.split('/').length > 2;
+		return path.split('/').length > 2 || path == '/extensions.js' || path === '/version';
 
 	var p = path.split('/').trim();
 
