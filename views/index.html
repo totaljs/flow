@@ -455,7 +455,7 @@
 		common.windows = [];
 		common.root = '@{#}';
 		common.page = 'flows';
-		common.editor = '@{#}/editor/';
+		common.designer = '@{#}/designer/';
 		common.totalversion = +'@{F.version}';
 		common.version = +'@{CONF.version}';
 		common.workers = '@{CONF.flowstream_worker}' !== 'false';
@@ -716,7 +716,7 @@
 				item.id = id;
 				item.icon = flow.icon;
 				item.name = flow.name;
-				item.html = ('<iframe src="' + model.editor + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0" class="iflowstream" style="width:{5}px"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(model.components || '') + model.openplatform ? ('&' + model.openplatform.substring(1)) : '', model.language, WW - model.appmenuwidth);
+				item.html = ('<iframe src="' + model.designer + '?darkmode={1}&socket={2}&components={3}&language={4}" scrolling="no" frameborder="0" class="iflowstream" style="width:{5}px"></iframe>').format(id, $('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url), encodeURIComponent(model.components || '') + model.openplatform ? ('&' + model.openplatform.substring(1)) : '', model.language, WW - model.appmenuwidth);
 				item.focus = 'common/focusiframe';
 				SETTER('loading/show');
 				SETTER('loading/hide', 2000);
@@ -785,7 +785,7 @@
 					switch (opt.id) {
 						case 'newtab':
 							var url = location.origin.replace(/^http/, 'ws') + '@{#}/fapi/{0}/'.format(id);
-							W.open(location.origin + model.editor + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url + (model.openplatform ? ((url.indexOf('?') === -1 ? '?' : '&') + model.openplatform.substring(1)) : '')), encodeURIComponent(model.components || '')) + (model.openplatform ? ('&' + model.openplatform.substring(1)) : ''));
+							W.open(location.origin + model.designer + '?darkmode={0}&socket={1}&components={2}'.format($('body').hclass('ui-dark') ? '1' : '0', encodeURIComponent(url + (model.openplatform ? ((url.indexOf('?') === -1 ? '?' : '&') + model.openplatform.substring(1)) : '')), encodeURIComponent(model.components || '')) + (model.openplatform ? ('&' + model.openplatform.substring(1)) : ''));
 							break;
 						case 'pause':
 						case 'play':

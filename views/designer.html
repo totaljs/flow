@@ -97,8 +97,8 @@
 			100% { color: #8c42f6; }
 		}
 
-		.feditor { background: #F8F8F8; }
-		.ui-dark .feditor { background: #181818; }
+		.fdesigner { background: #F8F8F8; }
+		.ui-dark .fdesigner { background: #181818; }
 
 		.fheader { height: 50px; padding: 0 10px; border-bottom: 1px solid #E0E0E0; background-color: transparent; }
 		.fheader .info { float: right; font-size: 11px; color: #999; text-align: right; line-height: 14px; padding-top: 10px; }
@@ -289,7 +289,7 @@
 					</ui-component>
 				</section>
 
-				<section class="feditor">
+				<section class="fdesigner">
 					<ui-component name="viewbox" config="parent:auto;visibleX:true;visibleY:true;scrollbar:true;margin:30;scrollbarshadow:0;$id:flowviewbox">
 						<ui-component name="flow" path="?.data" config="width:10000;height:10000;markers:0;grid:18;horizontal:1;snapping:0;=curvedlines:?.options.curvedlines;steplines:1;infopath:?/refreshinfo;outputoffsetY:1;inputoffsetY:1;undopath:?.undo;redopath:?.redo;ondrop:?/drop;contextmenu:?/contextmenu;dblclick:?/settings;onmove:?/onmove;onpause:?/onpause;onconnect:?/onconnect;$assign:Designer;dblclickgroup:?/group;animationlimit:300;animationlimitconnection:3"></ui-component>
 					</ui-component>
@@ -350,7 +350,16 @@
 	<ui-component name="importer" path="*form" config="if:flowsourcecodeform">
 		<script type="text/html">
 			<ui-component name="box" path="*form" config="if:flowsourcecodeform;title:@(Source code);width:1600;scrollbar:0;icon:ti ti-cog;reload:?/reload;submit:?/submit" class="hidden invisible" plugin="CLASS">
-				<ui-component name="code" path="?.source" config="realtime:1;type:clientside;contextmenu:?/contextmenu"></ui-component>
+				<nav>
+					<ui-bind path="?.toolbar" config="template">
+						<SCR type="text/html">
+						{{ foreach m in value }}
+						<button class="exec" data-exec="?/click" data-index="{{ $index }}">{{ if m.icon }}<i class="{{ m.icon }}"></i>{{ fi }}{{ m.name }}</button>
+						{{ end }}
+						</SCR>
+					</ui-bind>
+				</nav>
+				<ui-component name="code" path="?.source" config="realtime:1;type:clientside;contextmenu:?/contextmenu;$assign:?|editor"></ui-component>
 				<nav>
 					<ui-component name="validate" path="?" config="$assign:?|validation">
 						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(APPLY)</button>
@@ -404,7 +413,7 @@
 				<figure>
 					<div class="padding black">
 						<div class="m" style="font-size:55px"><i class="ti green ti-flag"></i></div>
-						<div>@(Welcome to <b>Total.js FlowStream</b>. With the editor, you can create your Flow design.)</div>
+						<div>@(Welcome to the <b>Total.js FlowStream</b>. Use this designer to create your Flow design.)</div>
 					</div>
 				</figure>
 				<figure>
@@ -1712,9 +1721,11 @@ var total = 'Hello world!';
 				}
 			};
 
-			exports.sourcecode = function(code, callback) {
+			exports.sourcecode = function(code, callback, id) {
 				let path = 'flowsourcecodeform';
-				SET(path + ' @reset', { source: code, callback: callback });
+				let model = { type: 'component', toolbar: [], source: code, callback: callback, id: id };
+				EMIT('sourcecode', exports, model);
+				SET(path + ' @reset', model);
 				SET('*form', path);
 			};
 
@@ -1837,8 +1848,8 @@ var total = 'Hello world!';
 						case 'edit':
 							EDITABLE.components.update && SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: function(response) {
 								exports.sourcecode(response.data, function(value) {
-									exports.updatesourcecode(item.component, value);
-								});
+									exports.savecomponent(item.component, value);
+								}, item.component);
 							}});
 							break;
 
@@ -1927,8 +1938,8 @@ var total = 'Hello world!';
 						case 'edit':
 							SETTER('websocket/send', { TYPE: 'component_read', id: id, callback: function(response) {
 								exports.sourcecode(response.data, function(value) {
-									exports.updatesourcecode(id, value);
-								});
+									exports.savecomponent(id, value);
+								}, id);
 							}});
 							break;
 						case 'remove':
@@ -2015,7 +2026,7 @@ var total = 'Hello world!';
 
 			};
 
-			exports.updatesourcecode = function(id, value) {
+			exports.savecomponent = function(id, value) {
 
 				if (id) {
 
@@ -2251,7 +2262,7 @@ var total = 'Hello world!';
 
 						} else {
 							if (EDITABLE.components.create) {
-								let id = exports.updatesourcecode('', reader.result);
+								let id = exports.savecomponent('', reader.result);
 								id && SETTER('notify/success', '@(Installed: <b>{0}</b>)'.format(id.encode()));
 							}
 							setTimeout(next, 500);
@@ -2367,7 +2378,7 @@ var total = 'Hello world!';
 					switch (selected.id) {
 						case 'create':
 							exports.sourcecode($('#template_component').html().trim().replace('{id}', FUNC.makeid('c')).replace(/SCR/g, 'scr' + 'ipt').replace(/CSS|STYLE/g, 'style'), function(value) {
-								exports.updatesourcecode('', value);
+								exports.savecomponent('', value);
 							});
 							break;
 						case 'import':
@@ -2519,6 +2530,14 @@ var total = 'Hello world!';
 			exports.reload = function(com) {
 				// let model = exports.model;
 				// com.reconfigure({ title: '@(Source-code)' + model.component.name });
+			};
+
+			exports.click = function(el) {
+				let index = +ATTRD(el, 'index');
+				let model = exports.model;
+				let button = model.toolbar[index];
+				FLAGS('@showloading @hideloading');
+				button && button.callback && setTimeout(() => button.callback.call(exports, model, exports.editor), 1000);
 			};
 
 			exports.readme = function() {
