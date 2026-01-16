@@ -2,8 +2,16 @@
 
 <script total>
 
+	// Server-side implementation.
+	// The action can be called directly from the Flow.
+
+	// exports.name {String}
+	// exports.flow {Object}
+
 	NEWACTION('Click', {
+		input: '*name',
 		action: function($, model) {
+			console.log(model);
 			$.success();
 		}
 	});
@@ -12,8 +20,11 @@
 
 <script>
 
+	// User-interface
+
 	ON('start', function(flow) {
-		flow.push('toolbar', { name: 'Test', icon: 'ti ti-flask', callback: () => flow.action('Click', (err, res) => alert(JSON.stringify(res))) });
+		// flow.savecomponent('[component_id]', 'source-code);
+		flow.push('toolbar', { name: 'Test', icon: 'ti ti-flask', callback: () => flow.action('Click', { name: 'Hello world' }, (err, res) => alert(JSON.stringify(res))) });
 	});
 
 	ON('menu', function(flow, opt) {
@@ -26,6 +37,17 @@
 
 	ON('contextmenu2', function(flow, opt) {
 		opt.items.push({ name: 'Test plugin', icon: 'ti ti-flask', callback: () => alert('TEST') });
+	});
+
+	ON('sourcecode', function(flow, opt) {
+		// opt.type {String} possible values "component"
+		// opt.toolbar = [];
+		// opt.callback {Function}
+		// opt.code {String}
+		opt.toolbar.push({ icon: 'ti ti-openai', name: 'Generate', callback: function(payload, code) {
+			// code --> https://componentator.com/components/j-code/
+			console.log(payload, code);
+		}});
 	});
 
 </script>
