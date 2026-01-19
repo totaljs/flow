@@ -10,18 +10,18 @@ exports.install = function() {
 	ROUTE('POST      /notify/{id}/ <1MB',      notify); // 1 MB
 
 	// Routes
-	ROUTE('+GET /editor/', editor);
+	ROUTE('+GET /designer/', designer);
 	ROUTE('-GET /', login);
 	ROUTE('+GET /', index);
 };
 
-function editor($) {
+function designer($) {
 	let model = {};
 	model.socket = $.query.socket;
 	model.darkmode = $.query.darkmode == '1' || $.query.darkmode == 'true';
 	model.permit = { pause: true, config: true, trigger: true, design: true, download: true, tms: true, variables: true, components: true, restart: true };
 	model.components = (CONF.components || 'https://cdn.totaljs.com/flowstream/webcomponents/db.json') + (CONF.components2 ? (',' + CONF.components2) : '');
-	$.view('editor', model);
+	$.view('designer', model);
 }
 
 function login($) {
