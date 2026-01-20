@@ -916,6 +916,7 @@ var total = 'Hello world!';
 		common.form = '';
 		common.form2 = '';
 		common.form3 = '';
+		common.root = '@{#}';
 
 		CONFIG('code', 'url:/1.min.html');
 
@@ -1042,6 +1043,11 @@ var total = 'Hello world!';
 							msg.origin = origin;
 							SETTER('websocket/send', { TYPE: 'origin', body: origin });
 						}
+
+						msg.proxyurl = location.origin;
+						let tmp = (msg.proxypath || '');
+						if (tmp)
+							msg.proxyurl += common.root && tmp.charAt(0) === '/' ? (common.root + tmp.substring(1)) : tmp;
 
 						msg.color && APPEARANCE({ color: msg.color });
 						exports.set('head @hideloading', msg);
