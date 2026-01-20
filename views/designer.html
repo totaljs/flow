@@ -946,7 +946,7 @@ var total = 'Hello world!';
 		if (flow.editable.variables)
 			flow.toolbar.push({ id: '?/variables', icon: 'ti ti-variables', title: '@(Variables)' });
 
-		flow.toolbar.push({ id: '?/logs', icon: 'ti ti-bug', title: '@(Errors)', class: 'errors' });
+		flow.toolbar.push({ id: '?/logs', icon: 'ti ti-script', title: '@(Console)', class: 'errors' });
 		flow.toolbar.push({ id: '?/search', icon: 'ti ti-file-search', title: '@(Search in nodes)' });
 		flow.toolbar.push({ id: '?/zoom', icon: 'ti ti-search-minus', title: '@(Zoom)' });
 
@@ -1109,6 +1109,10 @@ var total = 'Hello world!';
 						// |-----
 						// |-- groups {Array}
 						exports.load_design(msg.data);
+						break;
+
+					case 'flow/console':
+						exports.log(msg.type || 'info', msg.ts.format('[ts]') + ' - ' + Thelpers.encode(msg.data));
 						break;
 
 					case 'flow/error':
@@ -2404,7 +2408,6 @@ var total = 'Hello world!';
 			};
 
 			exports.components = function() {
-				console.log('SOM TU');
 				if (EDITABLE.components.download)
 					SET('*form', 'flowcomponentsform');
 			};
