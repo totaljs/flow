@@ -1999,7 +1999,7 @@ var total = 'Hello world!';
 						})();
 
 						if (cancel) {
-							SETTER('message/warning', '@(The <b>"{0}"</b> component is already in use)'.format(com.name.encode()));
+							SETTER('message/warning @hideloading', '@(The <b>"{0}"</b> component is already in use.)'.format(com.name.encode()));
 							return;
 						}
 
