@@ -1,0 +1,55 @@
+<script total>
+
+	exports.id = 'console';
+	exports.name = 'Console';
+	exports.icon = 'ti ti-print';
+	exports.author = 'Peter Širka | Total.js';
+	exports.version = '1';
+	exports.group = 'Common';
+	exports.config = {};
+	exports.meta = { readonly: false, singleton: true, hidden: false };
+
+	exports.make = function(instance, config) {
+
+		const log = console.log;
+		const error = console.error;
+		const warn = console.warn;
+		const util = require('util');
+
+		console.log = function(...args) {
+			let proxy = instance.main.proxy;
+			if (proxy.online)
+				instance.main.proxy.send({ TYPE: 'flow/console', ts: new Date(), data: util.format(...args) });
+		};
+
+		console.error = function(...args) {
+			let proxy = instance.main.proxy;
+			if (proxy.online)
+				proxy.send({ TYPE: 'flow/console', type: 'error', ts: new Date(), data: util.format(...args) });
+		};
+
+		console.warn = function(...args) {
+			let proxy = instance.main.proxy;
+			if (proxy.online)
+				proxy.send({ TYPE: 'flow/console', type: 'warning', ts: new Date(), data: util.format(...args) });
+		};
+
+		instance.close = function() {
+			console.log = log;
+			console.warn = warn;
+			console.error = error;
+		};
+
+	};
+
+</script>
+
+<readme>
+All `console` prints will be sent to the UI.
+</readme>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+</body>

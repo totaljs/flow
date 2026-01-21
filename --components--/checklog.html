@@ -1,0 +1,136 @@
+<script total>
+
+	exports.id = 'checklog';
+	exports.name = 'Check log';
+	exports.icon = 'ti ti-bug';
+	exports.author = 'Peter Širka | Total.js';
+	exports.version = '1';
+	exports.group = 'Checks';
+	exports.config = { path: '/var/log/auth.log', error: 'Log error: {0}', keywords: 'Error, error, ERROR', remember: true };
+	exports.inputs = [{ id: 'input', name: 'Test' }];
+	exports.outputs = [{ id: 'error', name: 'Error' }];
+
+	exports.make = function(instance, config) {
+
+		let start = 0;
+		let cfg;
+		let loading = false;
+
+		instance.message = function($) {
+
+			$.destroy();
+
+			if (!cfg.path || loading)
+				return;
+
+			let stream = Total.Fs.createReadStream(config.path, { start: start });
+			let buffer = Buffer.alloc(0);
+			let is = false;
+			let errors = [];
+
+			loading = true;
+
+			stream.on('data', function(chunk) {
+
+				start += chunk.length;
+
+				if (buffer.length) {
+
+					let tmp = Buffer.concat([buffer, chunk]);
+
+					buffer = chunk;
+					is = true;
+
+					let text = tmp.toString('utf8');
+
+					for (let keyword of cfg.keywords) {
+						let index = text.indexOf(keyword);
+						if (index !== -1) {
+							buffer = Buffer.alloc(0);
+							errors.push(text.substring(index, 150));
+							break;
+						}
+					}
+
+				} else {
+					buffer = chunk;
+					is = false;
+				}
+
+			});
+
+			CLEANUP(stream, function() {
+
+				loading = false;
+
+				if (!cfg.remember)
+					start = 0;
+
+				if (!is && buffer.length) {
+					let text = buffer.toString('utf8');
+					for (let keyword of cfg.keywords) {
+						let index = text.indexOf(keyword);
+						if (index !== -1) {
+							buffer = Buffer.alloc(0);
+							errors.push(text.substring(index, 200));
+							break;
+						}
+					}
+				}
+
+				for (let err of errors)
+					instance.newmessage(cfg.error.format(err)).send('error');
+			});
+
+		};
+
+		instance.configure = function() {
+			cfg = CLONE(config);
+			cfg.keywords = cfg.keywords.split(',').trim();
+		};
+
+		instance.configure();
+
+	};
+
+</script>
+
+<readme>
+This component checks a file and tries to find a
+</readme>
+
+<settings>
+	<div class="padding">
+		<div class="grid-3">
+			<div class="m">
+				<ui-component name="input" path="?.path" config="required:1">A path to the log file</ui-component>
+				<div class="help">It should be a text file.</div>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.error" config="required:1">Error message</ui-component>
+			</div>
+			<div class="m">
+				<ui-component name="input" path="?.keywords" config="required:1">Keywords</ui-component>
+				<div class="help">Divided by comma.</div>
+			</div>
+		</div>
+		<hr />
+		<ui-component name="input" path="?.remember" config="type:checkbox">Remember file position</ui-component>
+	</div>
+</settings>
+
+<style>
+	.CLASS ui-bind { padding: 10px; font-size: 12px; border-top: 1px solid rgba(0,0,0,0.1); display: block; }
+</style>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+	<ui-bind path="$CONFIG" config="show;template">
+		<script type="text/html">
+			<div class="hellip">Keywords: {{ value.keywords }}</div>
+			<div class="hellip">Path: {{ value.path }}</div>
+		</script>
+	</ui-bind>
+</body>

@@ -1,0 +1,68 @@
+<script total>
+
+	exports.id = 'checkfreespace';
+	exports.name = 'Check Free space';
+	exports.icon = 'ti ti-hdd';
+	exports.author = 'Peter Širka | Total.js';
+	exports.version = '1';
+	exports.group = 'Checks';
+	exports.config = { warning: 10000, error: 'Free space: The server has {0} MB of free space.' };
+	exports.inputs = [{ id: 'input', name: 'Test' }];
+	exports.outputs = [{ id: 'error', name: 'Error' }];
+
+	exports.make = function(instance, config) {
+
+		let status = {};
+
+		instance.message = function($) {
+			SHELL("df -m / | awk 'NR==2 {print $4}'", function(err, response) {
+
+				let free = response.trim().parseInt();
+
+				status.free = free;
+				status.warning = config.warning;
+
+				instance.status(status);
+
+				if (status.free < status.warning) {
+					$.send('error', config.error.format(status.free.format(2)));
+				} else
+					$.destroy();
+
+			});
+		};
+
+	};
+
+</script>
+
+<readme>
+This component checks a freespace on HDD.
+</readme>
+
+<settings>
+	<div class="padding">
+		<div class="grid-3">
+			<div>
+				<ui-component name="input" path="?.warning" config="type:number;required:1">Minimal free space</ui-component>
+				<div class="help">In megabytes (MB).</div>
+			</div>
+		</div>
+	</div>
+</settings>
+
+<style>
+	.CLASS ui-bind { padding: 10px; font-size: 12px; border-top: 1px solid rgba(0,0,0,0.1); display: block; }
+</style>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+	<ui-bind path="$STATUS" config="show;template">
+		<script type="text/html">
+			<div>Current: {{ value.free | format(0) }} MB</div>
+			<div>Minimal: {{ value.warning | format(0) }} MB</div>
+		</script>
+	</ui-bind>
+</body>

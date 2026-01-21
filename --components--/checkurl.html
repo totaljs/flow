@@ -1,0 +1,71 @@
+<script total>
+
+	exports.id = 'checkurl';
+	exports.name = 'Check URL';
+	exports.icon = 'ti ti-globe';
+	exports.author = 'Peter Širka | Total.js';
+	exports.version = '1';
+	exports.group = 'Checks';
+	exports.config = { url: 'https://www.totaljs.com', error: 'URL error: {0}' };
+	exports.inputs = [{ id: 'input', name: 'Test' }];
+	exports.outputs = [{ id: 'error', name: 'Error' }];
+
+	exports.make = function(instance, config) {
+
+		let status = { online: false, error: '' };
+
+		instance.message = function($) {
+
+			if (!config.url) {
+				status.online = false;
+				status.error = 'No URL address';
+				instance.status(status);
+				$.send('error', config.error.format(status.error));
+				return;
+			}
+
+			RESTBuilder.GET(config.url).callback(function(err) {
+				if (err) {
+					status.online = false;
+					status.error = err.stack;
+					instance.status(status);
+					$.send('error', config.error.format(status.error));
+				} else {
+					status.online = true;
+					status.error = null;
+					instance.status(status);
+					$.destroy();
+				}
+			});
+
+		};
+
+	};
+
+</script>
+
+<readme>
+This component checks URL address.
+</readme>
+
+<settings>
+	<div class="padding">
+		<ui-component name="input" path="?.url" config="monospace:1;required:1" class="m">URL address</ui-component>
+		<ui-component name="input" path="?.error" config="monospace:1;required:1" class="m">Error message format</ui-component>
+	</div>
+</settings>
+
+<style>
+	.CLASS ui-bind { padding: 10px; font-size: 12px; border-top: 1px solid rgba(0,0,0,0.1); }
+</style>
+
+<body>
+	<header>
+		<i class="$ICON"></i>$NAME
+	</header>
+	<ui-bind path="$STATUS" config="template;show" class="block">
+		<script type="text/html">
+			{{ if value.online }}<div class="badge badge-green" style="width:100%">ONLINE</div>{{ else }}<div class="red">{{ value.error }}</div>{{ fi }}
+		</script>
+	</ui-bind>
+</body>

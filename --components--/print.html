@@ -1,0 +1,139 @@
+<script total>
+
+	exports.id = 'print';
+	exports.name = 'Print';
+	exports.group = 'Common';
+	exports.version = '7';
+	exports.icon = 'ti ti-print';
+	exports.author = 'Peter Širka | Total.js';
+	exports.config = { repo: false, data: true, text: false, limit: 1000 };
+	exports.inputs = [{ id: 'input', name: 'Input' }];
+
+	exports.make = function(instance, config) {
+
+		function serializer(key, value) {
+			return value && value.type === 'Buffer' && value.data ? ('<Buffer ' + value.data.splice(0, 10).map(n => n.toString(16).padLeft(2, '0')).join('') + '...') : typeof(value) === 'string' ? value.max(config.limit) : value;
+		}
+
+		instance.message = function($) {
+
+			let data = $.data;
+
+			if (config.data !== false) {
+				if (data instanceof Buffer)
+					data = '<Buffer ' + data.toString('hex').substring(0, 10) + '...';
+			}
+
+			let count = 0;
+
+			for (let key in config) {
+				if (config[key])
+					count++;
+			}
+
+			let output = count > 1 ? {} : null;
+
+			if (config.repo) {
+				if (output)
+					output.repo = $.repo;
+				else
+					output = $.repository;
+			}
+
+			if (config.data) {
+				if (output)
+					output.data = $.data;
+				else
+					output = $.data;
+			}
+
+			if (output) {
+				output = JSON.stringify(output, serializer);
+				instance.status(output, 200);
+			}
+
+			$.destroy();
+		};
+
+		instance.trigger = function() {
+			instance.status('');
+		};
+
+	};
+
+</script>
+
+<style>
+	.CLASS footer > ui-bind { margin: 10px; }
+	.CLASS pre { font-size: 10px; margin: 0; padding: 5px; background-color: #F0F0F0; border-radius: var(--radius); }
+	.CLASS .json { white-space: pre; }
+	.CLASS .noscrollbar { max-height: 250px; }
+	.CLASS .readme { position: absolute; position: absolute; font-size: 11px; right: 5px; margin-top: -5px; cursor: pointer; }
+	.ui-dark .CLASS pre { background-color: #404040; tab-size: 2; }
+</style>
+
+<readme>
+The component prints incoming data in a JSON format.
+</readme>
+
+<settings>
+	<div class="padding">
+		<ui-component name="input" path="?.repo" config="type:checkbox">Shows repository</ui-component>
+		<ui-component name="input" path="?.data" config="type:checkbox">Shows data</ui-component>
+	</div>
+</settings>
+
+<body>
+	<header>
+		<button class="exec button" data-exec="FUNC.trigger">Clear</button>
+		<i class="$ICON"></i>$NAME
+	</header>
+	<footer>
+		<ui-bind path="!$STATUS" config="html pre:debugprinter(value);show" class="hidden selectable block">
+			<span class="readme" title="Open in new window"><i class="ti ti-window"></i></span>
+			<div class="noscrollbar mt5">
+				<pre class="json"></pre>
+			</div>
+		</ui-bind>
+	</footer>
+</body>
+
+<script>
+
+	W.debugprinter = function(value) {
+		if (value) {
+			value = JSON.parse(value);
+			if (typeof(value) === 'string')
+				return Thelpers.encode(value);
+			else
+				return Thelpers.jsonformat(JSON.stringify(value, null, '\t'));
+		} else
+			return '';
+	};
+
+	TOUCH(function(exports, reinit) {
+
+		if (reinit)
+			return;
+
+		var laststatus;
+
+		exports.status = function(status, isinit) {
+			laststatus = status;
+		};
+
+		exports.element.on('click', '.readme', function() {
+
+			let status = laststatus ? JSON.parse(laststatus) : null;
+
+			if (status != null) {
+				if (typeof(status) !== 'string')
+					status = JSON.stringify(status, null, '  ');
+			} else
+				status = '';
+
+			FUNC.readme('Debug', '```json\n' + status + '\n```');
+		});
+
+	});
+</script>
