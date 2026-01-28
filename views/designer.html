@@ -224,7 +224,7 @@
 	<ui-component name="imageviewer" config="unknown:@(Unknown image)"></ui-component>
 	<ui-component name="loading"></ui-component>
 	<ui-component name="locale" config="requests:1;language:@{language}"></ui-component>
-	<ui-component name="markdown"></ui-component>
+	<ui-component name="markdown" config="cdn:@{#}/"></ui-component>
 	<ui-component name="shortcuts"></ui-component>
 	<ui-component name="windows" path="*windows" config="zindex:50"></ui-component>
 
@@ -918,7 +918,7 @@ var total = 'Hello world!';
 		common.form3 = '';
 		common.root = '@{#}';
 
-		CONFIG('code', 'url:/1.min.html');
+		CONFIG('code', 'url:@{#}/editor.min@1.html');
 
 		(function() {
 			let openplatform = NAV.query.openplatform || '';
@@ -3132,6 +3132,10 @@ var total = 'Hello world!';
 
 			Instance.prototype.trigger = function(data) {
 				FUNC.trigger(this.id, data);
+			};
+
+			Instance.prototype.action = function(name, data, callback) {
+				EXEC('flow/action', name, data, callback);
 			};
 
 			Instance.prototype.call = function(data, callback, globalcall) {
