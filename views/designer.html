@@ -935,7 +935,7 @@ var total = 'Hello world!';
 
 		var flow = {};
 
-		flow.socket = '@{model.socket}' + common.openplatform;
+		flow.socket = '@{model.socket}';
 		flow.current = ''; // temporary
 		flow.checksum = ''; // temporary
 		flow.editable = { pause: @{model.permit.pause}, config: @{model.permit.config}, trigger: @{model.permit.trigger}, design: @{model.permit.design}, download: @{model.permit.download}, tms: @{model.permit.tms}, restart: @{model.permit.restart}, variables: @{model.permit.variables}, components: { create: @{model.permit.components}, update: @{model.permit.components}, remove: @{model.permit.components}, download: '@{model.components}' }};
