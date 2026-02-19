@@ -13,8 +13,9 @@
 	<script src="@{REPO.ui}"></script>
 	@{import('meta', 'head', 'favicon.ico')}
 	<style>
-		body { background-color: #D0D0D0; }
-		.login { max-width: 300px; text-align: left; margin: 0 auto; width: 100%; }
+		body { background-color: #F2F5FE; background: radial-gradient(circle at 12% 20%, rgba(241, 75, 54, 0.12), transparent 28%), radial-gradient(circle at 82% 8%, rgba(255, 122, 61, 0.15), transparent 32%), radial-gradient(circle at 52% 70%, rgba(255, 255, 255, 0.04), transparent 40%), #F2F5FE; min-height: 100vh; }
+		body::before { content: ""; position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px); background-size: 82px 82px; opacity: 0.18; pointer-events: none; z-index: 0; }
+		.login { max-width: 300px; text-align: left; margin: 0 auto; width: 100%; z-index: 5; position: relative; }
 		.login > div { background-color: #FFF; padding: 30px; border-radius: var(--radius); box-shadow: 0 0 20px rgba(0,0,0,0.1); }
 		footer { font-size: 11px; color: #999; text-align: center; padding: 0 0 10px; }
 		footer a { color: #777; }
@@ -76,7 +77,7 @@
 				</ui-component>
 			</div>
 			<br />
-			<footer><a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a> &copy; 2026</footer>
+			<footer><a href="https://www.totaljs.com" target="_blank">@(Powered by <b>Total.js</b>)</a> &copy; 2017-2026</footer>
 		</ui-plugin>
 	</ui-component>
 
