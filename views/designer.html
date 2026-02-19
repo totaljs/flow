@@ -744,6 +744,12 @@
 			// FlowStream variables are changed
 		};
 
+		instance.trigger = function(msg) {
+			// It's called when the user clicks on the button[name="trigger"]
+			// @msg {Object}
+			// @msg.data {String|Object} data is loaded from the attribute button[data-data="STRING"]
+		};
+
 		instance.configure();
 
 	};
@@ -2349,7 +2355,7 @@ var total = 'Hello world!';
 				let opt = {};
 				opt.element = el;
 				opt.items = [];
-				opt.offsetY = 13;
+				opt.offsetY = 5;
 
 				if (EDITABLE.components.create) {
 					opt.items.push({ id: 'create', name:'@(Create new component)', icon: 'ti ti-pencil-paintbrush' });
@@ -3368,6 +3374,11 @@ var total = 'Hello world!';
 			c = '0x' + c.join('');
 			return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')';
 		};
+
+		$(document.body).on('click', 'button[name="trigger"]', function() {
+			let btn = $(this);
+			FUNC.trigger(btn);
+		});
 
 		// Connect WS
 		$(document.body).append('<ui-component name="websocket" config="url:{0};stats:flow/stats;statsinterval:61000"></ui-component>'.format(flow.socket.replace(/\:/g, '\\:')));
