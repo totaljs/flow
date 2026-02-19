@@ -2268,10 +2268,7 @@ var total = 'Hello world!';
 					reader.onload = function() {
 						if (file.type === 'application/json') {
 
-							// replace design
-							if (EDITABLE.flow.replace) {
-
-							}
+							SETTER('message/warning', "@(It's not possible to replace the current FlowStream with a new one.)");
 
 							next = null;
 							arr.length = 0;
