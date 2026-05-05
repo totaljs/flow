@@ -33,7 +33,7 @@ Total.backup(path + '/app.bundle', PATH.root(), function() {
 	if (!p[0] || (p.length === 1 && p[0] === 'plugins'))
 		return true;
 
-	var allowed = ['controllers', 'definitions', 'modules', 'public', 'schemas', 'views', 'resources'];
+	var allowed = ['actions', 'controllers', 'definitions', 'modules', 'public', 'schemas', 'views', 'resources'];
 
 	for (var m of allowed) {
 		if (path.indexOf(m) === 1)
