@@ -8,3 +8,4 @@ Version: 11
 - added support for extensions
 - added support for actions
 - better plugin integration
+- added Tangular helper: `time`
