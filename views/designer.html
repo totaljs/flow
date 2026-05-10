@@ -2998,7 +2998,7 @@ var total = 'Hello world!';
 		SETTER('exec/register @important', function(attr, el, e, type) {
 			var c = attr.charAt(0);
 			if (c === '=' || c === '/') {
-				var id = ATTRD(el);
+				var id = ATTRD(el.closest('.component'));
 				var instance = flow.main.instances[id];
 				if (instance) {
 					attr = attr.substring(1);
