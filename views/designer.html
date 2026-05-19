@@ -100,13 +100,6 @@
 		.fdesigner { background: #F8F8F8; }
 		.ui-dark .fdesigner { background: #181818; }
 
-		.selection { width: 19px; height: 19px; border: 1px solid #D0D0D0; border-radius: var(--radius); font-size: 12px; float: left; text-align: center; margin-right: 8px; background-color: #FFF; line-height: 19px; color: #000; }
-		.selection i { display: none; line-height: 19px; }
-		.selection.selected i { display: block; }
-		.listing .selection { margin-top: 2px; }
-		.listing figure.selected .selection i, .listing2 figure.selected .selection i { display: block; }
-		.listing.small .selection { margin-top: 0; }
-
 		.fheader { height: 50px; padding: 0 10px; border-bottom: 1px solid #E0E0E0; background-color: transparent; }
 		.fheader .info { float: right; font-size: 11px; color: #999; text-align: right; line-height: 14px; padding-top: 10px; }
 		.fheader label, .fheader > span { line-height: 50px; font-weight: bold; font-size: 15px; float: left; color: #000; }
@@ -234,6 +227,7 @@
 	<ui-component name="markdown" config="cdn:@{#}/"></ui-component>
 	<ui-component name="shortcuts"></ui-component>
 	<ui-component name="windows" path="*windows" config="zindex:50"></ui-component>
+	<ui-component name="mainprogress" path="*progress"></ui-component>
 
 	<ui-plugin path="flow" class="flow">
 
