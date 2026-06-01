@@ -3235,11 +3235,13 @@ var total = 'Hello world!';
 				instance && instance.$destroy();
 			};
 
-			ON('service', function() {
-				for (var key in meta.instances) {
-					var instance = meta.instances[key];
+			ON('service', function(count) {
+				for (let key in meta.instances) {
+					const instance = meta.instances[key];
 					if (!inDOM(instance.dom))
 						instance.$destroy();
+					else if (instance.service)
+						instance.service(count);
 				}
 			});
 
