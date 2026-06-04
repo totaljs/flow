@@ -1,0 +1,17 @@
+.git
+.git/**
+.github
+.github/**
+.gitignore
+
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+node_modules
+npm-debug.log
+.DS_Store
