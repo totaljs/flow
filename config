@@ -1,5 +1,6 @@
 name                        : Total.js Flow v11
 flowstream_worker           : fork
+$proxytimeout               : 120
 
 cookie          (generate)  : 6
 cookie_secret   (generate)  : 10
