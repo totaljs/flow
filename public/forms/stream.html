@@ -4,22 +4,30 @@
 	</div>
 	<div class="padding npb">
 
-		<div class="grid-3">
-			<div class="m">
+		<div class="row">
+			<div class="col-sm-4 m">
 				<ui-component name="input" path="?.icon" config="required:1;type:icon" default="'ti ti-microchip'">@(Icon)</ui-component>
 			</div>
-			<div class="m">
+			<div class="col-sm-4 m">
 				<ui-component name="input" path="?.color" config="type:color">@(Color)</ui-component>
 			</div>
-			<div class="m">
+			<div class="col-sm-4 m">
 				<ui-component name="input" path="?.group" config="dirsource:common.groupsform;dircustom:1;dirempty:@(Empty);dirminwidth:300;dirplaceholder:@(Choose or enter new)">@(Group)</ui-component>
 			</div>
 		</div>
 
 		<hr style="margin-top:10px" />
 
-		<ui-component name="input" path="?.proxypath" config="placeholder:@(/users/)"><i class="ti ti-exchange"></i><b>@(Proxy endpoint)</b></ui-component>
-		<div class="help">@(The proxy endpoint routes all incoming requests to the FlowStream worker. This worker is an independent process that must be proxied by the main web server.)</div>
+		<div class="row">
+			<div class="col-md-8">
+				<ui-component name="input" path="?.proxypath" config="placeholder:@(/users/)"><i class="ti ti-exchange"></i><b>@(Proxy endpoint)</b></ui-component>
+				<div class="help">@(The proxy endpoint routes all incoming requests to the FlowStream worker. This worker is an independent process that must be proxied by the main web server.)</div>
+			</div>
+			<div class="col-md-4">
+				<ui-component name="input" path="?.timeout" config="type:number;required:1" default="120">@(Proxy timeout)</ui-component>
+				<div class="help">@(In seconds)</div>
+			</div>
+		</div>
 
 		<hr />
 		<ui-component name="input" path="?.cloning" config="type:checkbox" default="true" class="b">@(Enable cloning of message data)</ui-component>

@@ -1,4 +1,4 @@
-const Fields = 'id,name:SafeString,author,version,icon:Icon,reference,group,url,cloning:Boolean,color:Color,readme,memory:Number,proxypath'.toJSONSchema();
+const Fields = 'id,name:SafeString,author,version,icon:Icon,reference,group,url,cloning:Boolean,color:Color,readme,memory:Number,proxypath,proxytimeout:Number'.toJSONSchema();
 
 function skip(key, value) {
 	return key === 'unixsocket' || key === 'env' || key === 'import' || key === 'importscript' || key === 'worker' || key === 'asfiles' ? undefined : value;
@@ -122,6 +122,10 @@ NEWACTION('Streams|save', {
 				item.cloning = model.cloning;
 				item.readme = model.readme;
 				item.proxypath = model.proxypath;
+				item.proxytimeout = model.proxytimeout;
+
+				if (!item.import)
+					item.import = 'extensions.js';
 
 				TRANSFORM('flowstream.update', item, function(err, item) {
 					Flow.reload(item);
