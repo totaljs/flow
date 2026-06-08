@@ -627,7 +627,7 @@
 
 	<script type="text/html" id="template_readme">
 		<ui-component name="viewbox" config="parent:auto" class="invisible bg-white">
-			<div class="padding markdown-small"><div>
+			<div class="padding markdown-small readme"><div>
 		</ui-component>
 	</script>
 
@@ -3317,7 +3317,7 @@ var total = 'Hello world!';
 			return PLUGINS.flow.trigger(el, data);
 		};
 
-		FUNC.readme = function(title, text) {
+		FUNC.readme = function(title, text, callback) {
 
 			let winid = 'readme' + HASH(text);
 
@@ -3327,8 +3327,10 @@ var total = 'Hello world!';
 			}
 
 			let html = $($('#template_readme').html());
+			let meta = { id: winid, cache: 'readme', html: html, title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: el => el.closest('.ui-windows-item').css('z-index', 50) };
 			html.find('.markdown-small').html(Thelpers.markdown(FUNC.strim(text || ''), { el: html }));
-			PUSH('*windows', { id: winid, cache: 'readme', html: html, title: title, actions: { move: true, autosave: true, close: true, maximize: false, minimize: false }, offset: { x: ((WW / 2) - 275) >> 0, y: ((WH / 2) - 250) >> 0, width: 550, height: 500, minwidth: 200, minheight: 300, maxwidth: 800, maxheight: 1200 }, make: el => el.closest('.ui-windows-item').css('z-index', 50) });
+			callback && callback(meta);
+			PUSH('*windows', meta);
 
 		};
 
