@@ -323,6 +323,7 @@
 	<ui-component name="LAZY directory" config="placeholder:@(Search);create:@(Create)"></ui-component>
 	<ui-component name="LAZY colorpicker"></ui-component>
 	<ui-component name="LAZY prompt" config="cancel:@(Cancel);submit:@(OK)"></ui-component>
+	<ui-component name="LAZY filesaver"></ui-component>
 
 	<ui-component name="datepicker" config="today:@(Today);days:@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday);clear:@(Clear);months:@(January,February,March,April,May,Juny,July,August,September,October,November,December)"></ui-component>
 	<ui-component name="edit"></ui-component>
@@ -827,7 +828,7 @@
 
 								if (opt.id === 'download') {
 									var blob = new Blob([JSON.stringify(FUNC.cleanflow(JSON.parse(response.value)), null, '\t')], { type: 'text/plain; charset=utf-8' });
-									saveAs(blob, item.name + '.json');
+									SETTER('filesaver/save', item.name + '.json', blob);
 									return;
 								}
 
