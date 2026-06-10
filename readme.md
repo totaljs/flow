@@ -26,7 +26,7 @@ __Run__:
 npm run start
 ```
 
-or directly using node executable (port is optional, default 8000)
+or directly using node executable (__port is optional__, default `8000`)
 
 ```
 node index.js <port>
