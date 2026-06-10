@@ -1,5 +1,6 @@
 services:
-  web:
+  flow:
+    container_name: flow
     build: .
     ports:
       - "8000:8000"
