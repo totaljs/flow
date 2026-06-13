@@ -84,6 +84,8 @@
 		.controls button { width: 22px; height: 22px; border: 0; background-color: #FFF; line-height: 22px; padding: 0 5px; border-radius: var(--radius); margin-left: 2px; }
 		.controls button:first-child { margin-left: 0; }
 		.controls button:hover { background-color: #F0F0F0; }
+		.ui-dark .controls button { background-color: transparent; }
+		.ui-dark .controls button:hover { background-color: #303030; }
 
 		.colorize { animation: colorize 1.3s infinite alternate; }
 
@@ -456,6 +458,11 @@
 				.CLASS .installed section .readme { color: #FFF; }
 				.CLASS .search { height: 30px; }
 				.CLASS .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; padding-left: 12px; }
+				.ui-dark .CLASS .ui-searchinput { border-color: #404040; }
+				.ui-dark .CLASS section { border-color: #404040; background-color: #303030; }
+				.ui-dark .CLASS .installed section { border-color: var(--color); background-color: #202020; }
+				.ui-dark .CLASS .author { color: #777; }
+				.ui-dark .CLASS .version { color: #777; }
 			</style>
 			<ui-component name="box" path="*form" config="if:CLASS;icon:ti ti-database;title:@(Download components);autofocus:true;reload:?/reload;scrollbar:0;width:1200" class="hidden CLASS" plugin="CLASS">
 				<div>
@@ -499,6 +506,10 @@
 
 	<ui-component name="importer" path="*form" config="if:flowendpointform">
 		<script type="text/plain">
+			<style>
+				.CLASS .border { border: 1px solid #E0E0E0; }
+				.ui-dark .CLASS .border { border-color: #404040; }
+			</style>
 			<ui-component name="box" path="*form" config="if:CLASS;title:@(Link endpoint);icon:ti ti-network;autofocus:true;scrollbar:1;submit:?/submit;width:700" class="hidden CLASS" plugin="CLASS">
 				<div class="padding">
 
@@ -538,7 +549,7 @@
 					<hr />
 
 					<div class="b fs12" style="margin-bottom:5px">@(Read me):</div>
-					<div style="height:200px;border:1px solid #E0E0E0">
+					<div style="height:200px" class="m border">
 						<ui-component name="code" path="?.readme" config="parent:auto;monospace:1;type:markdown;linenumbers:0"></ui-component>
 						<div class="help">@(Markdown format)</div>
 					</div>
@@ -564,6 +575,9 @@
 				.CLASS .item .code { float: right; width: 120px; color: #E73323; }
 				.CLASS .item .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding: 0 10px 0 20px; }
 				.CLASS .item .name i { margin-right: 5px; }
+				.ui-dark .CLASS .item:hover { background: #303030; }
+				.ui-dark .CLASS .ui-searchinput { border-color: #404040; }
+				.ui-dark .CLASS .item { border-bottom-color: #404040; }
 			</style>
 			<ui-component name="box" path="*form" config="if:CLASS;title:@(TMS sources);icon:ti ti-code-branch;autofocus:true;reload:?/reload;scrollbar:0;submit:?/submit;width:800" class="hidden CLASS" plugin="CLASS">
 				<nav>
