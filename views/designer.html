@@ -683,7 +683,7 @@
 	<script type="text/plain" id="template_search">
 		<ui-plugin path="flowsearchwindow" class="flowsearchwindow">
 			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
-			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:29" class="invisible">
+			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:30" class="invisible">
 				<ui-bind path="?.response" config="template" class="block">
 					<SCR type="text/html">
 						{{ if !value || !value.length }}
@@ -3424,6 +3424,105 @@ var total = 'Hello world!';
 
 		// Connect WS
 		$(document.body).append('<ui-component name="websocket" config="url:{0};stats:flow/stats;statsinterval:61000"></ui-component>'.format(flow.socket.replace(/\:/g, '\\:')));
+
+	</script>
+
+	<script>
+
+		// @TAG: Shortcuts
+
+		(function() {
+
+			function check() {
+
+				if (document.activeElement && document.activeElement.tagName === 'INPUT')
+					return;
+
+				if (common.form || common.form2 || common.form3)
+					return;
+
+				if (common.windows.findItem(win => win.componentid))
+					return;
+
+				return true;
+			}
+
+			function save(e) {
+
+				let is = false;
+
+				if (common.form === 'flowsourcecodeform') {
+					EXEC('flowsourcecodeform/submit');
+					is = true;
+				} else if (check() && flow.changed) {
+					EXEC('flow/submit');
+					is = true;
+				}
+
+				is && e && e.preventDefault();
+			}
+
+			SETTER(true, 'shortcuts/register', 'CMD+F, CTRL+F', function(e) {
+				if (check()) {
+					EXEC('flow/search');
+					e.preventDefault();
+				}
+			}, true);
+
+			SETTER(true, 'shortcuts/register', 'CMD+ENTER, CTRL+ENTER', save);
+
+			SETTER(true, 'shortcuts/register', 'CMD+D, CTRL+D', function(e) {
+				if (check()) {
+					EXEC('flow/clone');
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}, true);
+
+			SETTER(true, 'shortcuts/register', 'remove', function(e) {
+				if (check()) {
+					FIND('flow').CMD('flow.selected.clear');
+					SET('flow.changed', true);
+					e.preventDefault();
+				}
+			});
+
+			SETTER(true, 'shortcuts/register', 'save', save, true);
+
+			function select_connected(designer, comp) {
+				var conns = comp.connections;
+				if (conns) {
+					for (let output in conns) {
+						for (let com of conns[output]) {
+							designer.op.select(com.id, true);
+							select_connected(designer, flow.data[com.id]);
+						}
+					}
+				}
+			};
+
+			SETTER(true, 'shortcuts/register', 'CMD+A, CTRL+A', function(e) {
+
+				if (!check())
+					return;
+
+				e.preventDefault();
+				e.stopPropagation();
+
+				let designer = FIND('flow');
+				let selected = designer.selected();
+
+				if (!selected.components.length) {
+					for (let key in flow.data) {
+						if (key !== 'groups' && key !== 'paused')
+							designer.op.select(key, true);
+					}
+				} else if (selected.components.length === 1)
+					select_connected(designer, flow.selected);
+
+			}, true);
+
+		})();
 
 	</script>
 
