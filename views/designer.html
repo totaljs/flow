@@ -3435,8 +3435,12 @@ var total = 'Hello world!';
 
 			function check() {
 
-				if (document.activeElement && document.activeElement.tagName === 'INPUT')
-					return;
+				let el = document.activeElement;
+				if (el) {
+					let tag = el.tagName;
+					if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'IFRAME' || el.isContentEditable)
+						return;
+				}
 
 				if (common.form || common.form2 || common.form3)
 					return;
