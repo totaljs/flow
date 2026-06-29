@@ -3433,12 +3433,13 @@ var total = 'Hello world!';
 
 		(function() {
 
+			let Tags = { INPUT: 1, TEXTAREA: 1, IFRAME: 1 };
+
 			function check() {
 
 				let el = document.activeElement;
 				if (el) {
-					let tag = el.tagName;
-					if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'IFRAME' || el.isContentEditable)
+					if (Tags[el.tagName] || el.isContentEditable)
 						return;
 				}
 
@@ -3467,7 +3468,7 @@ var total = 'Hello world!';
 			}
 
 			SETTER(true, 'shortcuts/register', 'CMD+F, CTRL+F', function(e) {
-				if (check()) {
+				if (!check()) {
 					EXEC('flow/search');
 					e.preventDefault();
 				}
@@ -3476,7 +3477,7 @@ var total = 'Hello world!';
 			SETTER(true, 'shortcuts/register', 'CMD+ENTER, CTRL+ENTER', save);
 
 			SETTER(true, 'shortcuts/register', 'CMD+D, CTRL+D', function(e) {
-				if (check()) {
+				if (!check()) {
 					EXEC('flow/clone');
 					e.preventDefault();
 					e.stopPropagation();
@@ -3484,7 +3485,7 @@ var total = 'Hello world!';
 			}, true);
 
 			SETTER(true, 'shortcuts/register', 'remove', function(e) {
-				if (check()) {
+				if (!check()) {
 					FIND('flow').CMD('flow.selected.clear');
 					SET('flow.changed', true);
 					e.preventDefault();
@@ -3510,6 +3511,8 @@ var total = 'Hello world!';
 				if (!check())
 					return;
 
+				W.getSelection().removeAllRanges();
+
 				e.preventDefault();
 				e.stopPropagation();
 
@@ -3524,7 +3527,7 @@ var total = 'Hello world!';
 				} else if (selected.components.length === 1)
 					select_connected(designer, flow.selected);
 
-			}, true);
+			});
 
 		})();
 
