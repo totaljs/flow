@@ -2481,9 +2481,11 @@ var total = 'Hello world!';
 			};
 
 			exports.action('Extensions', function(err, response) {
-				let body = $('body');
-				for (let m of response)
-					body.append(m.html);
+				if (response instanceof Array) {
+					let body = $('body');
+					for (let m of response)
+						body.append(m.html);
+				}
 				EMIT('start', exports);
 			});
 
