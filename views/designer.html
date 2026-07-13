@@ -214,6 +214,13 @@
 		.ui-dark .fsettings > nav button[name='submit']:disabled i { color: silver !important; }
 		.ui-dark .fsettings > nav button[name='submit'] { background-color: var(--color) !important; color: #FFF !important; }
 
+		.selection { width: 19px; height: 19px; border: 1px solid #D0D0D0; border-radius: var(--radius); font-size: 12px; float: left; text-align: center; margin-right: 8px; background-color: #FFF; line-height: 19px; color: #000; }
+		.selection i { display: none; line-height: 19px; }
+		.selection.selected i { display: block; }
+		.listing .selection { margin-top: 2px; }
+		.listing figure.selected .selection i, .listing2 figure.selected .selection i { display: block; }
+		.listing.small .selection { margin-top: 0; }
+		.ui-dark .selection { border-color: #303030; background-color: #222; color: #FFF; }
 
 	</style>
 </head>
