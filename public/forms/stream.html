@@ -24,7 +24,7 @@
 				<div class="help">@(The proxy endpoint routes all incoming requests to the FlowStream worker. This worker is an independent process that must be proxied by the main web server.)</div>
 			</div>
 			<div class="col-md-4">
-				<ui-component name="input" path="?.timeout" config="type:number;required:1" default="120">@(Proxy timeout)</ui-component>
+				<ui-component name="input" path="?.proxytimeout" config="type:number;required:1" default="120">@(Proxy timeout)</ui-component>
 				<div class="help">@(In seconds)</div>
 			</div>
 		</div>
