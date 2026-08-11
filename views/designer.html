@@ -1308,8 +1308,10 @@ var total = 'Hello world!';
 
 						COPY(msg.data, model.data[msg.id]);
 						model.config[msg.id] = msg.data.config;
+						model.notes[msg.id] = msg.data.note;
 						exports.upd('data');
 						exports.upd('config.' + msg.id);
+						exports.upd('notes.' + msg.id);
 						Designer.CMD('flow.refresh');
 						setTimeout(msg => model.main.exec(msg.id, 'redraw'), 100, msg);
 						break;
@@ -1612,6 +1614,7 @@ var total = 'Hello world!';
 				setTimeout2(exports.id + 'ready', function() {
 					exports.set('ready', true);
 					exports.upd('config');
+					exports.upd('notes');
 				}, 500);
 
 				Designer.CMD('flow.refresh');
