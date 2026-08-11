@@ -1,4 +1,12 @@
-11
+11.1
+
+===================================
+Version: 11.1
+===================================
+
+- fixed `proxytimeout` option in the FlowStream settings
+- fixed `notes` synchronization
+- improved UI
 
 ===================================
 Version: 11
