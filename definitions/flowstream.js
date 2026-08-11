@@ -12,7 +12,7 @@ function skip(key, value) {
 
 Flow.on('save', function() {
 
-	for (var key in Flow.db) {
+	for (let key in Flow.db) {
 		if (key !== 'variables') {
 			let flow = Flow.db[key];
 			flow.size = Buffer.byteLength(JSON.stringify(flow));
@@ -29,7 +29,7 @@ Flow.on('save', function() {
 
 function init(id, next) {
 
-	var flow = Flow.db[id];
+	let flow = Flow.db[id];
 
 	flow.variables2 = Flow.db.variables || {};
 	flow.directory = CONF.directory || PATH.root('/flowstream/');
