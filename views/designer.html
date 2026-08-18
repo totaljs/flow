@@ -385,7 +385,7 @@
 						</SCR>
 					</ui-bind>
 				</nav>
-				<ui-component name="code" path="?.source" config="realtime:1;type:clientside;contextmenu:?/contextmenu;$assign:?|editor"></ui-component>
+				<ui-component name="code" path="?.source" config="realtime:1;type:clientside;contextmenu:flow/codecontextmenu;$assign:?|editor"></ui-component>
 				<nav>
 					<ui-component name="validate" path="?" config="$assign:?|validation">
 						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(APPLY)</button>
@@ -1622,7 +1622,7 @@ var total = 'Hello world!';
 			};
 
 			exports.clipboard = function(el) {
-				SETTER('clipboard/copy', $(el).text());
+				SETTER('clipboard/copy @copied', $(el).text());
 			};
 
 			exports.group = function(item) {
@@ -1794,6 +1794,31 @@ var total = 'Hello world!';
 				EMIT('sourcecode', exports, model);
 				SET(path + ' @reset', model);
 				SET('*form', path);
+			};
+
+			exports.codecontextmenu = function(obj) {
+				var opt = {};
+				opt.instance = obj.instance;
+				opt.x = obj.x;
+				opt.y = obj.y;
+				opt.items = [];
+				opt.items.push({ id: 'icon', name: '@(Insert icon)', icon: 'ti ti-icons' });
+				opt.items.push({ id: 'color', name: '@(Insert color)', icon: 'ti ti-paint-brush' });
+				EMIT('codecontextmenu', opt);
+				opt.callback = function(selected) {
+					selected.callback && selected.callback(obj.instance);
+					switch (selected.id) {
+						case 'icon':
+							opt.callback = val => obj.instance.insert(val);
+							SETTER('icons/show', opt);
+							break;
+						case 'color':
+							opt.callback = val => obj.instance.insert(val);
+							SETTER('colorpicker/show', opt);
+							break;
+					}
+				};
+				SETTER('menu/show', opt);
 			};
 
 			exports.contextmenu = function(e, type, meta) {
@@ -2608,28 +2633,6 @@ var total = 'Hello world!';
 			exports.readme = function() {
 				let model = exports.model;
 				FUNC.readme(model.component.name, model.component.readme || '');
-			};
-
-			exports.contextmenu = function(obj) {
-				var opt = {};
-				opt.x = obj.x;
-				opt.y = obj.y;
-				opt.items = [];
-				opt.items.push({ id: 'icon', name: '@(Insert icon)', icon: 'ti ti-icons' });
-				opt.items.push({ id: 'color', name: '@(Insert color)', icon: 'ti ti-paint-brush' });
-				opt.callback = function(selected) {
-					switch (selected.id) {
-						case 'icon':
-							opt.callback = val => obj.instance.insert(val);
-							SETTER('icons/show', opt);
-							break;
-						case 'color':
-							opt.callback = val => obj.instance.insert(val);
-							SETTER('colorpicker/show', opt);
-							break;
-					}
-				};
-				SETTER('menu/show', opt);
 			};
 
 			exports.submit = function(hide) {
