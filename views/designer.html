@@ -754,6 +754,19 @@
 	// exports.npm = ['npm_module_1', 'npm_module_2@version'];
 	// exports.meta = { readonly: false, singleton: false, hidden: false };
 
+	/*
+	exports.install = function(com) {
+		// com.main {FlowInstance}
+		// com.config {Object}
+		// com.cache {Object}
+		// com.stats {Object}
+		// com.ui {Object}
+	};
+
+	exports.uninstall = function(com) {
+	};
+	*/
+
 	exports.make = function(instance, config) {
 
 		// instance.main.variables {Object}
@@ -3431,6 +3444,10 @@ var total = 'Hello world!';
 
 			c = '0x' + c.join('');
 			return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')';
+		};
+
+		FUNC.hostname = function(url, absolute) {
+			return (absolute ? (flow.head.origin || '') : '') + ((flow.head.proxypath || '/') + (url || '')).replace(/\/{2,}/g, '/');
 		};
 
 		$(document.body).on('click', 'button[name="trigger"]', function() {
