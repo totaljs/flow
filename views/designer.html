@@ -3366,6 +3366,10 @@ var total = 'Hello world!';
 			return index === -1 ? val : val.substring(0, index);
 		};
 
+		Thelpers.translate = function(text) {
+			return text ? TRANSLATE(text) : text;
+		};
+
 		FUNC.trigger = function(el, data) {
 			return PLUGINS.flow.trigger(el, data);
 		};
