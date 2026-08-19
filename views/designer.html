@@ -1922,7 +1922,7 @@ var total = 'Hello world!';
 									SETTER('websocket/send', { TYPE: 'note', id: item.id, data: value });
 								} else {
 									item.note = value;
-									exports.set('note.' + item.id, value);
+									exports.set('notes.' + item.id, value);
 								}
 							};
 
@@ -2290,9 +2290,10 @@ var total = 'Hello world!';
 					newbie.onmake = exports.onmake;
 					newbie.onremove = exports.onremove;
 					newbie.tab = instance.tab;
+					newbie.note = model.notes[item.id];
 					cloned[instance.id] = newbie.id;
 					add.push(newbie);
-					exports.set('note.' + newbie.id, model.notes[item.id]);
+					exports.set('notes.' + newbie.id, newbie.note);
 					exports.set('config.' + newbie.id, newbie.config);
 					now++;
 				}
