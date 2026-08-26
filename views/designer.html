@@ -208,13 +208,23 @@
 		.ui-dark .selection { border-color: #303030; background-color: #222; color: #FFF; }
 
 		.factivity { font-size: 10px; border-top: 1px solid #E0E0E0; padding: 4px 8px 6px; color: #999; }
-		.factivity .hellip > i:first-child { color: #B9261A; margin-right: 3px; }
+		.factivity .hellip > i:first-child, .factivity_component i { color: #B9261A; margin-right: 3px; }
 		.factivity_bar { background-color: #F0F0F0; border-radius: var(--radius); margin-top: 1px; }
 		.factivity_bar > div { background-color: var(--color); border-radius: var(--radius); text-align: right; height: 4px; }
+		.factivity_component { font-weight: bold; color: #666; }
+		.ui-dark .factivity_component { color: #C0C0C0; }
+
+		.factivities-label { padding: 8px 10px; font-weight: bold; border-bottom: 1px solid #E0E0E0; }
+		.ui-dark .factivities-label { border-bottom-color: #404040; }
+		.factivities-items { width: 380px; max-height: 250px; display: block; }
+		.factivities-items .factivity { font-size: 12px; padding: 8px 10px; }
+		.factivities-items .factivity:first-child { border-top: 0; }
+		.factivities-items .factivity:hover { background-color: #F8F8F8; }
+		.ui-dark .factivities-items .factivity:hover { background-color: #353535; }
 
 		.ui-dark .factivity { border-top-color: #404040; color: #999; }
 		.ui-dark .factivity .hellip > i:first-child { color: #ff5953; }
-		.ui-dark .factivity_bar { background-color: #303030; }
+		.ui-dark .factivity_bar { background-color: #272727; }
 
 		@keyframes colorize {
 			0% { color: #d7cd17; }
@@ -245,7 +255,8 @@
 	<ui-component name="LAZY filereader"></ui-component>
 	<ui-component name="LAZY filesaver"></ui-component>
 	<ui-component name="LAZY fileuploader"></ui-component>
-	<ui-component name="LAZY floatingbox"></ui-component>
+	<ui-component name="LAZY floatingbox" config="zindex:150"></ui-component>
+	<ui-component name="LAZY floatingpanel"></ui-component>
 	<ui-component name="LAZY icons" config="list:/icons-db.html"></ui-component>
 	<ui-component name="LAZY menu" config="style:2"></ui-component>
 	<ui-component name="LAZY message" config="button:@(OK)"></ui-component>
@@ -272,6 +283,22 @@
 
 		<ui-component name="title" path="?.head.name" config="plus:0;empty:---"></ui-component>
 		<ui-component name="console2" path="?.console" config="name:@(Console);datasource:?.logs;clear:?/resetlogs;autoshow:0;autoclose:0"></ui-component>
+
+		<div class="floatingbox" data-id="activity" data-config="zindex:100">
+			<div class="factivities-label">@(Activities)</div>
+			<ui-bind path="?.activities2" class="noscrollbar factivities-items" config="template:.factivity -> data-key;show:value && value.length">
+				<script type="text/html">
+					{{ foreach m in value }}
+					<div class="factivity exec" data-exec="flow/find" data-id="{{ m.instance.id }}" data-key="{{ m.instance.id }}_{{ m.key }}_{{ m.value }}">
+						<div class="factivity_component"><i class="ti ti-circle-notch ti-spin"></i>{{ m.instance.Component.name }}</div>
+						<div class="hellip">{{ m.name | raw }} ({{ m.value }}%)</div>
+						<div class="factivity_bar"><div style="width:{{ m.value2 }}%"></div></div>
+					</div>
+					{{ end }}
+				</script>
+			</ui-bind>
+			<ui-bind path="?.activities2" class="factivities-items center padding hidden help" config="hide:value && value.length"><i class="ti ti-exchange mr5"></i>@(No activities)</ui-bind>
+		</div>
 
 		<ui-bind path="?.head.id" config="visible" class="invisible">
 
@@ -1038,6 +1065,7 @@ var total = 'Hello world!';
 			flow.toolbar.push({ id: '?/variables', icon: 'ti ti-variables', title: '@(Variables)' });
 
 		flow.toolbar.push({ id: '?/logs', icon: 'ti ti-script', title: '@(Console)', class: 'errors' });
+		flow.toolbar.push({ id: '?/activity', icon: 'ti ti-circle-notch', title: '@(Activities)', class: 'activities' });
 		flow.toolbar.push({ id: '?/search', icon: 'ti ti-file-search', title: '@(Search in nodes)' });
 		flow.toolbar.push({ id: '?/zoom', icon: 'ti ti-search-minus', title: '@(Zoom)' });
 
@@ -1072,6 +1100,7 @@ var total = 'Hello world!';
 		flow.components = [];
 		flow.callbacks = {};
 		flow.activities = {};
+		flow.activities2 = [];
 
 		var Tactivity = Tangular.compile(`<div class="factivity" data-id="{{ key }}_{{ value }}">
 	<div class="hellip"><i class="ti ti-circle-notch ti-spin"></i>{{ name | raw }} {{ if value != null }}({{ value }}%){{ fi }}</div>
@@ -1166,11 +1195,20 @@ var total = 'Hello world!';
 						// msg.value
 						if (!model.activities[msg.id])
 							model.activities[msg.id] = {};
-						if (msg.name)
-							model.activities[msg.id][msg.key] = Tactivity({ id: msg.id, key: msg.key, name: msg.name, value: msg.value, value2: msg.value == null ? null : Math.ceil(msg.value) });
-						else
+						if (msg.name) {
+							if (msg.value != null)
+								msg.value = Number(msg.value).round(1);
+							let obj = { id: msg.id, key: msg.key, name: msg.name, value: msg.value, value2: msg.value == null ? null : Math.ceil(msg.value) };
+							obj.instance = model.data[msg.id];
+							if (obj.instance) {
+								obj.html = Tactivity(obj);
+								model.activities[msg.id][msg.key] = obj;
+							} else
+								delete model.activities[msg.id];
+						} else
 							delete model.activities[msg.id][msg.key];
 						exports.refresh_activity(msg.id);
+						exports.refresh_activities();
 						break;
 
 					case 'flow/activities':
@@ -1181,14 +1219,23 @@ var total = 'Hello world!';
 							let tmp = msg.data[key];
 							for (let key2 in tmp) {
 								let obj = tmp[key2];
-								if (obj.name)
-									model.activities[key][key2] = Tactivity({ id: key, key: key2, name: obj.name, value: obj.value, value2: obj.value == null ? null : Math.ceil(obj.value) });
-								else
+								if (obj.name) {
+									if (obj.value != null)
+										obj.value = Number(obj.value).round(1);
+									obj = { id: key, key: key2, name: obj.name, value: obj.value, value2: obj.value == null ? null : Math.ceil(obj.value) };
+									obj.instance = model.data[key];
+									if (obj.instance) {
+										obj.html = Tactivity(obj);
+										model.activities[key][key2] = obj;
+									} else
+										delete model.activities[key];
+								} else
 									delete model.activities[key][key2];
 							}
 
 							exports.refresh_activity(key);
 						}
+						exports.refresh_activities();
 						break;
 
 					case 'flow/variables':
@@ -1422,8 +1469,24 @@ var total = 'Hello world!';
 				let container = $('#factivities_' + id);
 				let builder = [];
 				for (let key in flow.activities[id])
-					builder.push(flow.activities[id][key]);
-				DIFFDOM(container, '.factivity', builder.join('\n'), 'data-id');
+					builder.push(flow.activities[id][key].html);
+				try {
+					DIFFDOM(container, '.factivity', builder.join('\n'), 'data-id');
+				} catch {}
+			};
+
+			exports.refresh_activities = function() {
+				let builder = [];
+				for (let key in flow.activities) {
+					for (let key2 in flow.activities[key]) {
+						let obj = flow.activities[key][key2];
+						if (obj.value != null)
+							builder.push(obj);
+					}
+				}
+				let is = builder.length > 0;
+				$('.activities i').tclass('ti-spin', is);
+				exports.set('activities2', builder);
 			};
 
 			exports.log = function(type, body) {
@@ -2478,6 +2541,15 @@ var total = 'Hello world!';
 
 			exports.logout = function() {
 				location.href = '?logout=1';
+			};
+
+			exports.activity = function(el) {
+				let opt = {};
+				opt.element = el;
+				opt.id = 'activity';
+				opt.offsetX = 5;
+				opt.offsetY = 30;
+				SETTER('floatingbox/show', opt);
 			};
 
 			exports.logs = function() {
