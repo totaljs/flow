@@ -184,77 +184,154 @@
 		.ui-dark .landing footer { background-color: #303030; border-top-color: #404040; }
 		.ui-dark .landing footer span b { border-right-color: #404040; }
 
-		.flows { padding: 0 10px 10px; }
-		.flows:first-child { padding-top: 10px; }
-		.flows h2 { margin: 0 0 0 10px; padding: 0 0 5px 0; font-size: 18px; color: #000; }
-		.flows h2 span { float: right; font-weight: normal; font-size: 14px; margin: 4px 0 0 0; color: #999; }
-		.ui-dark .flows h2 { color: #FFF; }
+		.flow-listbar { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 0 20px; border-bottom: 1px solid #DCDDDF; background-color: #FFF; }
+		.flow-listbar-title { color: #26292D; font-size: 15px; line-height: 19px; font-weight: 600; }
+		.flow-listbar-count { display: block; margin-top: 2px; color: #85888D; font-size: 11px; line-height: 14px; }
+		.flow-listbar-search { width: 30px; height: 30px; padding: 0; border: 1px solid #D7D8DA; border-radius: 4px; outline: 0; background-color: #FFF; color: #777B80; line-height: 28px; text-align: center; }
+		.flow-listbar-search:hover { border-color: #B9BBBE; background-color: #F2F2F3; color: #333; }
+		.flowstreams { min-height: 100%; padding: 18px 0 24px; }
 
+		.flows { padding: 0 20px 20px; }
+		.flows h2 { margin: 0; padding: 0 0 12px 1px; color: #62666B; font-size: 14px; line-height: 16px; font-weight: 600; letter-spacing: .35px; }
+		.flow-list { display: grid; gap: 7px; }
+
+		.flows figure { position: relative; display: block; margin: 0; }
+		.flows figure section { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(180px, 260px) 120px 40px; align-items: center; min-height: 50px; padding: 0 10px; border: 1px solid #DCDDDF; border-radius: var(--radius); background-color: #FFF; cursor: pointer; transition: background-color .12s; }
+		.flows figure section:hover { background-color: #f8f8f8; }
+
+		.flow-identity { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; min-width: 0; padding: 7px 16px 7px 0; }
+		.flows figure .icon { width: 32px; height: 32px; border-radius: var(--radius); background-color: #a0a0a0; color: #FFF; font-size: 16px; line-height: 32px; text-align: center; }
+		.flows figure .meta { min-width: 0; }
+		.flows figure .meta .name { display: flex; align-items: center; gap: 7px; min-width: 0; color: #282B2F; font-size: 13px; line-height: 17px; font-weight: 600; }
+		.flows figure .meta .name b { overflow: hidden; min-width: 0; text-overflow: ellipsis; white-space: nowrap; }
+		.flows figure .version { flex: 0 0 auto; padding: 0 5px; border: 0; border-radius: 3px; color: #FFF; background-color: #4285F4; font-family: Menlo, Consolas, monospace; font-size: 9px; line-height: 15px; font-weight: normal; }
+		.flow-error-badge { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 4px; padding: 0 6px; border-radius: 3px; background-color: #FFF0EF; color: #E73323; font-size: 10px; line-height: 17px; font-weight: 600; }
+		.flow-error-badge i { font-size: 10px; }
+		.flows figure .details { display: flex; align-items: center; gap: 7px; min-width: 0; margin-top: 3px; color: #85898E; font-size: 12px; line-height: 15px; }
+		.flows figure .details > span + span { padding-left: 7px; border-left: 1px solid #E0E0E1; }
+		.flows figure .reference { overflow: hidden; color: #5F6368; font-family: Menlo, Consolas, monospace; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+		.flow-status { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+		.flow-status i { width: 7px; height: 7px; margin: 0; border-radius: 50%; background-color: #62B55B; }
+		.flow-status-paused { color: #A36A1C; }
+		.flow-status-paused i { background-color: #E3A23B; }
+
+		.flows figure .proxy { justify-self: end; display: flex; align-items: center; width: 100%; min-width: 0; padding: 8px 16px; border-left: 1px solid #E2E2E3; text-align: left; }
+		.flows figure .proxy span { display: inline-block; max-width: 100%; overflow: hidden; padding: 0 7px; border: 1px solid #D7D7D9; border-radius: 3px; background-color: #F1F1F2; color: #4C4F54; font-family: Menlo, Consolas, monospace; font-size: 11px; line-height: 20px; font-weight: 600; text-overflow: ellipsis; vertical-align: middle; white-space: nowrap; }
+		.flows figure .proxy .empty { padding: 0; border: 0; background-color: transparent; color: #9AA2AC; font-family: Arial, sans-serif; font-weight: normal; }
+		.flows figure .proxy i { margin-right: 8px; }
+		.flows figure .stats { display: grid; grid-template-columns: 1fr; justify-self: stretch; align-items: center; width: 100%; min-width: 0; padding: 0 10px; border-right: 1px solid #E2E2E3; border-left: 1px solid #E2E2E3; }
+		.flows figure .stats > div { min-width: 0; padding: 4px 8px; text-align: right; }
+		.flows figure .stats label { display: none; }
+		.flows figure .stats span { display: block; overflow: hidden; color: #3F4348; font-size: 12px; line-height: 18px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+		.flows figure .stats .memory-value { display: inline-flex; align-items: center; gap: 7px; }
+		.flows figure .stats .memory-value i { color: #85898E; font-size: 12px; }
+
+		.flows figure .options { width: 28px; height: 28px; margin-left: 10px; border: 1px solid transparent; border-radius: 4px; color: #8B8E93; font-size: 14px; line-height: 26px; text-align: center; transition: border-color .15s, background-color .15s, color .15s; }
+		.flows figure .options:hover { border-color: #D2D3D5; background-color: #EFEFF0; color: #333; }
 		.flows .ispaused { display: none; }
-		.flows .paused .ispaused { display: block; position: absolute; margin: 15px 0 0 15px; font-size: 20px; color: red; }
-		.flows .paused section { border-color: red !important; }
-		.flows figure { padding: 10px; width: 25%; position: relative; display: inline-block; vertical-align: top; }
-		.flows figure section { border: 2px solid #E0E0E0; background-color: #FFF; cursor: pointer; border-radius: var(--radius); }
-		.flows figure section:hover { border-color: #B0B0B0; }
-		.flows figure .icon { height: 120px; font-size: 34px; text-align: center; line-height: 120px; border-bottom: 1px solid #E0E0E0; overflow: hidden;  background-color: #F8F8F8; border-radius: var(--radius) var(--radius) 0 0; }
-		.flows figure .meta { padding: 10px; font-size: 12px; }
-		.flows figure .meta .name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 15px; font-weight: bold; }
-		.flows figure .meta .name span { color: #FFF; border-radius: var(--radius); line-height: 12px; font-size: 11px; padding: 1px 3px; float: right; margin: 4px 5px 0 0; font-weight: normal; }
-		.flows figure .size { font-size: 11px; color: #A0A0A0; margin-bottom: 4px; }
-		.flows figure .proxy { border-top: 1px dashed #E0E0E0; padding: 7px 0 0; }
-		.flows figure .proxy span { font-family: monospace; font-weight: bold; background-color: #F0F0F0; padding: 1px 2px; border-radius: var(--radius); }
-		.flows figure .author { font-size: 11px; color: #000; }
-		.flows figure .stats { padding: 10px; font-size: 11px; border-top: 1px solid #E0E0E0; line-height: 12px; }
-		.flows figure .stats label { display: block; font-size: 11px; color: #777; margin-bottom: 5px; }
-		.flows figure .stats label i { margin-right: 5px; }
-		.flows figure .stats span { float: right; }
-		.flows figure .options { position: absolute; right: 20px; top: 20px; cursor: pointer; width: 25px; text-align: center; font-size: 18px; }
-		.flows figure .reference { position: absolute; left: 22px; top: 25px; cursor: pointer; text-align: center; font-size: 16px; font-weight: bold; font-family: Menlo,Consolas,monospace; }
+		.flows .paused section { border-color: #E3C98F; background-color: #FFFCF5; }
 
-		.ui-dark .flows figure section { border-color: #404040; background-color: #282828; }
-		.ui-dark .flows figure .proxy { border-top-color: #404040; }
-		.ui-dark .flows figure .proxy span { background-color: #111; color: #FFF; }
-		.ui-dark .flows figure section:hover { border-color: #606060; }
-		.ui-dark .flows figure .icon { border-bottom-color: #404040; color: #FFF; background-color: #303030; }
-		.ui-dark .flows figure .meta .name span { color: #FFF; }
-		.ui-dark .flows figure .size { color: #888; }
-		.ui-dark .flows figure .author { color: #FFF; }
-		.ui-dark .flows figure .stats { border-top-color: #404040; }
-		.ui-dark .flows figure .stats label { color: #888; }
+		.ui-dark .flow-listbar { border-bottom-color: #373B40; background-color: #232528; }
+		.ui-dark .flow-listbar-title { color: #F0F2F4; }
+		.ui-dark .flow-listbar-count { color: #858C95; }
+		.ui-dark .flow-listbar-search { border-color: #44484D; background-color: #292C2F; color: #A7ADB5; }
+		.ui-dark .flow-listbar-search:hover { border-color: #5A6067; background-color: #33363A; color: #FFF; }
+		.ui-dark .flowstreams { background-color: #1E2022; background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px); }
+		.ui-dark .flows h2 { color: #858C95; }
+		.ui-dark .flows figure section { border-color: #3A3E43; background-color: #272A2D; box-shadow: none; }
+		.ui-dark .flows figure section:hover { background-color: #2D3033; }
+		.ui-dark .flows figure .icon { color: #FFF; }
+		.ui-dark .flows figure .meta .name { color: #EFF1F3; }
+		.ui-dark .flows figure .version { background-color: #4285F4; color: #FFF; }
+		.ui-dark .flow-error-badge { background-color: #482725; color: #FF8178; }
+		.ui-dark .flows figure .details { color: #7F8790; }
+		.ui-dark .flows figure .details > span + span { border-left-color: #41454A; }
+		.ui-dark .flows figure .reference { color: #ABB1B8; }
+		.ui-dark .flows figure .proxy, .ui-dark .flows figure .stats { border-left-color: #3D4146; }
+		.ui-dark .flows figure .stats { border-right-color: #3D4146; }
+		.ui-dark .flows figure .proxy span { border-color: #41464B; background-color: #202225; color: #D2D6DA; }
+		.ui-dark .flows figure .proxy .empty { border: 0; background-color: transparent; color: #707780; }
+		.ui-dark .flows figure .stats span { color: #E1E4E7; }
+		.ui-dark .flows figure .stats .memory-value i { color: #858C95; }
+		.ui-dark .flows figure .options { color: #8E959D; }
+		.ui-dark .flows figure .options:hover { border-color: #484D52; background-color: #34373B; color: #FFF; }
+		.ui-dark .flows .paused section { border-color: #735D3C; background-color: #302C25; }
 
+		@media(max-width: 1050px) {
+			.flows figure section { grid-template-columns: minmax(240px, 1fr) minmax(140px, 220px) 120px 40px; }
+		}
+
+		@media(max-width: 850px) {
+			.flow-listbar { min-height: 54px; padding-right: 14px; padding-left: 14px; }
+			.flowstreams { padding-top: 14px; }
+			.flows { padding-right: 10px; padding-left: 10px; }
+			.flow-list { gap: 6px; }
+			.flows figure section { grid-template-columns: minmax(0, 1fr) 34px; align-items: center; padding: 5px 8px 9px; }
+			.flow-identity { grid-column: 1; grid-row: 1; padding-right: 6px; }
+			.flows figure .meta .name { flex-wrap: wrap; row-gap: 4px; }
+			.flows figure .meta .name b { flex: 1 1 120px; }
+			.flows figure .details { flex-wrap: wrap; gap: 4px 12px; margin-top: 5px; }
+			.flows figure .details > span + span { padding-left: 0; border-left: 0; }
+			.flows figure .proxy { display: flex; grid-column: 1 / -1; grid-row: 2; justify-self: stretch; align-items: center; width: auto; min-width: 0; margin-top: 3px; padding: 7px 0 7px 38px; border-top: 1px solid #E8EBEE; border-left: 0; text-align: left; }
+			.flows figure .proxy label { display: inline-flex; flex: 0 0 auto; align-items: center; width: 20px; margin: 0; color: #8B949F; font-size: 11px; }
+			.flows figure .proxy label i { margin: 0; }
+			.flows figure .proxy span { min-width: 0; }
+			.flows figure .stats { grid-column: 1 / -1; grid-row: 3; grid-template-columns: 1fr; justify-self: stretch; width: auto; padding: 7px 0 0 38px; border-top: 1px solid #E8EBEE; border-right: 0; border-left: 0; }
+			.flows figure .stats > div { padding: 0; text-align: left; }
+			.flows figure .options { grid-column: 2; grid-row: 1; align-self: center; margin-left: 2px; }
+			.ui-dark .flows figure .proxy, .ui-dark .flows figure .stats { border-top-color: #3D4146; }
+		}
+
+		@media(max-width: 520px) {
+			.flow-listbar { padding-right: 12px; padding-left: 12px; }
+			.flows { padding-right: 8px; padding-bottom: 16px; padding-left: 8px; }
+			.flows h2 { padding-left: 2px; }
+		}
+
+		@media(max-width: 850px) and (hover:none) {
+			.flows figure section:hover { background-color: #FFF; }
+			.flows .paused section:hover { background-color: #FFFCF5; }
+			.flows figure .options:hover { border-color: transparent; background-color: transparent; color: #8B8E93; }
+			.ui-dark .flows figure section:hover { background-color: #272A2D; }
+			.ui-dark .flows .paused section:hover { background-color: #302C25; }
+			.ui-dark .flows figure .options:hover { border-color: transparent; background-color: transparent; color: #8E959D; }
+		}
+
+		/* Fallback for the inner viewport managed by the viewbox component. */
+		.jc-xs .flows-viewbox { margin-right: 0 !important; }
+		.jc-xs .flow-listbar { min-height: 54px; padding-right: 12px; padding-left: 12px; }
+		.jc-xs .flowstreams { width: 100%; min-width: 0; padding-top: 14px; }
+		.jc-xs .flows { width: 100%; min-width: 0; padding-right: 8px; padding-bottom: 16px; padding-left: 8px; }
+		.jc-xs .flows h2 { padding-left: 2px; }
+		.jc-xs .flow-list { width: calc(100% - 60px); min-width: 0; gap: 6px; }
+		.jc-xs .flows figure { width: 100%; min-width: 0; }
+		.jc-xs .flows figure section { width: 100%; min-width: 0; grid-template-columns: minmax(0, 1fr) 34px; align-items: center; padding: 5px 8px 9px; }
+		.jc-xs .flow-identity { grid-column: 1; grid-row: 1; min-width: 0; padding-right: 6px; }
+		.jc-xs .flows figure .meta .name { flex-wrap: wrap; row-gap: 4px; }
+		.jc-xs .flows figure .meta .name b { flex: 1 1 120px; }
+		.jc-xs .flows figure .details { flex-wrap: wrap; gap: 4px 12px; margin-top: 5px; }
+		.jc-xs .flows figure .details > span + span { padding-left: 0; border-left: 0; }
+		.jc-xs .flows figure .proxy { display: none; }
+		.jc-xs .flows figure .proxy label { display: inline-flex; flex: 0 0 auto; align-items: center; width: 20px; margin: 0; color: #8B949F; font-size: 11px; }
+		.jc-xs .flows figure .proxy label i { margin: 0; }
+		.jc-xs .flows figure .proxy span { min-width: 0; }
+		.jc-xs .flows figure .stats { grid-column: 1 / -1; grid-row: 3; grid-template-columns: 1fr; justify-self: stretch; width: auto; min-width: 0; padding: 7px 0 0 38px; border-top: 1px solid #E8EBEE; border-right: 0; border-left: 0; }
+		.jc-xs .flows figure .stats > div { padding: 0; text-align: left; }
+		.jc-xs .flows figure .options { grid-column: 2; grid-row: 1; align-self: center; margin-left: 2px; }
+		.ui-dark.jc-xs .flows figure .proxy, .ui-dark.jc-xs .flows figure .stats { border-top-color: #3D4146; }
+		.jc-xs.jc-touch .flows figure section:hover { background-color: #FFF; }
+		.jc-xs.jc-touch .flows .paused section:hover { background-color: #FFFCF5; }
+		.jc-xs.jc-touch .flows figure .options:hover { border-color: transparent; background-color: transparent; color: #8B8E93; }
+		.ui-dark.jc-xs.jc-touch .flows figure section:hover { background-color: #272A2D; }
+		.ui-dark.jc-xs.jc-touch .flows .paused section:hover { background-color: #302C25; }
+		.ui-dark.jc-xs.jc-touch .flows figure .options:hover { border-color: transparent; background-color: transparent; color: #8E959D; }
+
+		.jc-sm .jc-xs .flows figure .proxy { display: none; }
 		.ui-windows-resizer { z-index: 100; }
 		.ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.1); }
 		.ui-windows-body { overflow: hidden; }
 		.ui-windows-item iframe { overflow: hidden; width: 100%; height: 100%; border: 0; }
 		.ui-dark .ui-windows-item { box-shadow: 1px 1px 30px rgba(0,0,0,0.5); }
-
-		@media (max-width:768px) {
-			.flows figure { width: 50%; }
-		}
-
-		@media (max-width:991px) and (min-width:768px) {
-			.flows figure { width: 33.33%; }
-		}
-
-		@media (max-width:1250px) and (min-width:992px) {
-			.flows figure { width: 25%; }
-		}
-
-		@media (min-width:1251px) {
-			.flows figure { width: 20%; }
-		}
-
-		@media (min-width:1600px) {
-			.flows figure { width: 16.6%; }
-		}
-
-		@media (min-width:2200px) {
-			.flows figure { width: 14.28%; }
-		}
-
-		@media (min-width:2500px) {
-			.flows figure { width: 12.5%; }
-		}
 
 		.ui-largeform .search { height: 30px; }
 		.ui-largeform .search .ui-searchinput { border: 0; border-bottom: 1px solid #E0E0E0; }
