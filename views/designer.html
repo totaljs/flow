@@ -90,23 +90,6 @@
 		.ui-dark .controls button:hover { background-color: #303030; }
 
 		.colorize { animation: colorize 1.3s infinite alternate; }
-
-		@keyframes colorize {
-			0% { color: #d7cd17; }
-			15% { color: #83c83c; }
-			30% { color: #2e67c5; }
-			45% { color: #b92865; }
-			60% { color: #62c9ca; }
-			75% { color: #FFF; }
-			100% { color: #8c42f6; }
-		}
-
-		@keyframes blink {
-			0% { opacity: 1; }
-			50% { opacity: 0.5; }
-			100% { opacity: 1; }
-		}
-
 		.fdesigner { background: #F8F8F8; }
 		.ui-dark .fdesigner { background: #181818; }
 
@@ -223,6 +206,31 @@
 		.listing figure.selected .selection i, .listing2 figure.selected .selection i { display: block; }
 		.listing.small .selection { margin-top: 0; }
 		.ui-dark .selection { border-color: #303030; background-color: #222; color: #FFF; }
+
+		.factivity { font-size: 10px; border-top: 1px solid #E0E0E0; padding: 4px 8px 6px; color: #999; }
+		.factivity .hellip > i:first-child { color: #B9261A; margin-right: 3px; }
+		.factivity_bar { background-color: #F0F0F0; border-radius: var(--radius); margin-top: 1px; }
+		.factivity_bar > div { background-color: var(--color); border-radius: var(--radius); text-align: right; height: 4px; }
+
+		.ui-dark .factivity { border-top-color: #404040; color: #999; }
+		.ui-dark .factivity .hellip > i:first-child { color: #ff5953; }
+		.ui-dark .factivity_bar { background-color: #303030; }
+
+		@keyframes colorize {
+			0% { color: #d7cd17; }
+			15% { color: #83c83c; }
+			30% { color: #2e67c5; }
+			45% { color: #b92865; }
+			60% { color: #62c9ca; }
+			75% { color: #FFF; }
+			100% { color: #8c42f6; }
+		}
+
+		@keyframes blink {
+			0% { opacity: 1; }
+			50% { opacity: 0.5; }
+			100% { opacity: 1; }
+		}
 
 	</style>
 </head>
@@ -409,7 +417,7 @@
 					<ui-component name="input" path="?.note" config="height:150;type:multiline;monospace:1;placeholder:@(Enter a note)"></ui-component>
 				</div>
 				<nav>
-					<ui-component name="validate" path="?" config="changes:1;output:?.is">
+					<ui-component name="validate" path="?" config="changes:1">
 						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
 						<button name="cancel">@(Cancel)</button>
 					</ui-component>
@@ -426,7 +434,24 @@
 					<p>@(Enter the URL of a component or your external integration.)</p>
 				</div>
 				<nav>
-					<ui-component name="validate" path="?" config="changes:1;output:?.is">
+					<ui-component name="validate" path="?" config="changes:1">
+						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
+						<button name="cancel">@(Cancel)</button>
+					</ui-component>
+				</nav>
+			</ui-component>
+		</script>
+	</ui-component>
+
+	<ui-component name="importer" path="*form" config="if:flowpasteform">
+		<script type="text/html">
+			<ui-component name="miniform" path="*form" config="if:CLASS;title:@(Paste nodes);icon:ti ti-paste;autofocus:true;closeesc:1;submit:?/submit;width:450" class="hidden invisible CLASS" plugin="CLASS">
+				<div class="padding">
+					<ui-component name="input" path="?.data" config="monospace:1;required:1;type:multiline;height:150" default="''" class="m">@(Paste nodes from the clipboard)</ui-component>
+					<div class="help">The pasted data must be valid JSON that adheres to the FlowStream design schema.</div>
+				</div>
+				<nav>
+					<ui-component name="validate" path="?">
 						<button name="submit" disabled><i class="ti ti-check-circle"></i>@(SUBMIT)</button>
 						<button name="cancel">@(Cancel)</button>
 					</ui-component>
@@ -692,7 +717,7 @@
 	<script type="text/plain" id="template_search">
 		<ui-plugin path="flowsearchwindow" class="flowsearchwindow">
 			<ui-component name="searchinput" path="?.search" config="placeholder:@(Search);autofocus:1" style="border-left:0;border-top:0;border-right:0"></ui-component>
-			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:30" class="invisible">
+			<ui-component name="viewbox" path="*windows" config="parent:auto;margin:29" class="invisible">
 				<ui-bind path="?.response" config="template" class="block">
 					<SCR type="text/html">
 						{{ if !value || !value.length }}
@@ -1026,7 +1051,6 @@ var total = 'Hello world!';
 		@{if user.color}
 		APPEARANCE({ color: '@{user.color}' });
 		@{fi}
-
 		// flow.toolbar.push({ id: '?/info', icon: 'ti ti-info', title: '@(Information)' });
 
 		flow.console = false;
@@ -1047,6 +1071,12 @@ var total = 'Hello world!';
 		flow.variables2 = {};
 		flow.components = [];
 		flow.callbacks = {};
+		flow.activities = {};
+
+		var Tactivity = Tangular.compile(`<div class="factivity" data-id="{{ key }}_{{ value }}">
+	<div class="hellip"><i class="ti ti-circle-notch ti-spin"></i>{{ name | raw }} {{ if value != null }}({{ value }}%){{ fi }}</div>
+	{{ if value != null }}<div class="factivity_bar"><div style="width:{{ value2 }}%"></div></div>{{ fi }}
+</div>`);
 
 		EXTENSION('websocket', function(com) {
 			com.send2 = com.send;
@@ -1129,6 +1159,38 @@ var total = 'Hello world!';
 						// msg.worker {Boolean}
 						break;
 
+					case 'flow/activity':
+						// msg.id
+						// msg.name
+						// msg.uid
+						// msg.value
+						if (!model.activities[msg.id])
+							model.activities[msg.id] = {};
+						if (msg.name)
+							model.activities[msg.id][msg.key] = Tactivity({ id: msg.id, key: msg.key, name: msg.name, value: msg.value, value2: msg.value == null ? null : Math.ceil(msg.value) });
+						else
+							delete model.activities[msg.id][msg.key];
+						exports.refresh_activity(msg.id);
+						break;
+
+					case 'flow/activities':
+						// msg.data
+						for (let key in msg.data) {
+							if (!model.activities[key])
+								model.activities[key] = {};
+							let tmp = msg.data[key];
+							for (let key2 in tmp) {
+								let obj = tmp[key2];
+								if (obj.name)
+									model.activities[key][key2] = Tactivity({ id: key, key: key2, name: obj.name, value: obj.value, value2: obj.value == null ? null : Math.ceil(obj.value) });
+								else
+									delete model.activities[key][key2];
+							}
+
+							exports.refresh_activity(key);
+						}
+						break;
+
 					case 'flow/variables':
 					case 'flow/variables2':
 						// msg.data; {Object}
@@ -1179,6 +1241,8 @@ var total = 'Hello world!';
 						// |-- item.y {Number}
 						// |-----
 						// |-- groups {Array}
+						$('.factivities').empty();
+						model.activities = {};
 						exports.load_design(msg.data);
 						break;
 
@@ -1328,6 +1392,8 @@ var total = 'Hello world!';
 						exports.upd('config.' + msg.id);
 						exports.upd('notes.' + msg.id);
 						Designer.CMD('flow.refresh');
+						delete flow.activities[msg.id];
+						$('#factivities_' + msg.id).empty();
 						setTimeout(msg => model.main.exec(msg.id, 'redraw'), 100, msg);
 						break;
 
@@ -1351,6 +1417,14 @@ var total = 'Hello world!';
 						break;
 				}
 			});
+
+			exports.refresh_activity = function(id) {
+				let container = $('#factivities_' + id);
+				let builder = [];
+				for (let key in flow.activities[id])
+					builder.push(flow.activities[id][key]);
+				DIFFDOM(container, '.factivity', builder.join('\n'), 'data-id');
+			};
 
 			exports.log = function(type, body) {
 				model.logs.unshift({ type: type, body: body });
@@ -1489,6 +1563,7 @@ var total = 'Hello world!';
 					content = el.find('.content');
 
 				content.append('<summ' + 'ary class="hidden" path="?.notes.' + t.id + '" config="show;html div:Thelpers.markdown(value, { element: el })"><span class="towindow exec" data-exec="?/notewindow"><i class="ti ti-window-alt"></i></span><span>@(Note)</span><div class="noscrollbar selectable markdown-small"></div></summ' + 'ary>');
+				el.find('.area').append('<div class="factivities" id="factivities_{0}"></div>'.format(t.id));
 
 				let target = el.closest('.component').attr('path', '?.errors.' + t.id).attr('config', '.iserror:value&&value.length;title:value?value[0].error\:\'\'').tclass('isnewbie', !t.connected).tclass('iserror', !!model.errors[t.id]);
 
@@ -1879,7 +1954,10 @@ var total = 'Hello world!';
 
 						if (!meta.readonly) {
 							single && EDITABLE.components.update && opt.items.push({ id: 'edit', name: '@(Edit source code)', icon: 'ti ti-laptop-code' });
-							EDITABLE.design && opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+							if (EDITABLE.design) {
+								opt.items.push({ id: 'copy', name: count > 1 ? '@(Copy nodes)' : '@(Copy node)', icon: 'ti ti-copy' });
+								opt.items.push({ id: 'clone', name: '@(Clone)', icon: 'ti ti-clone' });
+							}
 							if (meta.remove !== false)
 								opt.items.push('-');
 						}
@@ -1971,6 +2049,10 @@ var total = 'Hello world!';
 								exports.set('changed', checksum !== model.checksum);
 							}
 
+							break;
+
+						case 'copy':
+							exports.copy();
 							break;
 
 						case 'clone':
@@ -2282,6 +2364,25 @@ var total = 'Hello world!';
 				let add = [];
 				let cloned = {};
 				let now = Date.now();
+				let join = function(newbie, instance) {
+					for (let key in model.data) {
+						if (key === instance.id)
+							continue;
+						let t = model.data[key];
+						if (!t.connections)
+							continue;
+						for (let key2 in t.connections) {
+							let outputs = t.connections[key2];
+							for (let o of outputs) {
+								if (o.id === instance.id) {
+									o = CLONE(o);
+									o.id = newbie.id;
+									outputs.push(o);
+								}
+							}
+						}
+					}
+				};
 
 				for (let item of selected.components) {
 					let instance = model.data[item.id];
@@ -2294,7 +2395,7 @@ var total = 'Hello world!';
 					newbie.component = instance.component;
 					newbie.config = CLONE(instance.config);
 					newbie.connected = false;
-					newbie.connections = {};
+					newbie.connections = CLONE(instance.connections);
 					newbie.name = instance.name.slug().replace(/\-/g, '');
 					newbie.html = instance.html.replace(new RegExp(instance.id, 'g'), newbie.id);
 					newbie.$outputs = instance.$outputs;
@@ -2307,6 +2408,7 @@ var total = 'Hello world!';
 					newbie.tab = instance.tab;
 					newbie.note = model.notes[item.id];
 					cloned[instance.id] = newbie.id;
+					join(newbie, instance);
 					add.push(newbie);
 					exports.set('notes.' + newbie.id, newbie.note);
 					exports.set('config.' + newbie.id, newbie.config);
@@ -2335,6 +2437,43 @@ var total = 'Hello world!';
 					for (let item of add)
 						Designer.op.select(item.id, true);
 				}, 500, add);
+			};
+
+			exports.copy = function() {
+
+				let selected = Designer.selected();
+				let add = [];
+				let cloned = {};
+				let now = Date.now();
+				let copy = {};
+
+				for (let item of selected.components) {
+					let instance = item.instance;
+					let obj = {};
+					obj.id = instance.id;
+					obj.component = instance.component;
+					obj.config = CLONE(instance.config);
+					obj.note = instance.note;
+					obj.name = instance.Component.name;
+
+					if (instance.inputs) {
+						obj.inputs = [];
+						for (let m of instance.inputs)
+							obj.inputs.push({ id: m.id, name: m.name, type: m.type });
+					}
+
+					if (instance.outputs) {
+						obj.outputs = [];
+						for (let m of instance.outputs)
+							obj.outputs.push({ id: m.id, name: m.name, type: m.type });
+					}
+
+					obj.x = instance.x;
+					obj.y = instance.y;
+					obj.connections = CLONE(instance.connections);
+					copy[obj.id] = obj;
+				}
+				SETTER('clipboard/copy @copied', STRINGIFY(copy));
 			};
 
 			exports.logout = function() {
@@ -2457,6 +2596,8 @@ var total = 'Hello world!';
 
 					if (EDITABLE.tms)
 						opt.items.push({ id: 'tms', name: '@(TMS sources)', icon: 'ti ti-totaljs-alt' });
+
+					opt.items.push({ id: 'paste', icon: 'ti ti-paste', name: '@(Paste nodes)' });
 				}
 
 				if (EDITABLE.download)
@@ -2489,6 +2630,10 @@ var total = 'Hello world!';
 						case 'import':
 							SET('flowimport @default', {});
 							SET('*form', 'flowimport');
+							break;
+						case 'paste':
+							SET('flowpasteform @default', {});
+							SET('*form', 'flowpasteform');
 							break;
 						case 'download2':
 							exports.components();
@@ -2667,6 +2812,73 @@ var total = 'Hello world!';
 			exports.submit = function(hide) {
 				let model = exports.model;
 				model.is && model.callback(model.note);
+				hide();
+			};
+		});
+
+		PLUGIN('flowpasteform', function(exports) {
+			exports.submit = function(hide) {
+
+				let plugin = PLUGINS.flow;
+				let pluginmodel = plugin.model;
+
+				if (!pluginmodel.editable.design)
+					return;
+
+				let model = exports.form;
+				let data = PARSE(model.data);
+
+				if (!data) {
+					SETTER('message/warning', '@(The pasted data is invalid.)');
+					return;
+				}
+
+				for (let key in data) {
+					let obj = data[key];
+					if (!obj.component || !flow.components.findItem('id', obj.component)) {
+						SETTER('message/warning', 'The component "{0}" not found.'.format(obj.name || obj.component));
+						return;
+					}
+				}
+
+				let add = [];
+
+				for (let key in data) {
+					let newbie = data[key];
+					let com = flow.components.findItem('id', newbie.component);
+					let instance = flow.data[key];
+
+					if (instance) {
+						instance.connections = newbie.connections;
+						instance.x = newbie.x;
+						instance.y = newbie.y;
+						instance.config = newbie.config;
+						instance.note = newbie.note;
+						if (instance.connected) {
+							SETTER('websocket/send', { TYPE: 'reconfigure', id: instance.id, data: instance.config });
+						} else {
+							exports.set('data.' + instance.id + '.config', instance.config);
+							model.main.exec(instance.id, 'configure', instance.config);
+						}
+					} else {
+						newbie.Component = com;
+						newbie.name = com.name.slug().replace(/\-/g, '');
+						newbie.outputs = com.outputs ? CLONE(com.outputs) : null;
+						newbie.inputs = com.inputs ? CLONE(com.inputs) : null;
+						newbie.html = '<figure>' + com.html.format(newbie.id) + '</figure>';
+						newbie.template = com.template ? Tangular.compile(com.template) : null;
+						newbie.onmake = plugin.onmake;
+						newbie.onremove = plugin.onremove;
+						add.push(newbie);
+					}
+
+					plugin.set('notes.' + newbie.id, newbie.note);
+					plugin.set('config.' + newbie.id, newbie.config);
+				}
+
+				plugin.set('changed @done', true);
+				Designer.CMD('flow.components.add', add);
+				Designer.CMD('flow.refresh');
 				hide();
 			};
 		});
@@ -3226,7 +3438,11 @@ var total = 'Hello world!';
 			Instance.prototype.$destroy = function() {
 				var t = this;
 				delete meta.instances[t.id];
-				t.close && t.close();
+				try {
+					t.close && t.close();
+				} catch (e) {
+					W.console && console.error(e);
+				}
 			};
 
 			meta.components = {};
@@ -3266,22 +3482,31 @@ var total = 'Hello world!';
 						meta.exec(key, type, val);
 				} else {
 					var instance = meta.instances[id];
-					if (instance && instance[type])
-						instance[type](val);
+					if (instance && instance[type]) {
+						try {
+							instance[type](val);
+						} catch (e) {
+							W.console && console.error(e);
+						}
+					}
 				}
 			};
 
 			meta.init = function(name, instance, el, reinit) {
 				var tmp = meta.components[name];
 				if (tmp) {
-					if (meta.instances[instance.id])
-						meta.instances[instance.id].$destroy();
-					var obj = new Instance(instance, el);
-					meta.instances[instance.id] = obj;
-					tmp.fn(obj, reinit);
-					obj.configure && obj.configure(flow.config[instance.id], true);
-					obj.status && obj.status(flow.status[instance.id], true);
-					obj.note && obj.note(flow.notes[instance.id], true);
+					try {
+						if (meta.instances[instance.id])
+							meta.instances[instance.id].$destroy();
+						var obj = new Instance(instance, el);
+						meta.instances[instance.id] = obj;
+						tmp.fn(obj, reinit);
+						obj.configure && obj.configure(flow.config[instance.id], true);
+						obj.status && obj.status(flow.status[instance.id], true);
+						obj.note && obj.note(flow.notes[instance.id], true);
+					} catch (e) {
+						W.console && console.error(e);
+					}
 				}
 			};
 
@@ -3295,8 +3520,13 @@ var total = 'Hello world!';
 					const instance = meta.instances[key];
 					if (!inDOM(instance.dom))
 						instance.$destroy();
-					else if (instance.service)
-						instance.service(count);
+					else if (instance.service) {
+						try {
+							instance.service(count);
+						} catch (e) {
+							W.console && console.error(e);
+						}
+					}
 				}
 			});
 
