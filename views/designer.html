@@ -1188,6 +1188,10 @@ var total = 'Hello world!';
 						// msg.worker {Boolean}
 						break;
 
+					case 'flow/online':
+						exports.set('online', msg.online);
+						break;
+
 					case 'flow/activity':
 						// msg.id
 						// msg.name
