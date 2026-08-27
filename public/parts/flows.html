@@ -47,7 +47,7 @@
 										<div class="flow-identity">
 											<div class="icon"{{ if m.color }} style="background-color:{{ m.color }}"{{ fi }}><i class="{{ m.icon }}"></i></div>
 											<div class="meta">
-												<div class="name"><b>{{ m.name }}</b>{{ if m.version }}<span class="version" title="@(Version)">v{{ m.version }}</span>{{ fi }}{{ if m.stats.errors }}<span class="flow-error-badge" title="@(This FlowStream contains errors)"><i class="ti ti-exclamation-triangle"></i>@(Error)</span>{{ fi }}</div>
+												<div class="name"><b>{{ m.name }}</b>{{ if m.version }}<span class="version" title="@(Version)">v{{ m.version }}</span>{{ fi }}{{ if m.stats && m.stats.errors }}<span class="flow-error-badge"><i class="ti ti-exclamation-triangle"></i>@(Error)</span>{{ fi }}</div>
 												<div class="details">
 													{{ if m.stats && m.stats.paused }}<span class="flow-status flow-status-paused"><i></i>@(Paused)</span>{{ else }}<span class="flow-status"><i></i>@(Running)</span>{{ fi }}
 													{{ if m.reference }}<span class="reference">{{ m.reference }}</span>{{ fi }}
@@ -55,10 +55,10 @@
 											</div>
 										</div>
 										<div class="proxy">
-											{{ if m.proxypath }}<i class="ti ti-link mr5"></i><span title="{{ m.proxypath }}">{{ m.proxypath }}</span>{{ else }}<span class="empty">---</span>{{ fi }}
+											{{ if m.proxypath }}<i class="ti ti-link"></i><span title="{{ m.proxypath }}">{{ m.proxypath }}</span>{{ else }}<span class="empty">---</span>{{ fi }}
 										</div>
 										<div class="stats">
-											<div><span class="memory-value" title="@(Memory usage)">{{ m.stats.memory | filesize }}</span></div>
+											<div><span class="memory-value" title="@(Memory usage)">{{ if m.stats }}{{ m.stats.memory | filesize }}{{ fi }}</span></div>
 										</div>
 										<div class="options exec" data-exec="common/contextmenu" data-prevent="true" title="@(Options)"><i class="ti ti-ellipsis-v"></i></div>
 									</section>
