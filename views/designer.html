@@ -307,7 +307,7 @@
 				<ui-bind path="?.info.selected" config="template" class="info">
 					<script type="text/html">
 						{{ if value && value.component }}
-						<div>{{ value.Component.name }}<i class="{{ value.Component.icon }} ml5"></i></div>
+						<div>{{ value.Component.name }}<span class="badge badge-small badge-silver ml5">v{{ value.Component.version }}</span><i class="{{ value.Component.icon }} ml5"></i></div>
 						<span class="monospace b">{{ value.id }}</span>
 						{{ fi }}
 					</script>
