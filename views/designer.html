@@ -2887,7 +2887,7 @@ var total = 'Hello world!';
 		PLUGIN('flownoteform', function(exports) {
 			exports.submit = function(hide) {
 				let model = exports.model;
-				model.is && model.callback(model.note);
+				model.callback && model.callback(model.note);
 				hide();
 			};
 		});
