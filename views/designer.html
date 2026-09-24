@@ -1553,7 +1553,14 @@ var total = 'Hello world!';
 						groups[g] = [com];
 				}
 
-				new Function(js.join('\n'))();
+				for (let m of js) {
+					try {
+						new Function(m)();
+					} catch (e) {
+						console.error(e);
+					}
+				}
+
 				model.current = '';
 
 				let arr = [];
@@ -2099,8 +2106,8 @@ var total = 'Hello world!';
 
 						case 'edit':
 							EDITABLE.components.update && SETTER('websocket/send', { TYPE: 'component_read', id: item.component, callback: function(response) {
-								exports.sourcecode(response.data, function(value) {
-									exports.savecomponent(item.component, value);
+								exports.sourcecode(response.data, function(value, hide) {
+									exports.savecomponent(item.component, value, hide);
 								}, item.component);
 							}});
 							break;
@@ -2193,8 +2200,8 @@ var total = 'Hello world!';
 							break;
 						case 'edit':
 							SETTER('websocket/send', { TYPE: 'component_read', id: id, callback: function(response) {
-								exports.sourcecode(response.data, function(value) {
-									exports.savecomponent(id, value);
+								exports.sourcecode(response.data, function(value, hide) {
+									exports.savecomponent(id, value, hide);
 								}, id);
 							}});
 							break;
@@ -2282,7 +2289,8 @@ var total = 'Hello world!';
 
 			};
 
-			exports.savecomponent = function(id, value) {
+
+			exports.savecomponent = function(id, value, hide) {
 
 				if (id) {
 
@@ -2307,7 +2315,14 @@ var total = 'Hello world!';
 					id = FUNC.makeid('c');
 
 				value = FUNC.rtrim(value);
-				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: value, callback: ASETTER('message/response @hideloading', NOOP) });
+				SETTER('websocket/send @showloading', { TYPE: 'component_save', id: id, data: value, callback: function(err) {
+					if (err instanceof Array) {
+						EMIT('ERROR', err);
+					} else if (typeof(hide) === 'function') {
+						FLAGS('@saved @hideloading');
+						hide();
+					}
+				}});
 				return id;
 			};
 
@@ -2699,8 +2714,8 @@ var total = 'Hello world!';
 
 					switch (selected.id) {
 						case 'create':
-							exports.sourcecode($('#template_component').html().trim().replace('{id}', FUNC.makeid('c')).replace(/SCR/g, 'scr' + 'ipt').replace(/CSS|STYLE/g, 'style'), function(value) {
-								exports.savecomponent('', value);
+							exports.sourcecode($('#template_component').html().trim().replace('{id}', FUNC.makeid('c')).replace(/SCR/g, 'scr' + 'ipt').replace(/CSS|STYLE/g, 'style'), function(value, hide) {
+								exports.savecomponent('', value, hide);
 							});
 							break;
 						case 'import':
@@ -2872,13 +2887,12 @@ var total = 'Hello world!';
 				FUNC.readme(model.component.name, model.component.readme || '');
 			};
 
-			exports.submit = function(hide) {
+			exports.submit = function() {
 				let model = exports.model;
 				FLAGS('@showloading');
 				setTimeout(function(model) {
 					FLAGS('@hideloading');
-					model.callback(model.source);
-					hide();
+					model.callback(model.source, () => NUL('*form'));
 				}, 1000, model);
 			};
 
