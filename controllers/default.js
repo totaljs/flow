@@ -113,14 +113,13 @@ function private($) {
 	if (filename) {
 
 		filename = filename.replace(/\.{2,}|~|\+|\/|\\/g, '');
-		$.nocache();
 
 		let path = PATH.private(filename);
 
 		Total.Fs.lstat(path, function(err, stat) {
 
 			if (err) {
-				$.throw404();
+				$.fallback(404);
 				return;
 			}
 
@@ -133,8 +132,13 @@ function private($) {
 			}
 
 			let stream = Total.Fs.createReadStream(path, opt);
-			$.nocache();
-			$.stream(stream, U.contentTypes[U.getExtension(path)], filename, { 'x-size': stat.size, 'last-modified': stat.mtime.toUTCString() });
+			let headers = $.response.headers;
+
+			headers['cache-control'] = 'private, no-cache, no-store, max-age=0';
+			headers['x-size'] = stat.size;
+			headers['last-modified'] = stat.mtime.toUTCString();
+
+			$.stream(U.contentTypes[U.getExtension(path)], stream, filename);
 
 		});
 
