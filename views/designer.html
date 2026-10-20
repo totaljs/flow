@@ -2603,8 +2603,10 @@ var total = 'Hello world!';
 							setTimeout(next, 500);
 						}
 					};
+
 					reader.readAsText(file);
-				});
+
+				}, () => FLAGS('@hideloading'));
 			};
 
 			exports.search = function() {
