@@ -8,6 +8,7 @@ cookie_secret   (generate)  : 10
 $api                        : /fapi/
 $customtitles               : true
 
+// sso                         : https://my.openplatform.cloud
 // env                         : dev
 // components                  : https://cdn.totaljs.com/flowstream/webcomponents/db.json
 // templates                   : https://cdn.totaljs.com/flowstream/templates/db.json

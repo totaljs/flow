@@ -13,6 +13,7 @@ exports.install = function() {
 	ROUTE('+GET /designer/', designer);
 	ROUTE('-GET /', login);
 	ROUTE('+GET /', index);
+	ROUTE('GET  /auth/', auth);
 };
 
 function designer($) {
@@ -30,6 +31,11 @@ function login($) {
 			$.redirect(CONF.openplatform);
 		else
 			$.fallback(401);
+	} else if (CONF.sso) {
+		if ($.banned || $.query.authorized)
+			$.redirect(CONF.sso);
+		else
+			$.redirect(CONF.sso + '/?url=' + $.hostname());
 	} else
 		$.view('login');
 }
@@ -157,4 +163,10 @@ function private($) {
 
 function notify($) {
 	Flow.notify($, $.params.id);
+}
+
+function auth($) {
+	if ($.query.token)
+		$.cookie(CONF.op_cookie, $.query.token, '1 month');
+	$.redirect('/?authorized=1');
 }
