@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:24-alpine
 MAINTAINER totalplatform "info@totaljs.com"
 
 RUN apk add --no-cache ffmpeg tini bash
