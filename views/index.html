@@ -475,7 +475,6 @@
 
 				<ui-component name="importer" path="?.form" config="if:streamform;url:@{#}/forms/stream.html"></ui-component>
 				<ui-component name="importer" path="?.form" config="if:variablesform;url:@{#}/forms/variables.html"></ui-component>
-				<ui-component name="importer" path="?.form" config="if:welcomeform;url:@{#}/forms/welcome.html"></ui-component>
 
 				@{if user.sa}
 				<ui-component name="importer" path="?.form" config="if:templatesform;url:@{#}/forms/templates.html"></ui-component>
@@ -1223,11 +1222,6 @@
 					}
 				}
 			});
-
-			if (NAV.query.welcome) {
-				exports.set('form', 'welcomeform');
-				setTimeout(() => REDIRECT(NAV.url), 1000);
-			}
 
 			exports.mainmenu();
 
