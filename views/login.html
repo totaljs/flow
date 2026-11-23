@@ -90,7 +90,7 @@
 			exports.submit = function() {
 				let model = exports.form;
 				exports.tapi('Auth|login', model, ERROR(function(response) {
-					location.href = '@{#}/' + ($('.alert').length ? '?welcome=1' : '');
+					location.href = '@{#}/';
 				}, response => SET('%error', response[0].error)));
 			};
 
